@@ -22,7 +22,7 @@ function AppWithRedux(props: MyAppProps) {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>My page</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
       </Head>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

@@ -8,7 +8,7 @@ export const useStyles = makeStyles((_theme: any) => ({
     // border: 'none !important',
   },
   wrapper: {
-    padding: '30px 24px 30px 24px',
+    padding: '52px 24px 32px 24px',
     display: 'flex',
     justifyContent: 'space-between',
 

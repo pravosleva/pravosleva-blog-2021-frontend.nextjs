@@ -59,6 +59,7 @@ export const CertVerifiedPage = ({ userData }: TProps) => {
     <>
       <Head>
         <style type="text/css" dangerouslySetInnerHTML={{ __html: GosuslugiFonts }} />
+        <meta name="theme-color" content='#FFF' />
       </Head>
       <div className={classes.externalWrapper}>
         <div className={classes.wrapper}>

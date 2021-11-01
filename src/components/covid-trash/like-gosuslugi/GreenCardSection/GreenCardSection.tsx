@@ -18,6 +18,7 @@ export const GreenCardSectionConnected = ({
       <div className={classes.activated}>
         <span className='target-text'>{t('COVID-TRASH_TARGET-TEXT')}</span>
       </div>
+      <h4 className={classes.h4} style={{ marginTop: '12px' }}>№ 9500000011745973</h4>
     </div>
   )
 }

@@ -10,14 +10,15 @@ export const useStyles = makeStyles((_theme: any) => ({
   wrapper: {
     boxSizing: 'border-box',
     width: '100%',
-    padding: '22px 30px',
+    // minWidth: '350px',
+    padding: '20px 30px',
     background: 'url(/static/img/covid-trash/bg-valid.svg) no-repeat 0 0',
     borderRadius: '16px',
     textAlign: 'center',
     marginBottom: '24px',
   },
   h4: {
-    fontSize: '18px',
+    fontSize: '20px',
     lineHeight: '24px',
     fontWeight: 400,
     color: '#fff',
@@ -29,7 +30,7 @@ export const useStyles = makeStyles((_theme: any) => ({
     fontFamily: 'Lato,Arial,sans-serif,-apple-system',
     color: '#0b1f33',
 
-    marginTop: '24px',
+    marginTop: '12px',
 
     '& > .target-text': {
       display: 'inline-block',

@@ -11,7 +11,7 @@ export const useStyles = makeStyles((_theme: any) => ({
     margin: '0 auto',
   },
   externalWrapper: {
-    padding: '0 17px',
+    padding: '0 5px',
     // border: '1px solid transparent',
   },
 }))
