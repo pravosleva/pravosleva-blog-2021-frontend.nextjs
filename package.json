@@ -2,6 +2,18 @@
   "name": "frontend.nextjs",
   "version": "5.0.0",
   "private": true,
+  "scripts": {
+    "envs-init": "bash bin/envs-init.sh nextjs",
+    "local:cleanup": "bash bin/local-cleanup.sh nextjs",
+    "deploy:prod:build-send-restart-all": "deploy-app -d prod:build-send-restart-all",
+    "deploy:prod:build-send-restart-front": "deploy-app -d prod:build-send-restart-front",
+    "deploy:prod:send-restart-front": "deploy-app -d prod:send-restart-front",
+    
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
+  },
   "dependencies": {
     "@emotion/cache": "latest",
     "@emotion/react": "^11.4.1",
@@ -20,12 +32,6 @@
     "react-redux": "^7.2.5",
     "redux-symbiote": "^3.4.0",
     "slugify": "^1.6.0"
-  },
-  "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start",
-    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
   },
   "devDependencies": {
     "@types/js-cookie": "^2.2.7",

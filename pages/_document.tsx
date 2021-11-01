@@ -3,6 +3,10 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 import theme from '~/mui/theme';
 import createEmotionCache from '~/createEmotionCache';
+import { StylesProvider } from '@mui/styles';
+
+const isProd = process.env.NODE_ENV === 'production'
+const yandexCounterId = !!process.env.YANDEX_COUNTER_ID ? Number(process.env.YANDEX_COUNTER_ID) : null
 
 export default class MyDocument extends Document {
   render() {
@@ -74,10 +78,37 @@ MyDocument.getInitialProps = async (ctx) => {
       dangerouslySetInnerHTML={{ __html: style.css }}
     />
   ));
+  const styles = [...React.Children.toArray(initialProps.styles), ...emotionStyleTags]
+  const yandexMetrica = isProd && !!yandexCounterId ? (
+    <>
+      <script
+        type="text/javascript"
+        defer
+        dangerouslySetInnerHTML={{
+          __html: `
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+ym(${yandexCounterId}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
+`,
+        }}
+      />
+      <noscript>
+        <div>
+          <img
+            src={`https://mc.yandex.ru/watch/${yandexCounterId}`}
+            style={{ position: 'absolute', left: '-9999px' }}
+            alt=""
+          />
+        </div>
+      </noscript>
+    </>
+  ) : null
+  if (!!yandexMetrica) styles.push(yandexMetrica)
 
   return {
     ...initialProps,
     // Styles fragment is rendered after the app and page rendering finish.
-    styles: [...React.Children.toArray(initialProps.styles), ...emotionStyleTags],
+    styles,
   };
 };
