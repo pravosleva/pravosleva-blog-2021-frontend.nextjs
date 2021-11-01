@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'ALS Ekibastuz';
+    src: local('ALS Ekibastuz Bold'), local('ALS-Ekibastuz-Bold'),
+        url('Ekibastuz-Bold.woff2') format('woff2'),
+        url('Ekibastuz-Bold.woff') format('woff'),
+        url('Ekibastuz-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
