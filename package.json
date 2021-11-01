@@ -4,13 +4,11 @@
   "private": true,
   "scripts": {
     "start:pm2": "pm2 start yarn --name next-9000-prod -- start",
-
     "envs-init": "bash bin/envs-init.sh nextjs",
     "local:cleanup": "bash bin/local-cleanup.sh nextjs",
     "deploy:prod:build-send-restart-all": "deploy-app -d prod:build-send-restart-all",
     "deploy:prod:build-send-restart-front": "deploy-app -d prod:build-send-restart-front",
     "deploy:prod:send-restart-front": "deploy-app -d prod:send-restart-front",
-    
     "dev": "next",
     "build": "next build",
     "start": "next start",
@@ -40,6 +38,7 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "deploy-app": "^1.0.3",
     "typescript": "latest"
   }
 }

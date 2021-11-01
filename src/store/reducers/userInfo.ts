@@ -11,7 +11,7 @@ export const { actions: userInfoActions, reducer: userInfo } = createSymbiote(
   {
     fillDelta: (state, payload) => ({ ...state, ...payload }),
     setUser: (state, fromServer) => ({ ...state, fromServer }),
-    reset: (state, payload) => ({ ...initialState }),
+    reset: (_state, _payload) => ({ ...initialState }),
   },
   'userInfo'
 )
