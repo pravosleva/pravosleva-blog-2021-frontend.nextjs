@@ -3,10 +3,10 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 import theme from '~/mui/theme';
 import createEmotionCache from '~/createEmotionCache';
-import { StylesProvider } from '@mui/styles';
+import { metrics } from '~/constants'
 
 const isProd = process.env.NODE_ENV === 'production'
-const yandexCounterId = !!process.env.YANDEX_COUNTER_ID ? Number(process.env.YANDEX_COUNTER_ID) : null
+const yandexCounterId = !!metrics.yaCounter ? Number(metrics.yaCounter) : null
 
 export default class MyDocument extends Document {
   render() {
