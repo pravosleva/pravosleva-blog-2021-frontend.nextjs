@@ -11,7 +11,7 @@ export const useStyles = makeStyles((_theme: any) => ({
     boxSizing: 'border-box',
     width: '100%',
     // minWidth: '350px',
-    padding: '20px 30px',
+    padding: '22px 30px',
     background: 'url(/static/img/covid-trash/bg-valid.svg) no-repeat 0 0',
     borderRadius: '16px',
     textAlign: 'center',
@@ -40,7 +40,7 @@ export const useStyles = makeStyles((_theme: any) => ({
       verticalAlign: 'baseline',
       color: '#0b1f33',
       fontFamily: 'Lato-Bold,Arial,sans-serif,-apple-system !important',
-      fontWeight: 400,
+      fontWeight: 300,
     }
   },
 }))

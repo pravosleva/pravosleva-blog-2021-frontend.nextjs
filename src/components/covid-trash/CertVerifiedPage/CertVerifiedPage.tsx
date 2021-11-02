@@ -47,7 +47,7 @@ body {
   color: #3b3b3b;
   font-size: 15px;
   line-height: normal;
-  background: #fafcff;
+  background-color: #fafcff !important;
 }
 `
 
