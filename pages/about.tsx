@@ -6,8 +6,16 @@ import Button from '@mui/material/Button';
 import ProTip from '~/components/ProTip';
 import Link from '~/components/Link';
 import Copyright from '~/components/Copyright';
+import { event } from '~/utils/googleAnalitycs';
 
 export default function About() {
+  const handleClick = () => {
+    event({
+      action: "tst.0",
+      params : { x: 1 }
+    })
+  }
+
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
@@ -16,6 +24,9 @@ export default function About() {
         </Typography>
         <Button variant="contained" component={Link} noLinkStyle href="/">
           Go to the main page
+        </Button>
+        <Button variant="contained" onClick={handleClick}>
+          GA tst 0
         </Button>
         <ProTip />
         <Copyright />

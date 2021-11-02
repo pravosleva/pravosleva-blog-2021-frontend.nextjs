@@ -6,7 +6,8 @@ import createEmotionCache from '~/createEmotionCache';
 import { metrics } from '~/constants'
 
 const isProd = process.env.NODE_ENV === 'production'
-const yandexCounterId = !!metrics.yaCounter ? Number(metrics.yaCounter) : null
+const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
+const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 
 export default class MyDocument extends Document {
   render() {
@@ -21,6 +22,19 @@ export default class MyDocument extends Document {
           />
         </Head>
         <body>
+          {
+            isProd && !!YANDEX_COUNTER_ID && (
+              <noscript>
+                <div>
+                  <img
+                    src={`https://mc.yandex.ru/watch/${YANDEX_COUNTER_ID}`}
+                    style={{ position: 'absolute', left: '-9999px' }}
+                    alt=""
+                  />
+                </div>
+              </noscript>
+            )
+          }
           <Main />
           <NextScript />
         </body>
@@ -79,32 +93,42 @@ MyDocument.getInitialProps = async (ctx) => {
     />
   ));
   const styles = [...React.Children.toArray(initialProps.styles), ...emotionStyleTags]
-  const yandexMetrica = isProd && !!yandexCounterId ? (
-    <>
-      <script
-        type="text/javascript"
-        defer
-        dangerouslySetInnerHTML={{
-          __html: `
+  const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
+    <script
+      type="text/javascript"
+      defer
+      dangerouslySetInnerHTML={{
+        __html: `
 (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
 m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
 (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-ym(${yandexCounterId}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
+ym(${YANDEX_COUNTER_ID}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
 `,
+      }}
+    />
+  ) : null
+  if (!!yaMetrica) styles.push(yaMetrica)
+  const gMetrica = isProd && !!GA_TRACKING_ID ? (
+    <>
+      <script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '${GA_TRACKING_ID}', {
+          page_path: window.location.pathname,
+        });
+      `,
         }}
       />
-      <noscript>
-        <div>
-          <img
-            src={`https://mc.yandex.ru/watch/${yandexCounterId}`}
-            style={{ position: 'absolute', left: '-9999px' }}
-            alt=""
-          />
-        </div>
-      </noscript>
     </>
   ) : null
-  if (!!yandexMetrica) styles.push(yandexMetrica)
+  if (!!gMetrica) styles.push(gMetrica)
 
   return {
     ...initialProps,
