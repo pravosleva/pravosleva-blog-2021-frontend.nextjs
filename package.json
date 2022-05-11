@@ -20,6 +20,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/server": "latest",
     "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.6.2",
     "@mui/material": "latest",
     "@mui/styles": "^5.0.1",
     "axios": "^0.21.4",

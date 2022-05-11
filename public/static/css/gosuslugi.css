@@ -1,0 +1,73 @@
+body {
+  min-height: 100vh;
+}
+
+@keyframes pulse{
+  from {
+    transform:scale3d(0.6, 0.6, 0.6);
+    opacity:.4;
+  }
+  to {
+    transform:scale3d(1.1, 1.1, 1.1);
+    opacity:0;
+  }
+}
+.container-app-loader {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 10000000000;
+    background: #fff;
+    opacity: 1;
+}
+.container-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -100px 0 0 -100px;
+    width: 200px;
+    height: 200px;
+    background: #fff url(https://gu-st.ru/covid-web-st/static-pages-assets/HEX_blue.e0544782cd99d0fba77b.svg) no-repeat center center;
+    opacity: .3;
+}
+.pulse {
+    animation-name: pulse;
+}
+.animated {
+    /* -webkit-animation: rotation 1.4s infinite linear forwards; */
+    animation: pulse 1.4s infinite linear forwards;
+    animation-name: pulse;
+}
+.container-app-loader {
+    text-align: center;
+}
+.container-app-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -61px 0 0 -61px;
+    width: 122px;
+    height: 122px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: url(https://gu-st.ru/covid-web-st/static-pages-assets/HEX.d47a7cda205691b07950.svg) no-repeat center center;
+}
+.app-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -50px 0 0 -50px;
+    width: 100px;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: url(https://gu-st.ru/covid-web-st/static-pages-assets/gos_logo_mobile.9ea844b130533f5a6099.svg) no-repeat center center;
+}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { CertVerifiedPage } from '~/components/covid-trash'
 
@@ -11,7 +11,27 @@ const api = axios.create({ baseURL: API_URL })
 const isDev = process.env.NODE_ENV === 'development'
 
 const VerifyPage = ({ userData, errorMsg }: any) => {
+  const [isTimerEnabled, setIsTimerEnabled] = useState<boolean>(true)
+  useEffect(() => {
+    const disableLoader = () => {
+      setTimeout(() => {
+        setIsTimerEnabled(false)
+      }, 2000)
+    }
+    if (typeof window !== 'undefined') disableLoader()
+  }, [typeof window])
+  
   return <>
+    {
+      isTimerEnabled && (
+        <div className="container-app-loader">
+          <div className="container-pulse pulse animated" />
+          <div className="container-app-logo">
+            <div className="app-logo" />
+          </div>
+        </div>
+      )
+    }
     {isDev && !!errorMsg && (
       <pre style={{ border: '1px solid red' }}>{JSON.stringify(userData, null, 2)}</pre>
     )}
@@ -36,13 +56,12 @@ VerifyPage.getInitialProps = async (ctx: any) => {
 
     const result = await api
       .get(`/users/${userId}`)
-      .then((res) => res.data)
+      .then((res) => !!res.data)
       .catch((err) => typeof err === 'string' ? err : err.message || 'No err.message')
 
     // if (Array.isArray(result) && result.length > 0 && !!result[0]?.id) return result[0]
-    if (typeof result === 'string') {
-      errorMsg = result
-    }
+    if (typeof result === 'string') errorMsg = result
+
     return result
   }
 

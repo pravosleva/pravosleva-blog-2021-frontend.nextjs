@@ -41,7 +41,7 @@ function AppWithRedux(props: MyAppProps) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>My page</title>
+        <title>Pravosleva</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
       </Head>
       <ThemeProvider theme={theme}>

@@ -7,27 +7,40 @@ import ProTip from '~/components/ProTip';
 import Link from '~/components/Link';
 import Copyright from '~/components/Copyright';
 import { event } from '~/utils/googleAnalitycs';
+import { Alert, Stack } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function About() {
   const handleClick = () => {
-    event({
-      action: "tst.0",
-      params : { x: 1 }
-    })
+    try {
+      const gaEvent = {
+        action: "tst.0",
+        params : { x: 1 },
+      }
+      const isConfirmed = window.confirm(`New event for google analytics?\n\n${JSON.stringify(gaEvent, null, 2)}`)
+      if (isConfirmed) event(gaEvent)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Next.js v5-beta with TypeScript example
+          About
         </Typography>
-        <Button variant="contained" component={Link} noLinkStyle href="/">
-          Go to the main page
-        </Button>
-        <Button variant="contained" onClick={handleClick}>
-          GA tst 0
-        </Button>
+        <Alert sx={{ mb: 2 }} variant="outlined" severity="info">
+          In progress...
+        </Alert>
+        <Stack spacing={1}>
+          <Button startIcon={<ArrowBackIcon />} variant="contained" color='primary' component={Link} noLinkStyle href="/">
+            Go to the main page
+          </Button>
+          <Button variant="contained" color='inherit' onClick={handleClick}>
+            GA tst 0
+          </Button>
+        </Stack>
         <ProTip />
         <Copyright />
       </Box>

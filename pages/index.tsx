@@ -5,17 +5,40 @@ import Box from '@mui/material/Box';
 import ProTip from '~/components/ProTip';
 import Link from '~/components/Link';
 import Copyright from '~/components/Copyright';
+import { Alert, Button, Stack } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 export default function Index() {
+  // const goToPage = (url: string) => (e: any) => {
+  //   e.preventDefault()
+  //   try {
+  //     window.location.href = url
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
   return (
     <Container maxWidth="sm">
-      <Box sx={{ my: 4 }}>
+      <Box
+        sx={{
+          my: 4,
+        }}
+      >
         <Typography variant="h4" component="h1" gutterBottom>
-          Next.js v5-beta with TypeScript example
+          In progress...
         </Typography>
-        <Link href="/about" color="secondary">
-          Go to the about page
-        </Link>
+        <Alert sx={{ mb: 2 }} severity="info" variant='filled'>Next.js / MUI v5-beta / TypeScript</Alert>
+        <Stack spacing={1}>
+          {/* <Link href="/about" color="secondary">
+            Go to the about page
+          </Link> */}
+          <Button startIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='http://pravosleva.ru/cra/' target='_blank'>
+            Go to CRA version
+          </Button>
+          <Link href='/about' color="secondary">
+            Go to about page
+          </Link>
+        </Stack>
         <ProTip />
         <Copyright />
       </Box>
