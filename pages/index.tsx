@@ -32,11 +32,14 @@ export default function Index() {
           {/* <Link href="/about" color="secondary">
             Go to the about page
           </Link> */}
-          <Button startIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='http://pravosleva.ru/cra/' target='_blank'>
-            Go to CRA version
+          <Button endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='http://pravosleva.ru/cra/' target='_blank'>
+            Go to CRA version (mui@4.x)
           </Button>
-          <Link href='/about' color="secondary">
+          <Link href='/about' color="secondary" shallow>
             Go to about page
+          </Link>
+          <Link href='https://selection4test.ru' color="secondary" target='_blank'>
+            Old trash
           </Link>
         </Stack>
         <ProTip />

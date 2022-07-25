@@ -1,13 +1,10 @@
-import {
-  // applyMiddleware,
-  createStore,
-} from 'redux';
 // import createSagaMiddleware, { Task } from 'redux-saga';
-import { createWrapper } from 'next-redux-wrapper';
 // import { Store, AnyAction } from 'redux';
 import { rootReducer } from './reducers';
 // import { rootSaga } from './sagas';
 // import { IRootState } from './IRootState';
+import { createWrapper } from 'next-redux-wrapper'
+import { configureStore } from '@reduxjs/toolkit'
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -25,16 +22,22 @@ const isDev = process.env.NODE_ENV === 'development';
 //   return applyMiddleware(...middlewares);
 // };
 
-export const makeStore = (_context: any) => {
-  // const sagaMiddleware = createSagaMiddleware();
-  const store = createStore(
-    rootReducer,
-    // bindMiddleware([sagaMiddleware])
-  );
+// export const makeStore = (_context: any) => {
+//   // const sagaMiddleware = createSagaMiddleware();
+//   const store = createStore(
+//     rootReducer,
+//     // bindMiddleware([sagaMiddleware])
+//   );
 
-  // store.sagaTask = sagaMiddleware.run(rootSaga);
-  return store;
-};
+//   // store.sagaTask = sagaMiddleware.run(rootSaga);
+//   return store;
+// };
 
-export const wrapper = createWrapper(makeStore, { debug: isDev });
+// export const wrapper = createWrapper(makeStore, { debug: isDev });
 
+export const makeStore = () =>
+  configureStore({
+    reducer: rootReducer
+  })
+
+export const wrapper = createWrapper(makeStore)

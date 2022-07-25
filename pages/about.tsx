@@ -34,7 +34,7 @@ export default function About() {
           In progress...
         </Alert>
         <Stack spacing={1}>
-          <Button startIcon={<ArrowBackIcon />} variant="contained" color='primary' component={Link} noLinkStyle href="/">
+          <Button startIcon={<ArrowBackIcon />} variant="contained" color='primary' component={Link} noLinkStyle href="/" shallow>
             Go to the main page
           </Button>
           <Button variant="contained" color='inherit' onClick={handleClick}>

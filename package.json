@@ -23,6 +23,7 @@
     "@mui/icons-material": "^5.6.2",
     "@mui/material": "latest",
     "@mui/styles": "^5.0.1",
+    "@reduxjs/toolkit": "^1.8.3",
     "axios": "^0.21.4",
     "clsx": "^1.1.1",
     "js-cookie": "^3.0.1",
@@ -31,7 +32,8 @@
     "react": "latest",
     "react-dom": "latest",
     "react-intl-universal": "^2.4.8",
-    "react-redux": "^7.2.5",
+    "react-pin-input": "1.0.x",
+    "react-redux": "^8.0.2",
     "redux-symbiote": "^3.4.0",
     "slugify": "^1.6.0"
   },
