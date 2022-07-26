@@ -42,7 +42,7 @@ export const Report = ({
   const handleChangeMileage = useCallback((e: any) => {
     setMileage(parseInt(e.target.value))
   }, [project_id, chat_id])
-  const [report, setReport] = useState(null)
+  const [report, setReport] = useState<any[] | null>(null)
   const resetErr = useCallback(() => {
     setApiErr('')
     // setReport(null)
@@ -82,7 +82,7 @@ export const Report = ({
         </Alert>
       )}
 
-      {!!report && (
+      {!!report && Array.isArray(report) && report.length > 0 && (
         <Box sx={{ mb: 2 }}>
           {/* <pre>{JSON.stringify(report, null, 2)}</pre> */}
           <ReportTable report={report} />
