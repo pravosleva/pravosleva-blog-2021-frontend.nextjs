@@ -9,8 +9,8 @@ import {
 // import { IRootState } from '~/store/IRootState';
 import { updateProjects } from '~/store/reducers/autopark'
 import AddIcon from '@mui/icons-material/Add'
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import CloseIcon from '@mui/icons-material/Close';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
+import CloseIcon from '@mui/icons-material/Close'
 
 type TProps = {
   chat_id: string
@@ -40,9 +40,17 @@ const fetchCreateProject = async ({ chat_id, name, description }: { chat_id: str
 export const CreateNewProject = ({ chat_id }: TProps) => {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [isOpened, setIsOpened] = useState(false)
+  const handleOpen = useCallback(() => {
+    setIsOpened(true)
+  }, [setIsOpened])
+  const handleClose = useCallback(() => {
+    setIsOpened(false)
+  }, [setIsOpened])
   const resetAll = useCallback(() => {
     setName('')
     setDescription('')
+    handleClose()
   }, [])
   const [isLoading, setIsLoading] = useState(false)
   const [apiErr, setApiErr] = useState<string>('')
@@ -80,13 +88,6 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
   const handleChangeDescr = useCallback((e) => {
     setDescription(e.target.value)
   }, [])
-  const [isOpened, setIsOpened] = useState(false)
-  const handleOpen = useCallback(() => {
-    setIsOpened(true)
-  }, [setIsOpened])
-  const handleClose = useCallback(() => {
-    setIsOpened(false)
-  }, [setIsOpened])
 
   return (
     <>

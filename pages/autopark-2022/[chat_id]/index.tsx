@@ -2,12 +2,12 @@ import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import ProTip from '~/components/ProTip';
-import Link from '~/components/Link';
-import Copyright from '~/components/Copyright';
-import { Alert, Stack } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+// import Button from '@mui/material/Button';
+// import ProTip from '~/components/ProTip';
+// import Link from '~/components/Link';
+// import Copyright from '~/components/Copyright';
+import { Alert } from '@mui/material';
+// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import { Autopark2022 } from '~/components/Autopark2022'
 import { wrapper } from '~/store'
@@ -49,19 +49,19 @@ export default function MyProjects({
           ) : (
             <>
               <Typography variant="h4" component="h1" gutterBottom>
-                My projects <code>{chat_id}</code>
+                My projects
               </Typography>
               <Autopark2022 chat_id={chat_id} />
             </>
           )
         }
-        <Stack spacing={1}>
+        {/* <Stack spacing={1}>
           <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-            Go to the main page
+            Go to home page
           </Button>
-        </Stack>
-        <ProTip />
-        <Copyright />
+        </Stack> */}
+        {/* <ProTip />
+        <Copyright /> */}
       </Box>
     </Container>
   );

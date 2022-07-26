@@ -3,11 +3,12 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import ProTip from '~/components/ProTip';
+// import ProTip from '~/components/ProTip';
 import Link from '~/components/Link';
-import Copyright from '~/components/Copyright';
+// import Copyright from '~/components/Copyright';
 import { Alert, Stack } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import axios from 'axios';
 import { TheProject } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
@@ -47,28 +48,36 @@ export default function MyProjects({
             <b>{errorMsg}</b>
           ) : (
             <>
-              <Typography variant="h4" component="h1" gutterBottom>
+              {/* <Typography variant="h4" component="h1" gutterBottom>
+                Project
+              </Typography> */}
+              <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
                 <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
-              </Typography>
+              </Box>
               <TheProject
                 chat_id={chat_id}
                 project_id={project_id}
               />
               <Stack sx={{ mb: 2 }} spacing={1}>
-                <Button startIcon={<ArrowBackIcon />} variant="contained" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
-                  Go to my projects
+                <Button startIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
+                  Go to report
+                </Button>
+              </Stack>
+              <Stack sx={{ mb: 2 }} spacing={1}>
+                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
+                  Go to projects
                 </Button>
               </Stack>
             </>
           )
         }
-        <Stack spacing={1}>
+        {/* <Stack spacing={1}>
           <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-            Go to the main page
+            Go to home page
           </Button>
-        </Stack>
-        <ProTip />
-        <Copyright />
+        </Stack> */}
+        {/* <ProTip />
+        <Copyright /> */}
       </Box>
     </Container>
   );
