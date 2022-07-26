@@ -15,7 +15,7 @@ export const CustomPinInput = ({
   return (
     <Alert sx={{ mb: 2 }} variant="outlined" severity="info">
       <Typography variant="body2" component="h2" gutterBottom>
-        Введите одноразовый пароль
+        Для входа в режим редактирования введите одноразовый пароль:
       </Typography>
       <PinInput 
         length={4} 

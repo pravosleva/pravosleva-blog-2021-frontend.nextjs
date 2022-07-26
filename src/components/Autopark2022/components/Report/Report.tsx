@@ -39,8 +39,10 @@ export const Report = ({
   const [apiErr, setApiErr] = useState<string>('')
   // const [mileage, setMileage] = useState<number>(0)
   const [mileage, setMileage] = useStickyState(0, "autopark.current-mileage")
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false)
   const handleChangeMileage = useCallback((e: any) => {
     setMileage(parseInt(e.target.value))
+    setIsSubmitDisabled(false)
   }, [project_id, chat_id])
   const [report, setReport] = useState<any[] | null>(null)
   const resetErr = useCallback(() => {
@@ -63,6 +65,7 @@ export const Report = ({
       })
       .finally(() => {
         setIsLoading(false)
+        setIsSubmitDisabled(true)
       })
   }, [chat_id, project_id, mileage])
 
@@ -72,9 +75,13 @@ export const Report = ({
         <TextField value={mileage} size='small' fullWidth disabled={isLoading} variant="outlined" label="Пробег" type="number" onChange={handleChangeMileage}></TextField>
       </Box>
 
-      <Box sx={{ mb: 2 }}>
-        <Button fullWidth disabled={isLoading || !mileage} variant='contained' onClick={handleSubmit} color='secondary' startIcon={<LocalFireDepartmentIcon />}>Получить отчет</Button>
-      </Box>
+      {
+        !isSubmitDisabled && (
+          <Box sx={{ mb: 2 }}>
+            <Button fullWidth disabled={isLoading || !mileage} variant='contained' onClick={handleSubmit} color='secondary' startIcon={<LocalFireDepartmentIcon />}>Получить отчет</Button>
+          </Box>
+        )
+      }
 
       {!!apiErr && (
         <Alert sx={{ mb: 2 }} variant="filled" severity="error">

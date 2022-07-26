@@ -184,7 +184,7 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
               </Grid>
             </Grid>
 
-            <pre>{JSON.stringify({ name, description, mileageLast, mileageDelta }, null, 2)}</pre>
+            {/* <pre>{JSON.stringify({ name, description, mileageLast, mileageDelta }, null, 2)}</pre> */}
           </>
         ) : (
           <Box sx={{ mb: 2 }}>

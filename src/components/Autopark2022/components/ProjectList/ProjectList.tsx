@@ -85,14 +85,22 @@ export const ProjectList = ({
             //   </ListItemButton>
             // </ListItem>
             <Grid container spacing={2} sx={{ mb: i !== a.length ? 2 : 0 }} key={id}>
-              <Grid item xs={9} sm={10}>
+              <Grid
+                item
+                xs={isOneTimePasswordCorrect ? 9 : 12}
+                sm={isOneTimePasswordCorrect ? 10 : 12}
+              >
                 <Button size='small' fullWidth variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
                 {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
               </Button>
               </Grid>
-              <Grid item xs={3} sm={2}>
-                <Button size='small' fullWidth variant='outlined' onClick={handleRemove(id)} color='secondary'>DEL</Button>
-              </Grid>
+              {
+                isOneTimePasswordCorrect && (
+                  <Grid item xs={3} sm={2}>
+                    <Button size='small' fullWidth variant='outlined' onClick={handleRemove(id)} color='secondary'>DEL</Button>
+                  </Grid>
+                )
+              }
             </Grid>
           )
         })}

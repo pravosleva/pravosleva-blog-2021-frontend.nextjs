@@ -96,14 +96,11 @@ export const Autopark2022 = ({
       {!!autoparkData.userCheckerResponse?.projects && (
         <Box sx={{ mb: 2 }}>{Object.keys(autoparkData.userCheckerResponse?.projects).length} project(s)</Box>
       )}
+      <Box>
+        <ProjectList chat_id={chat_id} />
+      </Box>
       {
-        isOneTimePasswordCorrect
-        ? (
-          <Box>
-            <ProjectList chat_id={chat_id} />
-          </Box>
-        )
-        : (
+        !isOneTimePasswordCorrect && (
           <>
             {/* <Alert sx={{ mb: 2 }} variant="outlined" severity="info">
               <pre style={{ margin: 0 }}>{JSON.stringify(userCheckerResponse, null, 2)}</pre>
@@ -111,7 +108,7 @@ export const Autopark2022 = ({
             {/* <TextField disabled={isLoading} error={!!apiErr} helperText={apiErr || undefined} sx={{ mb: 2 }} variant="outlined" label="Password" type="text" onChange={handleChange}></TextField> */}
             {
               typeof window !== 'undefined' && (
-                <Box sx={{ mb: 2 }}>
+                <Box sx={{ mt: 2, mb: 2 }}>
                   <CustomPinInput
                     handlePinInputComplete={handlePinInputComplete}
                     isLoading={isLoading}
