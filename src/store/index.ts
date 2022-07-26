@@ -6,7 +6,7 @@ import { rootReducer } from './reducers';
 import { createWrapper } from 'next-redux-wrapper'
 import { configureStore } from '@reduxjs/toolkit'
 
-const isDev = process.env.NODE_ENV === 'development';
+// const isDev = process.env.NODE_ENV === 'development';
 
 // export interface SagaStore extends Store<IRootState, AnyAction> {
 //   sagaTask: Task;

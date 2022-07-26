@@ -1,45 +1,135 @@
-import { Button } from '@mui/material';
+import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { useCallback } from 'react';
-import { useSelector } from 'react-redux'
-import { IRootState } from '~/store/IRootState';
-import AddIcon from '@mui/icons-material/Add'
+import { useSelector, useDispatch } from 'react-redux'
+import { updateProjects, setActiveProject } from '~/store/reducers/autopark'
+import { IRootState } from '~/store/IRootState'
+// import AddIcon from '@mui/icons-material/Add'
+import { CreateNewItem } from './components'
+// import FolderIcon from '@mui/icons-material/Folder'
+import DeleteIcon from '@mui/icons-material/Delete'
+import axios from 'axios';
+// import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import BuildIcon from '@mui/icons-material/Build';
 
 type TProps = {
   chat_id: string;
   project_id: string;
 }
+type TReqArgs = {
+  chat_id: string;
+  project_id: string;
+  item_id: number;
+}
+
+const isDev = process.env.NODE_ENV === 'development'
+const baseURL = isDev
+  ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
+  : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
+const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
+const fetchRemoveItem = async ({ chat_id, project_id, item_id }: TReqArgs) => {
+  const result = await api
+    .post('/project/remove-item', {
+      chat_id,
+      project_id,
+      item_id,
+    })
+    .then((res: any) => {
+      // console.log(res)
+      return res.data
+    })
+    .catch((err: any) => typeof err === 'string' ? err : err.message || 'No err.message')
+
+  return result
+}
 
 export const TheProject = ({
-  // chat_id,
-  // project_id,
+  chat_id,
+  project_id,
 }: TProps) => {
   const activeProject = useSelector((state: IRootState) => state.autopark.activeProject)
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
-  const handleEdit = useCallback(() => {
-    if (typeof window !== 'undefined') window.alert('WIP #2:\nTODO: 1) API 2) front')
-  }, [])
-  const handleAddItem = useCallback(() => {
-    if (typeof window !== 'undefined') window.alert('WIP #1:\nTODO: 1) API 2) front')
-  }, [])
+  // const handleEdit = useCallback(() => {
+  //   if (typeof window !== 'undefined') window.alert('WIP #2:\nTODO: 1) API 2) front')
+  // }, [])
+  const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
+  const dispatch = useDispatch()
+  const handleDelete = useCallback((id: number) => () => {
+    fetchRemoveItem({
+      chat_id,
+      project_id,
+      item_id: id,
+    })
+      .then((res) => {
+        if (res.ok) {
+          if (!!res.projects) {
+            dispatch(updateProjects(res.projects))
+            const targetProject = res.projects[project_id]
+
+            if (!!targetProject) dispatch(setActiveProject(targetProject))
+          }
+          // resetAll()
+        }
+        // else if (!!res.message) setApiErr(res.message)
+
+        return res
+      })
+  }, [chat_id, project_id])
 
   return (
     <>
-      <div>Hello from Redux</div>
-      <pre>{JSON.stringify(activeProject, null, 2)}</pre>
+      {!!activeProject?.description && <div>{activeProject.description}</div>}
+      {/* <pre>{JSON.stringify(activeProject, null, 2)}</pre> */}
 
-      {
+      <List dense>
+        {items.map(({ id, name, description, mileage }: any) => (
+          <ListItem
+            key={id}
+            secondaryAction={
+              isOneTimePasswordCorrect
+              ? (
+                <IconButton edge="end" aria-label="delete" onClick={handleDelete(id)}>
+                  <DeleteIcon />
+                </IconButton>
+              ) : null
+            }
+          >
+            <ListItemAvatar>
+              <Avatar>
+                <BuildIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={name}
+              secondary={
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <div>{description}</div>
+                  <div>{mileage.last} / {mileage.delta}</div>
+                </div>
+              }
+            />
+          </ListItem>
+        ))}
+      </List>
+
+      {/*
         isOneTimePasswordCorrect && (
           <Button sx={{ mb: 2 }} fullWidth variant="outlined" color='secondary' onClick={handleEdit}>
             Edit
           </Button>
         )
-      }
+      */}
 
       {
         isOneTimePasswordCorrect && (
-          <Button sx={{ mb: 2 }} fullWidth variant="contained" color='primary' onClick={handleAddItem} startIcon={<AddIcon />}>
-            Добавить расходник
-          </Button>
+          // <Button sx={{ mb: 2 }} fullWidth variant="contained" color='primary' onClick={handleAddItem} startIcon={<AddIcon />}>
+          //   Добавить расходник
+          // </Button>
+          <CreateNewItem chat_id={chat_id} project_id={project_id} />
         )
       }
     </>

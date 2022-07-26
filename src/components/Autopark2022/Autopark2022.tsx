@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Alert,  Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import axios from 'axios';
 import { useDebounce } from '~/hooks/useDebounce'
 import { ProjectList } from './components'
-import PinInput from 'react-pin-input'
-// import blue from '@mui/material/colors/blue'
-// import red from '@mui/material/colors/red'
 import { useSelector, useDispatch } from 'react-redux'
 import { IRootState } from '~/store/IRootState';
 import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { CustomPinInput } from '~/components/CustomPinInput'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -94,7 +92,10 @@ export const Autopark2022 = ({
   return (
     <>
       {/* <Button disabled={isLoading} variant='outlined' sx={{ mb: 2 }} onClick={countInc} color='secondary'>Count inc</Button> */}
-      <pre>{JSON.stringify(autoparkData, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(autoparkData, null, 2)}</pre> */}
+      {!!autoparkData.userCheckerResponse?.projects && (
+        <Box sx={{ mb: 2 }}>{Object.keys(autoparkData.userCheckerResponse?.projects).length} projects</Box>
+      )}
       {
         isOneTimePasswordCorrect
         ? (
@@ -111,31 +112,11 @@ export const Autopark2022 = ({
             {
               typeof window !== 'undefined' && (
                 <Box sx={{ mb: 2 }}>
-                  <Alert sx={{ mb: 2 }} variant="outlined" severity="info">
-                    <Typography variant="body2" component="h2" gutterBottom>
-                      Введите одноразовый пароль
-                    </Typography>
-                    <PinInput 
-                      length={4} 
-                      initialValue=""
-                      secret 
-                      // onChange={(value, index) => {}} 
-                      type="numeric" 
-                      inputMode="number"
-                      style={{ padding: '10px' }}  
-                      inputStyle={{ borderColor: 'red', borderRadius: '8px' }}
-                      inputFocusStyle={{ borderColor: 'blue' }}
-                      onComplete={handlePinInputComplete}
-                      // autoSelect={true}
-                      regexCriteria={/^[ A-Za-z0-9_@./#&+-]*$/}
-                      disabled={isLoading}
-                    />
-                    {!!apiErr && (
-                      <Typography variant="body2" component="h3" gutterBottom>
-                        {apiErr}
-                      </Typography>
-                    )}
-                  </Alert>
+                  <CustomPinInput
+                    handlePinInputComplete={handlePinInputComplete}
+                    isLoading={isLoading}
+                    apiErr={apiErr}
+                  />
                 </Box>
               )
             }

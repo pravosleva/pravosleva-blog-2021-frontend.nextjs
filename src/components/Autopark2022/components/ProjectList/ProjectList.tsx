@@ -33,7 +33,7 @@ export const ProjectList = ({
             //   </ListItemButton>
             // </ListItem>
             <Button sx={{ mb: i !== a.length ? 2 : 0 }} fullWidth key={id} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
-              {projects[id].name}
+              {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
             </Button>
           )
         })}
