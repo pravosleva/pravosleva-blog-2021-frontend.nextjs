@@ -133,9 +133,9 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
       {
         isOpened ? (
           <>
-            <Box sx={{ mb: 2 }}>
+            {/* <Box sx={{ mb: 2 }}>
               <em>Create item for {chat_id} in {project_id}</em>
-            </Box>
+            </Box> */}
             <Box sx={{ mb: 2 }}>
               <TextField value={name} size='small' fullWidth disabled={isLoading} variant="outlined" label="Name" type="text" onChange={handleChangeName}></TextField>
             </Box>

@@ -1,5 +1,5 @@
-import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
-import { useCallback } from 'react';
+import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
+import { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { updateProjects, setActiveProject } from '~/store/reducers/autopark'
 import { IRootState } from '~/store/IRootState'
@@ -10,6 +10,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios';
 // import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import BuildIcon from '@mui/icons-material/Build';
+import EditIcon from '@mui/icons-material/Edit';
+import { EditModal } from './components/EditModal'
 
 type TProps = {
   chat_id: string;
@@ -41,6 +43,15 @@ const fetchRemoveItem = async ({ chat_id, project_id, item_id }: TReqArgs) => {
 
   return result
 }
+const defaultItem = {
+  id: 777,
+  name: '',
+  description: '',
+  mileage: {
+    last: 0,
+    delta: 0,
+  }
+}
 
 export const TheProject = ({
   chat_id,
@@ -54,6 +65,10 @@ export const TheProject = ({
   const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
   const dispatch = useDispatch()
   const handleDelete = useCallback((id: number) => () => {
+    if (typeof window === 'undefined') return
+    const isConfirmed = window.confirm('Уверены?')
+    if (!isConfirmed) return
+
     fetchRemoveItem({
       chat_id,
       project_id,
@@ -75,46 +90,77 @@ export const TheProject = ({
       })
   }, [chat_id, project_id])
 
+  const [isEditModalOpened, setIsEditModalOpened] = useState(false)
+  const handleEditModalOpen = useCallback(() => {
+    setIsEditModalOpened(true)
+  }, [])
+  const handleEditModalClose = useCallback(() => {
+    setIsEditModalOpened(false)
+  }, [])
+  const [activeItem, setActiveItem] = useState(defaultItem)
+  const handleEdit = useCallback((item) => () => {
+    setActiveItem(item)
+    handleEditModalOpen()
+  }, [])
+  
   return (
     <>
       {!!activeProject?.description && <div>{activeProject.description}</div>}
       {/* <pre>{JSON.stringify(activeProject, null, 2)}</pre> */}
 
       <List dense>
-        {items.map(({ id, name, description, mileage }: any) => (
-          <ListItem
-            key={id}
-            secondaryAction={
-              isOneTimePasswordCorrect
-              ? (
-                <IconButton edge="end" aria-label="delete" onClick={handleDelete(id)}>
-                  <DeleteIcon />
-                </IconButton>
-              ) : null
-            }
-          >
-            <ListItemAvatar>
-              <Avatar>
-                <BuildIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={name}
-              secondary={
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column'
-                  }}
-                >
-                  <div>{description}</div>
-                  <div>{mileage.last} / {mileage.delta}</div>
-                </div>
+        {items.map((item: any) => {
+          const { id, name, description, mileage } = item
+
+          return (
+            <ListItem
+              key={id}
+              secondaryAction={
+                (isOneTimePasswordCorrect || isDev)
+                ? (
+                  <>
+                    <IconButton edge="end" aria-label="edit" onClick={handleEdit(item)} sx={{ mr: 1 }}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton edge="end" aria-label="delete" onClick={handleDelete(id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
+                ) : null
               }
-            />
-          </ListItem>
-        ))}
+            >
+              <ListItemAvatar>
+                <Avatar>
+                  <BuildIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={name}
+                secondary={
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}
+                  >
+                    <div>{description}</div>
+                    <div>{mileage.last} / {mileage.delta}</div>
+                  </div>
+                }
+              />
+            </ListItem>
+          )
+        })}
       </List>
+
+      <EditModal
+        key={activeItem.id}
+        isOpened={isEditModalOpened}
+        initialState={activeItem}
+        onClose={handleEditModalClose}
+        chat_id={chat_id}
+        project_id={project_id}
+      />
 
       {/*
         isOneTimePasswordCorrect && (
