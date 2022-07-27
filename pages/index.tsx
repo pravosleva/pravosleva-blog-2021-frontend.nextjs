@@ -32,8 +32,11 @@ export default function Index() {
           {/* <Link href="/about" color="secondary">
             Go to the about page
           </Link> */}
-          <Button endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='http://pravosleva.ru/cra/' target='_blank'>
+          {/* <Button endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='http://pravosleva.ru/cra/' target='_blank'>
             Go to CRA version (mui@4.x)
+          </Button> */}
+          <Button endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='https://t.me/pravosleva_bot?start=autopark' target='_blank'>
+            Autopark
           </Button>
           <Link href='/about' color="secondary" shallow>
             Go to about page

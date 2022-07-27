@@ -13,6 +13,8 @@ import axios from 'axios';
 import { TheProject } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
 import { setActiveProject } from '~/store/reducers/autopark'
+import { useSelector } from 'react-redux';
+import { IRootState } from '~/store/IRootState';
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -38,6 +40,7 @@ export default function MyProjects({
       </Box>
     </Container>
   )
+  const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
 
   return (
     <Container maxWidth="sm">
@@ -58,11 +61,15 @@ export default function MyProjects({
                 chat_id={chat_id}
                 project_id={project_id}
               />
-              <Stack sx={{ mb: 2 }} spacing={1}>
-                <Button startIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
-                  Go to report
-                </Button>
-              </Stack>
+              {
+                items.length > 0 && (
+                  <Stack sx={{ mb: 2 }} spacing={1}>
+                    <Button startIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
+                      Go to report
+                    </Button>
+                  </Stack>
+                )
+              }
               <Stack sx={{ mb: 2 }} spacing={1}>
                 <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
                   Go to projects

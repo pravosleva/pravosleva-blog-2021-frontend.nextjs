@@ -49,7 +49,7 @@ export default function MyProjects({
           ) : (
             <>
               <Typography variant="h4" component="h1" gutterBottom>
-                My projects
+                Autopark
               </Typography>
               <Autopark2022 chat_id={chat_id} />
             </>
