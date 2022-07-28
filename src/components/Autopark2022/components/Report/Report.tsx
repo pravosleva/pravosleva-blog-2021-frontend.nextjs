@@ -1,9 +1,10 @@
 import { Button, TextField, Box, Alert } from '@mui/material'
 import axios from 'axios';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 import { ReportTable } from './components'
 import { useStickyState } from '~/hooks/useStickyState'
+import { TReport } from '~/components/Autopark2022/components/Report/interfaces'
 
 type TProps = {
   project_id: string;
@@ -44,7 +45,7 @@ export const Report = ({
     setMileage(parseInt(e.target.value))
     setIsSubmitDisabled(false)
   }, [project_id, chat_id])
-  const [report, setReport] = useState<any[] | null>(null)
+  const [report, setReport] = useState<TReport[] | null>(null)
   const resetErr = useCallback(() => {
     setApiErr('')
     // setReport(null)
@@ -68,6 +69,7 @@ export const Report = ({
         setIsSubmitDisabled(true)
       })
   }, [chat_id, project_id, mileage])
+  const hasAnyReport = useMemo(() => !!report && Array.isArray(report) && report.length > 0, [report])
 
   return (
     <>
@@ -89,12 +91,18 @@ export const Report = ({
         </Alert>
       )}
 
-      {!!report && Array.isArray(report) && report.length > 0 && (
+      {hasAnyReport ? (
         <Box sx={{ mb: 2 }}>
           {/* <pre>{JSON.stringify(report, null, 2)}</pre> */}
-          <ReportTable report={report} />
+          <ReportTable report={report || []} />
         </Box>
-      )}
+      ) : isSubmitDisabled
+        ? (
+          <Alert sx={{ mb: 2 }} variant="filled" severity="info">
+            Пока нет расходников
+          </Alert>
+        ) : null
+      }
     </>
   )
 }

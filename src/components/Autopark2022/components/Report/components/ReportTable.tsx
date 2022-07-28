@@ -6,22 +6,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
+import { TReport } from '~/components/Autopark2022/components/Report/interfaces'
 
-type TReport = {
-  id: string;
-  name: string;
-  description: string;
-  mileage: {
-    last: number;
-    delta: number;
-  }
-  diff: number;
-}
 type TProps = {
   report: TReport[]
 }
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+const StyledTableCell: any = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,

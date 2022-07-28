@@ -27,7 +27,7 @@ export default function MyProjects({
   project_id,
   projectDataResponse,
 }: any) {
-  if (userCheckerResponse.code === 'not_found') return (
+  if (userCheckerResponse?.code === 'not_found') return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
         <Alert sx={{ mb: 2 }} variant="filled" severity="error">
@@ -140,7 +140,7 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
     if (!errorMsg)
       projectDataResult = await fetchProjectData()
 
-    if (!!projectDataResult.ok && !!projectDataResult.projectData)
+    if (!!projectDataResult?.ok && !!projectDataResult.projectData)
       store.dispatch(setActiveProject(projectDataResult.projectData))
 
     return { userCheckerResponse: userDataResult, projectDataResponse: projectDataResult?.projectData || null, errorMsg, isUserExists: userDataResult?.ok, chat_id, project_id }
