@@ -15,6 +15,7 @@ import { wrapper } from '~/store'
 import { setActiveProject } from '~/store/reducers/autopark'
 import { useSelector } from 'react-redux';
 import { IRootState } from '~/store/IRootState';
+import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTimeLoginFormBtn'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -70,8 +71,8 @@ export default function MyProjects({
                   </Stack>
                 )
               }
-              <Stack sx={{ mb: 2 }} spacing={1}>
-                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
+              <Stack spacing={1}  sx={{ mb: 2 }}>
+                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
                   Go to projects
                 </Button>
               </Stack>
@@ -85,6 +86,13 @@ export default function MyProjects({
         </Stack> */}
         {/* <ProTip />
         <Copyright /> */}
+        {
+          typeof window !== 'undefined' && (
+            <Box sx={{ mb: 2 }}>
+              <OneTimeLoginFormBtn chat_id={chat_id} />
+            </Box>
+          )
+        }
       </Box>
     </Container>
   );
@@ -143,7 +151,7 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
     if (!errorMsg)
       projectDataResult = await fetchProjectData()
 
-    if (!!projectDataResult.ok && !!projectDataResult.projectData)
+    if (!!projectDataResult?.ok && !!projectDataResult?.projectData)
       store.dispatch(setActiveProject(projectDataResult.projectData))
 
     return { userCheckerResponse: userDataResult, projectDataResponse: projectDataResult?.projectData || null, errorMsg, isUserExists: userDataResult?.ok, chat_id, project_id }

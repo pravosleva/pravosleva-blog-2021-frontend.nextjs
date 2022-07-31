@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import axios from 'axios'
+import KeyIcon from '@mui/icons-material/Key';
 
 type TProps = {
   chat_id: string
@@ -45,9 +46,9 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   const handleOpenForm = useCallback(() => {
     setIsFormOpened(true)
   }, [])
-  // const handleCloseForm = useCallback(() => {
-  //   setIsFormOpened(false)
-  // }, [])
+  const handleCloseForm = useCallback(() => {
+    setIsFormOpened(false)
+  }, [])
 
   useEffect(() => {
     // console.log('debouncedCounter', debouncedCounter)
@@ -95,7 +96,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
     <>
       {
         !isOneTimePasswordCorrect && !isFormOpened && (
-          <Button fullWidth variant="contained" color='primary' onClick={handleOpenForm}>
+          <Button endIcon={<KeyIcon />} fullWidth variant="contained" color='secondary' onClick={handleOpenForm}>
             Вход
           </Button>
         )
@@ -106,14 +107,15 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
             handlePinInputComplete={handlePinInputComplete}
             isLoading={isLoading}
             apiErr={apiErr}
+            onCancel={handleCloseForm}
           />
         )
       }
-      {isLoading && (
+      {/* isLoading && (
         <div>
           <em>Loading...</em>
         </div>
-      )}
+      ) */}
     </>
   )
 }

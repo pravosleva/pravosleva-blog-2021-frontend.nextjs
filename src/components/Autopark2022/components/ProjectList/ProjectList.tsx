@@ -90,14 +90,14 @@ export const ProjectList = ({
                 xs={isOneTimePasswordCorrect ? 9 : 12}
                 sm={isOneTimePasswordCorrect ? 10 : 12}
               >
-                <Button size='small' fullWidth variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
-                {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
-              </Button>
+                <Button fullWidth variant="contained" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
+                  {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
+                </Button>
               </Grid>
               {
                 isOneTimePasswordCorrect && (
                   <Grid item xs={3} sm={2}>
-                    <Button size='small' fullWidth variant='outlined' onClick={handleRemove(id)} color='secondary'>DEL</Button>
+                    <Button fullWidth variant='outlined' onClick={handleRemove(id)} color='secondary'>DEL</Button>
                   </Grid>
                 )
               }
