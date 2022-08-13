@@ -90,7 +90,7 @@ export const ProjectList = ({
                 xs={isOneTimePasswordCorrect ? 9 : 12}
                 sm={isOneTimePasswordCorrect ? 10 : 12}
               >
-                <Button fullWidth variant="contained" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
+                <Button fullWidth variant="contained" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
                   {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
                 </Button>
               </Grid>

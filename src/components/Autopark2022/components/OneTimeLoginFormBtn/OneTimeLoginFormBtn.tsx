@@ -96,7 +96,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
     <>
       {
         !isOneTimePasswordCorrect && !isFormOpened && (
-          <Button endIcon={<KeyIcon />} fullWidth variant="contained" color='secondary' onClick={handleOpenForm}>
+          <Button endIcon={<KeyIcon />} fullWidth variant="contained" color='primary' onClick={handleOpenForm}>
             Вход
           </Button>
         )

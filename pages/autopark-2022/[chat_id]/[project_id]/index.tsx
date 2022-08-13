@@ -65,14 +65,14 @@ export default function MyProjects({
               {
                 items.length > 0 && (
                   <Stack sx={{ mb: 2 }} spacing={1}>
-                    <Button startIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
+                    <Button startIcon={<ArrowForwardIcon />} variant="contained" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
                       Go to report
                     </Button>
                   </Stack>
                 )
               }
               <Stack spacing={1}  sx={{ mb: 2 }}>
-                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
+                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
                   Go to projects
                 </Button>
               </Stack>

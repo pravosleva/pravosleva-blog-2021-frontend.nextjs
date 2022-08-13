@@ -71,7 +71,7 @@ export const CustomPinInput = ({
           <Button disabled={isLoading} endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='https://t.me/pravosleva_bot?start=autopark' target='_blank'>
             Get Password
           </Button>
-          <Button disabled={isLoading} variant="outlined" color='secondary' onClick={onCancel}>
+          <Button disabled={isLoading} variant="outlined" color='primary' onClick={onCancel}>
             Close
           </Button>
         </CardActions>
