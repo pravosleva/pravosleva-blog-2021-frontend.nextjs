@@ -180,7 +180,7 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
                 <Button fullWidth disabled={isLoading || !name || !mileageLast || !mileageDelta || !description} variant='contained' onClick={handleSubmit} color='primary' startIcon={<LocalFireDepartmentIcon />}>Создать</Button>
               </Grid>
               <Grid item xs={6}>
-                <Button fullWidth variant='outlined' onClick={handleClose} color='secondary' startIcon={<CloseIcon />}>Отмена</Button>
+                <Button fullWidth variant='outlined' onClick={handleClose} color='primary' startIcon={<CloseIcon />}>Отмена</Button>
               </Grid>
             </Grid>
 

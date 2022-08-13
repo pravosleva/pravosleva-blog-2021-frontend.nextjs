@@ -39,10 +39,23 @@ export const Report = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [apiErr, setApiErr] = useState<string>('')
   // const [mileage, setMileage] = useState<number>(0)
-  const [mileage, setMileage] = useStickyState(0, "autopark.current-mileage")
+  const [mileage, setMileage] = useStickyState({}, "autopark.current-mileage")
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false)
   const handleChangeMileage = useCallback((e: any) => {
-    setMileage(parseInt(e.target.value))
+    setMileage((s: any) => {
+      const newState: any = { ...s }
+      if (!!s[chat_id]) newState[chat_id] = {
+        ...s[chat_id],
+      }
+
+      return ({
+        ...newState,
+        [chat_id]: {
+          ...newState[chat_id],
+          [project_id]: parseInt(e.target.value)
+        },
+      })
+    })
     setIsSubmitDisabled(false)
   }, [project_id, chat_id])
   const [report, setReport] = useState<TReport[] | null>(null)
@@ -53,7 +66,7 @@ export const Report = ({
   const handleSubmit = useCallback(() => {
     resetErr()
     setIsLoading(true)
-    fetchGetProjectReport({ chat_id, project_id, mileage })
+    fetchGetProjectReport({ chat_id, project_id, mileage: mileage[chat_id][project_id] })
       .then((res) => {
         if (res.ok && !!res.report) {
           setReport(res.report)
@@ -74,13 +87,13 @@ export const Report = ({
   return (
     <>
       <Box sx={{ mb: 2 }}>
-        <TextField value={mileage} size='small' fullWidth disabled={isLoading} variant="outlined" label="Пробег" type="number" onChange={handleChangeMileage}></TextField>
+        <TextField value={mileage[chat_id]?.[project_id]} size='small' fullWidth disabled={isLoading} variant="outlined" label="Пробег" type="number" onChange={handleChangeMileage}></TextField>
       </Box>
 
       {
         !isSubmitDisabled && (
           <Box sx={{ mb: 2 }}>
-            <Button fullWidth disabled={isLoading || !mileage} variant='contained' onClick={handleSubmit} color='secondary' startIcon={<LocalFireDepartmentIcon />}>Получить отчет</Button>
+            <Button fullWidth disabled={isLoading || !mileage[chat_id]?.[project_id]} variant='contained' onClick={handleSubmit} color='secondary' startIcon={<LocalFireDepartmentIcon />}>Получить отчет</Button>
           </Box>
         )
       }

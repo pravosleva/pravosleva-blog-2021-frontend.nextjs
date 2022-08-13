@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { ProjectList } from './components'
 import { useSelector } from 'react-redux'
-import { IRootState } from '~/store/IRootState';
+import { IRootState } from '~/store/IRootState'
 import { OneTimeLoginFormBtn } from './components'
 
 type TProps = {

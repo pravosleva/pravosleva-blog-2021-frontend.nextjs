@@ -190,11 +190,11 @@ export const EditModal = ({
           <Grid container spacing={2}>
             {!!onClose && (
               <Grid item xs={6}>
-                <Button fullWidth variant='outlined' onClick={onClose} color='secondary' sx={{ mb: 2 }}>Close</Button>
+                <Button fullWidth variant='outlined' onClick={onClose} color='primary' sx={{ mb: 2 }}>Close</Button>
               </Grid>
             )}
             <Grid item xs={6}>
-              <Button fullWidth variant='contained' onClick={handleSubmit} disabled={!isFormCorrect} color='secondary'>Send</Button>
+              <Button fullWidth variant='contained' onClick={handleSubmit} disabled={!isFormCorrect} color='primary'>Send</Button>
             </Grid>
           </Grid>
         </Box>
