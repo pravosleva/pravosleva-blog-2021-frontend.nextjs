@@ -25,8 +25,6 @@ export default function MyProjects({
   errorMsg,
   chat_id,
 }: any) {
-
-
   if (userCheckerResponse?.code === 'not_found') return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>

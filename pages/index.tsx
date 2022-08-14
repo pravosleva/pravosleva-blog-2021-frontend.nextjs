@@ -7,6 +7,7 @@ import Link from '~/components/Link'
 import Copyright from '~/components/Copyright'
 import { Alert, Button, Stack } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+// import { CarSelectSample } from '~/components/Autopark2022/components/CarSelectSample'
 
 export default function Index() {
   // const goToPage = (url: string) => (e: any) => {
@@ -27,8 +28,8 @@ export default function Index() {
         <Typography variant="h4" component="h1" gutterBottom>
           In progress...
         </Typography>
-        <Alert sx={{ mb: 2 }} severity="info" variant='filled'>Next.js / MUI v5-beta / TypeScript</Alert>
-        <Stack spacing={1}>
+        <Alert sx={{ mb: 2 }} severity="info" variant='outlined'>Next.js / MUI v5-beta / TypeScript</Alert>
+        <Stack spacing={2}>
           {/* <Link href="/about" color="secondary">
             Go to the about page
           </Link> */}
@@ -38,6 +39,9 @@ export default function Index() {
           <Button endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='https://t.me/pravosleva_bot?start=autopark' target='_blank'>
             Autopark
           </Button>
+
+          {/* <CarSelectSample /> */}
+
           <Link href='/about' color="secondary" shallow>
             Go to about page
           </Link>

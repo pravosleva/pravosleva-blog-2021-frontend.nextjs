@@ -1,4 +1,5 @@
-import { Box } from '@mui/material';
+import { useMemo } from 'react'
+import { Box } from '@mui/material'
 import { ProjectList } from './components'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
@@ -12,6 +13,7 @@ export const Autopark2022 = ({
   chat_id
 }: TProps) => {
   const autoparkData = useSelector((s: IRootState) => s.autopark)
+  const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
 
   return (
     <>
@@ -24,7 +26,7 @@ export const Autopark2022 = ({
         <ProjectList chat_id={chat_id} />
       </Box>
       {
-        typeof window !== 'undefined' && (
+        isBrowser && (
           <Box sx={{ mt: 2, mb: 2 }}>
             <OneTimeLoginFormBtn chat_id={chat_id} />
           </Box>

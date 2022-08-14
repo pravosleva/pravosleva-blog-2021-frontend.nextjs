@@ -49,6 +49,8 @@ export const ProjectList = ({
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
   const dispatch = useDispatch()
   const handleRemove = useCallback((id: string) => () => {
+    const isConfirmed = window.confirm('Уверены?')
+    if (!isConfirmed) return
     fetchRemoveProject({
       chat_id,
       project_id: id,
@@ -87,15 +89,15 @@ export const ProjectList = ({
             <Grid container spacing={2} sx={{ mb: i !== a.length ? 2 : 0 }} key={id}>
               <Grid
                 item
-                xs={isOneTimePasswordCorrect ? 9 : 12}
-                sm={isOneTimePasswordCorrect ? 10 : 12}
+                xs={(isOneTimePasswordCorrect || isDev) ? 9 : 12}
+                sm={(isOneTimePasswordCorrect || isDev) ? 10 : 12}
               >
                 <Button fullWidth variant="contained" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
                   {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
                 </Button>
               </Grid>
               {
-                isOneTimePasswordCorrect && (
+                (isOneTimePasswordCorrect || isDev) && (
                   <Grid item xs={3} sm={2}>
                     <Button fullWidth variant='outlined' onClick={handleRemove(id)} color='secondary'>DEL</Button>
                   </Grid>
@@ -105,7 +107,7 @@ export const ProjectList = ({
           )
         })}
       </Box>
-      {isOneTimePasswordCorrect && (
+      {(isOneTimePasswordCorrect || isDev) && (
         <Box>
           <CreateNewProject chat_id={chat_id} />
         </Box>
