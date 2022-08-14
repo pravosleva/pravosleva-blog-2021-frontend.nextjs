@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Autocomplete, Button, TextField, Box, Grid, Select, MenuItem, Alert } from '@mui/material';
+import { Autocomplete, Button, TextField, Box, Grid, Select, MenuItem, Alert, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
 // import { useDebounce } from '~/hooks/useDebounce'
 import {
@@ -12,52 +12,8 @@ import AddIcon from '@mui/icons-material/Add'
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 import CloseIcon from '@mui/icons-material/Close'
 import { marks } from '~/components/Autopark2022/components/CarSelectSample/car-marks-list-by-uremont.json'
-// import listOfCars from '~/components/Autopark2022/components/CarSelectSample/list-of-cars.json'
-
-// declare module '*/list-of-cars.json' {
-//   const value: any;
-//   export default value;
-// }
-
-// type TListOfCars = {
-//   Year: number;
-//   Make: string;
-//   Model: string;
-//   Category: string;
-// }
-// type TModelResult = {
-//   [key: string]: {
-//     models: string[]
-//   }
-// }
 
 const getVendorOptions = () => marks.map((m) => ({ label: m.name, ...m }))
-// const getModelsMap = () => {
-//   const result: TModelResult = {}
-
-//   for (const car of listOfCars) {
-//     if (!result[car.Make]?.models) {
-//       result[car.Make] = {
-//         models: [car.Model]
-//       }
-//     } else {
-//       if (!result[car.Make].models.includes(car.Model)) {
-//         result[car.Make].models.push(car.Model)
-//       }
-//     }
-//   }
-
-//   return result
-// }
-// const getModelsOptions = (vendor: string) => {
-//   const modelsMap = getModelsMap()
-
-//   if (!!modelsMap[vendor]) {
-//     return modelsMap[vendor].models.map((m) => ({ label: m }))
-//   }
-
-//   return []
-// }
 
 type TProps = {
   chat_id: string
@@ -93,6 +49,70 @@ const fetchModelsData = async ({ vendor }: { vendor: string }) => {
 
   return result
 }
+type TSpecialImage = {
+  "id": number;
+  "thumb_140_140": string;
+  "thumb_34_34": string;
+  "file_url": string;
+}
+type TUremontGeneration = {
+  "id": number;
+  "mark_name": string;
+  "model_name": string;
+  "generation_name": string;
+  "start_year": number;
+  "finish_year": number;
+  "image": string;
+  "images": TSpecialImage[];
+}
+type TUremontModel = {
+  "id": number;
+  "name": string;
+  "mark_id": number;
+  "sort_id": number;
+  "rating": number;
+  "is_seo_active": number;
+  "rgs_code": any;
+  "generations": TUremontGeneration[],
+}
+type TUremontModelsData = {
+  "success": number;
+	"models": TUremontModel[]
+}
+const getGenerationsOptions = (byUremont: TUremontModelsData | null, selectedModel: string | null): { label: string }[] => {
+  if (!byUremont || byUremont.success !== 1 || !selectedModel) return []
+  const result = []
+  for (const model of byUremont.models) {
+    if (model.name === selectedModel) {
+      for (const gName of model.generations.map((g: TUremontGeneration) => g.generation_name)) {
+        result.push({ label: gName })
+      }
+    }
+  }
+  return result
+}
+const getYearsOptions = (byUremont: TUremontModelsData | null, selectedModel: string | null, selectedGeneration: string | null): number[] => {
+  if (!byUremont || byUremont.success !== 1 || !selectedModel || !selectedGeneration) return []
+  return byUremont.models.reduce((acc: number[], model: TUremontModel) => {
+    if (model.name === selectedModel) {
+      const targetIndex: number = model.generations.findIndex((gen: TUremontGeneration) => gen.generation_name === selectedGeneration)
+
+      if (targetIndex !== -1)  {
+        const min = model.generations[targetIndex].start_year
+        const max = model.generations[targetIndex].finish_year || new Date().getFullYear()
+
+        // @ts-ignore
+        const years: number[] = Array.apply(null, { length: max + 1 - min }).map(function(_, idx) {
+          return idx + min;
+        })
+        
+        return [...acc, ...years]
+      }
+    }
+
+    return acc
+  }, [])
+}
 // --
 
 export const CreateNewProject = ({ chat_id }: TProps) => {
@@ -103,14 +123,22 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
   const modelsOptions = useMemo(() => !!selectedBrand ? modelsByServer.map((str) => ({ label: str })) : [], [selectedBrand, modelsByServer])
   const [selectedModel, setSelectedModel] = useState<string | null>(null)
   const [additionalServiceErr, setAdditionalServiceErr] = useState<string | null>(null)
+  const [uremontModelsData, setUremontModelsData] = useState<TUremontModelsData | null>(null)
+  const generationOptions = useMemo<{ label: string }[]>(() => getGenerationsOptions(uremontModelsData, selectedModel), [uremontModelsData, selectedModel])
+  const [selectedGeneration, setSelectedGeneration] = useState<string | null>(null)
+  const yearsOptions = useMemo<number[]>(() => getYearsOptions(uremontModelsData, selectedModel, selectedGeneration), [uremontModelsData, selectedModel, selectedGeneration])
+  const [selectedYear, setSelectYear] = useState<number | null>(null)
   useEffect(() => {
     if (!selectedBrand) return
     setAdditionalServiceErr(null)
     setModelsByServer([])
     setSelectedModel(null)
+    setUremontModelsData(null)
+    setSelectedGeneration(null)
     fetchModelsData({ vendor: selectedBrand })
       .then((res) => {
         if (!!res.models) setModelsByServer(res.models)
+        if (!!res.byUremont) setUremontModelsData(res.byUremont)
         else throw new Error(res.message || 'Additional service ERR')
       })
       .catch((err) => {
@@ -128,6 +156,8 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
     handleClose()
     setSelectedBrand(null)
     setSelectedModel(null)
+    setSelectedGeneration(null)
+    setSelectYear(null)
   }, [])
   const [isOpened, setIsOpened] = useState(false)
   const handleOpen = useCallback(() => {
@@ -136,6 +166,8 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
   const handleClose = useCallback(() => {
     setSelectedBrand(null)
     setSelectedModel(null)
+    setSelectedGeneration(null)
+    setSelectYear(null)
     setIsOpened(false)
   }, [setIsOpened])
   const [isLoading, setIsLoading] = useState(false)
@@ -147,8 +179,8 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
     setApiErr('')
     fetchCreateProject({
       chat_id,
-      name: `${selectedBrand} ${selectedModel}, ${selectedTransmission}`,
-      description,
+      name: `${selectedBrand} ${selectedModel}, ${selectedTransmission}, ${selectedYear}`,
+      description: `${selectedGeneration}${!!description ? ` / ${description}` : ''}`,
     })
       .then((res) => {
         if (res.ok) {
@@ -166,7 +198,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
       .finally(() => {
         setIsLoading(false)
       })
-  }, [chat_id, description, selectedBrand, selectedModel, selectedTransmission])
+  }, [chat_id, description, selectedBrand, selectedModel, selectedTransmission, selectedGeneration, selectedYear])
 
   // const handleChangeName = useCallback((e) => {
   //   setName(e.target.value)
@@ -187,10 +219,12 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 id='vendors'
                 options={brandsOptions}
                 fullWidth
-                renderInput={(params) => <TextField {...params} label="Brand" />}
+                renderInput={(params) => <TextField {...params} required label="Brand" />}
                 onChange={(e: any) => {
                   setSelectedBrand(e.target.textContent)
                   setSelectedModel(null)
+                  setSelectedGeneration(null)
+                  setSelectYear(null)
                   try {
                     const modelInput: any = document.getElementById('models')
                     console.log(modelInput)
@@ -216,8 +250,10 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                     id='models'
                     options={modelsOptions}
                     fullWidth
-                    renderInput={(params) => <TextField {...params} label="Model" value={selectedModel} />}
+                    renderInput={(params) => <TextField {...params} label="Model" required value={selectedModel} />}
                     onChange={(e: any) => {
+                      setSelectedGeneration(null)
+                      setSelectYear(null)
                       setSelectedModel(e.target.textContent)
                     }}
                   />
@@ -225,22 +261,75 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               }
             </Box>
             <Box sx={{ mb: 2 }}>
-              <Select
-                size='small'
-                variant='outlined'
-                fullWidth
-                labelId="transmission-type-select-label"
-                id="transmission-type-select"
-                value={selectedTransmission}
-                onChange={(e: any) => {
-                  setSelectedTransmission(e.target.value)
-                }}
-                label="Transmission"
-              >
-                <MenuItem value='MT'>MT</MenuItem>
-                <MenuItem value='AT'>AT</MenuItem>
-              </Select>
+              <FormControl fullWidth required>
+                <InputLabel id="transmission-select-label">Transmission</InputLabel>
+                <Select
+                  size='small'
+                  variant='outlined'
+                  labelId="transmission-select-label"
+                  id="transmission-select"
+                  value={selectedTransmission}
+                  label="Transmission"
+                  fullWidth
+                  onChange={(e: any) => {
+                    setSelectedTransmission(e.target.value)
+                  }}
+                >
+                  <MenuItem value='MT'>MT</MenuItem>
+                  <MenuItem value='AT'>AT</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
+            {
+              generationOptions.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  <Autocomplete
+                    // key={selectedModel || 'default-key'}
+                    value={!selectedGeneration ? { label: '' } : { label: selectedGeneration }}
+                    size='small'
+                    disablePortal
+                    id='generation'
+                    options={generationOptions}
+                    // isOptionEqualToValue={() => false}
+                    fullWidth
+                    renderInput={(params) => <TextField {...params} label="Generation" required value={selectedGeneration} />}
+                    onChange={(e: any) => {
+                      setSelectYear(null)
+                      setSelectedGeneration(e.target.textContent)
+                    }}
+                  />
+                </Box>
+              )
+            }
+            {
+              yearsOptions.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  <FormControl size='small' fullWidth required>
+                    <InputLabel id="year-select-label">Year</InputLabel>
+                    <Select
+                      size='small'
+                      variant='outlined'
+                      labelId="year-select-label"
+                      id="year-select"
+                      value={selectedYear}
+                      label="Year"
+                      fullWidth
+                      onChange={(e: any) => {
+                        setSelectYear(e.target.value)
+                      }}
+                    >
+                      {
+                        yearsOptions.map((year) => {
+                          return (
+                            <MenuItem value={year}>{year}</MenuItem>
+                          )
+                        })
+                      }
+                    </Select>
+                  </FormControl>
+                </Box>
+              )
+            }
 
             {/* <Box sx={{ mb: 2 }}>
               <TextField value={name} size='small' fullWidth disabled={isLoading} variant="outlined" label="Name" type="text" onChange={handleChangeName}></TextField>
@@ -259,7 +348,14 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
 
             <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item xs={6}>
-                <Button fullWidth disabled={isLoading || !selectedBrand || !selectedModel || !selectedTransmission} variant='contained' onClick={handleSubmit} color='primary' startIcon={<LocalFireDepartmentIcon />}>Создать</Button>
+                <Button
+                  fullWidth
+                  disabled={isLoading || !selectedBrand || !selectedModel || !selectedTransmission || (generationOptions.length > 0 && !selectedGeneration) || !selectedYear}
+                  variant='contained'
+                  onClick={handleSubmit}
+                  color='primary'
+                  startIcon={<LocalFireDepartmentIcon />}
+                >Создать</Button>
               </Grid>
               <Grid item xs={6}>
                 <Button fullWidth variant='outlined' onClick={handleClose} color='primary' startIcon={<CloseIcon />}>Отмена</Button>
