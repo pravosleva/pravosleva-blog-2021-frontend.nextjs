@@ -13,6 +13,7 @@ import { Autopark2022 } from '~/components/Autopark2022'
 import { wrapper } from '~/store'
 // import { IRootState } from '~/store/IRootState'
 import { setUserCheckerResponse } from '~/store/reducers/autopark'
+import Head from 'next/head'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -38,30 +39,35 @@ export default function MyProjects({
   )
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ my: 4 }}>
-        {
-          !!errorMsg
-          ? (
-            <b>{errorMsg}</b>
-          ) : (
-            <>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Autopark
-              </Typography>
-              <Autopark2022 chat_id={chat_id} />
-            </>
-          )
-        }
-        {/* <Stack spacing={1}>
-          <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-            Go to home page
-          </Button>
-        </Stack> */}
-        {/* <ProTip />
-        <Copyright /> */}
-      </Box>
-    </Container>
+    <>
+      <Head>
+        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}`} />
+      </Head>
+      <Container maxWidth="sm">
+        <Box sx={{ my: 4 }}>
+          {
+            !!errorMsg
+            ? (
+              <b>{errorMsg}</b>
+            ) : (
+              <>
+                <Typography variant="h4" component="h1" gutterBottom>
+                  Autopark
+                </Typography>
+                <Autopark2022 chat_id={chat_id} />
+              </>
+            )
+          }
+          {/* <Stack spacing={1}>
+            <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
+              Go to home page
+            </Button>
+          </Stack> */}
+          {/* <ProTip />
+          <Copyright /> */}
+        </Box>
+      </Container>
+    </>
   );
 }
 

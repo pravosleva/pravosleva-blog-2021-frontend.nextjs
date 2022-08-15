@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -16,6 +15,7 @@ import { setActiveProject } from '~/store/reducers/autopark'
 import { useSelector } from 'react-redux';
 import { IRootState } from '~/store/IRootState';
 import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTimeLoginFormBtn'
+import Head from 'next/head'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -44,57 +44,65 @@ export default function MyProjects({
   const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ my: 4 }}>
-        {
-          !!errorMsg
-          ? (
-            <b>{errorMsg}</b>
-          ) : (
-            <>
-              {/* <Typography variant="h4" component="h1" gutterBottom>
-                Project
-              </Typography> */}
-              <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
-                <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
+    <>
+      {/*
+      
+      */}
+      <Head>
+        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}`} />
+      </Head>
+      <Container maxWidth="sm">
+        <Box sx={{ my: 4 }}>
+          {
+            !!errorMsg
+            ? (
+              <b>{errorMsg}</b>
+            ) : (
+              <>
+                {/* <Typography variant="h4" component="h1" gutterBottom>
+                  Project
+                </Typography> */}
+                <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
+                  <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
+                </Box>
+                <TheProject
+                  chat_id={chat_id}
+                  project_id={project_id}
+                />
+                {
+                  items.length > 0 && (
+                    <Stack sx={{ mb: 2 }} spacing={1}>
+                      <Button startIcon={<ArrowForwardIcon />} variant="contained" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
+                        Go to report
+                      </Button>
+                    </Stack>
+                  )
+                }
+                <Stack spacing={1}  sx={{ mb: 2 }}>
+                  <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
+                    Go to projects
+                  </Button>
+                </Stack>
+              </>
+            )
+          }
+          {/* <Stack spacing={1}>
+            <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
+              Go to home page
+            </Button>
+          </Stack> */}
+          {/* <ProTip />
+          <Copyright /> */}
+          {
+            typeof window !== 'undefined' && (
+              <Box sx={{ mb: 2 }}>
+                <OneTimeLoginFormBtn chat_id={chat_id} />
               </Box>
-              <TheProject
-                chat_id={chat_id}
-                project_id={project_id}
-              />
-              {
-                items.length > 0 && (
-                  <Stack sx={{ mb: 2 }} spacing={1}>
-                    <Button startIcon={<ArrowForwardIcon />} variant="contained" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
-                      Go to report
-                    </Button>
-                  </Stack>
-                )
-              }
-              <Stack spacing={1}  sx={{ mb: 2 }}>
-                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
-                  Go to projects
-                </Button>
-              </Stack>
-            </>
-          )
-        }
-        {/* <Stack spacing={1}>
-          <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-            Go to home page
-          </Button>
-        </Stack> */}
-        {/* <ProTip />
-        <Copyright /> */}
-        {
-          typeof window !== 'undefined' && (
-            <Box sx={{ mb: 2 }}>
-              <OneTimeLoginFormBtn chat_id={chat_id} />
-            </Box>
-          )
-        }
-      </Box>
-    </Container>
+            )
+          }
+        </Box>
+      </Container>
+    </>
   );
 }
 
