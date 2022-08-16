@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Autocomplete, Button, TextField, Box, Grid, Select, MenuItem, Alert, FormControl, InputLabel } from '@mui/material';
+import { Autocomplete, Button, TextField, Box, Grid, Select, MenuItem, Alert, FormControl, InputLabel, Typography, Card, CardMedia, CardContent, CardActions } from '@mui/material';
 import axios from 'axios';
 // import { useDebounce } from '~/hooks/useDebounce'
 import {
@@ -12,6 +12,8 @@ import AddIcon from '@mui/icons-material/Add'
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 import CloseIcon from '@mui/icons-material/Close'
 import { marks } from '~/components/Autopark2022/components/CarSelectSample/car-marks-list-by-uremont.json'
+// import { ContentCut } from '@mui/icons-material'
+import CheckIcon from '@mui/icons-material/Check'
 
 const getVendorOptions = () => marks.map((m) => ({ label: m.name, ...m }))
 
@@ -79,14 +81,14 @@ type TUremontModelsData = {
   "success": number;
 	"models": TUremontModel[]
 }
-const getGenerationsOptions = (byUremont: TUremontModelsData | null, selectedModel: string | null): { label: string }[] => {
+const getGenerationsOptions = (byUremont: TUremontModelsData | null, selectedModel: string | null): { label: string, image: string, descr: string }[] => {
   if (!byUremont || byUremont.success !== 1 || !selectedModel) return []
-  const result = []
+  const result: { label: string, image: string, descr: string }[] = []
   for (const model of byUremont.models) {
     if (model.name === selectedModel) {
-      for (const gName of model.generations.map((g: TUremontGeneration) => g.generation_name)) {
-        result.push({ label: gName })
-      }
+      model.generations.forEach((g: TUremontGeneration) => {
+        result.push({ label: g.generation_name, image: g.image, descr: `${g.start_year} - ${g.finish_year || 'Now'}` })
+      })
     }
   }
   return result
@@ -124,7 +126,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
   const [selectedModel, setSelectedModel] = useState<string | null>(null)
   const [additionalServiceErr, setAdditionalServiceErr] = useState<string | null>(null)
   const [uremontModelsData, setUremontModelsData] = useState<TUremontModelsData | null>(null)
-  const generationOptions = useMemo<{ label: string }[]>(() => getGenerationsOptions(uremontModelsData, selectedModel), [uremontModelsData, selectedModel])
+  const generationOptions = useMemo<{ label: string, image: string, descr: string }[]>(() => getGenerationsOptions(uremontModelsData, selectedModel), [uremontModelsData, selectedModel])
   const [selectedGeneration, setSelectedGeneration] = useState<string | null>(null)
   const yearsOptions = useMemo<number[]>(() => getYearsOptions(uremontModelsData, selectedModel, selectedGeneration), [uremontModelsData, selectedModel, selectedGeneration])
   const [selectedYear, setSelectYear] = useState<number | null>(null)
@@ -148,10 +150,8 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
       })
   }, [selectedBrand])
   const [selectedTransmission, setSelectedTransmission] = useState<'MT' | 'AT'>('MT')
-  // const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const resetAll = useCallback(() => {
-    // setName('')
     setDescription('')
     handleClose()
     setSelectedBrand(null)
@@ -200,9 +200,6 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
       })
   }, [chat_id, description, selectedBrand, selectedModel, selectedTransmission, selectedGeneration, selectedYear])
 
-  // const handleChangeName = useCallback((e) => {
-  //   setName(e.target.value)
-  // }, [])
   const handleChangeDescr = useCallback((e) => {
     setDescription(e.target.value)
   }, [])
@@ -243,7 +240,6 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 )
                 : (
                   <Autocomplete
-                    // key={selectedModel || 'default-key'}
                     value={!selectedModel ? { label: '' } : { label: selectedModel }}
                     size='small'
                     disablePortal
@@ -280,26 +276,47 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 </Select>
               </FormControl>
             </Box>
+            {generationOptions.length > 0 && !selectedGeneration && (
+              <Box sx={{ mb: 2 }}>
+                <Alert severity="info" variant='filled'>Выберите поколение из списка ниже</Alert>
+              </Box>
+            )}
             {
-              generationOptions.length > 0 && (
-                <Box sx={{ mb: 2 }}>
-                  <Autocomplete
-                    // key={selectedModel || 'default-key'}
-                    value={!selectedGeneration ? { label: '' } : { label: selectedGeneration }}
-                    size='small'
-                    disablePortal
-                    id='generation'
-                    options={generationOptions}
-                    // isOptionEqualToValue={() => false}
-                    fullWidth
-                    renderInput={(params) => <TextField {...params} label="Generation" required value={selectedGeneration} />}
-                    onChange={(e: any) => {
-                      setSelectYear(null)
-                      setSelectedGeneration(e.target.textContent)
-                    }}
-                  />
-                </Box>
-              )
+              generationOptions.length > 0 && 
+              generationOptions.map(({ label, image, descr }) => {
+                const isSelected = label === selectedGeneration
+                return (
+                  <Card sx={{ maxWidth: '100%', mb: 2 }} variant='outlined'>
+                    <CardMedia
+                      component="img"
+                      height="160"
+                      image={image}
+                      alt={label}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {label}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {descr}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        size="small"
+                        variant={isSelected ? 'contained' : 'outlined'}
+                        color='secondary'
+                        onClick={() => {
+                          setSelectYear(null)
+                          setSelectedGeneration(label)
+                        }}
+                        startIcon={isSelected ? <CheckIcon /> : undefined}
+                      >{isSelected ? 'This!' : 'Select'}</Button>
+                      {/* <Button size="small">Learn More</Button> */}
+                    </CardActions>
+                  </Card>
+                )
+              })
             }
             {
               yearsOptions.length > 0 && (
@@ -311,7 +328,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                       variant='outlined'
                       labelId="year-select-label"
                       id="year-select"
-                      value={selectedYear}
+                      value={selectedYear || undefined}
                       label="Year"
                       fullWidth
                       onChange={(e: any) => {
@@ -321,7 +338,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                       {
                         yearsOptions.map((year) => {
                           return (
-                            <MenuItem value={year}>{year}</MenuItem>
+                            <MenuItem key={year} value={year}>{year}</MenuItem>
                           )
                         })
                       }
@@ -331,9 +348,6 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               )
             }
 
-            {/* <Box sx={{ mb: 2 }}>
-              <TextField value={name} size='small' fullWidth disabled={isLoading} variant="outlined" label="Name" type="text" onChange={handleChangeName}></TextField>
-            </Box> */}
             <Box sx={{ mb: 2 }}>
               <TextField value={description} size='small' fullWidth disabled={isLoading} variant="outlined" label="Description" type="text" onChange={handleChangeDescr}></TextField>
             </Box>
