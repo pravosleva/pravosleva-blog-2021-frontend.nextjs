@@ -1,19 +1,20 @@
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import { useMemo } from 'react'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 // import ProTip from '~/components/ProTip';
-import Link from '~/components/Link';
+import Link from '~/components/Link'
 // import Copyright from '~/components/Copyright';
-import { Alert, Stack } from '@mui/material';
+import { Alert, Grid } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import axios from 'axios';
 import { TheProject } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
 import { setActiveProject } from '~/store/reducers/autopark'
-import { useSelector } from 'react-redux';
-import { IRootState } from '~/store/IRootState';
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
 import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTimeLoginFormBtn'
 import Head from 'next/head'
 
@@ -42,6 +43,7 @@ export default function MyProjects({
     </Container>
   )
   const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
+  const hasItems = useMemo(() => items.length > 0, [items])
 
   return (
     <>
@@ -65,24 +67,52 @@ export default function MyProjects({
                 <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
                   <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
                 </Box>
+
                 <TheProject
                   chat_id={chat_id}
                   project_id={project_id}
                 />
-                {
-                  items.length > 0 && (
-                    <Stack sx={{ mb: 2 }} spacing={1}>
-                      <Button startIcon={<ArrowForwardIcon />} variant="contained" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}/report`} shallow>
-                        Go to report
-                      </Button>
-                    </Stack>
-                  )
-                }
-                <Stack spacing={1}  sx={{ mb: 2 }}>
-                  <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
-                    Go to projects
-                  </Button>
-                </Stack>
+
+                {!hasItems && (
+                  <Alert sx={{ mb: 2 }} variant="standard" severity="error">
+                    Пока нет расходников
+                  </Alert>
+                )}
+
+                <Grid container spacing={2} sx={{ mb: 2 }}>
+                  <Grid item xs={hasItems ? 6 : 12}>
+                    <Button
+                      startIcon={<ArrowBackIcon />}
+                      variant='outlined'
+                      color='primary'
+                      component={Link}
+                      noLinkStyle
+                      href={`/autopark-2022/${chat_id}`}
+                      shallow
+                      fullWidth
+                    >
+                      Projects
+                    </Button>
+                  </Grid>
+                  {
+                    hasItems && (
+                      <Grid item xs={6}>
+                        <Button
+                          endIcon={<ArrowForwardIcon />}
+                          variant='contained'
+                          color='secondary'
+                          component={Link}
+                          noLinkStyle
+                          href={`/autopark-2022/${chat_id}/${project_id}/report`}
+                          shallow
+                          fullWidth
+                        >
+                          Report
+                        </Button>
+                      </Grid>
+                    )
+                  }
+                </Grid>
               </>
             )
           }

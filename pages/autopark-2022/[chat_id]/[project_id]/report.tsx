@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 // import ProTip from '~/components/ProTip';
 import Link from '~/components/Link';
 // import Copyright from '~/components/Copyright';
-import { Alert, Stack } from '@mui/material';
+import { Alert, Grid } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 // import { TheProject } from '~/components/Autopark2022/components'
@@ -63,15 +63,37 @@ export default function MyProjects({
                   />
                 )
               }
-              
-              <Stack sx={{ mb: 2 }} spacing={2}>
-                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${project_id}`} shallow>
-                  {projectDataResponse?.name || 'Go to project'}
-                </Button>
-                <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}`} shallow>
-                  Go to projects
-                </Button>
-              </Stack>
+
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                  <Grid item xs={12}>
+                    <Button
+                      startIcon={<ArrowBackIcon />}
+                      variant="outlined"
+                      color='secondary'
+                      component={Link}
+                      noLinkStyle
+                      href={`/autopark-2022/${chat_id}/${project_id}`}
+                      shallow
+                      fullWidth
+                    >
+                      {projectDataResponse?.name || 'Project'}
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      startIcon={<ArrowBackIcon />}
+                      variant='outlined'
+                      color='primary'
+                      component={Link}
+                      noLinkStyle
+                      href={`/autopark-2022/${chat_id}`}
+                      shallow
+                      fullWidth
+                    >
+                      Projects
+                    </Button>
+                  </Grid>
+                </Grid>
             </>
           )
         }

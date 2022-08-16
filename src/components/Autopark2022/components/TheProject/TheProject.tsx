@@ -1,5 +1,5 @@
 import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateProjects, setActiveProject } from '~/store/reducers/autopark'
 import { IRootState } from '~/store/IRootState'
@@ -9,8 +9,8 @@ import { CreateNewItem } from './components'
 import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios';
 // import BuildCircleIcon from '@mui/icons-material/BuildCircle';
-import BuildIcon from '@mui/icons-material/Build';
-import EditIcon from '@mui/icons-material/Edit';
+import BuildIcon from '@mui/icons-material/Build'
+import EditIcon from '@mui/icons-material/Edit'
 import { EditModal } from './components/EditModal'
 
 type TProps = {

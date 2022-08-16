@@ -1,22 +1,15 @@
 import { useCallback } from 'react'
-// import List from '@mui/material/List';
-// import ListItem from '@mui/material/ListItem';
-// import ListItemText from '@mui/material/ListItemText';
-// import ListItemButton from '@mui/material/ListItemButton'
 import { CreateNewProject } from './components'
-import { Box, Button, Grid } from '@mui/material'
-// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Box, Button, Stack, IconButton } from '@mui/material'
 import Link from '~/components/Link'
-import axios from 'axios';
-// import { useDebounce } from '~/hooks/useDebounce'
+import axios from 'axios'
 import {
   useSelector,
   useDispatch,
 } from 'react-redux'
-// import { IRootState } from '~/store/IRootState';
 import { updateProjects } from '~/store/reducers/autopark'
 import { IRootState } from '~/store/IRootState'
-// import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 type TProps = {
   chat_id: string
@@ -33,10 +26,7 @@ const fetchRemoveProject = async ({ chat_id, project_id }: { chat_id: string, pr
       chat_id,
       project_id,
     })
-    .then((res: any) => {
-      // console.log(res)
-      return res.data
-    })
+    .then((res: any) => res.data)
     .catch((err: any) => typeof err === 'string' ? err : err.message || 'No err.message')
 
   return result
@@ -68,15 +58,12 @@ export const ProjectList = ({
         // if (!!err.message) setApiErr(err.message)
         return err
       })
-      .finally(() => {
-        // setIsLoading(false)
-      })
   }, [chat_id])
 
   return (
     <>
       <Box>
-        {Object.keys(projects).map((id: string, i, a) => {
+        {Object.keys(projects).map((id: string, _i, _a) => {
           return (
             // <ListItem key={id}>
             //   <ListItemButton>
@@ -86,24 +73,35 @@ export const ProjectList = ({
             //     />
             //   </ListItemButton>
             // </ListItem>
-            <Grid container spacing={2} sx={{ mb: i !== a.length ? 2 : 0 }} key={id}>
-              <Grid
-                item
-                xs={(isOneTimePasswordCorrect || isDev) ? 9 : 12}
-                sm={(isOneTimePasswordCorrect || isDev) ? 10 : 12}
+            <Stack
+              key={id}
+              direction='row'
+              spacing={2}
+              sx={{ mb: 2 }}
+            >
+              <Button
+                fullWidth
+                variant="contained"
+                color='secondary'
+                component={Link}
+                noLinkStyle
+                href={`/autopark-2022/${chat_id}/${id}`}
+                shallow
               >
-                <Button fullWidth variant="contained" color='secondary' component={Link} noLinkStyle href={`/autopark-2022/${chat_id}/${id}`} shallow>
-                  {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
-                </Button>
-              </Grid>
+                {projects[id].name}{projects[id].items.length > 0 ? ` (${projects[id].items.length} jobs)` : ''}
+              </Button>
               {
                 (isOneTimePasswordCorrect || isDev) && (
-                  <Grid item xs={3} sm={2}>
-                    <Button fullWidth variant='outlined' onClick={handleRemove(id)} color='secondary'>DEL</Button>
-                  </Grid>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={handleRemove(id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 )
               }
-            </Grid>
+            </Stack>
           )
         })}
       </Box>

@@ -93,6 +93,10 @@ const getGenerationsOptions = (byUremont: TUremontModelsData | null, selectedMod
   }
   return result
 }
+// @ts-ignore
+const getYears = (min: number, max: number): number[] => Array.apply(null, { length: max + 1 - min }).map(function(_, idx) {
+  return idx + min;
+})
 const getYearsOptions = (byUremont: TUremontModelsData | null, selectedModel: string | null, selectedGeneration: string | null): number[] => {
   if (!byUremont || byUremont.success !== 1 || !selectedModel || !selectedGeneration) return []
   return byUremont.models.reduce((acc: number[], model: TUremontModel) => {
@@ -102,11 +106,7 @@ const getYearsOptions = (byUremont: TUremontModelsData | null, selectedModel: st
       if (targetIndex !== -1)  {
         const min = model.generations[targetIndex].start_year
         const max = model.generations[targetIndex].finish_year || new Date().getFullYear()
-
-        // @ts-ignore
-        const years: number[] = Array.apply(null, { length: max + 1 - min }).map(function(_, idx) {
-          return idx + min;
-        })
+        const years: number[] = getYears(min, max)
         
         return [...acc, ...years]
       }
@@ -121,7 +121,6 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
   const brandsOptions = getVendorOptions()
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
   const [modelsByServer, setModelsByServer] = useState<string[]>([])
-  // const modelsOptions = useMemo(() => !!selectedBrand ? getModelsOptions(selectedBrand) : [], [selectedBrand])
   const modelsOptions = useMemo(() => !!selectedBrand ? modelsByServer.map((str) => ({ label: str })) : [], [selectedBrand, modelsByServer])
   const [selectedModel, setSelectedModel] = useState<string | null>(null)
   const [additionalServiceErr, setAdditionalServiceErr] = useState<string | null>(null)
@@ -173,14 +172,15 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [apiErr, setApiErr] = useState<string>('')
   const dispatch = useDispatch()
-
+  const hasGenerationsByUremont = useMemo(() => generationOptions.length !== 0, [generationOptions])
+  const defaultYearsOptions = getYears(1980, new Date().getFullYear())
   const handleSubmit = useCallback(() => {
     setIsLoading(true)
     setApiErr('')
     fetchCreateProject({
       chat_id,
       name: `${selectedBrand} ${selectedModel}, ${selectedTransmission}, ${selectedYear}`,
-      description: `${selectedGeneration}${!!description ? ` / ${description}` : ''}`,
+      description: `${(hasGenerationsByUremont && !!selectedGeneration) ? `${selectedGeneration} / ` : ''}${description || ''}`,
     })
       .then((res) => {
         if (res.ok) {
@@ -198,7 +198,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
       .finally(() => {
         setIsLoading(false)
       })
-  }, [chat_id, description, selectedBrand, selectedModel, selectedTransmission, selectedGeneration, selectedYear])
+  }, [chat_id, description, selectedBrand, selectedModel, selectedTransmission, selectedGeneration, selectedYear, hasGenerationsByUremont])
 
   const handleChangeDescr = useCallback((e) => {
     setDescription(e.target.value)
@@ -276,9 +276,9 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 </Select>
               </FormControl>
             </Box>
-            {generationOptions.length > 0 && !selectedGeneration && (
+            {generationOptions.length > 0 && (
               <Box sx={{ mb: 2 }}>
-                <Alert severity="info" variant='filled'>Выберите поколение из списка ниже</Alert>
+                <Alert severity='info' variant='standard'>Выберите поколение из списка ниже</Alert>
               </Box>
             )}
             {
@@ -318,35 +318,29 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 )
               })
             }
-            {
-              yearsOptions.length > 0 && (
-                <Box sx={{ mb: 2 }}>
-                  <FormControl size='small' fullWidth required>
-                    <InputLabel id="year-select-label">Year</InputLabel>
-                    <Select
-                      size='small'
-                      variant='outlined'
-                      labelId="year-select-label"
-                      id="year-select"
-                      value={selectedYear || undefined}
-                      label="Year"
-                      fullWidth
-                      onChange={(e: any) => {
-                        setSelectYear(e.target.value)
-                      }}
-                    >
-                      {
-                        yearsOptions.map((year) => {
-                          return (
-                            <MenuItem key={year} value={year}>{year}</MenuItem>
-                          )
-                        })
-                      }
-                    </Select>
-                  </FormControl>
-                </Box>
-              )
-            }
+            <Box sx={{ mb: 2 }}>
+              <FormControl size='small' fullWidth required>
+                <InputLabel id="year-select-label">Year</InputLabel>
+                <Select
+                  size='small'
+                  variant='outlined'
+                  labelId="year-select-label"
+                  id="year-select"
+                  value={selectedYear || undefined}
+                  label="Year"
+                  fullWidth
+                  onChange={(e: any) => {
+                    setSelectYear(e.target.value)
+                  }}
+                >
+                  {
+                    (hasGenerationsByUremont && yearsOptions.length > 0)
+                    ? yearsOptions.map((year) => <MenuItem key={year} value={year}>{year}</MenuItem>)
+                    : defaultYearsOptions.map((year) => <MenuItem key={year} value={year}>{year}</MenuItem>)
+                  }
+                </Select>
+              </FormControl>
+            </Box>  
 
             <Box sx={{ mb: 2 }}>
               <TextField value={description} size='small' fullWidth disabled={isLoading} variant="outlined" label="Description" type="text" onChange={handleChangeDescr}></TextField>
@@ -364,7 +358,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               <Grid item xs={6}>
                 <Button
                   fullWidth
-                  disabled={isLoading || !selectedBrand || !selectedModel || !selectedTransmission || (generationOptions.length > 0 && !selectedGeneration) || !selectedYear}
+                  disabled={isLoading || !selectedBrand || !selectedModel || !selectedTransmission || (hasGenerationsByUremont && !selectedGeneration) || !selectedYear}
                   variant='contained'
                   onClick={handleSubmit}
                   color='primary'
