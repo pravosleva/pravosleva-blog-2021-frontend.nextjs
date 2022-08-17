@@ -1,3 +1,4 @@
+export * from './BtnsBottomStickyBox'
 export * from './OneTimeLoginFormBtn'
 export * from './ProjectList'
 export * from './Report'

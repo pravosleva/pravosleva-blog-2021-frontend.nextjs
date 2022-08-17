@@ -1,4 +1,4 @@
-import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
+import { Avatar, Box, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
 import { useCallback, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateProjects, setActiveProject } from '~/store/reducers/autopark'
@@ -105,10 +105,10 @@ export const TheProject = ({
   
   return (
     <>
-      {!!activeProject?.description && <div>{activeProject.description}</div>}
+      <Box sx={{ pt: 2, pb: 2 }}>{!!activeProject?.description && <div>{activeProject.description}</div>}</Box>
       {/* <pre>{JSON.stringify(activeProject, null, 2)}</pre> */}
 
-      <List dense>
+      <List dense sx={{ mr: 2 }}>
         {items.map((item: any) => {
           const { id, name, description, mileage } = item
 

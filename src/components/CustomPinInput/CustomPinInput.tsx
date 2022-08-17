@@ -26,7 +26,7 @@ export const CustomPinInput = ({
 }: TProps) => {
   return (
     <>
-      <Card sx={{ width: '100%', mb: 2 }}>
+      <Card sx={{ width: '100%' }}>
         <CardContent>
           {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             One time password
@@ -78,7 +78,7 @@ export const CustomPinInput = ({
       </Card>
       {!!apiErr && (
         <Alert
-          sx={{ mb: 2 }}
+          sx={{ mt: 2 }}
           variant="filled"
           severity="error"
         >

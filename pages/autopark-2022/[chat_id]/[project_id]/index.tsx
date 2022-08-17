@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTimeLoginFormBtn'
 import Head from 'next/head'
+import { BtnsBottomStickyBox } from '~/components/Autopark2022/components'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -53,8 +54,22 @@ export default function MyProjects({
       <Head>
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}`} />
       </Head>
-      <Container maxWidth="sm">
-        <Box sx={{ my: 4 }}>
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+        // sx={{ pt: 4, pb: 4 }}
+      >
+        <Container
+          maxWidth="xs"
+          style={{
+            marginBottom: 'auto',
+            overflowY: 'auto',
+            padding: '20px',
+          }}
+        >
           {
             !!errorMsg
             ? (
@@ -64,7 +79,7 @@ export default function MyProjects({
                 {/* <Typography variant="h4" component="h1" gutterBottom>
                   Project
                 </Typography> */}
-                <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
+                <Box sx={{ pt: 2, pb: 2 }} style={{ fontWeight: 'bold' }}>
                   <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
                 </Box>
 
@@ -78,60 +93,58 @@ export default function MyProjects({
                     Пока нет расходников
                   </Alert>
                 )}
-
-                <Grid container spacing={2} sx={{ mb: 2 }}>
-                  <Grid item xs={hasItems ? 6 : 12}>
-                    <Button
-                      startIcon={<ArrowBackIcon />}
-                      variant='outlined'
-                      color='primary'
-                      component={Link}
-                      noLinkStyle
-                      href={`/autopark-2022/${chat_id}`}
-                      shallow
-                      fullWidth
-                    >
-                      Projects
-                    </Button>
-                  </Grid>
-                  {
-                    hasItems && (
-                      <Grid item xs={6}>
-                        <Button
-                          endIcon={<ArrowForwardIcon />}
-                          variant='contained'
-                          color='secondary'
-                          component={Link}
-                          noLinkStyle
-                          href={`/autopark-2022/${chat_id}/${project_id}/report`}
-                          shallow
-                          fullWidth
-                        >
-                          Report
-                        </Button>
-                      </Grid>
-                    )
-                  }
-                </Grid>
               </>
             )
           }
-          {/* <Stack spacing={1}>
-            <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-              Go to home page
-            </Button>
-          </Stack> */}
-          {/* <ProTip />
-          <Copyright /> */}
+        </Container>
+        <BtnsBottomStickyBox>
+          <Grid
+            container
+            spacing={2}
+            sx={{ mb: 2 }}
+          >
+            <Grid item xs={hasItems ? 6 : 12}>
+              <Button
+                startIcon={<ArrowBackIcon />}
+                variant='outlined'
+                color='primary'
+                component={Link}
+                noLinkStyle
+                href={`/autopark-2022/${chat_id}`}
+                shallow
+                fullWidth
+              >
+                Projects
+              </Button>
+            </Grid>
+            {
+              hasItems && (
+                <Grid item xs={6}>
+                  <Button
+                    endIcon={<ArrowForwardIcon />}
+                    variant='contained'
+                    color='secondary'
+                    component={Link}
+                    noLinkStyle
+                    href={`/autopark-2022/${chat_id}/${project_id}/report`}
+                    shallow
+                    fullWidth
+                  >
+                    Report
+                  </Button>
+                </Grid>
+              )
+            }
+          </Grid>
           {
             typeof window !== 'undefined' && (
-              <Box sx={{ mb: 2 }}>
+              <Box>
                 <OneTimeLoginFormBtn chat_id={chat_id} />
               </Box>
             )
           }
-        </Box>
-      </Container>
+        </BtnsBottomStickyBox>
+      </div>
     </>
   );
 }

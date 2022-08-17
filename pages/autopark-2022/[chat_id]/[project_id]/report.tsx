@@ -1,18 +1,19 @@
-import * as React from 'react';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-// import ProTip from '~/components/ProTip';
-import Link from '~/components/Link';
-// import Copyright from '~/components/Copyright';
-import { Alert, Grid } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import axios from 'axios';
+import * as React from 'react'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+// import ProTip from '~/components/ProTip'
+import Link from '~/components/Link'
+// import Copyright from '~/components/Copyright'
+import { Alert, Grid } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import axios from 'axios'
 // import { TheProject } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
 import { setActiveProject } from '~/store/reducers/autopark'
 import { Report } from '~/components/Autopark2022/components'
+import { BtnsBottomStickyBox } from '~/components/Autopark2022/components'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -40,8 +41,21 @@ export default function MyProjects({
   )
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ my: 4 }}>
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Container
+        maxWidth="xs"
+        style={{
+          marginBottom: 'auto',
+          overflowY: 'auto',
+          padding: '20px',
+        }}
+      >
         {
           !!errorMsg
           ? (
@@ -51,7 +65,7 @@ export default function MyProjects({
               {/* <Typography variant="h4" component="h1" gutterBottom>
                 Project
               </Typography> */}
-              <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
+              <Box sx={{ pt: 2, pb: 4 }} style={{ fontWeight: 'bold' }}>
                 <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
               </Box>
               
@@ -63,49 +77,43 @@ export default function MyProjects({
                   />
                 )
               }
-
-              <Grid container spacing={2} sx={{ mb: 2 }}>
-                  <Grid item xs={12}>
-                    <Button
-                      startIcon={<ArrowBackIcon />}
-                      variant="outlined"
-                      color='secondary'
-                      component={Link}
-                      noLinkStyle
-                      href={`/autopark-2022/${chat_id}/${project_id}`}
-                      shallow
-                      fullWidth
-                    >
-                      {projectDataResponse?.name || 'Project'}
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      startIcon={<ArrowBackIcon />}
-                      variant='outlined'
-                      color='primary'
-                      component={Link}
-                      noLinkStyle
-                      href={`/autopark-2022/${chat_id}`}
-                      shallow
-                      fullWidth
-                    >
-                      Projects
-                    </Button>
-                  </Grid>
-                </Grid>
             </>
           )
         }
-        {/* <Stack spacing={1}>
-          <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-            Go to home page
-          </Button>
-        </Stack> */}
-        {/* <ProTip />
-        <Copyright /> */}
-      </Box>
-    </Container>
+      </Container>
+      <BtnsBottomStickyBox>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Button
+              startIcon={<ArrowBackIcon />}
+              variant="outlined"
+              color='secondary'
+              component={Link}
+              noLinkStyle
+              href={`/autopark-2022/${chat_id}/${project_id}`}
+              shallow
+              fullWidth
+            >
+              {projectDataResponse?.name || 'Project'}
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              startIcon={<ArrowBackIcon />}
+              variant='outlined'
+              color='primary'
+              component={Link}
+              noLinkStyle
+              href={`/autopark-2022/${chat_id}`}
+              shallow
+              fullWidth
+            >
+              Projects
+            </Button>
+          </Grid>
+        </Grid>
+      </BtnsBottomStickyBox>
+    </div>
   );
 }
 

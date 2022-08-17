@@ -14,6 +14,11 @@ import { wrapper } from '~/store'
 // import { IRootState } from '~/store/IRootState'
 import { setUserCheckerResponse } from '~/store/reducers/autopark'
 import Head from 'next/head'
+import {
+  BtnsBottomStickyBox,
+  OneTimeLoginFormBtn,
+} from '~/components/Autopark2022/components'
+import { useMemo } from 'react'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -37,36 +42,52 @@ export default function MyProjects({
       </Box>
     </Container>
   )
+  const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
 
   return (
     <>
       <Head>
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}`} />
       </Head>
-      <Container maxWidth="sm">
-        <Box sx={{ my: 4 }}>
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Container
+          maxWidth="xs"
+          style={{
+            marginBottom: 'auto',
+            overflowY: 'auto',
+            padding: '20px',
+          }}
+        >
+          <Box>
+            {
+              !!errorMsg
+              ? (
+                <b>{errorMsg}</b>
+              ) : (
+                <>
+                  <Typography variant="h4" component="h1" gutterBottom>
+                    Autopark
+                  </Typography>
+                  <Autopark2022 chat_id={chat_id} />
+                </>
+              )
+            }
+          </Box>
+        </Container>
+        <BtnsBottomStickyBox>
           {
-            !!errorMsg
-            ? (
-              <b>{errorMsg}</b>
-            ) : (
-              <>
-                <Typography variant="h4" component="h1" gutterBottom>
-                  Autopark
-                </Typography>
-                <Autopark2022 chat_id={chat_id} />
-              </>
+            isBrowser && (
+              <OneTimeLoginFormBtn chat_id={chat_id} />
             )
           }
-          {/* <Stack spacing={1}>
-            <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-              Go to home page
-            </Button>
-          </Stack> */}
-          {/* <ProTip />
-          <Copyright /> */}
-        </Box>
-      </Container>
+        </BtnsBottomStickyBox>
+      </div>
     </>
   );
 }
