@@ -8,6 +8,7 @@ import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/au
 import axios from 'axios'
 import KeyIcon from '@mui/icons-material/Key';
 import axiosRetry from 'axios-retry'
+import { groupLog } from '~/utils/groupLog'
 
 type TProps = {
   chat_id: string
@@ -18,6 +19,17 @@ const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
+// NOTE: See also about axios interceptors https://axios-http.com/docs/interceptors
+api.interceptors.response.use(function(config) {
+  let count = 0
+  count += 1
+
+  groupLog({
+    spaceName: `API interceptor: ${count}`,
+    items: [count, config]
+  })
+  return config
+})
 // Exponential back-off retry delay between requests
 axiosRetry(api, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
 const fetchCheckPassword = async ({ chat_id, password }: { chat_id: string, password: string }) => {
