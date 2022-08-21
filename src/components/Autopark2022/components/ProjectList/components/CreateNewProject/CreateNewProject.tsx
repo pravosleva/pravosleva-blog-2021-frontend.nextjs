@@ -14,6 +14,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { marks } from '~/components/Autopark2022/components/CarSelectSample/car-marks-list-by-uremont.json'
 // import { ContentCut } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
+import axiosRetry from 'axios-retry'
 
 const getVendorOptions = () => marks.map((m) => ({ label: m.name, ...m }))
 
@@ -26,6 +27,8 @@ const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
+// Exponential back-off retry delay between requests
+axiosRetry(api, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
 const fetchCreateProject = async ({ chat_id, name, description }: { chat_id: string, name: string, description: string }) => {
   const result = await api
     .post('/project/create', {
@@ -43,6 +46,8 @@ const baseURL2 = isDev
   ? 'http://localhost:5000/car-service'
   : 'http://pravosleva.ru/express-helper/car-service'
 const api2 = axios.create({ baseURL: baseURL2, validateStatus: (_s: number) => true, })
+// Exponential back-off retry delay between requests
+axiosRetry(api2, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
 const fetchModelsData = async ({ vendor }: { vendor: string }) => {
   const result = await api2
     .get(`/get-models?vendor=${vendor}`)

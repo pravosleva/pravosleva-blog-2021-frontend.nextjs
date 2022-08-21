@@ -7,7 +7,7 @@ import {
   Button,
   Typography,
 } from '@mui/material'
-import PinInput from 'react-pin-input'
+import PinInput from './components/PinInput' // 'react-pin-input'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Link from '~/components/Link'
 

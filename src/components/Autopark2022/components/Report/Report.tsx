@@ -5,6 +5,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 import { ReportTable } from './components'
 import { useStickyState } from '~/hooks/useStickyState'
 import { TReport } from '~/components/Autopark2022/components/Report/interfaces'
+import axiosRetry from 'axios-retry'
 
 type TProps = {
   project_id: string;
@@ -16,6 +17,8 @@ const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
+// Exponential back-off retry delay between requests
+axiosRetry(api, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
 const fetchGetProjectReport = async ({ chat_id, project_id, mileage }: { chat_id: string, project_id: string, mileage: number }) => {
   const result = await api
     .post('/project/get-report', {

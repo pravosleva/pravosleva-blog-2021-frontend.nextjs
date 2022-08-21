@@ -7,6 +7,7 @@ import { IRootState } from '~/store/IRootState'
 import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import axios from 'axios'
 import KeyIcon from '@mui/icons-material/Key';
+import axiosRetry from 'axios-retry'
 
 type TProps = {
   chat_id: string
@@ -17,6 +18,8 @@ const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
+// Exponential back-off retry delay between requests
+axiosRetry(api, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
 const fetchCheckPassword = async ({ chat_id, password }: { chat_id: string, password: string }) => {
   const result = await api
     .post('/check-password', {
