@@ -76,6 +76,7 @@ export const ProjectList = ({
             <Stack
               key={id}
               direction='row'
+              alignItems='start'
               spacing={2}
               sx={{ mb: 2 }}
             >

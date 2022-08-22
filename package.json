@@ -33,7 +33,6 @@
     "react": "latest",
     "react-dom": "latest",
     "react-intl-universal": "^2.4.8",
-    "react-pin-input": "1.0.x",
     "react-redux": "^8.0.2",
     "redux-symbiote": "^3.4.0",
     "slugify": "^1.6.0"
