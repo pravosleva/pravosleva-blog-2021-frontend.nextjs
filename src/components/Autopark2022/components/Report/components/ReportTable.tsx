@@ -1,12 +1,14 @@
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell, { tableCellClasses } from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
 import { TReport } from '~/components/Autopark2022/components/Report/interfaces'
+import Chip from '@mui/material/Chip'
+import { getPrettyPrice } from '~/utils/getPrettyPrice'
 
 type TProps = {
   report: TReport[]
@@ -31,6 +33,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }))
 
+const deadLineKM = 500
+
 export const ReportTable = ({
   report
 }: TProps) => {
@@ -54,7 +58,7 @@ export const ReportTable = ({
                 <br />
                 <small>{description}</small>
               </StyledTableCell>
-              <StyledTableCell align="right">{diff}</StyledTableCell>
+              <StyledTableCell align="right"><Chip label={getPrettyPrice(diff)} color={diff < deadLineKM ? "error" : "default"} /></StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
