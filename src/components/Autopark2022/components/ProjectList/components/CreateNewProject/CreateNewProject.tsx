@@ -291,12 +291,15 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               generationOptions.map(({ label, image, descr }) => {
                 const isSelected = label === selectedGeneration
                 return (
-                  <Card sx={{ maxWidth: '100%', mb: 2 }} variant='outlined'>
+                  <Card key={image} sx={{ maxWidth: '100%', mb: 2 }} variant='outlined'>
                     <CardMedia
+                      sx={{
+                        backgroundColor: '#F0F0F0',
+                      }}
                       component="img"
                       height="160"
                       image={image}
-                      alt={label}
+                      alt=''
                     />
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="div">
