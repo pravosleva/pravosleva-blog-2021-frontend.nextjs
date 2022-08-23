@@ -44,7 +44,7 @@ export const ReportTable = ({
       <Table size="small" aria-label="simple table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Расходники</StyledTableCell>
+            <StyledTableCell>Замена расходников</StyledTableCell>
             <StyledTableCell align="right">Left, km</StyledTableCell>
           </TableRow>
         </TableHead>
@@ -62,7 +62,7 @@ export const ReportTable = ({
                   <br />
                   <small>{description}</small>
                 </StyledTableCell>
-                <StyledTableCell align="right"><Chip icon={isFired ? <LocalFireDepartmentIcon /> : undefined} label={getPrettyPrice(diff)} color={isFired ? "error" : "default"} /></StyledTableCell>
+                <StyledTableCell align="right"><Chip icon={isFired ? <LocalFireDepartmentIcon /> : undefined} label={<b>{getPrettyPrice(diff)}</b>} color={isFired ? "error" : "default"} /></StyledTableCell>
               </StyledTableRow>
             )
           })}
