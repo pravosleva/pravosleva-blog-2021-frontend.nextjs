@@ -18,7 +18,7 @@ const baseURL = isDev
   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
 // Exponential back-off retry delay between requests
-axiosRetry(api, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
+axiosRetry(api, { retries: 100, retryDelay: axiosRetry.exponentialDelay })
 const fetchGetProjectReport = async ({ chat_id, project_id, mileage }: { chat_id: string, project_id: string, mileage: number }) => {
   const result = await api
     .post('/project/get-report', {

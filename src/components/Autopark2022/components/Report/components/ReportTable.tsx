@@ -9,6 +9,7 @@ import { styled } from '@mui/material/styles'
 import { TReport } from '~/components/Autopark2022/components/Report/interfaces'
 import Chip from '@mui/material/Chip'
 import { getPrettyPrice } from '~/utils/getPrettyPrice'
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 
 type TProps = {
   report: TReport[]
@@ -48,19 +49,23 @@ export const ReportTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {report.map(({ name, description, id, diff }) => (
-            <StyledTableRow
-              key={id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <StyledTableCell component="th" scope="row">
-                {name}
-                <br />
-                <small>{description}</small>
-              </StyledTableCell>
-              <StyledTableCell align="right"><Chip label={getPrettyPrice(diff)} color={diff < deadLineKM ? "error" : "default"} /></StyledTableCell>
-            </StyledTableRow>
-          ))}
+          {report.map(({ name, description, id, diff }) => {
+            const isFired= diff < deadLineKM
+
+            return (
+              <StyledTableRow
+                key={id}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <StyledTableCell component="th" scope="row">
+                  {name}
+                  <br />
+                  <small>{description}</small>
+                </StyledTableCell>
+                <StyledTableCell align="right"><Chip icon={isFired ? <LocalFireDepartmentIcon /> : undefined} label={getPrettyPrice(diff)} color={isFired ? "error" : "default"} /></StyledTableCell>
+              </StyledTableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </TableContainer>

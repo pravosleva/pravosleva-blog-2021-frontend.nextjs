@@ -10,6 +10,7 @@ import {
 import PinInput from './components/PinInput' // 'react-pin-input'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Link from '~/components/Link'
+import LoadingButton from '@mui/lab/LoadingButton'
 
 type TProps = {
   handlePinInputComplete: (_value: any, _index: any) => void;
@@ -45,7 +46,7 @@ export const CustomPinInput = ({
               // onChange={(value, index) => {}} 
               type="numeric" 
               inputMode="number"
-              inputStyle={{ borderColor: '#ff715c', borderRadius: '10px', borderWidth: '2px' }}
+              inputStyle={{ borderColor: '#ff715c', borderRadius: '50%', borderWidth: '2px' }}
               inputFocusStyle={{ borderColor: '#03A9F4' }}
               onComplete={handlePinInputComplete}
               autoSelect={true}
@@ -68,9 +69,19 @@ export const CustomPinInput = ({
           }}
         >
           {/* <Button size="small">Learn More</Button> */}
-          <Button disabled={isLoading} endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='https://t.me/pravosleva_bot?start=autopark' target='_blank'>
+          <LoadingButton
+            // disabled={isLoading}
+            loading={isLoading}
+            endIcon={<ArrowForwardIcon />}
+            variant="contained"
+            color='primary'
+            component={Link}
+            noLinkStyle
+            href='https://t.me/pravosleva_bot?start=autopark'
+            target='_blank'
+          >
             Get Password
-          </Button>
+          </LoadingButton>
           <Button disabled={isLoading} variant="outlined" color='primary' onClick={onCancel}>
             Close
           </Button>

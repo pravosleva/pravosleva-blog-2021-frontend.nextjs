@@ -28,7 +28,7 @@ export default function MyProjects({
   projectDataResponse,
 }: any) {
   if (userCheckerResponse?.code === 'not_found') return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs">
       <Box sx={{ my: 4 }}>
         <Alert sx={{ mb: 2 }} variant="filled" severity="error">
           <Typography variant="body2" component="h2" gutterBottom>
@@ -40,7 +40,7 @@ export default function MyProjects({
   )
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs">
       <Box sx={{ my: 4 }}>
         {
           !!errorMsg
