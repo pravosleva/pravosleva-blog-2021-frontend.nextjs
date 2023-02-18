@@ -51,7 +51,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   const [count, setCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const passwordRef = useRef<string>('')
-  const debouncedCounter = useDebounce(count, 2000)
+  const debouncedCounter = useDebounce(count, 1000)
   // const [isPasswordCorrect, setIsPasswordCorrect] = useState(false)
   const [apiErr, setApiErr] = useState<string>('')
   const userCheckerResponse = useSelector((state: IRootState) => state.autopark.userCheckerResponse)
@@ -66,8 +66,9 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   }, [])
 
   useEffect(() => {
-    // console.log('debouncedCounter', debouncedCounter)
-    if (userCheckerResponse?.ok && !!passwordRef.current) {
+    console.log('debouncedCounter', debouncedCounter)
+    if (!!passwordRef.current) { // !userCheckerResponse?.ok
+      setIsLoading(true)
       setApiErr('')
       fetchCheckPassword({ chat_id, password: passwordRef.current })
         .then((data) => {
@@ -89,8 +90,10 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
         .finally(() => {
           setIsLoading(false)
         })
+    } else {
+      setIsLoading(false)
     }
-  }, [debouncedCounter, chat_id, setIsLoading, userCheckerResponse])
+  }, [debouncedCounter, chat_id, setIsLoading, userCheckerResponse?.ok, setApiErr, dispatch])
 
   const countInc = useCallback(() => {
     setCount((s) => ++s)
@@ -105,7 +108,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
     setIsLoading(true)
     passwordRef.current = value
     countInc()
-  }, [countInc])
+  }, [countInc, setIsLoading])
 
   return (
     <>
@@ -123,6 +126,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
             isLoading={isLoading}
             apiErr={apiErr}
             onCancel={handleCloseForm}
+            chat_id={chat_id}
           />
         )
       }

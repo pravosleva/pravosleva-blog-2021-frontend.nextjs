@@ -90,7 +90,16 @@ export const Report = ({
   return (
     <>
       <Box sx={{ mb: 2 }}>
-        <TextField value={mileage[chat_id]?.[project_id]} size='small' fullWidth disabled={isLoading} variant="outlined" label="Пробег" type="number" onChange={handleChangeMileage}></TextField>
+        <TextField
+          value={mileage[chat_id]?.[project_id]}
+          size='small'
+          fullWidth
+          disabled={isLoading}
+          variant="outlined"
+          label="Пробег"
+          type="number"
+          onChange={handleChangeMileage}
+        ></TextField>
       </Box>
 
       {

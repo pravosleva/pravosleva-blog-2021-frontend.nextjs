@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 // import { reducer as formReducer } from 'redux-form'
 // import { counter, initialState as countInitialState } from './counter'
-// import { lang, initialState as langInitialState } from './lang'
+import { lang } from './lang'
 // import {
 //   scrollDisablingComponents,
 //   initialState as scrollDisablingComponentsInitialState,
@@ -13,7 +13,7 @@ import { reducer as autoparkReducer } from './autopark'
 
 export const rootReducer = combineReducers({
   // counter,
-  // lang,
+  lang,
   // scrollDisablingComponents,
   // userInfo,
   // users,

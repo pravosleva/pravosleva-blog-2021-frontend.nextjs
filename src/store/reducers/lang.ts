@@ -4,7 +4,7 @@ import enUS from '~/public/static/locales/en-US.json'
 import ruRU from '~/public/static/locales/ru-RU.json'
 // Others...
 
-const SUPPOER_LOCALES = [
+export const SUPPOER_LOCALES = [
   {
     label: 'RU',
     guLabel: 'RUS',
