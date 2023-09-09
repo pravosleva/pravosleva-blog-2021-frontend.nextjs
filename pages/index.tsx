@@ -17,11 +17,17 @@ type TLink = {
 }
 const links: TLink[] = [
   {
-    name: 'Viselitsa 2023',
-    link: 'https://pravosleva.ru/dist.viselitsa-2023',
-    colorCode: 'success',
+    name: 'Todo 2023',
+    link: '/subprojects/todo',
+    colorCode: 'primary',
     variantCode: 'contained',
   },
+  // {
+  //   name: 'Viselitsa 2023',
+  //   link: 'https://pravosleva.ru/dist.viselitsa-2023',
+  //   colorCode: 'success',
+  //   variantCode: 'contained',
+  // },
   {
     name: 'AutoPark 2022',
     link: 'https://t.me/pravosleva_bot?start=autopark',

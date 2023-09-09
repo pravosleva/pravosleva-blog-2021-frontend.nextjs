@@ -1,4 +1,5 @@
 export function getPrettyPrice(price: number): string {
+  /*
   let result: any = Math.round(+price * 100) / 100
   var parts = price.toString().split('.')
   result = parts[0]
@@ -28,4 +29,6 @@ export function getPrettyPrice(price: number): string {
   }
 
   return parts.join('.')
+  */
+  return new Intl.NumberFormat().format(price)
 }

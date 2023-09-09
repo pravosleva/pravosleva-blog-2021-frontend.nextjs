@@ -5,10 +5,12 @@ import { red } from '@mui/material/colors';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      // main: '#556cd6',
+      main: '#2196f3',
     },
     secondary: {
-      main: '#19857b',
+      // main: '#19857b',
+      main: '#97f48a',
     },
     error: {
       main: red.A400,
@@ -21,6 +23,19 @@ const theme = createTheme({
       md: 900,
       lg: 1200,
       xl: 1536
+    },
+  },
+  // NOTE: See also https://mui.com/material-ui/customization/theme-components/#theme-default-props
+  components: {
+    // Name of the component
+    MuiButton: {
+      styleOverrides: {
+        // Name of the slot
+        root: {
+          // Some CSS
+          borderRadius: '8px',
+        },
+      },
     },
   },
 });

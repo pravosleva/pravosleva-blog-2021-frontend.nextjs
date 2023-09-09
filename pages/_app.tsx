@@ -10,7 +10,7 @@ import createEmotionCache from '~/createEmotionCache';
 import { wrapper } from '~/store';
 import { pageview } from '~/utils/googleAnalitycs';
 import { useRouter } from 'next/router'
-
+import '~/mui/common.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -44,6 +44,7 @@ function AppWithRedux(props: MyAppProps) {
       <Head>
         <title>Pravosleva</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </Head>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

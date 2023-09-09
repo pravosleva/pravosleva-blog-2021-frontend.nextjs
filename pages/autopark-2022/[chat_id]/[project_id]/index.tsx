@@ -53,7 +53,12 @@ export default function MyProjects({
       <Head>
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}`} />
       </Head>
-      <Container maxWidth="xs">
+      <Container
+        maxWidth="xs"
+        sx={{
+          border: '1px solid red',
+        }}
+      >
         <Box sx={{ my: 4 }}>
           {
             !!errorMsg
