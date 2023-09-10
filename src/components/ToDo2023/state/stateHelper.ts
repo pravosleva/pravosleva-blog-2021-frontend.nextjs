@@ -1,16 +1,16 @@
-import { proxy } from 'valtio';
+// import { proxy } from 'valtio';
 import { TAudit, EJobStatus, ESubjobStatus, IJob } from './types'
 import { standardJobList as _standardJobList } from './constants'
 
 // NOTE: Example https://github.com/pravosleva/express-helper/blob/master/src/server/utils/gcsUsersMapInstance.ts
 class SingletoneState {
   private static instance: SingletoneState;
-  _state: { audits: TAudit[]; };
+  // _state: { audits: TAudit[]; };
 
   constructor() {
-    this._state = proxy<{ audits: TAudit[] }>({
-      audits: [],
-    })
+    // this._state = proxy<{ audits: TAudit[] }>({
+    //   audits: [],
+    // })
 
     // TODO: Get audits from LS -> Put to this._state
     // try {
@@ -36,9 +36,9 @@ class SingletoneState {
   //   })
   // }
 
-  get state() {
-    return this._state
-  }
+  // get state() {
+  //   return this._state
+  // }
 
   public static getInstance(): SingletoneState {
     if (!SingletoneState.instance) SingletoneState.instance = new SingletoneState();
