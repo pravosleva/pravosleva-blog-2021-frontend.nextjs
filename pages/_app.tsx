@@ -61,7 +61,7 @@ function AppWithRedux(props: MyAppProps) {
         </ThemeProvider>
       </CacheProvider>
     </PersistGate>
-  );
+  )
 }
 
 export default wrapper.withRedux(AppWithRedux);

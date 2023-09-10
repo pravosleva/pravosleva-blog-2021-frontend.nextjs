@@ -47,6 +47,7 @@ const makeStore = ({ isServer }: any) => {
   } else {
     //If it's on client side, create a store which will persist
     const { persistStore, persistReducer } = require('redux-persist');
+    // const storage = require('redux-persist/lib/storage')
 
     const persistConfig = {
       key: 'nextjs',
