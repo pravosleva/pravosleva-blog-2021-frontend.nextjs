@@ -1,31 +1,46 @@
 // import { Modal, Box, Typography, Button, TextField, Grid } from '@mui/material'
 import { Box, Container, Typography } from '@mui/material'
 import { AddNewBtn, AuditList } from '~/components/ToDo2023/components'
-import { stateInstance } from '~/components/ToDo2023/state'
+import { TAudit } from '~/components/ToDo2023/state'
+import { useSelector, useDispatch } from 'react-redux'
+import { addAudit } from '~/store/reducers/todo2023'
+import { memo, useCallback } from 'react'
+import { IRootState } from '~/store/IRootState'
+import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
 
-export const ToDo2023 = () => {
+export const ToDo2023 = memo(() => {
+  const dispatch = useDispatch()
   const handleError = (arg: any) => {
     console.warn(arg)
   }
-  const handleAddNewAudit = (arg: any) => {
+  const handleAddNewAudit = useCallback(async (arg: any) => {
     const { name, description } = arg
     if (!name) {
       // window.alert('Incorrect name')
       return
     }
 
-    stateInstance.addAudit({
+    // NOTE: Get remote standardJobList -> Put to jobs
+    const remoteJobs = await todo2023HttpClient.getJobs()
+      .then((res) => {
+        // @ts-ignore
+        if (!res?.jobs) throw new Error('jobs was not received')
+        // @ts-ignore
+        return res.jobs
+      })
+      .catch((err) => {
+        console.log(err)
+        return []
+      })
+
+    dispatch(addAudit({
       name,
       description,
-    })
-      .catch((err) => {
-        if (!!err?.message) {
-          console.error(err.message)
-          return
-        }
-        console.warn(err)
-      })
-  }
+      jobs: remoteJobs,
+    }))
+  }, [])
+
+  const localAudits: TAudit[] = useSelector((state: IRootState) => state.todo2023.localAudits)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
@@ -35,7 +50,7 @@ export const ToDo2023 = () => {
             Audit list
           </Typography>
         </Box>
-        <AuditList />
+        <AuditList audits={localAudits} />
       </Container>
       {
         typeof window !== 'undefined' && (
@@ -82,4 +97,4 @@ export const ToDo2023 = () => {
       }
     </div>
   )
-}
+})

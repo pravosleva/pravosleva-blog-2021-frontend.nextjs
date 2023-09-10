@@ -6,13 +6,17 @@ import Paper from '@mui/material/Paper';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 // import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
-import { stateInstance } from '~/components/ToDo2023/state'
+// import { stateInstance } from '~/components/ToDo2023/state'
 import DoneIcon from '@mui/icons-material/Done';
+import { memo, useCallback } from "react"
+import { useDispatch } from 'react-redux'
+import { toggleSubJobDone } from "~/store/reducers/todo2023";
 
 type TProps = {
   subjobs: TSubJob[];
   auditId: string;
   jobId: string;
+  jobTsUpdate: number;
 }
 
 const ListItem = styled('li')(({ theme }) => ({
@@ -43,8 +47,15 @@ const icons: {
   },
 }
 
-export const SubjobList = ({ subjobs, auditId, jobId }: TProps) => {
-
+export const SubjobList = memo(({ subjobs, auditId, jobId }: TProps) => {
+  const dispatch = useDispatch()
+  const handleToggleSubjob = useCallback(({ subjobId }: { subjobId: string; }) => {
+    dispatch(toggleSubJobDone({
+      auditId,
+      jobId,
+      subjobId,
+    }))
+  }, [])
   return (
     <div
       style={{
@@ -77,11 +88,7 @@ export const SubjobList = ({ subjobs, auditId, jobId }: TProps) => {
                 variant={icons[status]?.muiSettings.variant || undefined}
                 // onDelete={data.label === 'React' ? undefined : handleDelete(data)}
                 onClick={() => {
-                  stateInstance.toggleSubJob({
-                    auditId,
-                    jobId,
-                    subjobId: id,
-                  })
+                  handleToggleSubjob({ subjobId: id })
                 }}
               />
             </ListItem>
@@ -90,4 +97,4 @@ export const SubjobList = ({ subjobs, auditId, jobId }: TProps) => {
       </Paper>
     </div>
   )
-}
+}, (prevPs, nextPs) => prevPs.jobTsUpdate === nextPs.jobTsUpdate)

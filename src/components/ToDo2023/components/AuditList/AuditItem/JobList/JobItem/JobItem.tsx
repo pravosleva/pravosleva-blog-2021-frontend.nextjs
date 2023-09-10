@@ -1,4 +1,4 @@
-import { IJob, stateInstance, EJobStatus } from "~/components/ToDo2023/state"
+import { IJob, stateHelper, EJobStatus } from "~/components/ToDo2023/state"
 import { SubjobList } from './SubjobList'
 import Badge from '@mui/material/Badge';
 // import MailIcon from '@mui/icons-material/Mail';
@@ -15,10 +15,12 @@ import IconButton from '@mui/material/IconButton';
 // import AlarmIcon from '@mui/icons-material/Alarm';
 // import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import { useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReportIcon from '@mui/icons-material/Report';
+import { useDispatch } from 'react-redux'
+import { toggleJobDone } from '~/store/reducers/todo2023'
 
 type TProps = {
   job: IJob;
@@ -33,38 +35,37 @@ type TProps = {
 //   [EJobStatus.IS_NOT_AVAILABLE]: 'Отключено',
 // }
 
-export const JobItem = ({
+export const JobItem = memo(({
   job,
   auditId,
 }: TProps) => {
-  // const audits = useSnapshot<TAudit[]>(stateInstance.state.audits)
+  // const audits = useSnapshot<TAudit[]>(stateHelper.state.audits)
   // useEffect(() => {
   //   console.log(`${auditId} ${job.id} -> ${counter}`)
   // }, [counter])
+  const dispatch = useDispatch()
   const handleDoneJob = useCallback(() => {
-    stateInstance.toggleJobDone({
+    // stateHelper.toggleJobDone({
+    //   auditId,
+    //   jobId: job.id,
+    // })
+    dispatch(toggleJobDone({
       auditId,
       jobId: job.id,
-    })
+    }))
   }, [auditId, job.id])
-  // const handleRestoreJob = () => {
-  //   stateInstance.toggleJobDone({
-  //     auditId,
-  //     jobId: job.id,
-  //   })
-  // }
-  // const handleToggleJobStatus = () => {
-  //   stateInstance.toggleJobStatus({
-  //     auditId,
-  //     jobId: job.id,
-  //   })
-  // }
 
   const [isOpened, setIsOpened] = useState(false)
 
-  const handleToggle = useCallback(() => {
+  const handleOpenToggle = useCallback(() => {
     setIsOpened((val) => !val)
   }, [setIsOpened])
+
+  const incompleteSubjobsCounter = useMemo(() => {
+    return stateHelper.getIncompleteSubjobsCounter({
+      job,
+    })
+  }, [job.tsUpdate])
   
   return (
     <div>
@@ -76,10 +77,7 @@ export const JobItem = ({
           gap: '16px',
         }}
       >
-        <Badge  color='error' badgeContent={stateInstance.getIncompleteSubjobsCounter({
-          auditId,
-          jobId: job.id,
-        })}>
+        <Badge  color='error' badgeContent={incompleteSubjobsCounter}>
           {job.status === EJobStatus.IS_DONE ? <TaskAltIcon color='success' /> : <ReportIcon />}
         </Badge>
         <div>{job.name}</div>
@@ -88,7 +86,7 @@ export const JobItem = ({
         >
           {
             job.subjobs.length > 0 && (
-              <IconButton aria-label="delete" onClick={handleToggle}>
+              <IconButton aria-label="delete" onClick={handleOpenToggle}>
                 {isOpened ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </IconButton>
             )
@@ -116,9 +114,9 @@ export const JobItem = ({
       </div> */}
       {
         job.subjobs.length > 0 && isOpened && (
-          <SubjobList subjobs={job.subjobs} auditId={auditId} jobId={job.id} />
+          <SubjobList subjobs={job.subjobs} auditId={auditId} jobId={job.id} jobTsUpdate={job.tsUpdate} />
         )
       }
     </div>
   )
-}
+}, (prevPs, nextPs) => prevPs.job.tsUpdate === nextPs.job.tsUpdate)

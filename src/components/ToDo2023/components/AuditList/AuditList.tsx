@@ -1,10 +1,14 @@
-import { TAudit, stateInstance } from '~/components/ToDo2023/state'
-import { useSnapshot } from 'valtio';
+// import { TAudit, stateInstance } from '~/components/ToDo2023/state'
+// import { useSnapshot } from 'valtio';
+// import { useSelector } from 'react-redux'
 import { AuditItem } from './AuditItem'
+// import { IRootState } from '~/store/IRootState'
+import { memo } from 'react'
+import { TAudit } from '../../state'
 
-export const AuditList = () => {
-  const audits = useSnapshot<TAudit[]>(stateInstance.state.audits)
-
+export const AuditList = memo(({ audits }: { audits: TAudit[] }) => {
+  // const audits = useSnapshot<TAudit[]>(stateInstance.state.audits)
+  
   return (
     <div
       style={{
@@ -23,4 +27,4 @@ export const AuditList = () => {
       ))}
     </div>
   )
-}
+})

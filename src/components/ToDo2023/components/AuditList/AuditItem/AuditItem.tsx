@@ -1,9 +1,9 @@
 import { TAudit } from "~/components/ToDo2023/state"
 import { JobList } from './JobList'
-import { stateInstance } from '~/components/ToDo2023/state'
+import { stateHelper } from '~/components/ToDo2023/state'
 import Badge from "@mui/material/Badge";
 // import SettingsIcon from '@mui/icons-material/Settings';
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo, memo } from "react";
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import IconButton from "@mui/material/IconButton";
@@ -12,17 +12,26 @@ import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import Typography from "@mui/material/Typography";
+import { useDispatch } from 'react-redux'
+import { removeAudit } from "~/store/reducers/todo2023";
 
 type TProps = {
   audit: TAudit;
 }
 
-export const AuditItem = ({ audit }: TProps) => {
+export const AuditItem = memo(({ audit }: TProps) => {
+  const dispatch = useDispatch()
   const [isOpened, setIsOpened] = useState(false)
 
   const handleToggle = useCallback(() => {
     setIsOpened((val) => !val)
   }, [setIsOpened])
+
+  const incompleteJobsCounter = useMemo<number>(() => {
+    return stateHelper.getIncompleteJobsCounter({
+      audit,
+    })
+  }, [audit.tsUpdate])
 
   return (
     <div
@@ -47,10 +56,11 @@ export const AuditItem = ({ audit }: TProps) => {
           borderBottom: '1px solid lightgray',
         }}
       >
-        <Badge color="error" badgeContent={stateInstance.getIncompleteJobsCounter({
-          auditId: audit.id,
-        })}>
-          {stateInstance.getIncompleteJobsCounter({ auditId: audit.id }) > 0 ? <FolderIcon /> : <TaskAltIcon color='success' />}
+        <Badge
+          color="error"
+          badgeContent={incompleteJobsCounter}
+        >
+          {incompleteJobsCounter > 0 ? <FolderIcon /> : <TaskAltIcon color='success' />}
         </Badge>
 
         <div>{audit.name}</div>
@@ -64,11 +74,15 @@ export const AuditItem = ({ audit }: TProps) => {
                 </IconButton>
               )
             }
-            <IconButton color='error' aria-label="delete" onClick={() => {
-              const isConfirmed = window.confirm('Вы уверены?')
-              if (isConfirmed) stateInstance.removeAudit({
-                auditId: audit.id,
-              })}}
+            <IconButton
+              color='error'
+              aria-label="delete"
+              onClick={() => {
+                const isConfirmed = window.confirm('Вы уверены?')
+                if (isConfirmed) dispatch(removeAudit({
+                  auditId: audit.id,
+                }))
+              }}
             >
               <DeleteIcon />
             </IconButton>
@@ -86,10 +100,13 @@ export const AuditItem = ({ audit }: TProps) => {
         audit.jobs.length > 0 && isOpened && (
           <JobList
             auditId={audit.id}
+            auditTsUpdate={audit.tsUpdate}
             jobs={audit.jobs}
           />
         )
       }
     </div>
   )
-}
+}, function arePropsEqual(prevPs, nextPs) {
+  return prevPs.audit.tsUpdate === nextPs.audit.tsUpdate
+})

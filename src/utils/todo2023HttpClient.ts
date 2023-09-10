@@ -6,7 +6,7 @@ const baseApiURL = isDev ? 'http://pravosleva.ru/express-helper/subprojects/gapi
 : 'http://pravosleva.ru/express-helper/subprojects/gapi/todo-2023' // process.env.API_ENDPOINT || '';
 
 enum EControllers {
-  GET_JOBS = 'get-jobs',
+  GET_JOBS = 'post:/jobs',
 }
 
 type TLocalResult = {

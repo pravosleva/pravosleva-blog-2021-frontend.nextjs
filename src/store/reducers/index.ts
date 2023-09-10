@@ -10,6 +10,7 @@ import { lang } from './lang'
 // import { users, initialState as usersInitialState } from './users'
 // import { toaster, initialState as toasterInitialState } from './toaster'
 import { reducer as autoparkReducer } from './autopark'
+import { reducer as todo2023Reducer } from './todo2023'
 
 export const rootReducer = combineReducers({
   // counter,
@@ -20,6 +21,7 @@ export const rootReducer = combineReducers({
   // form: formReducer,
   // toaster,
   autopark: autoparkReducer,
+  todo2023: todo2023Reducer,
   // Others...
 })
 

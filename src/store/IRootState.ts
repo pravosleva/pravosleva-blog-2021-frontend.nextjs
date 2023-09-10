@@ -1,30 +1,35 @@
 import { Store } from 'redux'
 // import { IToast } from '@/actions'
+import { TAudit } from '~/components/ToDo2023/state'
 
 type TProject = {
   name: string;
   description: string;
-  items: any[]
+  items: any[];
 }
 
 export interface IRootState extends Store {
-  [x: string]: any
+  [x: string]: any;
   // toaster: {
-  //   items: IToast[]
-  // }
+  //   items: IToast[];
+  // };
   autopark: {
     activeProject: {
-      [key: string]: any,
-    } | null,
+      [key: string]: any;
+    } | null;
     userCheckerResponse: {
-      ok: boolean,
-      message?: string,
-      password?: number,
+      ok: boolean;
+      message?: string;
+      password?: number;
       projects?: {
-        [key: string]: TProject
+        [key: string]: TProject;
       }
-    } | null,
-    x: number,
-    isOneTimePasswordCorrect: boolean,
-  },
+    } | null;
+    x: number;
+    isOneTimePasswordCorrect: boolean;
+  };
+  todo2023: {
+    localAudits: TAudit[];
+    // TODO: remoteAudits: TAudit[];
+  };
 }
