@@ -263,6 +263,8 @@ export const todo2023Slice: any = createSlice({
             tsCreate: tsUpdate,
             tsUpdate,
           })
+
+          state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].status = EJobStatus.IN_PROGRESS
           state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].tsUpdate = tsUpdate
           state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
       } catch (err) {

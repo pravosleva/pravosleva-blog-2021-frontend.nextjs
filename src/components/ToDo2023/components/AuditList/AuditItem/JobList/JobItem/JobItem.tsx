@@ -66,6 +66,12 @@ export const JobItem = memo(({
       job,
     })
   }, [job.tsUpdate])
+  const Icon = useMemo(() => {
+    switch (job.status) {
+      case EJobStatus.IS_DONE: return <TaskAltIcon color='success' />
+      default: return <ReportIcon />
+    }
+  }, [job.status, job.tsUpdate])
   
   return (
     <div>
@@ -78,7 +84,7 @@ export const JobItem = memo(({
         }}
       >
         <Badge  color='error' badgeContent={incompleteSubjobsCounter}>
-          {job.status === EJobStatus.IS_DONE ? <TaskAltIcon color='success' /> : <ReportIcon />}
+          {Icon}
         </Badge>
         <div>{job.name}</div>
         <div
@@ -119,4 +125,4 @@ export const JobItem = memo(({
       }
     </div>
   )
-}, (prevPs, nextPs) => prevPs.job.tsUpdate === nextPs.job.tsUpdate)
+}, (prevPs, nextPs) => prevPs.job.tsUpdate === nextPs.job.tsUpdate && prevPs.job.status === nextPs.job.status)
