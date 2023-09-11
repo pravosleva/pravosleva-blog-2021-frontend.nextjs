@@ -5,6 +5,10 @@ import Button from "@mui/material/Button";
 import { todo2023HttpClient } from "~/utils/todo2023HttpClient";
 import { useDispatch } from "react-redux";
 import { addJob, addSubjob } from "~/store/reducers/todo2023";
+import {
+  // VariantType,
+  useSnackbar,
+} from 'notistack'
 
 export const JobList = memo(({
   jobs,
@@ -15,6 +19,7 @@ export const JobList = memo(({
   auditId: string;
   auditTsUpdate: number;
 }) => {
+  const { enqueueSnackbar } = useSnackbar()
   const dispatch = useDispatch()
   const handleActualize = useCallback(async () => {
     // NOTE: Get remote standardJobList -> Put to jobs
@@ -41,6 +46,7 @@ export const JobList = memo(({
             name: remoteJob.name,
             subjobs: remoteJob.subjobs,
           }))
+          enqueueSnackbar(`New Job 👉 ${remoteJob.name}`, { variant: 'success', autoHideDuration: 10000 })
         } else {
           // NOTE: Проверяем ее на предмет subjobs
           const remoteSubjobs = remoteJob.subjobs
@@ -55,6 +61,7 @@ export const JobList = memo(({
                 auditId,
                 jobId: jobs[jobIndex].id,
               }))
+              enqueueSnackbar(`New Subjob in ${remoteJob.name} 👉 ${remoteSubjob.name}`, { variant: 'success', autoHideDuration: 10000 })
             }
           }
         }

@@ -15,6 +15,7 @@ import '~/mui/common.css'
 import { PersistGate } from 'redux-persist/integration/react';
 import { useStore } from 'react-redux';
 // import { IRootState } from '~/store/IRootState';
+import { SnackbarProvider } from 'notistack'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -32,8 +33,8 @@ function AppWithRedux(props: MyAppProps) {
     const handleRouteChange = (url: string) => {
       pageview(url)
     }
-    //When the component is mounted, subscribe to router changes
-    //and log those page views
+    // When the component is mounted, subscribe to router changes
+    // and log those page views
     router.events.on('routeChangeComplete', handleRouteChange)
 
     // If the component is unmounted, unsubscribe
@@ -48,18 +49,20 @@ function AppWithRedux(props: MyAppProps) {
   return (
     // @ts-ignore
     <PersistGate persistor={store.__persistor}>
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <title>Pravosleva</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
-      </CacheProvider>
+      <SnackbarProvider maxSnack={3}>
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <title>Pravosleva</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+          </Head>
+          <ThemeProvider theme={theme}>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </CacheProvider>
+      </SnackbarProvider>
     </PersistGate>
   )
 }
