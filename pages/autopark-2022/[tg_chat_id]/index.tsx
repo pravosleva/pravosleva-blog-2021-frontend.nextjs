@@ -61,12 +61,12 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => async (ctx: any) => {
     const { query } = ctx
-    const { chat_id } = query
+    const { tg_chat_id } = query
     let errorMsg = null
 
     const result = await autoparkHttpClient.getUserData({
       tg: {
-        chat_id
+        chat_id: tg_chat_id,
       }
     })
       .then((res) => res)
@@ -75,6 +75,6 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
     if (result?.ok === true || result?.ok === false) store.dispatch(setUserCheckerResponse(result))
     if (typeof result === 'string') errorMsg = result
 
-    return { userCheckerResponse: result, errorMsg, isUserExists: result?.ok, chat_id }
+    return { userCheckerResponse: result, errorMsg, isUserExists: result?.ok, chat_id: tg_chat_id }
   }
 )

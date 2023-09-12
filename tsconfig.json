@@ -25,5 +25,5 @@
     }
   },
   "exclude": ["node_modules", "tsconfig.json"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/components/CustomPinInput/components/PinInput.js"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

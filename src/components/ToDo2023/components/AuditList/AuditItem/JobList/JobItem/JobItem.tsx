@@ -20,7 +20,8 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReportIcon from '@mui/icons-material/Report';
 import { useDispatch } from 'react-redux'
-import { toggleJobDone } from '~/store/reducers/todo2023'
+import { toggleJobDone, removeJob } from '~/store/reducers/todo2023'
+import CloseIcon from '@mui/icons-material/Close';
 
 type TProps = {
   job: IJob;
@@ -61,6 +62,14 @@ export const JobItem = memo(({
     setIsOpened((val) => !val)
   }, [setIsOpened])
 
+  const handleRemoveJob = useCallback(() => {
+    const isConfirmed = window.confirm('Вы уверены?')
+    if (isConfirmed) dispatch(removeJob({
+      auditId,
+      jobId: job.id,
+    }))
+  }, [auditId, job.id])
+
   const incompleteSubjobsCounter = useMemo(() => {
     return stateHelper.getIncompleteSubjobsCounter({
       job,
@@ -92,11 +101,14 @@ export const JobItem = memo(({
         >
           {
             job.subjobs.length > 0 && (
-              <IconButton aria-label="delete" onClick={handleOpenToggle}>
+              <IconButton aria-label="open" onClick={handleOpenToggle}>
                 {isOpened ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </IconButton>
             )
           }
+          <IconButton aria-label="remove-job" onClick={handleRemoveJob}>
+            <CloseIcon color="error" />
+          </IconButton>
           <IconButton aria-label="delete" onClick={handleDoneJob}>
             {job.status === EJobStatus.IS_DONE ? <AutorenewIcon /> : <TaskAltIcon />}
           </IconButton>

@@ -9,6 +9,7 @@ import {
   // VariantType,
   useSnackbar,
 } from 'notistack'
+import { useCompare } from "~/hooks/useDeepEffect";
 
 export const JobList = memo(({
   jobs,
@@ -22,6 +23,7 @@ export const JobList = memo(({
   const { enqueueSnackbar } = useSnackbar()
   const dispatch = useDispatch()
   const handleActualize = useCallback(async () => {
+    let newsCounter = 0
     // NOTE: Get remote standardJobList -> Put to jobs
     const remoteJobs: IJob[] = await todo2023HttpClient.getJobs()
       .then((res) => {
@@ -46,7 +48,8 @@ export const JobList = memo(({
             name: remoteJob.name,
             subjobs: remoteJob.subjobs,
           }))
-          enqueueSnackbar(`New Job 👉 ${remoteJob.name}`, { variant: 'success', autoHideDuration: 10000 })
+          enqueueSnackbar(`New Job 👉 ${remoteJob.name}`, { variant: 'warning', autoHideDuration: 10000 })
+          newsCounter += 1
         } else {
           // NOTE: Проверяем ее на предмет subjobs
           const remoteSubjobs = remoteJob.subjobs
@@ -61,13 +64,16 @@ export const JobList = memo(({
                 auditId,
                 jobId: jobs[jobIndex].id,
               }))
-              enqueueSnackbar(`New Subjob in ${remoteJob.name} 👉 ${remoteSubjob.name}`, { variant: 'success', autoHideDuration: 10000 })
+              enqueueSnackbar(`New Subjob in ${remoteJob.name} 👉 ${remoteSubjob.name}`, { variant: 'warning', autoHideDuration: 10000 })
+              newsCounter += 1
             }
           }
         }
       }
     }
-  }, [])
+
+    if (newsCounter === 0) enqueueSnackbar('Уже актуально', { variant: 'success', autoHideDuration: 3000 })
+  }, [useCompare(jobs)])
   return (
     <div
       style={{

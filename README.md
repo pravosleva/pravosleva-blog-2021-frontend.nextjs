@@ -1,5 +1,95 @@
 # Next.js with TypeScript example
 
+## Express server usage details
+
+### `better-module-alias` [npm](https://www.npmjs.com/package/better-module-alias)
+
+#### Step 1: Create `./server.src` dir
+
+#### Step 2: Install tools
+```bash
+yarn add better-module-alias
+```
+
+#### Step 2: Add `./tsconfig.server.json``
+```json
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "target": "es5",
+    "module": "commonjs",
+    "lib": [
+      "es2015",
+      "es5"
+    ],
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": false,
+    "isolatedModules": false,
+    "baseUrl": ".",
+    "paths": {
+      "~srv/*": [
+        "./server.src/*"
+      ]
+    },
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "outDir": "./server.dist"
+  },
+  "include": [
+    "./server.src/run.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*"
+  ]
+}
+```
+
+#### Step 3: Start project scripts updates. See `package.json` diffs:
+```js
+{
+  "scripts": {
+
+    "dev": "yarn build && NODE_ENV=development node server.dist/run.js",
+    "build": "yarn make-js-server && next build",
+    "start": "NODE_ENV=production node server.dist/run.js",
+    
+    "transpile-server": "node_modules/.bin/tsc --project ./tsconfig.server.json --downlevelIteration",
+    "make-js-server": "yarn transpile-server"
+  },
+  "_moduleAliases": {
+    "$tests": "./tests",
+    "~srv": "./" // NOTE: It's for server only
+  }
+}
+```
+
+#### Step 4: `./server.src/run.ts` diffs
+```js
+const packageJson = require("../package.json")
+import betterModuleAlias from "better-module-alias";
+betterModuleAlias(__dirname, packageJson._moduleAliases);
+```
+
+#### Step 5: Ready to use! In `./server.src/socket-logic/socketLogic.ts` for example
+```ts
+import { getTstValue } from '~s/utils/getTstValue'
+
+console.log('--')
+console.log(getTstValue(1))
+console.log('--')
+```
+
 ## How to use
 
 Download the example [or clone the repo](https://github.com/mui-org/material-ui):

@@ -9,6 +9,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.env.prod
 
 npm-debug.log*
 yarn-debug.log*
@@ -19,3 +20,7 @@ yarn-error.log*
 
 # deploy tool
 deploy-app-config.json
+
+# server dist dir
+/server.dist/*
+!/server.dist/.gitkeep
