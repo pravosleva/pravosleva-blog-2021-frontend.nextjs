@@ -1,31 +1,52 @@
 import { IJob, stateHelper, EJobStatus } from "~/components/ToDo2023/state"
 import { SubjobList } from './SubjobList'
-import Badge from '@mui/material/Badge';
-// import MailIcon from '@mui/icons-material/Mail';
-// import DoneIcon from '@mui/icons-material/Done';
-// import Button from "@mui/material/Button";
-// import { useSnapshot } from 'valtio';
-// import { useEffect, useMemo } from "react";
-// import { useSnapshot } from 'valtio';
-// import SettingsIcon from '@mui/icons-material/Settings';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import IconButton from '@mui/material/IconButton';
-// import Stack from '@mui/material/Stack';
-// import DeleteIcon from '@mui/icons-material/Delete';
-// import AlarmIcon from '@mui/icons-material/Alarm';
-// import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import { memo, useCallback, useMemo, useState } from "react";
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ReportIcon from '@mui/icons-material/Report';
-import { useDispatch } from 'react-redux'
-import { toggleJobDone, removeJob } from '~/store/reducers/todo2023'
-import CloseIcon from '@mui/icons-material/Close';
+import Badge from '@mui/material/Badge'
+// import MailIcon from '@mui/icons-material/Mail'
+// import DoneIcon from '@mui/icons-material/Done'
+// import Button from "@mui/material/Button"
+// import { useSnapshot } from 'valtio'
+// import { useEffect, useMemo } from "react"
+// import { useSnapshot } from 'valtio'
+// import SettingsIcon from '@mui/icons-material/Settings'
+import AutorenewIcon from '@mui/icons-material/Autorenew'
+import IconButton from '@mui/material/IconButton'
+// import Stack from '@mui/material/Stack'
+// import DeleteIcon from '@mui/icons-material/Delete'
+// import AlarmIcon from '@mui/icons-material/Alarm'
+// import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import { memo, useCallback, useMemo, useState } from "react"
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ReportIcon from '@mui/icons-material/Report'
+import CloseIcon from '@mui/icons-material/Close'
 
 type TProps = {
   job: IJob;
   auditId: string;
+  onToggleJobDone: ({
+    auditId,
+    jobId,
+  }: {
+    auditId: string;
+    jobId: string;
+  }) => void;
+  onRemoveJob: ({
+    auditId,
+    jobId,
+  }: {
+    auditId: string;
+    jobId: string;
+  }) => void;
+  onToggleSubjob: ({
+    auditId,
+    jobId,
+    subjobId,
+  }: {
+    auditId: string;
+    jobId: string;
+    subjobId: string;
+  }) => void;
 }
 
 // const statusDict: {
@@ -39,21 +60,20 @@ type TProps = {
 export const JobItem = memo(({
   job,
   auditId,
+  onToggleJobDone,
+  onRemoveJob,
+  onToggleSubjob,
 }: TProps) => {
   // const audits = useSnapshot<TAudit[]>(stateHelper.state.audits)
   // useEffect(() => {
   //   console.log(`${auditId} ${job.id} -> ${counter}`)
   // }, [counter])
-  const dispatch = useDispatch()
   const handleDoneJob = useCallback(() => {
     // stateHelper.toggleJobDone({
     //   auditId,
     //   jobId: job.id,
     // })
-    dispatch(toggleJobDone({
-      auditId,
-      jobId: job.id,
-    }))
+    onToggleJobDone({ auditId, jobId: job.id })
   }, [auditId, job.id])
 
   const [isOpened, setIsOpened] = useState(false)
@@ -63,11 +83,7 @@ export const JobItem = memo(({
   }, [setIsOpened])
 
   const handleRemoveJob = useCallback(() => {
-    const isConfirmed = window.confirm('Вы уверены?')
-    if (isConfirmed) dispatch(removeJob({
-      auditId,
-      jobId: job.id,
-    }))
+    onRemoveJob({ auditId, jobId: job.id })
   }, [auditId, job.id])
 
   const incompleteSubjobsCounter = useMemo(() => {
@@ -132,7 +148,13 @@ export const JobItem = memo(({
       </div> */}
       {
         job.subjobs.length > 0 && isOpened && (
-          <SubjobList subjobs={job.subjobs} auditId={auditId} jobId={job.id} jobTsUpdate={job.tsUpdate} />
+          <SubjobList
+            subjobs={job.subjobs}
+            auditId={auditId}
+            jobId={job.id}
+            jobTsUpdate={job.tsUpdate}
+            onToggleSubjob={onToggleSubjob}
+          />
         )
       }
     </div>

@@ -9,14 +9,21 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 // import { stateInstance } from '~/components/ToDo2023/state'
 import DoneIcon from '@mui/icons-material/Done';
 import { memo, useCallback } from "react"
-import { useDispatch } from 'react-redux'
-import { toggleSubJobDone } from "~/store/reducers/todo2023";
 
 type TProps = {
   subjobs: TSubJob[];
   auditId: string;
   jobId: string;
   jobTsUpdate: number;
+  onToggleSubjob: ({
+    auditId,
+    jobId,
+    subjobId,
+  }: {
+    auditId: string;
+    jobId: string;
+    subjobId: string;
+  }) => void;
 }
 
 const ListItem = styled('li')(({ theme }) => ({
@@ -47,14 +54,13 @@ const icons: {
   },
 }
 
-export const SubjobList = memo(({ subjobs, auditId, jobId }: TProps) => {
-  const dispatch = useDispatch()
+export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob }: TProps) => {
   const handleToggleSubjob = useCallback(({ subjobId }: { subjobId: string; }) => {
-    dispatch(toggleSubJobDone({
+    onToggleSubjob({
       auditId,
       jobId,
       subjobId,
-    }))
+    })
   }, [])
   return (
     <div

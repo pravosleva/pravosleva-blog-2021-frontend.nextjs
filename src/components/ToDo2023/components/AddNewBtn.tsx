@@ -103,6 +103,7 @@ export const AddNewBtn = ({
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button
+            variant='contained'
             onClick={
               handleSubmit(handleSuccess, handleError)
             }

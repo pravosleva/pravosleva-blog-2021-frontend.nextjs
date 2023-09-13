@@ -36,9 +36,7 @@ yarn add better-module-alias
     "isolatedModules": false,
     "baseUrl": ".",
     "paths": {
-      "~srv/*": [
-        "./server.src/*"
-      ]
+      "~/*": ["./src/*", "./*"],
     },
     "typeRoots": [
       "node_modules/@types"
@@ -46,7 +44,8 @@ yarn add better-module-alias
     "outDir": "./server.dist"
   },
   "include": [
-    "./server.src/run.ts"
+    "run.ts",
+    "./srv.*/*"
   ],
   "exclude": [
     "node_modules",
@@ -61,29 +60,28 @@ yarn add better-module-alias
   "scripts": {
 
     "dev": "yarn build && NODE_ENV=development node server.dist/run.js",
-    "build": "yarn make-js-server && next build",
+    "build": "yarn transpile-server && next build",
     "start": "NODE_ENV=production node server.dist/run.js",
     
-    "transpile-server": "node_modules/.bin/tsc --project ./tsconfig.server.json --downlevelIteration",
-    "make-js-server": "yarn transpile-server"
+    "transpile-server": "node_modules/.bin/tsc --downlevelIteration --project tsconfig.server.json"
   },
   "_moduleAliases": {
     "$tests": "./tests",
-    "~srv": "./" // NOTE: It's for server only
-  }
+    "~": "./" // NOTE: It's for server runtime only
+  },
 }
 ```
 
-#### Step 4: `./server.src/run.ts` diffs
+#### Step 4: `./run.ts` diffs
 ```js
 const packageJson = require("../package.json")
 import betterModuleAlias from "better-module-alias";
 betterModuleAlias(__dirname, packageJson._moduleAliases);
 ```
 
-#### Step 5: Ready to use! In `./server.src/socket-logic/socketLogic.ts` for example
+#### Step 5: Ready to use! In `./srv.socket-logic/socketLogic.ts` for example
 ```ts
-import { getTstValue } from '~s/utils/getTstValue'
+import { getTstValue } from '~/srv.utils/getTstValue'
 
 console.log('--')
 console.log(getTstValue(1))

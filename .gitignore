@@ -10,6 +10,7 @@
 .env.test.local
 .env.production.local
 .env.prod
+.env.dev
 
 npm-debug.log*
 yarn-debug.log*

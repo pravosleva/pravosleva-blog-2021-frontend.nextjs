@@ -347,6 +347,17 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
+    replaceAudits: (state: TState, action: { payload: {
+      audits: TAudit[];
+    } }) => {
+      const {
+        payload: {
+          audits,
+        }
+      } = action
+
+      state.localAudits = audits
+    },
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
   extraReducers: {
@@ -369,6 +380,8 @@ export const {
   removeJob,
   addSubjob,
   removeSubjob,
+
+  replaceAudits,
 } = todo2023Slice.actions
 
 export const reducer = todo2023Slice.reducer

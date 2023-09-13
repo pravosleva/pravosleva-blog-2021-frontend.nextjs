@@ -7,7 +7,7 @@ betterModuleAlias(__dirname, packageJson._moduleAliases)
 import { withTodo2023SocketLogic } from '~/srv.socket-logic'
 
 const next = require('next')
-// const expressRouter = require('./express-tools/e-api')
+const { api } = require('~/srv.express-next-api')
 
 // const { crossDeviceState } = require('~/utils/next/crossDeviceState')
 
@@ -49,6 +49,7 @@ nextApp
         return nextHanlder(req, res, parsedUrl)
       }
     })
+    app.use(api)
 
     server.listen(PORT, (err: any) => {
       if (err) throw err

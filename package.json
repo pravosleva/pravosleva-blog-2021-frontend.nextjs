@@ -43,6 +43,7 @@
     "next-redux-wrapper": "^7.0.5",
     "notistack": "^3.0.1",
     "react": "17.x",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "17.x",
     "react-hook-form": "^7.45.4",
     "react-intl-universal": "^2.4.8",
@@ -55,9 +56,11 @@
     "use-sync-external-store": "^1.2.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.17",
     "@types/js-cookie": "^2.2.7",
     "@types/node": "latest",
     "@types/react": "latest",
+    "@types/react-copy-to-clipboard": "^5.0.4",
     "@types/react-dom": "latest",
     "@types/redux-persist": "^4.3.1",
     "deploy-app": "^1.0.3",

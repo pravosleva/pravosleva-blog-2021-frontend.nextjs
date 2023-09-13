@@ -3,7 +3,7 @@ import axiosRetry from 'axios-retry'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-: 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
+: 'https://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
 
 enum EControllers {
   CHECK_USER = 'check-user',

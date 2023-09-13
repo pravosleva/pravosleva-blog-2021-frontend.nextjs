@@ -1,4 +1,4 @@
-import { TAudit } from "~/components/ToDo2023/state"
+import { TAudit, TSubJob } from "~/components/ToDo2023/state"
 import { JobList } from './JobList'
 import { stateHelper } from '~/components/ToDo2023/state'
 import Badge from "@mui/material/Badge";
@@ -12,15 +12,50 @@ import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import Typography from "@mui/material/Typography";
-import { useDispatch } from 'react-redux'
-import { removeAudit } from "~/store/reducers/todo2023";
 
 type TProps = {
   audit: TAudit;
+  onRemoveAudit: ({
+    auditId
+  }: {
+    auditId: string;
+  }) => void;
+  onAddJob: (ps: {
+    auditId: string;
+    name: string;
+    subjobs: TSubJob[];
+  }) => void;
+  onAddSubjob: (ps: {
+    name: string;
+    auditId: string;
+    jobId: string;
+  }) => void;
+  onToggleJobDone: ({
+    auditId,
+    jobId,
+  }: {
+    auditId: string;
+    jobId: string;
+  }) => void;
+  onRemoveJob: ({
+    auditId,
+    jobId,
+  }: {
+    auditId: string;
+    jobId: string;
+  }) => void;
+  onToggleSubjob: ({
+    auditId,
+    jobId,
+    subjobId,
+  }: {
+    auditId: string;
+    jobId: string;
+    subjobId: string;
+  }) => void;
 }
 
-export const AuditItem = memo(({ audit }: TProps) => {
-  const dispatch = useDispatch()
+export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob }: TProps) => {
   const [isOpened, setIsOpened] = useState(false)
 
   const handleToggle = useCallback(() => {
@@ -78,10 +113,7 @@ export const AuditItem = memo(({ audit }: TProps) => {
               color='error'
               aria-label="delete"
               onClick={() => {
-                const isConfirmed = window.confirm('Вы уверены?')
-                if (isConfirmed) dispatch(removeAudit({
-                  auditId: audit.id,
-                }))
+                onRemoveAudit({ auditId: audit.id })
               }}
             >
               <DeleteIcon />
@@ -102,6 +134,12 @@ export const AuditItem = memo(({ audit }: TProps) => {
             auditId={audit.id}
             auditTsUpdate={audit.tsUpdate}
             jobs={audit.jobs}
+
+            onAddJob={onAddJob}
+            onAddSubjob={onAddSubjob}
+            onToggleJobDone={onToggleJobDone}
+            onRemoveJob={onRemoveJob}
+            onToggleSubjob={onToggleSubjob}
           />
         )
       }

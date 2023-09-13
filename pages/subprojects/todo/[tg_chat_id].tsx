@@ -1,8 +1,8 @@
-import * as React from 'react'
-import Container from '@mui/material/Container'
-import Box from '@mui/material/Box'
+// import Container from '@mui/material/Container'
+// import Box from '@mui/material/Box'
 import { wrapper } from '~/store'
 import Head from 'next/head'
+import { Todo2023Online } from '~/components/Todo2023.online/Todo2023Online'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -11,18 +11,15 @@ const baseURL = isDev
 
 export default function TodoOnline({
   chat_id,
-}: any) {
-
+}: {
+  chat_id: number;
+}) {
   return (
     <>
       <Head>
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}`} />
       </Head>
-      <Container maxWidth="xs">
-        <Box>
-          chat_id: {chat_id}
-        </Box>
-      </Container>
+      <Todo2023Online room={chat_id} />
     </>
   );
 }
@@ -44,6 +41,6 @@ TodoOnline.getInitialProps = wrapper.getInitialPageProps(
     // if (result?.ok === true || result?.ok === false) store.dispatch(setUserCheckerResponse(result))
     // if (typeof result === 'string') errorMsg = result
 
-    return { chat_id: tg_chat_id }
+    return { chat_id: Number(tg_chat_id) }
   }
 )

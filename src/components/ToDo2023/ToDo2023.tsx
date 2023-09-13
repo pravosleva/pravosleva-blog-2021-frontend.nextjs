@@ -3,7 +3,15 @@ import { Box, Container, Typography } from '@mui/material'
 import { AddNewBtn, AuditList } from '~/components/ToDo2023/components'
 import { TAudit } from '~/components/ToDo2023/state'
 import { useSelector, useDispatch } from 'react-redux'
-import { addAudit } from '~/store/reducers/todo2023'
+import {
+  addAudit,
+  removeAudit,
+  addJob,
+  addSubjob,
+  toggleJobDone,
+  removeJob,
+  toggleSubJobDone,
+} from '~/store/reducers/todo2023'
 import { memo, useCallback } from 'react'
 import { IRootState } from '~/store/IRootState'
 import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
@@ -41,6 +49,64 @@ export const ToDo2023 = memo(() => {
   }, [])
 
   const localAudits: TAudit[] = useSelector((state: IRootState) => state.todo2023.localAudits)
+  const handleRemoveAudit = useCallback(({ auditId }) => {
+    const isConfirmed = window.confirm('Вы уверены?')
+    if (isConfirmed) dispatch(removeAudit({
+      auditId,
+    }))
+  }, [])
+  const handleAddJob = useCallback(({
+    auditId,
+    name,
+    subjobs,
+  }) => {
+    dispatch(addJob({
+      auditId,
+      name,
+      subjobs,
+    }))
+  }, [])
+  const handleAddSubjob = useCallback(({
+    name,
+    auditId,
+    jobId,
+  }) => {
+    dispatch(addSubjob({
+      name,
+      auditId,
+      jobId,
+    }))
+  }, [])
+  const handleToggleJobDone = useCallback(({
+    auditId,
+    jobId,
+  }) => {
+    dispatch(toggleJobDone({
+      auditId,
+      jobId,
+    }))
+  }, [])
+  const handleRemoveJob = useCallback(({
+    auditId,
+    jobId,
+  }) => {
+    const isConfirmed = window.confirm('Вы уверены?')
+    if (isConfirmed) dispatch(removeJob({
+      auditId,
+      jobId,
+    }))
+  }, [])
+  const handleToggleSubjob = useCallback(({
+    auditId,
+    jobId,
+    subjobId,
+  }) => {
+    dispatch(toggleSubJobDone({
+      auditId,
+      jobId,
+      subjobId,
+    }))
+  }, [])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
@@ -50,7 +116,15 @@ export const ToDo2023 = memo(() => {
             Audit list
           </Typography>
         </Box>
-        <AuditList audits={localAudits} />
+        <AuditList
+          audits={localAudits}
+          onRemoveAudit={handleRemoveAudit}
+          onAddJob={handleAddJob}
+          onAddSubjob={handleAddSubjob}
+          onToggleJobDone={handleToggleJobDone}
+          onRemoveJob={handleRemoveJob}
+          onToggleSubjob={handleToggleSubjob}
+        />
       </Container>
       {
         typeof window !== 'undefined' && (
