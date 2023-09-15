@@ -1,10 +1,17 @@
 import express from 'express'
-
-import { todo2023Api } from './todo2023'
+import bodyParser from 'body-parser'
+import { todo2023Api } from './todo-2023'
 
 const api = express()
 
-api.use('/todo2023', todo2023Api)
+const jsonParser = bodyParser.json()
+api.use(jsonParser)
+
+api.use(
+  '/todo-2023',
+  todo2023Api,
+)
+// Others...
 
 export {
   api,

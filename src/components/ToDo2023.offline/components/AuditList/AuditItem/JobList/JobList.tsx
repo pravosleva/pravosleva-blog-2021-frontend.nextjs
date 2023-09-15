@@ -1,4 +1,4 @@
-import { IJob, TSubJob } from "~/components/ToDo2023/state"
+import { IJob, TSubJob } from "~/components/ToDo2023.offline/state"
 import { JobItem } from './JobItem'
 import { memo, useCallback } from "react";
 import Button from "@mui/material/Button";
@@ -73,6 +73,7 @@ export const JobList = memo(({
       })
       .catch((err) => {
         console.log(err)
+        enqueueSnackbar(`ERR! ${err?.message || 'No err.message'}`, { variant: 'warning', autoHideDuration: 10000 })
         return []
       })
     if (remoteJobs.length > 0) {
@@ -86,7 +87,7 @@ export const JobList = memo(({
             name: remoteJob.name,
             subjobs: remoteJob.subjobs,
           })
-          enqueueSnackbar(`New Job 👉 ${remoteJob.name}`, { variant: 'warning', autoHideDuration: 10000 })
+          enqueueSnackbar(`New Job 👉 ${remoteJob.name}`, { variant: 'warning', autoHideDuration: 7000 })
           newsCounter += 1
         } else {
           // NOTE: Проверяем ее на предмет subjobs

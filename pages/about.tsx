@@ -26,7 +26,7 @@ export default function About() {
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ my: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           About
         </Typography>

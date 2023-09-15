@@ -56,7 +56,7 @@ class Singleton {
 
   public addAudit ({ room, name, description, jobs }: { room: number; name: string; description: string; jobs: { name: string; subjobs: { name: string }[] }[] }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     try {
-      const targetAudits = this._state.get(room)
+      const targetAudits = this._state.get(room) || []
       if (!targetAudits) throw new Error(`Room ${room} not found`)
 
       if (!!targetAudits.find(({ name: _name }) => _name === name)) throw new Error('Аудит с таким именем уже существует, придумайте что-то другое')

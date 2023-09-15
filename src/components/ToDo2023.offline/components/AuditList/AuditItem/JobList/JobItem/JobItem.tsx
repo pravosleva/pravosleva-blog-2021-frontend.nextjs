@@ -1,4 +1,4 @@
-import { IJob, stateHelper, EJobStatus } from "~/components/ToDo2023/state"
+import { IJob, stateHelper, EJobStatus } from "~/components/ToDo2023.offline/state"
 import { SubjobList } from './SubjobList'
 import Badge from '@mui/material/Badge'
 // import MailIcon from '@mui/icons-material/Mail'

@@ -1,6 +1,6 @@
 import { Store } from 'redux'
 // import { IToast } from '@/actions'
-import { TAudit } from '~/components/ToDo2023/state'
+import { TAudit } from '~/components/ToDo2023.offline/state'
 
 type TProject = {
   name: string;

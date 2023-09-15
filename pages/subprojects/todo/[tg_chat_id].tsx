@@ -3,23 +3,35 @@
 import { wrapper } from '~/store'
 import Head from 'next/head'
 import { Todo2023Online } from '~/components/Todo2023.online/Todo2023Online'
+import { ErrorPage } from '~/components/ErrorPage';
 
-const isDev = process.env.NODE_ENV === 'development'
-const baseURL = isDev
-  ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-  : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
+// const isDev = process.env.NODE_ENV === 'development'
+// const baseURL = isDev
+//   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
+//   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
+
+type TPageService = {
+  isOk: boolean;
+  message?: string;
+}
 
 export default function TodoOnline({
   chat_id,
+  _pageService,
 }: {
   chat_id: number;
+  _pageService: TPageService;
 }) {
   return (
     <>
       <Head>
-        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}`} />
+        <title>Audit list</title>
       </Head>
-      <Todo2023Online room={chat_id} />
+      {
+        _pageService.isOk
+        ? <Todo2023Online room={chat_id} />
+        : <ErrorPage message={_pageService.message || 'ERR: No _pageService.message'} />
+      }
     </>
   );
 }
@@ -41,6 +53,18 @@ TodoOnline.getInitialProps = wrapper.getInitialPageProps(
     // if (result?.ok === true || result?.ok === false) store.dispatch(setUserCheckerResponse(result))
     // if (typeof result === 'string') errorMsg = result
 
-    return { chat_id: Number(tg_chat_id) }
+    const _pageService: TPageService = {
+      isOk: true,
+    }
+
+    if(isNaN(tg_chat_id)) {
+      _pageService.isOk = false
+      _pageService.message = 'Incorrect page param (number expected)'
+    }
+
+    return {
+      chat_id: Number(tg_chat_id),
+      _pageService,
+    }
   }
 )

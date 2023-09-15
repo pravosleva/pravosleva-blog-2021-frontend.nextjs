@@ -8,8 +8,10 @@ export const withTodo2023SocketLogic = (io: Socket) => {
   io.on('connection', function (socket: any) {
     // 1.
     socket.on(NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM, ({ room }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM, cb: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB) => {
+      // console.log(`-- CLIENT_CONNECT_TO_ROOM -> ${room} (${typeof room})`)
       socket.join(String(room))
       const keys = stateInstance.getKeys()
+      // console.log(`-- keys -> ${keys.join(', ')}`)
       cb({ data: { room, audits: stateInstance.get(room) || [], message: `keys= ${keys.join(', ')}; size= ${stateInstance.size}` }})
     })
     // 2.
@@ -83,13 +85,15 @@ export const withTodo2023SocketLogic = (io: Socket) => {
         })
     })
     // 8.
-    socket.on(NEvent.EServerIncoming.AUDIT_ADD, ({ room, name, description, jobs }: NEventData.NServerIncoming.TAUDIT_ADD, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
+    socket.on(NEvent.EServerIncoming.AUDIT_ADD, ({ room, name, description, jobs }: NEventData.NServerIncoming.TAUDIT_ADD, cb?: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addAudit({ room, name, description, jobs })
         .then(({ audits }) => {
+          // console.log(`-- audit added: audits.len ${audits.length}`)
           io.in(String(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
-          cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          console.log(err)
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
 

@@ -41,7 +41,7 @@ export default function MyProjects({
 
   return (
     <Container maxWidth="xs">
-      <Box sx={{ my: 4 }}>
+      <Box sx={{ py: 4 }}>
         {
           !!errorMsg
           ? (
@@ -113,7 +113,7 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => async (ctx: any) => {
     const { query } = ctx
-    const { chat_id, project_id } = query
+    const { tg_chat_id: chat_id, project_id } = query
     let errorMsg = null
 
     const fetchUserData = async () => {

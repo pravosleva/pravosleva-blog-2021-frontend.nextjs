@@ -10,9 +10,10 @@ import {
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ useSnackbar } from 'notistack'
-import { /* AddNewBtn, */ AddNewBtn, AuditList } from '~/components/ToDo2023/components'
+import { /* AddNewBtn, */ AddNewBtn, AuditList } from '~/components/ToDo2023.offline/components'
 import {
   Box,
+  Button,
   // Button,
   Container,
   IconButton,
@@ -28,8 +29,12 @@ import SendIcon from '@mui/icons-material/Send'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import SaveIcon from '@mui/icons-material/Save'
+import { useLastUpdatedAuditTs } from './hooks/useLastUpdatedAuditTs'
+import { useTimeAgo } from '~/hooks/useTimeAgo'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import Link from '~/components/Link';
 
-const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.ru'
+const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'http://pravosleva.ru'
 
 type TLogicProps = {
   room: number;
@@ -50,11 +55,12 @@ const Logic = ({ room }: TLogicProps) => {
     const socket: Socket = io(NEXT_APP_SOCKET_API_ENDPOINT, {
       reconnection: true,
       transports: ['websocket', 'polling'],
+      // secure: true,
     })
     socketRef.current = socket
     // const newStateDelta: Partial<TSocketMicroStore> = {}
 
-    socket.on('connect', () => {
+    const onConnectListener = () => {
       groupLog({ spaceName: '-- connect', items: ['no args'] })
       setStore({ isConnected: true })
 
@@ -63,14 +69,34 @@ const Logic = ({ room }: TLogicProps) => {
       }, ({ data }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
         groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb`, items: [data] })
         setStore({ audits: data.audits })
-        enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'success', autoHideDuration: 7000 })
+        enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'success', autoHideDuration: 3000 })
       })
-    })
+    }
+    socket.on('connect', onConnectListener)
 
-    socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, (data) => {
+    const onConnectErrorListener = (arg: any) => {
+      groupLog({ spaceName: '-- connect_error', items: [arg] })
+      enqueueSnackbar('Connect error', { variant: 'error', autoHideDuration: 3000 })
+    }
+    socket.on('connect_error', onConnectErrorListener)
+    
+    const onReconnectErrorListener = (arg: any) => {
+      groupLog({ spaceName: '-- reconnect', items: [arg] })
+      enqueueSnackbar('Reconnect', { variant: 'success', autoHideDuration: 3000 })
+    }
+    socket.on('reconnect', onReconnectErrorListener)
+
+    const onReconnectAttemptListener = (arg: any) => {
+      groupLog({ spaceName: '-- reconnect_attempt', items: [arg] })
+      enqueueSnackbar('Reconnect attempt', { variant: 'info', autoHideDuration: 3000 })
+    }
+    socket.on('reconnect_attempt', onReconnectAttemptListener)
+
+    const onAuditsReplace = (data: NEventData.NServerOutgoing.TAUDITLIST_REPLACE) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.AUDITLIST_REPLACE}`, items: [data] })
       setStore({ audits: data.audits })
-    });
+    }
+    socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace);
 
     // TODO?
 
@@ -78,6 +104,13 @@ const Logic = ({ room }: TLogicProps) => {
       groupLog({ spaceName: '-- disconnect', items: ['no data'] })
       setStore({ isConnected: false })
     })
+
+    // return () => {
+    //   socket.off(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
+    //   socket.off('connect_error', onConnectErrorListener)
+    //   socket.off('reconnect', onReconnectErrorListener)
+    //   socket.off('reconnect_attempt', onReconnectAttemptListener)
+    // }
   }, [])
 
   //-- NOTE: Menu
@@ -109,7 +142,7 @@ const Logic = ({ room }: TLogicProps) => {
         console.warn(err)
       }
     }
-  }, [useCompare(localAudits)])
+  }, [useCompare([localAudits])])
   const handleRemoveAudit = useCallback(({
     auditId,
   }) => {
@@ -204,7 +237,7 @@ const Logic = ({ room }: TLogicProps) => {
         // @ts-ignore
         if (!res?.jobs) throw new Error('jobs was not received')
         // @ts-ignore
-        enqueueSnackbar(`Получен список из ${res?.jobs.length} работ...`, { variant: 'success', autoHideDuration: 5000 })
+        enqueueSnackbar(`${res?.jobs.length} jobs received...`, { variant: 'success', autoHideDuration: 3000 })
         // @ts-ignore
         return res.jobs
       })
@@ -228,6 +261,7 @@ const Logic = ({ room }: TLogicProps) => {
     // groupLog({ spaceName: 'copy link', items: [text] })
     enqueueSnackbar(text, { variant: 'info', autoHideDuration: 5000 })
   }, [])
+  // const { timeAgoText } = useTimeAgo({ delay: 1000, date: })
   const handleLocalBackup = useCallback(() => {
     const isConfirmed = window.confirm('Локальный кэш будет перезаписан! Вы уверены?')
     if (isConfirmed) {
@@ -238,7 +272,12 @@ const Logic = ({ room }: TLogicProps) => {
       }))
       enqueueSnackbar('Local backup saved', { variant: 'success', autoHideDuration: 3000 })
     }
-  }, [useCompare(audits)])
+  }, [useCompare([audits])])
+
+  const { last: lastLocalAudits } = useLastUpdatedAuditTs({ audits: localAudits })
+  const { last: lastRemoteAudits } = useLastUpdatedAuditTs({ audits })
+  const { timeAgoText: lastRemoteAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastRemoteAudits.tsUpdate.value, delay: 1000 })
+  const { timeAgoText: lastLocalAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastLocalAudits.tsUpdate.value, delay: 1000 })
 
   return (
     <>
@@ -246,7 +285,8 @@ const Logic = ({ room }: TLogicProps) => {
         <Container maxWidth="xs">
           <Box
             sx={{
-              py: 2,
+              pt: 2,
+              pb: 0,
               display: 'flex',
               justifyContent: 'space-between',
             }}
@@ -288,12 +328,16 @@ const Logic = ({ room }: TLogicProps) => {
                 // },
               }}
             >
-              <MenuItem selected={false} onClick={handlePush}>
+              <MenuItem
+                selected={false}
+                onClick={handlePush}
+                disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
+              >
                 <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
-                <Typography variant="inherit">Push</Typography>
+                <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
               </MenuItem>
               <CopyToClipboard
-                text={`https://pravosleva.ru/subprojects/todo/${room}`}
+                text={`http://pravosleva.ru:9000/subprojects/todo/${room}`}
                 onCopy={handleCopyLink}
               >
                 <MenuItem selected={false}>
@@ -301,11 +345,33 @@ const Logic = ({ room }: TLogicProps) => {
                   <Typography variant="inherit">Copy link</Typography>
                 </MenuItem>
               </CopyToClipboard>
-              <MenuItem selected={false} onClick={handleLocalBackup}>
+              <MenuItem
+                selected={false}
+                onClick={handleLocalBackup}
+                disabled={audits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
+              >
                 <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
-                <Typography variant="inherit">Local backup</Typography>
+                <Typography variant="inherit">Local backup ({audits.length}) {lastLocalAuditsTsUpdateTimeAgo}</Typography>
               </MenuItem>
             </Menu>
+          </Box>
+          <Box
+            sx={{
+              pt: 0,
+              pb: 0,
+            }}
+          >
+            <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo' target='_self'>
+              Onffline
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              pt: 2,
+              pb: 2,
+            }}
+          >
+            <em>Updated {lastRemoteAuditsTsUpdateTimeAgo}</em>
           </Box>
           <AuditList
             audits={audits}

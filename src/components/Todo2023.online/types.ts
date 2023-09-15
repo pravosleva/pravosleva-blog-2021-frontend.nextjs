@@ -1,4 +1,4 @@
-import { TAudit } from "../ToDo2023/state/types";
+import { TAudit } from "../ToDo2023.offline/state/types";
 
 export namespace NEvent {
   export enum EServerOutgoing {
@@ -58,5 +58,8 @@ export namespace NEventData {
     }
     export type TAUDIT_REMOVE_CB_ARG = { data: { room: number; audits: TAudit[] } }
     export type TAUDIT_REMOVE_CB = ({ data }: TAUDIT_REMOVE_CB_ARG) => void;
+  }
+  export namespace NServerOutgoing {
+    export type TAUDITLIST_REPLACE = { audits: TAudit[]; }
   }
 }

@@ -1,4 +1,4 @@
-import { ESubjobStatus, TSubJob } from "~/components/ToDo2023/state/types";
+import { ESubjobStatus, TSubJob } from "~/components/ToDo2023.offline/state/types";
 
 export const standardJobList: {
   name: string;

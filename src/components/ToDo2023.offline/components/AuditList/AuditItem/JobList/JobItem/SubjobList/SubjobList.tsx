@@ -1,4 +1,4 @@
-import { TSubJob, ESubjobStatus } from "~/components/ToDo2023/state"
+import { TSubJob, ESubjobStatus } from "~/components/ToDo2023.offline/state"
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';

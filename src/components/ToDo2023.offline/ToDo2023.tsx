@@ -1,7 +1,7 @@
 // import { Modal, Box, Typography, Button, TextField, Grid } from '@mui/material'
-import { Box, Container, Typography } from '@mui/material'
-import { AddNewBtn, AuditList } from '~/components/ToDo2023/components'
-import { TAudit } from '~/components/ToDo2023/state'
+import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { AddNewBtn, AuditList } from '~/components/ToDo2023.offline/components'
+import { TAudit } from '~/components/ToDo2023.offline/state'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   addAudit,
@@ -15,8 +15,16 @@ import {
 import { memo, useCallback } from 'react'
 import { IRootState } from '~/store/IRootState'
 import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
+import Link from '~/components/Link'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import SendIcon from '@mui/icons-material/Send';
+// import { useRouter } from 'next/router'
+import { useCompare } from '~/hooks/useDeepEffect'
+import { /* VariantType, */ useSnackbar } from 'notistack'
 
 export const ToDo2023 = memo(() => {
+  // const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
   const dispatch = useDispatch()
   const handleError = (arg: any) => {
     console.warn(arg)
@@ -37,7 +45,7 @@ export const ToDo2023 = memo(() => {
         return res.jobs
       })
       .catch((err) => {
-        console.log(err)
+        enqueueSnackbar(err?.message || 'ERR: No err.message', { variant: 'error', autoHideDuration: 10000 })
         return []
       })
 
@@ -108,6 +116,24 @@ export const ToDo2023 = memo(() => {
     }))
   }, [])
 
+  const pushForMeowt = useCallback(() => {
+    const passwd = window.prompt('Meowt password')
+    if (passwd === '123455') {
+      // console.log(router)
+      todo2023HttpClient.replaceAuditsInRoom({
+        room: 1,
+        audits: localAudits,
+      })
+        .then((_res) => {
+          enqueueSnackbar('Ok', { variant: 'success', autoHideDuration: 3000 })
+        })
+        .catch((err) => {
+          console.log(err)
+          enqueueSnackbar(err?.message || 'ERR: No err.message', { variant: 'error', autoHideDuration: 10000 })
+        })
+    } else enqueueSnackbar('Incorrect', { variant: 'error', autoHideDuration: 3000 })
+  }, [useCompare([localAudits])])
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
       <Container maxWidth="xs">
@@ -115,7 +141,22 @@ export const ToDo2023 = memo(() => {
           <Typography variant="h5" display="block" gutterBottom>
             Audit list
           </Typography>
+          
+          <Stack
+            direction='row'
+            alignItems='start'
+            spacing={2}
+            // sx={{ mb: 2 }}
+          >
+            <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo/1' target='_self'>
+              Online /1
+            </Button>
+            <Button onClick={pushForMeowt} fullWidth endIcon={<SendIcon />} variant='outlined' color='secondary'>
+              Sp. for Meowt
+            </Button>
+          </Stack>
         </Box>
+
         <AuditList
           audits={localAudits}
           onRemoveAudit={handleRemoveAudit}

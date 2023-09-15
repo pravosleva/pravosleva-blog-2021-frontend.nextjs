@@ -1,6 +1,6 @@
-import { TAudit, TSubJob } from "~/components/ToDo2023/state"
+import { TAudit, TSubJob } from "~/components/ToDo2023.offline/state"
 import { JobList } from './JobList'
-import { stateHelper } from '~/components/ToDo2023/state'
+import { stateHelper } from '~/components/ToDo2023.offline/state'
 import Badge from "@mui/material/Badge";
 // import SettingsIcon from '@mui/icons-material/Settings';
 import { useCallback, useState, useMemo, memo } from "react";

@@ -18,7 +18,7 @@ type TLink = {
 const links: TLink[] = [
   {
     name: 'Todo 2023',
-    link: '/subprojects/todo',
+    link: 'http://pravosleva.ru:9000/subprojects/todo',
     colorCode: 'primary',
     variantCode: 'contained',
   },
@@ -61,7 +61,7 @@ export default function Index() {
     <Container maxWidth="sm">
       <Box
         sx={{
-          my: 4,
+          py: 4,
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
