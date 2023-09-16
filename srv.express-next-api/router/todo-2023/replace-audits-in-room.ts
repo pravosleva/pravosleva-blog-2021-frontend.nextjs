@@ -41,7 +41,7 @@ const isJobListCorrect = ({ jobs }: { jobs: any[] }): TAnalysis => {
     const subjobsAnalysis = isSubjobListCorrect({ subjobs: job.subjobs })
 
     switch (true) {
-      case Array.isArray( job.subjobs):
+      case !Array.isArray(job.subjobs):
         result.isOk = false
         result.message = `job.subjobs shound be an Array, received: ${typeof job.subjobs} (!isArray)`
         break
@@ -80,7 +80,7 @@ const isAuditListCorrect = ({ audits }: { audits: any[] }): TAnalysis => {
     const jobsAnalysis = isJobListCorrect({ jobs: audit.jobs })
 
     switch (true) {
-      case Array.isArray(audit.jobs):
+      case !Array.isArray(audit.jobs):
         result.isOk = false
         result.message = `audit.jobs shound be an Array, received: ${typeof audit.jobs} (!isArray)`
         break
