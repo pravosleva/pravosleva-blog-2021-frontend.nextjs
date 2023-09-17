@@ -15,6 +15,7 @@ const isSubjobListCorrect = ({ subjobs }: { subjobs: any[] }): TAnalysis => {
       if (!subjob[requiredKey]) {
         result.isOk = false
         result.message = `Each subjob must have a key \`${requiredKey}\``
+        break
       }
     }
     if (!result.isOk) return result
