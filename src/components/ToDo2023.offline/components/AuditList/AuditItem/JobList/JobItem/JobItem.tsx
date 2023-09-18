@@ -47,6 +47,7 @@ type TProps = {
     jobId: string;
     subjobId: string;
   }) => void;
+  isEditable: boolean;
 }
 
 // const statusDict: {
@@ -63,6 +64,7 @@ export const JobItem = memo(({
   onToggleJobDone,
   onRemoveJob,
   onToggleSubjob,
+  isEditable,
 }: TProps) => {
   // const audits = useSnapshot<TAudit[]>(stateHelper.state.audits)
   // useEffect(() => {
@@ -122,12 +124,18 @@ export const JobItem = memo(({
               </IconButton>
             )
           }
-          <IconButton aria-label="remove-job" onClick={handleRemoveJob}>
-            <CloseIcon color="error" />
-          </IconButton>
-          <IconButton aria-label="delete" onClick={handleDoneJob}>
-            {job.status === EJobStatus.IS_DONE ? <AutorenewIcon /> : <TaskAltIcon />}
-          </IconButton>
+          {
+            isEditable && (
+              <>
+                <IconButton aria-label="remove-job" onClick={handleRemoveJob}>
+                  <CloseIcon color="error" />
+                </IconButton>
+                <IconButton aria-label="done" onClick={handleDoneJob}>
+                  {job.status === EJobStatus.IS_DONE ? <AutorenewIcon /> : <TaskAltIcon />}
+                </IconButton>
+              </>
+            )
+          }
         </div>
       </div>
 
@@ -154,9 +162,10 @@ export const JobItem = memo(({
             jobId={job.id}
             jobTsUpdate={job.tsUpdate}
             onToggleSubjob={onToggleSubjob}
+            isEditable={isEditable}
           />
         )
       }
     </div>
   )
-}, (prevPs, nextPs) => prevPs.job.tsUpdate === nextPs.job.tsUpdate && prevPs.job.status === nextPs.job.status)
+}, (prevPs, nextPs) => prevPs.job.tsUpdate === nextPs.job.tsUpdate && prevPs.job.status === nextPs.job.status && prevPs.isEditable === nextPs.isEditable)

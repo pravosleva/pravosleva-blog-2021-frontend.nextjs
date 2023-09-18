@@ -9,6 +9,7 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 // import { stateInstance } from '~/components/ToDo2023/state'
 import DoneIcon from '@mui/icons-material/Done';
 import { memo, useCallback } from "react"
+import { /* VariantType, */ useSnackbar } from 'notistack'
 
 type TProps = {
   subjobs: TSubJob[];
@@ -24,6 +25,7 @@ type TProps = {
     jobId: string;
     subjobId: string;
   }) => void;
+  isEditable: boolean;
 }
 
 const ListItem = styled('li')(({ theme }) => ({
@@ -54,14 +56,19 @@ const icons: {
   },
 }
 
-export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob }: TProps) => {
+export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEditable }: TProps) => {
+  const { enqueueSnackbar } = useSnackbar()
   const handleToggleSubjob = useCallback(({ subjobId }: { subjobId: string; }) => {
+    if (!isEditable) {
+      enqueueSnackbar('For authorized users only', { variant: 'error', autoHideDuration: 3000 })
+      return
+    }
     onToggleSubjob({
       auditId,
       jobId,
       subjobId,
     })
-  }, [])
+  }, [isEditable])
   return (
     <div
       style={{
@@ -93,7 +100,8 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob }: TPr
                 color={icons[status]?.muiSettings.color || undefined}
                 variant={icons[status]?.muiSettings.variant || undefined}
                 // onDelete={data.label === 'React' ? undefined : handleDelete(data)}
-                onClick={() => {
+                onClick={(e) => {
+                  if (!isEditable) e.preventDefault()
                   handleToggleSubjob({ subjobId: id })
                 }}
               />
@@ -103,4 +111,4 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob }: TPr
       </Paper>
     </div>
   )
-}, (prevPs, nextPs) => prevPs.jobTsUpdate === nextPs.jobTsUpdate)
+}, (prevPs, nextPs) => prevPs.jobTsUpdate === nextPs.jobTsUpdate && prevPs.isEditable === nextPs.isEditable)

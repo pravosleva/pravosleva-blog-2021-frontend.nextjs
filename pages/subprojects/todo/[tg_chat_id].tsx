@@ -4,6 +4,9 @@ import { wrapper } from '~/store'
 import Head from 'next/head'
 import { Todo2023Online } from '~/components/Todo2023.online/Todo2023Online'
 import { ErrorPage } from '~/components/ErrorPage';
+import jwt from 'jsonwebtoken'
+// import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
+// import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 
 // const isDev = process.env.NODE_ENV === 'development'
 // const baseURL = isDev
@@ -13,6 +16,7 @@ import { ErrorPage } from '~/components/ErrorPage';
 type TPageService = {
   isOk: boolean;
   message?: string;
+  hasAuthenticated: boolean;
 }
 
 export default function TodoOnline({
@@ -29,7 +33,7 @@ export default function TodoOnline({
       </Head>
       {
         _pageService.isOk
-        ? <Todo2023Online room={chat_id} />
+        ? <Todo2023Online room={chat_id} hasAuthenticated={_pageService.hasAuthenticated} />
         : <ErrorPage message={_pageService.message || 'ERR: No _pageService.message'} />
       }
     </>
@@ -41,20 +45,28 @@ TodoOnline.getInitialProps = wrapper.getInitialPageProps(
   (store) => async (ctx: any) => {
     const { query: { tg_chat_id } } = ctx
     // let errorMsg = null
+    const _pageService: TPageService = {
+      isOk: true,
+      hasAuthenticated: false,
+    }
 
-    // const result = await autoparkHttpClient.getUserData({
-    //   tg: {
-    //     chat_id: tg_chat_id,
-    //   }
+    // const result = await autoparkHttpClient.checkJWT({
+    //   tested_chat_id: tg_chat_id,
     // })
     //   .then((res) => res)
     //   .catch((err) => err.message || 'Unknown err (GIPP)')
 
-    // if (result?.ok === true || result?.ok === false) store.dispatch(setUserCheckerResponse(result))
+    // if (result?.ok === true) store.dispatch(setIsOneTimePasswordCorrect(true))
     // if (typeof result === 'string') errorMsg = result
 
-    const _pageService: TPageService = {
-      isOk: true,
+    const { cookies } = ctx.req
+
+    const authCookieName = 'autopark-2022.jwt'
+    const secretKey = 'super-secret'
+    if (!!cookies[authCookieName]) {
+      const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
+
+      _pageService.hasAuthenticated = decodedToken?.chat_id === tg_chat_id
     }
 
     if(isNaN(tg_chat_id)) {

@@ -16,10 +16,11 @@ import { memo, useCallback } from 'react'
 import { IRootState } from '~/store/IRootState'
 import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
 import Link from '~/components/Link'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import SendIcon from '@mui/icons-material/Send';
+// import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+// import SendIcon from '@mui/icons-material/Send';
 // import { useRouter } from 'next/router'
-import { useCompare } from '~/hooks/useDeepEffect'
+// import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ useSnackbar } from 'notistack'
 
 export const ToDo2023 = memo(() => {
@@ -116,23 +117,24 @@ export const ToDo2023 = memo(() => {
     }))
   }, [])
 
-  const pushForMeowt = useCallback(() => {
-    const passwd = window.prompt('Meowt password')
-    if (passwd === '123455') {
-      // console.log(router)
-      todo2023HttpClient.replaceAuditsInRoom({
-        room: 1,
-        audits: localAudits,
-      })
-        .then((_res) => {
-          enqueueSnackbar('Ok', { variant: 'success', autoHideDuration: 3000 })
-        })
-        .catch((err) => {
-          console.log(err)
-          enqueueSnackbar(err?.message || 'ERR: No err.message', { variant: 'error', autoHideDuration: 10000 })
-        })
-    } else enqueueSnackbar('Incorrect', { variant: 'error', autoHideDuration: 3000 })
-  }, [useCompare([localAudits])])
+  // const pushForMeowt = useCallback(() => {
+  //   const passwd = window.prompt('Meowt password')
+  //   if (passwd === '123455') {
+  //     // console.log(router)
+  //     todo2023HttpClient.replaceAuditsInRoom({
+  //       room: 1,
+  //       audits: localAudits,
+  //     })
+  //       .then((_res) => {
+  //         enqueueSnackbar('Ok', { variant: 'success', autoHideDuration: 3000 })
+  //       })
+  //       .catch((err) => {
+  //         console.log(err)
+  //         enqueueSnackbar(err?.message || 'ERR: No err.message', { variant: 'error', autoHideDuration: 10000 })
+  //       })
+  //   } else enqueueSnackbar('Incorrect', { variant: 'error', autoHideDuration: 3000 })
+  // }, [useCompare([localAudits])])
+  // const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
@@ -148,12 +150,19 @@ export const ToDo2023 = memo(() => {
             spacing={2}
             // sx={{ mb: 2 }}
           >
-            <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo/1' target='_self'>
+            <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/' target='_self'>
+              Home
+            </Button>
+            {/* <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo/1' target='_self'>
               Online /1
-            </Button>
-            <Button onClick={pushForMeowt} fullWidth endIcon={<SendIcon />} variant='outlined' color='secondary'>
-              Sp. for Meowt
-            </Button>
+            </Button> */}
+            {/*
+              isOneTimePasswordCorrect && (
+                <Button onClick={pushForMeowt} fullWidth endIcon={<SendIcon />} variant='outlined' color='secondary'>
+                  Push /1
+                </Button>
+              )
+            */}
           </Stack>
         </Box>
 
@@ -165,6 +174,7 @@ export const ToDo2023 = memo(() => {
           onToggleJobDone={handleToggleJobDone}
           onRemoveJob={handleRemoveJob}
           onToggleSubjob={handleToggleSubjob}
+          isEditable={true}
         />
       </Container>
       {

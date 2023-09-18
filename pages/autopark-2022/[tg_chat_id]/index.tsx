@@ -20,20 +20,26 @@ export default function MyProjects({
   chat_id,
 }: any) {
   if (userCheckerResponse?.code === 'not_found') return (
-    <Container maxWidth="xs">
-      <Box sx={{ py: 4 }}>
-        <Alert sx={{ mb: 2 }} variant="filled" severity="error">
-          <Typography variant="body2" component="h2" gutterBottom>
-            Пользователя {chat_id} не существует.<br />Нужна авторизация через Telegram
-          </Typography>
-        </Alert>
-      </Box>
-    </Container>
+    <>
+      <Head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+      </Head>
+      <Container maxWidth="xs">
+        <Box sx={{ py: 4 }}>
+          <Alert sx={{ mb: 2 }} variant="filled" severity="error">
+            <Typography variant="body2" component="h2" gutterBottom>
+              Пользователя {chat_id} не существует.<br />Нужна авторизация через Telegram
+            </Typography>
+          </Alert>
+        </Box>
+      </Container>
+    </>
   )
 
   return (
     <>
       <Head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}`} />
       </Head>
       <Container maxWidth="xs">

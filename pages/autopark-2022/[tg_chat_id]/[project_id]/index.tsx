@@ -32,7 +32,11 @@ export default function MyProjects({
   projectDataResponse,
 }: any) {
   if (userCheckerResponse.code === 'not_found') return (
-    <Container maxWidth="xs">
+    <>
+      <Head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+      </Head>
+      <Container maxWidth="xs">
       <Box sx={{ my: 4 }}>
         <Alert sx={{ mb: 2 }} variant="filled" severity="error">
           <Typography variant="body2" component="h2" gutterBottom>
@@ -41,6 +45,7 @@ export default function MyProjects({
         </Alert>
       </Box>
     </Container>
+    </>
   )
   const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
   const hasItems = useMemo(() => items.length > 0, [items])
@@ -51,6 +56,7 @@ export default function MyProjects({
       
       */}
       <Head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}`} />
       </Head>
       <Container

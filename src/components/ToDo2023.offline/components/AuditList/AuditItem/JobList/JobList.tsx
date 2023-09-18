@@ -47,6 +47,7 @@ type TProps = {
     jobId: string;
     subjobId: string;
   }) => void;
+  isEditable: boolean;
 }
 
 export const JobList = memo(({
@@ -58,6 +59,7 @@ export const JobList = memo(({
   onToggleJobDone,
   onRemoveJob,
   onToggleSubjob,
+  isEditable,
 }: TProps) => {
   const { enqueueSnackbar } = useSnackbar()
   const handleActualize = useCallback(async () => {
@@ -133,9 +135,14 @@ export const JobList = memo(({
           onToggleJobDone={onToggleJobDone}
           onRemoveJob={onRemoveJob}
           onToggleSubjob={onToggleSubjob}
+          isEditable={isEditable}
         />
       ))}
-      <Button variant="outlined" onClick={handleActualize}>Актуализировать</Button>
+      {
+        isEditable && (
+          <Button variant="outlined" onClick={handleActualize}>Актуализировать</Button>
+        )
+      }
     </div>
   )
-}, (prevPs, nextPs) => prevPs.auditTsUpdate === nextPs.auditTsUpdate)
+}, (prevPs, nextPs) => prevPs.auditTsUpdate === nextPs.auditTsUpdate && prevPs.isEditable === nextPs.isEditable)

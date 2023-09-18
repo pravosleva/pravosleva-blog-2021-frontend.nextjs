@@ -1,5 +1,5 @@
 import { useStore, WithSocketContext, TSocketMicroStore } from '~/components/Todo2023.online/hocs'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import io, { Socket } from 'socket.io-client'
 import { groupLog } from '~/utils/groupLog'
 import { NEvent, NEventData } from './types'
@@ -33,14 +33,18 @@ import { useLastUpdatedAuditTs } from './hooks/useLastUpdatedAuditTs'
 import { useTimeAgo } from '~/hooks/useTimeAgo'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import Link from '~/components/Link';
+import { OneTimeLoginFormBtn } from '../Autopark2022/components/OneTimeLoginFormBtn'
+// import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
+import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'http://pravosleva.ru'
 
 type TLogicProps = {
   room: number;
+  hasAuthenticatedOnSSR: boolean;
 }
 
-const Logic = ({ room }: TLogicProps) => {
+const Logic = ({ room, hasAuthenticatedOnSSR }: TLogicProps) => {
   // -- NOTE: External logic
   const dispatch = useDispatch()
   // --
@@ -254,6 +258,7 @@ const Logic = ({ room }: TLogicProps) => {
       jobs: remoteJobs,
     })
   }, [])
+  // 803565425
   const handleError = useCallback((arg: any) => {
     console.warn(arg)
   }, [])
@@ -276,8 +281,24 @@ const Logic = ({ room }: TLogicProps) => {
 
   const { last: lastLocalAudits } = useLastUpdatedAuditTs({ audits: localAudits })
   const { last: lastRemoteAudits } = useLastUpdatedAuditTs({ audits })
-  const { timeAgoText: lastRemoteAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastRemoteAudits.tsUpdate.value, delay: 1000 })
-  const { timeAgoText: lastLocalAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastLocalAudits.tsUpdate.value, delay: 1000 })
+  const { timeAgoText: lastRemoteAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastRemoteAudits.tsUpdate.value, delay: 5000 })
+  const { timeAgoText: lastLocalAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastLocalAudits.tsUpdate.value, delay: 5000 })
+
+  const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
+  const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
+
+  useEffect(() => {
+    // autoparkHttpClient.checkJWT({
+    //   tested_chat_id: String(roomRef.current),
+    // })
+    //   .then((res: any) => {
+    //     if (res?.ok === true) dispatch(setIsOneTimePasswordCorrect(true))
+    //   })
+    //   .catch((err) => {
+    //     console.log(err.message || 'Unknown err (eff)')
+    //   })
+    if (hasAuthenticatedOnSSR) dispatch(setIsOneTimePasswordCorrect(true))
+  }, [])
 
   return (
     <>
@@ -328,16 +349,20 @@ const Logic = ({ room }: TLogicProps) => {
                 // },
               }}
             >
-              <MenuItem
-                selected={false}
-                onClick={handlePush}
-                disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
-              >
-                <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
-                <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
-              </MenuItem>
+              {
+                isOneTimePasswordCorrect && (
+                  <MenuItem
+                    selected={false}
+                    onClick={handlePush}
+                    disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
+                  >
+                    <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
+                    <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
+                  </MenuItem>
+                )
+              }
               <CopyToClipboard
-                text={`http://pravosleva.ru:9000/subprojects/todo/${room}`}
+                text={`http://pravosleva.ru/subprojects/todo/${room}`}
                 onCopy={handleCopyLink}
               >
                 <MenuItem selected={false}>
@@ -381,10 +406,11 @@ const Logic = ({ room }: TLogicProps) => {
             onToggleJobDone={handleToggleJobDone}
             onRemoveJob={handleRemoveJob}
             onToggleSubjob={handleToggleSubjob}
+            isEditable={isOneTimePasswordCorrect}
           />
         </Container>
         {
-          typeof window !== 'undefined' && (
+          isBrowser && (
             <div
               style={{
                 marginTop: 'auto',
@@ -397,32 +423,40 @@ const Logic = ({ room }: TLogicProps) => {
               }}
               className='backdrop-blur--lite'
             >
-              <AddNewBtn
-                cb={{
-                  onSuccess: handleAddNewAudit,
-                  onError: handleError,
-                }}
-                label='Добавить Аудит'
-                muiColor='primary'
-                cfg={{
-                  name: {
-                    type: 'text',
-                    label: 'Название',
-                    inputId: 'audit-name',
-                    placeholder: 'Аудит',
-                    defaultValue: '',
-                    reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
-                  },
-                  description: {
-                    type: 'text',
-                    label: 'Описание',
-                    inputId: 'audit-description',
-                    placeholder: 'Something',
-                    defaultValue: '',
-                    reactHookFormOptions: { required: false, maxLength: 50 }
-                  }
-                }}
-              />
+              {
+                isOneTimePasswordCorrect ? (
+                  <AddNewBtn
+                    cb={{
+                      onSuccess: handleAddNewAudit,
+                      onError: handleError,
+                    }}
+                    label='Добавить Аудит'
+                    muiColor='primary'
+                    cfg={{
+                      name: {
+                        type: 'text',
+                        label: 'Название',
+                        inputId: 'audit-name',
+                        placeholder: 'Аудит',
+                        defaultValue: '',
+                        reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
+                      },
+                      description: {
+                        type: 'text',
+                        label: 'Описание',
+                        inputId: 'audit-description',
+                        placeholder: 'Something',
+                        defaultValue: '',
+                        reactHookFormOptions: { required: false, maxLength: 50 }
+                      }
+                    }}
+                  />
+                ) : (
+                  <OneTimeLoginFormBtn
+                    chat_id={String(room)}
+                  />
+                )
+              }
             </div>
           )
         }
@@ -433,10 +467,11 @@ const Logic = ({ room }: TLogicProps) => {
 
 type TProps = {
   room: number;
+  hasAuthenticated: boolean;
 }
 
-export const Todo2023Online = ({ room }: TProps) => (
+export const Todo2023Online = ({ room, hasAuthenticated }: TProps) => (
   <WithSocketContext>
-    <Logic room={room} />
+    <Logic room={room} hasAuthenticatedOnSSR={hasAuthenticated} />
   </WithSocketContext>
 )

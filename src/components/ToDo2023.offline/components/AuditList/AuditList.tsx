@@ -44,9 +44,10 @@ type TProps = {
     jobId: string;
     subjobId: string;
   }) => void;
+  isEditable: boolean;
 }
 
-export const AuditList = memo(({ audits, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob }: TProps) => {
+export const AuditList = memo(({ audits, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
   return (
     <div
       style={{
@@ -67,6 +68,7 @@ export const AuditList = memo(({ audits, onRemoveAudit, onAddJob, onAddSubjob, o
           onToggleJobDone={onToggleJobDone}
           onRemoveJob={onRemoveJob}
           onToggleSubjob={onToggleSubjob}
+          isEditable={isEditable}
         />
       ))}
     </div>

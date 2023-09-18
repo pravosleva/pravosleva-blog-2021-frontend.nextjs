@@ -2,10 +2,10 @@ import { useCallback, useState } from 'react'
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
-  Button,
   Typography,
 } from '@mui/material'
 import PinInput from './components/PinInput' // 'react-pin-input'
@@ -71,7 +71,7 @@ export const CustomPinInput = ({
     setSuccessMsg(null)
     fetchSendCode({ chat_id })
       .then((res) => {
-        if (res.ok) setSuccessMsg('Пароль отправлен в телегу')
+        if (res.ok) setSuccessMsg('Пароль отправлен в Telegram (Вы его можете получить только от @pravosleva_bot)')
         else setErrMsg(res.message || 'No res.message')
       })
       .catch((err) => {
@@ -80,7 +80,7 @@ export const CustomPinInput = ({
   }, [chat_id, setErrMsg, setSuccessMsg])
   return (
     <>
-      <Card sx={{ width: '100%', mb: 2 }}>
+      <Card sx={{ width: '100%' }}>
         <CardContent>
           {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             One time password

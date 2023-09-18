@@ -53,9 +53,10 @@ type TProps = {
     jobId: string;
     subjobId: string;
   }) => void;
+  isEditable: boolean;
 }
 
-export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob }: TProps) => {
+export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
   const [isOpened, setIsOpened] = useState(false)
 
   const handleToggle = useCallback(() => {
@@ -109,15 +110,19 @@ export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, on
                 </IconButton>
               )
             }
-            <IconButton
-              color='error'
-              aria-label="delete"
-              onClick={() => {
-                onRemoveAudit({ auditId: audit.id })
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
+            {
+              isEditable && (
+                <IconButton
+                  color='error'
+                  aria-label="delete-audit"
+                  onClick={() => {
+                    onRemoveAudit({ auditId: audit.id })
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )
+            }
           </>
         </div>
       </div>
@@ -140,11 +145,12 @@ export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, on
             onToggleJobDone={onToggleJobDone}
             onRemoveJob={onRemoveJob}
             onToggleSubjob={onToggleSubjob}
+            isEditable={isEditable}
           />
         )
       }
     </div>
   )
 }, function arePropsEqual(prevPs, nextPs) {
-  return prevPs.audit.tsUpdate === nextPs.audit.tsUpdate
+  return (prevPs.audit.tsUpdate === nextPs.audit.tsUpdate && prevPs.isEditable === nextPs.isEditable)
 })

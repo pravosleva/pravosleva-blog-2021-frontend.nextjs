@@ -13,6 +13,7 @@ import axios from 'axios';
 import { wrapper } from '~/store'
 import { setActiveProject } from '~/store/reducers/autopark'
 import { Report } from '~/components/Autopark2022/components'
+import Head from 'next/head'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -28,43 +29,52 @@ export default function MyProjects({
   projectDataResponse,
 }: any) {
   if (userCheckerResponse?.code === 'not_found') return (
-    <Container maxWidth="xs">
-      <Box sx={{ my: 4 }}>
-        <Alert sx={{ mb: 2 }} variant="filled" severity="error">
-          <Typography variant="body2" component="h2" gutterBottom>
-            Пользователя {chat_id} не существует.<br />Нужна авторизация через Telegram
-          </Typography>
-        </Alert>
-      </Box>
-    </Container>
+    <>
+      <Head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+      </Head>
+      <Container maxWidth="xs">
+        <Box sx={{ my: 4 }}>
+          <Alert sx={{ mb: 2 }} variant="filled" severity="error">
+            <Typography variant="body2" component="h2" gutterBottom>
+              Пользователя {chat_id} не существует.<br />Нужна авторизация через Telegram
+            </Typography>
+          </Alert>
+        </Box>
+      </Container>
+    </>
   )
 
   return (
-    <Container maxWidth="xs">
-      <Box sx={{ py: 4 }}>
-        {
-          !!errorMsg
-          ? (
-            <b>{errorMsg}</b>
-          ) : (
-            <>
-              {/* <Typography variant="h4" component="h1" gutterBottom>
-                Project
-              </Typography> */}
-              <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
-                <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
-              </Box>
-              
-              {
-                typeof window !== 'undefined' && (
-                  <Report
-                    chat_id={chat_id}
-                    project_id={project_id}
-                  />
-                )
-              }
+    <>
+      <Head>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+      </Head>
+      <Container maxWidth="xs">
+        <Box sx={{ py: 4 }}>
+          {
+            !!errorMsg
+            ? (
+              <b>{errorMsg}</b>
+            ) : (
+              <>
+                {/* <Typography variant="h4" component="h1" gutterBottom>
+                  Project
+                </Typography> */}
+                <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
+                  <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
+                </Box>
+                
+                {
+                  typeof window !== 'undefined' && (
+                    <Report
+                      chat_id={chat_id}
+                      project_id={project_id}
+                    />
+                  )
+                }
 
-              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid container spacing={2} sx={{ mb: 2 }}>
                   <Grid item xs={12}>
                     <Button
                       startIcon={<ArrowBackIcon />}
@@ -94,18 +104,19 @@ export default function MyProjects({
                     </Button>
                   </Grid>
                 </Grid>
-            </>
-          )
-        }
-        {/* <Stack spacing={1}>
-          <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-            Go to home page
-          </Button>
-        </Stack> */}
-        {/* <ProTip />
-        <Copyright /> */}
-      </Box>
-    </Container>
+              </>
+            )
+          }
+          {/* <Stack spacing={1}>
+            <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
+              Go to home page
+            </Button>
+          </Stack> */}
+          {/* <ProTip />
+          <Copyright /> */}
+        </Box>
+      </Container>
+    </>
   );
 }
 

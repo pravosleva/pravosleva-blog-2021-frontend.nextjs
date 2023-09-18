@@ -1,12 +1,18 @@
 import axios, { AxiosResponse as IAxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry'
 
-const isDev = process.env.NODE_ENV === 'development'
-const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-: 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
+// const isDev = process.env.NODE_ENV === 'development'
+// const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
+// : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
+
+const baseApiURL = {
+  v1: 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022',
+  // v2: 'http://pravosleva.ru:9000/express-helper/pravosleva-bot-2021/autopark-2022'
+}
 
 enum EControllers {
   CHECK_USER = 'check-user',
+  CHECK_JWT = 'check-jwt',
 }
 
 type TLocalResult = {
@@ -42,7 +48,7 @@ class httpClientSingletone {
       );
     }
     this.api = axios.create({
-      baseURL: baseApiURL,
+      baseURL: baseApiURL.v1,
       validateStatus: (_s: number) => true,
     })
     axiosRetry(this.api, { retries: 10 })
@@ -91,6 +97,37 @@ class httpClientSingletone {
       })
 
     this.controllers[EControllers.CHECK_USER] = null
+    if (result.isOk) return Promise.resolve(result.res)
+
+    return Promise.reject(this.getErrorMsg(result))
+  }
+
+  async checkJWT(data: {
+    tested_chat_id: string;
+  }) {
+    const opts: any = {
+      method: 'POST',
+      data,
+    }
+    
+    if (typeof window !== 'undefined') {
+      if (!!this.controllers[EControllers.CHECK_JWT]) this.controllers[EControllers.CHECK_JWT].abort()
+
+      this.controllers[EControllers.CHECK_JWT] = new AbortController()
+      opts.signal = this.controllers[EControllers.CHECK_JWT].signal
+    }
+    const result: TLocalResult = await this.api('/check-jwt', opts)
+      .then(this.universalAxiosResponseHandler(({ data }) => data?.ok === true))
+      .catch((err: any) => {
+        if (axios.isCancel(err)) {
+          console.log('Request canceled', err.message)
+        } else {
+          console.log(err)
+        }
+        return { isOk: false, message: err.message || 'No err.message' }
+      })
+
+    this.controllers[EControllers.CHECK_JWT] = null
     if (result.isOk) return Promise.resolve(result.res)
 
     return Promise.reject(this.getErrorMsg(result))

@@ -14,7 +14,7 @@ const isSubjobListCorrect = ({ subjobs }: { subjobs: any[] }): TAnalysis => {
     for (const requiredKey of requiredFields) {
       if (!subjob[requiredKey]) {
         result.isOk = false
-        result.message = `Each subjob must have a key \`${requiredKey}\``
+        result.message = `Each subjob should have a key \`${requiredKey}\``
         break
       }
     }
@@ -44,11 +44,11 @@ const isJobListCorrect = ({ jobs }: { jobs: any[] }): TAnalysis => {
     switch (true) {
       case !Array.isArray(job.subjobs):
         result.isOk = false
-        result.message = `job.subjobs shound be an Array, received: ${typeof job.subjobs} (!isArray)`
+        result.message = `job.subjobs shound be an Array, received ${typeof job.subjobs} (!isArray)`
         break
       case !subjobsAnalysis.isOk:
         result.isOk = false
-        result.message = `Subjobs analysis failed: ${subjobsAnalysis.message || 'No message'}`
+        result.message = `Subjobs analysis failed - ${subjobsAnalysis.message || 'No message'}`
         break
       default:
         break
@@ -62,7 +62,7 @@ const isAuditListCorrect = ({ audits }: { audits: any[] }): TAnalysis => {
   }
   if (!audits) {
     result.isOk = false
-    result.message = `Incorrect audit, received ${typeof audits}`
+    result.message = `Incorrect audits, received ${typeof audits}`
   }
   if (!result.isOk) return result
 
@@ -72,7 +72,7 @@ const isAuditListCorrect = ({ audits }: { audits: any[] }): TAnalysis => {
     for (const requiredKey of requiredFields) {
       if (!audit[requiredKey]) {
         result.isOk = false
-        result.message = `Каждый аудит должен содержать ключ \'${requiredKey}\'`
+        result.message = `Каждый аудит должен содержать ключ \`${requiredKey}\``
         break
       }
     }
@@ -83,11 +83,11 @@ const isAuditListCorrect = ({ audits }: { audits: any[] }): TAnalysis => {
     switch (true) {
       case !Array.isArray(audit.jobs):
         result.isOk = false
-        result.message = `audit.jobs shound be an Array, received: ${typeof audit.jobs} (!isArray)`
+        result.message = `audit.jobs should be an Array, received ${typeof audit.jobs} (!isArray)`
         break
       case !jobsAnalysis.isOk:
         result.isOk = false
-        result.message = `Jobs analysis failed: ${jobsAnalysis.message || 'No message'}`
+        result.message = `Jobs analysis failed - ${jobsAnalysis.message || 'No message'}`
         break
       default:
         break

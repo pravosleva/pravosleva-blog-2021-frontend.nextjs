@@ -1,17 +1,17 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Button } from '@mui/material'
 import { CustomPinInput } from '~/components/CustomPinInput'
 import { useDebounce } from '~/hooks/useDebounce'
-import { useDispatch, useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
-import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import axios from 'axios'
 import KeyIcon from '@mui/icons-material/Key';
 import axiosRetry from 'axios-retry'
 import { groupLog } from '~/utils/groupLog'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 
 type TProps = {
-  chat_id: string
+  chat_id: string;
 }
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -55,7 +55,6 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   // const [isPasswordCorrect, setIsPasswordCorrect] = useState(false)
   const [apiErr, setApiErr] = useState<string>('')
   const userCheckerResponse = useSelector((state: IRootState) => state.autopark.userCheckerResponse)
-  const dispatch = useDispatch()
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
   const [isFormOpened, setIsFormOpened] = useState(false)
   const handleOpenForm = useCallback(() => {
@@ -64,6 +63,10 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   const handleCloseForm = useCallback(() => {
     setIsFormOpened(false)
   }, [])
+  const dispatch = useDispatch()
+  const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
+
+  if (!isBrowser) return null
 
   useEffect(() => {
     console.log('debouncedCounter', debouncedCounter)
@@ -72,18 +75,16 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
       setApiErr('')
       fetchCheckPassword({ chat_id, password: passwordRef.current })
         .then((data) => {
-          console.log(data)
+          
           if (data?.ok) {
             dispatch(setIsOneTimePasswordCorrect(true))
-            if (!!data?.projects) {
-              dispatch(updateProjects(data.projects))
-            }
+            if (!!data?.projects) dispatch(updateProjects(data.projects))
           }
+
           else if (!!data?.message) setApiErr(data.message)
           return data
         })
         .catch((err)=> {
-          console.log(err)
           if (!!err?.message) setApiErr(err.message)
           return err
         })
@@ -93,7 +94,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
     } else {
       setIsLoading(false)
     }
-  }, [debouncedCounter, chat_id, setIsLoading, userCheckerResponse?.ok, setApiErr, dispatch])
+  }, [debouncedCounter, chat_id, setIsLoading, userCheckerResponse?.ok, setApiErr])
 
   const countInc = useCallback(() => {
     setCount((s) => ++s)
