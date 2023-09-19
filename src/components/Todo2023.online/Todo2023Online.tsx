@@ -35,16 +35,16 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import Link from '~/components/Link';
 import { OneTimeLoginFormBtn } from '../Autopark2022/components/OneTimeLoginFormBtn'
 // import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
-import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+// import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'http://pravosleva.ru'
 
 type TLogicProps = {
   room: number;
-  hasAuthenticatedOnSSR: boolean;
+  // hasAuthenticatedOnSSR: boolean;
 }
 
-const Logic = ({ room, hasAuthenticatedOnSSR }: TLogicProps) => {
+const Logic = ({ room }: TLogicProps) => {
   // -- NOTE: External logic
   const dispatch = useDispatch()
   // --
@@ -73,7 +73,7 @@ const Logic = ({ room, hasAuthenticatedOnSSR }: TLogicProps) => {
       }, ({ data }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
         groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb`, items: [data] })
         setStore({ audits: data.audits })
-        enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'success', autoHideDuration: 3000 })
+        if (data.audits.length > 0) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'default', autoHideDuration: 3000 })
       })
     }
     socket.on('connect', onConnectListener)
@@ -287,18 +287,18 @@ const Logic = ({ room, hasAuthenticatedOnSSR }: TLogicProps) => {
   const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
 
-  useEffect(() => {
-    // autoparkHttpClient.checkJWT({
-    //   tested_chat_id: String(roomRef.current),
-    // })
-    //   .then((res: any) => {
-    //     if (res?.ok === true) dispatch(setIsOneTimePasswordCorrect(true))
-    //   })
-    //   .catch((err) => {
-    //     console.log(err.message || 'Unknown err (eff)')
-    //   })
-    if (hasAuthenticatedOnSSR) dispatch(setIsOneTimePasswordCorrect(true))
-  }, [])
+  // useEffect(() => {
+  //   // autoparkHttpClient.checkJWT({
+  //   //   tested_chat_id: String(roomRef.current),
+  //   // })
+  //   //   .then((res: any) => {
+  //   //     if (res?.ok === true) dispatch(setIsOneTimePasswordCorrect(true))
+  //   //   })
+  //   //   .catch((err) => {
+  //   //     console.log(err.message || 'Unknown err (eff)')
+  //   //   })
+  //   if (hasAuthenticatedOnSSR) dispatch(setIsOneTimePasswordCorrect(true))
+  // }, [])
 
   return (
     <>
@@ -467,11 +467,10 @@ const Logic = ({ room, hasAuthenticatedOnSSR }: TLogicProps) => {
 
 type TProps = {
   room: number;
-  hasAuthenticated: boolean;
 }
 
-export const Todo2023Online = ({ room, hasAuthenticated }: TProps) => (
+export const Todo2023Online = ({ room }: TProps) => (
   <WithSocketContext>
-    <Logic room={room} hasAuthenticatedOnSSR={hasAuthenticated} />
+    <Logic room={room} />
   </WithSocketContext>
 )

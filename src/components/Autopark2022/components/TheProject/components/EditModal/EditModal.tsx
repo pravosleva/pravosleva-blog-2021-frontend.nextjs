@@ -141,13 +141,13 @@ export const EditModal = ({
     >
       <>
         <Box sx={style}>
-          <Box sx={{ mb: 2 }}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Edit item
-          </Typography>
-          {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography> */}
+          <Box sx={{ p: 2 }}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Edit item
+            </Typography>
+            {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+            </Typography> */}
           </Box>
 
           <Box sx={{ mb: 2 }}>

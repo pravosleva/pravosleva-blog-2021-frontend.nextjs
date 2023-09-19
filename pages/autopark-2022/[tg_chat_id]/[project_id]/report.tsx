@@ -1,12 +1,11 @@
 import * as React from 'react';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-// import ProTip from '~/components/ProTip';
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+} from '@mui/material'
 import Link from '~/components/Link';
-// import Copyright from '~/components/Copyright';
-import { Alert, Grid } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 // import { TheProject } from '~/components/Autopark2022/components'
@@ -14,12 +13,20 @@ import { wrapper } from '~/store'
 import { setActiveProject } from '~/store/reducers/autopark'
 import { Report } from '~/components/Autopark2022/components'
 import Head from 'next/head'
+import { ErrorPage } from '~/components/ErrorPage'
+import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import jwt from 'jsonwebtoken'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
+
+type TPageService = {
+  isOk: boolean;
+  message?: string;
+}
 
 export default function MyProjects({
   userCheckerResponse,
@@ -33,16 +40,11 @@ export default function MyProjects({
       <Head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </Head>
-      <Container maxWidth="xs">
-        <Box sx={{ my: 4 }}>
-          <Alert sx={{ mb: 2 }} variant="filled" severity="error">
-            <Typography variant="body2" component="h2" gutterBottom>
-              Пользователя {chat_id} не существует.<br />Нужна авторизация через Telegram
-            </Typography>
-          </Alert>
-        </Box>
-      </Container>
+      <ErrorPage message={`Пользователя ${chat_id} не существует. Нужна авторизация через Telegram`} />
     </>
+  )
+  if (!!errorMsg) return (
+    <ErrorPage message={errorMsg} />
   )
 
   return (
@@ -50,74 +52,67 @@ export default function MyProjects({
       <Head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </Head>
-      <Container maxWidth="xs">
-        <Box sx={{ py: 4 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+        <Container maxWidth="xs">
+          <Box sx={{ p: 2 }} style={{ fontWeight: 'bold' }}>
+            <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
+          </Box>
+          
           {
-            !!errorMsg
-            ? (
-              <b>{errorMsg}</b>
-            ) : (
-              <>
-                {/* <Typography variant="h4" component="h1" gutterBottom>
-                  Project
-                </Typography> */}
-                <Box sx={{ mb: 2 }} style={{ fontWeight: 'bold' }}>
-                  <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
-                </Box>
-                
-                {
-                  typeof window !== 'undefined' && (
-                    <Report
-                      chat_id={chat_id}
-                      project_id={project_id}
-                    />
-                  )
-                }
-
-                <Grid container spacing={2} sx={{ mb: 2 }}>
-                  <Grid item xs={12}>
-                    <Button
-                      startIcon={<ArrowBackIcon />}
-                      variant="outlined"
-                      color='secondary'
-                      component={Link}
-                      noLinkStyle
-                      href={`/autopark-2022/${chat_id}/${project_id}`}
-                      shallow
-                      fullWidth
-                    >
-                      {projectDataResponse?.name || 'Project'}
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      startIcon={<ArrowBackIcon />}
-                      variant='outlined'
-                      color='primary'
-                      component={Link}
-                      noLinkStyle
-                      href={`/autopark-2022/${chat_id}`}
-                      shallow
-                      fullWidth
-                    >
-                      Projects
-                    </Button>
-                  </Grid>
-                </Grid>
-              </>
+            typeof window !== 'undefined' && (
+              <Report
+                chat_id={chat_id}
+                project_id={project_id}
+              />
             )
           }
-          {/* <Stack spacing={1}>
-            <Button startIcon={<ArrowBackIcon />} variant="outlined" color='primary' component={Link} noLinkStyle href="/" shallow>
-              Go to home page
-            </Button>
-          </Stack> */}
-          {/* <ProTip />
-          <Copyright /> */}
-        </Box>
-      </Container>
+        </Container>
+        <div
+          style={{
+            marginTop: 'auto',
+            position: 'sticky',
+            bottom: '0px',
+            zIndex: 2,
+            padding: '16px',
+            // backgroundColor: '#fff',
+            // borderTop: '1px solid lightgray',
+          }}
+          className='backdrop-blur--lite'
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Button
+                startIcon={<ArrowBackIcon />}
+                variant="outlined"
+                color='secondary'
+                component={Link}
+                noLinkStyle
+                href={`/autopark-2022/${chat_id}/${project_id}`}
+                shallow
+                fullWidth
+              >
+                {projectDataResponse?.name || 'Project'}
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                startIcon={<ArrowBackIcon />}
+                variant='outlined'
+                color='primary'
+                component={Link}
+                noLinkStyle
+                href={`/autopark-2022/${chat_id}`}
+                shallow
+                fullWidth
+              >
+                Projects
+              </Button>
+            </Grid>
+          </Grid>
+        </div>
+      </div>
     </>
-  );
+  )
 }
 
 MyProjects.getInitialProps = wrapper.getInitialPageProps(
@@ -176,6 +171,26 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
     if (!!projectDataResult?.ok && !!projectDataResult.projectData)
       store.dispatch(setActiveProject(projectDataResult.projectData))
 
-    return { userCheckerResponse: userDataResult, projectDataResponse: projectDataResult?.projectData || null, errorMsg, isUserExists: userDataResult?.ok, chat_id, project_id }
+    // - NOTE: Quick auth
+    const _pageService: TPageService = {
+      isOk: true,
+    }
+    try {
+      const { cookies } = ctx.req
+
+      const authCookieName = 'autopark-2022.jwt'
+      const secretKey = 'super-secret'
+      if (!!cookies[authCookieName]) {
+        const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
+
+        if (decodedToken?.chat_id === chat_id) store.dispatch(setIsOneTimePasswordCorrect(true))
+      }
+    } catch (err) {
+      // @ts-ignore
+      _pageService.message = err?.message || 'No err.message'
+    }
+    // -
+
+    return { userCheckerResponse: userDataResult, projectDataResponse: projectDataResult?.projectData || null, errorMsg, isUserExists: userDataResult?.ok, chat_id, project_id, _pageService }
   }
 )

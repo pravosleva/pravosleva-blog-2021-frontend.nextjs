@@ -3,10 +3,10 @@
 import { wrapper } from '~/store'
 import Head from 'next/head'
 import { Todo2023Online } from '~/components/Todo2023.online/Todo2023Online'
-import { ErrorPage } from '~/components/ErrorPage';
+import { ErrorPage } from '~/components/ErrorPage'
 import jwt from 'jsonwebtoken'
 // import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
-// import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 
 // const isDev = process.env.NODE_ENV === 'development'
 // const baseURL = isDev
@@ -16,7 +16,6 @@ import jwt from 'jsonwebtoken'
 type TPageService = {
   isOk: boolean;
   message?: string;
-  hasAuthenticated: boolean;
 }
 
 export default function TodoOnline({
@@ -33,7 +32,7 @@ export default function TodoOnline({
       </Head>
       {
         _pageService.isOk
-        ? <Todo2023Online room={chat_id} hasAuthenticated={_pageService.hasAuthenticated} />
+        ? <Todo2023Online room={chat_id} />
         : <ErrorPage message={_pageService.message || 'ERR: No _pageService.message'} />
       }
     </>
@@ -47,7 +46,6 @@ TodoOnline.getInitialProps = wrapper.getInitialPageProps(
     // let errorMsg = null
     const _pageService: TPageService = {
       isOk: true,
-      hasAuthenticated: false,
     }
 
     // const result = await autoparkHttpClient.checkJWT({
@@ -66,7 +64,7 @@ TodoOnline.getInitialProps = wrapper.getInitialPageProps(
     if (!!cookies[authCookieName]) {
       const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
 
-      _pageService.hasAuthenticated = decodedToken?.chat_id === tg_chat_id
+      if (decodedToken?.chat_id === tg_chat_id) store.dispatch(setIsOneTimePasswordCorrect(true))
     }
 
     if(isNaN(tg_chat_id)) {

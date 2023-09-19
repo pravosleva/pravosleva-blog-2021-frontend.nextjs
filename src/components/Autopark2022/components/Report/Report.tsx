@@ -117,7 +117,7 @@ export const Report = ({
       )}
 
       {hasAnyReport && isSubmitDisabled ? (
-        <Box sx={{ mb: 2 }}>
+        <Box>
           {/* <pre>{JSON.stringify(report, null, 2)}</pre> */}
           <ReportTable report={report || []} />
         </Box>

@@ -136,14 +136,13 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
             {/* <Box sx={{ mb: 2 }}>
               <em>Create item for {chat_id} in {project_id}</em>
             </Box> */}
-            <Box sx={{ mb: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
               <TextField value={name} size='small' fullWidth disabled={isLoading} variant="outlined" label="Name" type="text" onChange={handleChangeName}></TextField>
-            </Box>
-            <Box sx={{ mb: 2 }}>
+              </Grid>
+              <Grid item xs={6}>
               <TextField value={description} size='small' fullWidth disabled={isLoading} variant="outlined" label="Description" type="text" onChange={handleChangeDescr}></TextField>
-            </Box>
-
-            <Grid container spacing={2} sx={{ mb: 2 }}>
+              </Grid>
               <Grid item xs={6}>
                 <TextField value={mileageLast} size='small' fullWidth disabled={isLoading} variant="outlined" label="Mileage Last" type="number" onChange={handleChangeMileageLast}></TextField>
               </Grid>
@@ -165,17 +164,7 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
                 </Stack> */}
                 <TextField value={mileageDelta} size='small' fullWidth disabled={isLoading} variant="outlined" label="Mileage Delta" type="number" onChange={handleChangeMileageDelta}></TextField>
               </Grid>
-            </Grid>
 
-            {
-              !!apiErr && (
-                <Box sx={{ mb: 2 }}>
-                  <em>{apiErr}</em>
-                </Box>
-              )
-            }
-
-            <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item xs={6}>
                 <Button fullWidth disabled={isLoading || !name || !mileageLast || !mileageDelta || !description} variant='contained' onClick={handleSubmit} color='primary' startIcon={<LocalFireDepartmentIcon />}>Создать</Button>
               </Grid>
@@ -184,10 +173,18 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
               </Grid>
             </Grid>
 
+            {
+              !!apiErr && (
+                <Box>
+                  <em>{apiErr}</em>
+                </Box>
+              )
+            }
+
             {/* <pre>{JSON.stringify({ name, description, mileageLast, mileageDelta }, null, 2)}</pre> */}
           </>
         ) : (
-          <Box sx={{ mb: 2 }}>
+          <Box>
             <Button fullWidth disabled={isLoading} variant='contained' onClick={handleOpen} color='primary' startIcon={<AddIcon />}>Добавить расходник</Button>
           </Box>
         )
