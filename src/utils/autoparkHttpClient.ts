@@ -6,7 +6,7 @@ import axiosRetry from 'axios-retry'
 // : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
 
 const baseApiURL = {
-  v1: 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022',
+  v1: 'https://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022',
   // v2: 'http://pravosleva.ru:9000/express-helper/pravosleva-bot-2021/autopark-2022'
 }
 

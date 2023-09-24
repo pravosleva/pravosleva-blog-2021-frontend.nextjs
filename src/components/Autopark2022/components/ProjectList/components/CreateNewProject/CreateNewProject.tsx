@@ -362,7 +362,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               )
             }
 
-            <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid container spacing={2}>
               <Grid item xs={6}>
                 <Button
                   fullWidth
@@ -379,7 +379,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
             </Grid>
           </>
         ) : (
-          <Box sx={{ mb: 2 }}>
+          <Box>
             <Button fullWidth disabled={isLoading} variant='contained' onClick={handleOpen} color='primary' startIcon={<AddIcon />}>Create New Project</Button>
           </Box>
         )

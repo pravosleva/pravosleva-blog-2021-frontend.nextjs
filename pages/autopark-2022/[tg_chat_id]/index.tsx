@@ -11,6 +11,7 @@ import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTim
 import { Container } from '@mui/material'
 import jwt from 'jsonwebtoken'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { CreateNewProject } from '~/components/Autopark2022/components/ProjectList/components/CreateNewProject'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -55,7 +56,7 @@ export default function MyProjects({
           <Autopark2022 chat_id={chat_id} />
         </Container>
         {
-          isBrowser && !isOneTimePasswordCorrect && (
+          isBrowser && (
             <div
               style={{
                 marginTop: 'auto',
@@ -68,9 +69,13 @@ export default function MyProjects({
               }}
               className='backdrop-blur--lite'
             >
-              <OneTimeLoginFormBtn
-                chat_id={chat_id}
-              />
+              {isOneTimePasswordCorrect ? (
+                <CreateNewProject chat_id={chat_id} />
+              ) : (
+                <OneTimeLoginFormBtn
+                  chat_id={chat_id}
+                />
+              )}
             </div>
           )
         }

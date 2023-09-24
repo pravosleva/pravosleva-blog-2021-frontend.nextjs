@@ -6,12 +6,15 @@ type TProps = {
   delay: number
 }
 
+const defaultTimeAgoText = ''
+
 export const useTimeAgo = ({
   date,
   delay,
 }: TProps) => {
+  const _lastDateRef = useRef<number>(new Date().getTime())
   const timeoutRef = useRef<NodeJS.Timeout | undefined>()
-  const _timeAgoTextRef = useRef<string>('Unknown')
+  const _timeAgoTextRef = useRef<string>(defaultTimeAgoText)
   const [timeAgoText, setTimeAgoText] = useState('')
 
   const [count, setCount] = useState<number>(0)
@@ -38,16 +41,11 @@ export const useTimeAgo = ({
   }, [count])
 
   useEffect(() => {
-    if (!!timeoutRef.current) clearTimeout(timeoutRef.current)
-
-    timeoutRef.current = setTimeout(updateCounter, delay)
-    if (!!timeoutRef.current) return () => {
-      if (!!timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
+    if (_lastDateRef.current !== date) updateCounter()
   }, [date])
 
   return {
-    timeAgoText: !!date ? timeAgoText : 'Unknown',
+    timeAgoText: !!date ? timeAgoText : defaultTimeAgoText,
     // _count: count,
   }
 }

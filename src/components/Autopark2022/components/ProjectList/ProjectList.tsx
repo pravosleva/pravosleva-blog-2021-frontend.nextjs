@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { CreateNewProject } from './components'
+// import { CreateNewProject } from './components'
 import { Box, Button, Stack, IconButton } from '@mui/material'
 import Link from '~/components/Link'
 import axios from 'axios'
@@ -106,11 +106,6 @@ export const ProjectList = ({
           )
         })}
       </Box>
-      {(isOneTimePasswordCorrect || isDev) && (
-        <Box>
-          <CreateNewProject chat_id={chat_id} />
-        </Box>
-      )}
     </>
   )
 }

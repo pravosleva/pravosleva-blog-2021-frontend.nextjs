@@ -1,17 +1,18 @@
-import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
+import { Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
 import { useCallback, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateProjects, setActiveProject } from '~/store/reducers/autopark'
 import { IRootState } from '~/store/IRootState'
 // import AddIcon from '@mui/icons-material/Add'
-import { CreateNewItem } from './components'
+// import { CreateNewItem } from './components'
 // import FolderIcon from '@mui/icons-material/Folder'
-import DeleteIcon from '@mui/icons-material/Delete'
+// import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios';
 // import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import BuildIcon from '@mui/icons-material/Build'
-import EditIcon from '@mui/icons-material/Edit'
+// import EditIcon from '@mui/icons-material/Edit'
 import { EditModal } from './components/EditModal'
+import { ProjectMenu } from './components'
 
 type TProps = {
   chat_id: string;
@@ -64,7 +65,7 @@ export const TheProject = ({
   // }, [])
   const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
   const dispatch = useDispatch()
-  const handleDelete = useCallback((id: number) => () => {
+  const handleDelete = useCallback((id: number) => {
     if (typeof window === 'undefined') return
     const isConfirmed = window.confirm('Уверены?')
     if (!isConfirmed) return
@@ -98,7 +99,7 @@ export const TheProject = ({
     setIsEditModalOpened(false)
   }, [])
   const [activeItem, setActiveItem] = useState(defaultItem)
-  const handleEdit = useCallback((item) => () => {
+  const handleEdit = useCallback((item)  => {
     setActiveItem(item)
     handleEditModalOpen()
   }, [])
@@ -119,12 +120,20 @@ export const TheProject = ({
                 (isOneTimePasswordCorrect || isDev)
                 ? (
                   <>
-                    <IconButton edge="end" aria-label="edit" onClick={handleEdit(item)} sx={{ mr: 1 }}>
+                    <ProjectMenu
+                      onDelete={() => {
+                        handleDelete(id)
+                      }}
+                      onEdit={() => {
+                        handleEdit(item)
+                      }}
+                    />
+                    {/* <IconButton edge="end" aria-label="edit" onClick={} sx={{ mr: 1 }}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton edge="end" aria-label="delete" onClick={handleDelete(id)}>
+                    <IconButton edge="end" aria-label="delete" onClick={()}>
                       <DeleteIcon />
-                    </IconButton>
+                    </IconButton> */}
                   </>
                 ) : null
               }
@@ -161,23 +170,6 @@ export const TheProject = ({
         chat_id={chat_id}
         project_id={project_id}
       />
-
-      {/*
-        isOneTimePasswordCorrect && (
-          <Button sx={{ mb: 2 }} fullWidth variant="outlined" color='secondary' onClick={handleEdit}>
-            Edit
-          </Button>
-        )
-      */}
-
-      {
-        isOneTimePasswordCorrect && (
-          // <Button sx={{ mb: 2 }} fullWidth variant="contained" color='primary' onClick={handleAddItem} startIcon={<AddIcon />}>
-          //   Добавить расходник
-          // </Button>
-          <CreateNewItem chat_id={chat_id} project_id={project_id} />
-        )
-      }
     </>
   )
 }

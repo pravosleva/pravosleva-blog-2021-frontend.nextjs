@@ -1,17 +1,17 @@
 import { TAudit, TSubJob } from "~/components/ToDo2023.offline/state"
 import { JobList } from './JobList'
 import { stateHelper } from '~/components/ToDo2023.offline/state'
-import Badge from "@mui/material/Badge";
-// import SettingsIcon from '@mui/icons-material/Settings';
-import { useCallback, useState, useMemo, memo } from "react";
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import IconButton from "@mui/material/IconButton";
-// import ReportIcon from '@mui/icons-material/Report';
-import FolderIcon from '@mui/icons-material/Folder';
-import DeleteIcon from '@mui/icons-material/Delete';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import Typography from "@mui/material/Typography";
+import Badge from "@mui/material/Badge"
+// import SettingsIcon from '@mui/icons-material/Settings'
+import { useCallback, useState, useMemo, memo } from "react"
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import IconButton from "@mui/material/IconButton"
+// import ReportIcon from '@mui/icons-material/Report'
+import FolderIcon from '@mui/icons-material/Folder'
+import DeleteIcon from '@mui/icons-material/Delete'
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import Typography from "@mui/material/Typography"
 
 type TProps = {
   audit: TAudit;

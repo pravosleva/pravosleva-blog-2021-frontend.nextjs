@@ -28,7 +28,8 @@ export default function TodoOnline({
   return (
     <>
       <Head>
-        <title>Audit list</title>
+        <title>AuditList | Online</title>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </Head>
       {
         _pageService.isOk
@@ -57,19 +58,22 @@ TodoOnline.getInitialProps = wrapper.getInitialPageProps(
     // if (result?.ok === true) store.dispatch(setIsOneTimePasswordCorrect(true))
     // if (typeof result === 'string') errorMsg = result
 
-    const { cookies } = ctx.req
-
-    const authCookieName = 'autopark-2022.jwt'
-    const secretKey = 'super-secret'
-    if (!!cookies[authCookieName]) {
-      const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
-
-      if (decodedToken?.chat_id === tg_chat_id) store.dispatch(setIsOneTimePasswordCorrect(true))
-    }
-
     if(isNaN(tg_chat_id)) {
       _pageService.isOk = false
-      _pageService.message = 'Incorrect page param (number expected)'
+      _pageService.message = `Incorrect page param (number expected), received \`${tg_chat_id}\``
+    } else {
+      // NOTE: For ssr only
+      try {
+        const { cookies } = ctx.req
+        const authCookieName = 'autopark-2022.jwt'
+        const secretKey = 'super-secret'
+        if (!!cookies[authCookieName]) {
+          const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
+          if (decodedToken?.chat_id === tg_chat_id) store.dispatch(setIsOneTimePasswordCorrect(true))
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
 
     return {

@@ -18,7 +18,7 @@ type TLink = {
 const links: TLink[] = [
   {
     name: 'Todo 2023',
-    link: 'http://pravosleva.ru:9000/subprojects/todo',
+    link: '/subprojects/todo',
     colorCode: 'primary',
     variantCode: 'contained',
   },
@@ -36,7 +36,7 @@ const links: TLink[] = [
   },
   {
     name: 'KanBan 2021',
-    link: 'http://pravosleva.ru/express-helper/chat/',
+    link: 'https://gosuslugi.pravosleva.ru/express-helper/chat/',
     colorCode: 'primary',
     variantCode: 'outlined',
   },

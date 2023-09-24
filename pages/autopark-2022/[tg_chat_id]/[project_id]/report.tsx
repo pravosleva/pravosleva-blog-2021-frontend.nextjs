@@ -83,7 +83,7 @@ export default function MyProjects({
             <Grid item xs={12}>
               <Button
                 startIcon={<ArrowBackIcon />}
-                variant="outlined"
+                variant='contained'
                 color='secondary'
                 component={Link}
                 noLinkStyle

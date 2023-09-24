@@ -2,17 +2,26 @@ import { Socket } from 'socket.io'
 // import { getTstValue } from '~/srv.utils'
 import { NEvent, NEventData } from './types'
 // NOTE: Fake DB as cache
-import { stateInstance } from '~/srv.utils/todo2023/stateInstance'
+import {
+  stateInstance,
+  // connectionsInstance,
+} from '~/srv.utils/todo2023'
 
 export const withTodo2023SocketLogic = (io: Socket) => {
   io.on('connection', function (socket: any) {
     // 1.
     socket.on(NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM, ({ room }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM, cb: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB) => {
       // console.log(`-- CLIENT_CONNECT_TO_ROOM -> ${room} (${typeof room})`)
+      // if (connectionsInstance.has(socket.id)) {
+      //   socket.leave(connectionsInstance.get(socket.id))
+      // }
+
       socket.join(String(room))
-      const keys = stateInstance.getKeys()
+      // connectionsInstance.set(socket.id, room)
+
+      const pages = stateInstance.getKeys()
       // console.log(`-- keys -> ${keys.join(', ')}`)
-      cb({ data: { room, audits: stateInstance.get(room) || [], message: `keys= ${keys.join(', ')}; size= ${stateInstance.size}` }})
+      cb({ data: { room, audits: stateInstance.get(room) || [], message: `pages= ${pages.join(', ') || 'no yet'}` }})
     })
     // 2.
     socket.on(NEvent.EServerIncoming.AUDITLIST_REPLACE, ({ room, audits }: NEventData.NServerIncoming.TAUDITLIST_REPLACE, _cb: NEventData.NServerIncoming.TAUDITLIST_REPLACE_CB) => {
@@ -102,5 +111,9 @@ export const withTodo2023SocketLogic = (io: Socket) => {
         socketId: socket.id,
       }
     })
+
+    // socket.on("disconnect", () => {
+    //   connectionsInstance.delete(socket.id)
+    // });
   })
 }

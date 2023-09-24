@@ -6,6 +6,7 @@ import { NEvent, NEventData } from './types'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   replaceAudits,
+  fixVisitedPage,
 } from '~/store/reducers/todo2023'
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
@@ -16,14 +17,17 @@ import {
   Button,
   // Button,
   Container,
+  Divider,
   IconButton,
   ListItemIcon,
   Menu,
   MenuItem,
+  MenuList,
+  Stack,
   Typography,
  } from '@mui/material'
 import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
-// import UploadIcon from '@mui/icons-material/Upload';
+// import UploadIcon from '@mui/icons-material/Upload'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import SendIcon from '@mui/icons-material/Send'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
@@ -34,8 +38,11 @@ import { useTimeAgo } from '~/hooks/useTimeAgo'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import Link from '~/components/Link';
 import { OneTimeLoginFormBtn } from '../Autopark2022/components/OneTimeLoginFormBtn'
-// import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
-// import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
+import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { useRouter } from 'next/router'
+import FolderIcon from '@mui/icons-material/Folder'
+// import MuiLink from '@mui/material/Link'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'http://pravosleva.ru'
 
@@ -45,10 +52,15 @@ type TLogicProps = {
 }
 
 const Logic = ({ room }: TLogicProps) => {
+  const router = useRouter()
+
   // -- NOTE: External logic
   const dispatch = useDispatch()
   // --
   const roomRef = useRef<number>(room)
+  useEffect(() => {
+    roomRef.current = Number(router.query.tg_chat_id)
+  }, [router.query.tg_chat_id])
   const [isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
   const [audits] = useStore((store: TSocketMicroStore) => store.audits)
   const socketRef = useRef<Socket | null>(null)
@@ -73,7 +85,7 @@ const Logic = ({ room }: TLogicProps) => {
       }, ({ data }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
         groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb`, items: [data] })
         setStore({ audits: data.audits })
-        if (data.audits.length > 0) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'default', autoHideDuration: 3000 })
+        if (data.audits.length > 0) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
       })
     }
     socket.on('connect', onConnectListener)
@@ -109,13 +121,13 @@ const Logic = ({ room }: TLogicProps) => {
       setStore({ isConnected: false })
     })
 
-    // return () => {
-    //   socket.off(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
-    //   socket.off('connect_error', onConnectErrorListener)
-    //   socket.off('reconnect', onReconnectErrorListener)
-    //   socket.off('reconnect_attempt', onReconnectAttemptListener)
-    // }
-  }, [])
+    return () => {
+      socket.off(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
+      socket.off('connect_error', onConnectErrorListener)
+      socket.off('reconnect', onReconnectErrorListener)
+      socket.off('reconnect_attempt', onReconnectAttemptListener)
+    }
+  }, [router.query.tg_chat_id])
 
   //-- NOTE: Menu
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -128,7 +140,7 @@ const Logic = ({ room }: TLogicProps) => {
   }, [])
   // --
   const handlePush = useCallback(() => {
-    const isConfirmed = window.confirm('Удаленный кэш будет перезаписан! Вы уверены?')
+    const isConfirmed = window.confirm('⚠️ Удаленный кэш будет перезаписан! Вы уверены?')
     if (isConfirmed) {
       try {
         handleMenuClose()
@@ -268,7 +280,7 @@ const Logic = ({ room }: TLogicProps) => {
   }, [])
   // const { timeAgoText } = useTimeAgo({ delay: 1000, date: })
   const handleLocalBackup = useCallback(() => {
-    const isConfirmed = window.confirm('Локальный кэш будет перезаписан! Вы уверены?')
+    const isConfirmed = window.confirm('⚠️ Локальный кэш будет перезаписан! Вы уверены?')
     if (isConfirmed) {
       // groupLog({ spaceName: 'local backup', items: [`Local backup for ${room}`] })
       handleMenuClose()
@@ -281,123 +293,158 @@ const Logic = ({ room }: TLogicProps) => {
 
   const { last: lastLocalAudits } = useLastUpdatedAuditTs({ audits: localAudits })
   const { last: lastRemoteAudits } = useLastUpdatedAuditTs({ audits })
-  const { timeAgoText: lastRemoteAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastRemoteAudits.tsUpdate.value, delay: 5000 })
+  // const { timeAgoText: lastRemoteAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastRemoteAudits.tsUpdate.value, delay: 5000 })
   const { timeAgoText: lastLocalAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastLocalAudits.tsUpdate.value, delay: 5000 })
 
   const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
 
-  // useEffect(() => {
-  //   // autoparkHttpClient.checkJWT({
-  //   //   tested_chat_id: String(roomRef.current),
-  //   // })
-  //   //   .then((res: any) => {
-  //   //     if (res?.ok === true) dispatch(setIsOneTimePasswordCorrect(true))
-  //   //   })
-  //   //   .catch((err) => {
-  //   //     console.log(err.message || 'Unknown err (eff)')
-  //   //   })
-  //   if (hasAuthenticatedOnSSR) dispatch(setIsOneTimePasswordCorrect(true))
+  useEffect(() => {
+    autoparkHttpClient.checkJWT({
+      tested_chat_id: String(roomRef.current),
+    })
+      .then((res: any) => {
+        dispatch(setIsOneTimePasswordCorrect(res?.ok === true))
+        
+        if (!res?.ok && !!res?.message) enqueueSnackbar(res.message, { variant: 'error', autoHideDuration: 7000 })
+      })
+      .catch((err) => {
+        dispatch(setIsOneTimePasswordCorrect(false))
+        if (err?.message) enqueueSnackbar(err.message, { variant: 'error', autoHideDuration: 7000 })
+        console.log(err.message || 'Unknown err (eff)')
+      })
+    // if (hasAuthenticatedOnSSR) dispatch(setIsOneTimePasswordCorrect(true))
+
+    // NOTE: Remember this
+    dispatch(fixVisitedPage({ tg_chat_id: room }))
+  }, [])
+  const lastVisitedOnlinePages = useSelector((state: IRootState) => state.todo2023.online?.lastVisitedPages || [])
+  // const handleRoomClick = useCallback((tg_chat_id: number) => () => {
+  //   router.push(`/subprojects/todo/${tg_chat_id}`)
   // }, [])
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <Container maxWidth="xs">
-          <Box
-            sx={{
-              pt: 2,
-              pb: 0,
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
+          <Stack
+            direction='column'
+            alignItems='start'
+            spacing={2}
+            sx={{ pt: 2, pb: 2 }}
           >
-            <Typography variant="h5" display="block" gutterBottom>
-              Audit list | {isConnected ? 'connected' : 'disconnected'}
-            </Typography>
-            {/*
-            <Button
-              startIcon={<UploadIcon />}
-              fullWidth
-              variant="contained"
-              color='secondary'
-              onClick={handlePush}
-            >Push from LS (Save)</Button>
-          */}
-            <IconButton
-              aria-label="more"
-              id="long-button"
-              aria-controls={isMenuOpened ? 'long-menu' : undefined}
-              aria-expanded={isMenuOpened ? 'true' : undefined}
-              aria-haspopup="true"
-              onClick={handleMenuOpen}
-            >
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              id="long-menu"
-              MenuListProps={{
-                'aria-labelledby': 'long-button',
-              }}
-              anchorEl={anchorEl}
-              open={isMenuOpened}
-              onClose={handleMenuClose}
-              PaperProps={{
-                // style: {
-                //   maxHeight: ITEM_HEIGHT * 4.5,
-                //   width: '20ch',
-                // },
+            <Box
+              sx={{
+                // pt: 2,
+                // pb: 0,
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%',
               }}
             >
-              {
-                isOneTimePasswordCorrect && (
+              <Typography variant="h5" display="block" gutterBottom>
+                {isConnected ? '🟢' : '🔴'} {room}
+              </Typography>
+              {/*
+              <Button
+                startIcon={<UploadIcon />}
+                fullWidth
+                variant="contained"
+                color='secondary'
+                onClick={handlePush}
+              >Push from LS (Save)</Button>
+            */}
+              <IconButton
+                aria-label="more"
+                id="long-button"
+                aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                aria-expanded={isMenuOpened ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={handleMenuOpen}
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="long-menu"
+                MenuListProps={{
+                  'aria-labelledby': 'long-button',
+                }}
+                anchorEl={anchorEl}
+                open={isMenuOpened}
+                onClose={handleMenuClose}
+                PaperProps={{
+                  // style: {
+                  //   maxHeight: ITEM_HEIGHT * 4.5,
+                  //   width: '20ch',
+                  // },
+                }}
+              >
+                <MenuList>
+                  {
+                    isOneTimePasswordCorrect && (
+                      <MenuItem
+                        selected={false}
+                        onClick={handlePush}
+                        disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
+                      >
+                        <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
+                        <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
+                      </MenuItem>
+                    )
+                  }
+                  <CopyToClipboard
+                    text={`/subprojects/todo/${room}`}
+                    onCopy={handleCopyLink}
+                  >
+                    <MenuItem selected={false}>
+                      <ListItemIcon><ContentCopyIcon fontSize="small" /></ListItemIcon>
+                      <Typography variant="inherit">Copy link</Typography>
+                    </MenuItem>
+                  </CopyToClipboard>
                   <MenuItem
                     selected={false}
-                    onClick={handlePush}
-                    disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
+                    onClick={handleLocalBackup}
+                    disabled={audits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
                   >
-                    <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
-                    <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
+                    <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
+                    <Typography variant="inherit">Local backup ({audits.length}){!!lastLocalAuditsTsUpdateTimeAgo ? ` ${lastLocalAuditsTsUpdateTimeAgo}` : ''}</Typography>
                   </MenuItem>
-                )
-              }
-              <CopyToClipboard
-                text={`http://pravosleva.ru/subprojects/todo/${room}`}
-                onCopy={handleCopyLink}
-              >
-                <MenuItem selected={false}>
-                  <ListItemIcon><ContentCopyIcon fontSize="small" /></ListItemIcon>
-                  <Typography variant="inherit">Copy link</Typography>
-                </MenuItem>
-              </CopyToClipboard>
-              <MenuItem
-                selected={false}
-                onClick={handleLocalBackup}
-                disabled={audits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
-              >
-                <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
-                <Typography variant="inherit">Local backup ({audits.length}) {lastLocalAuditsTsUpdateTimeAgo}</Typography>
-              </MenuItem>
-            </Menu>
-          </Box>
-          <Box
-            sx={{
-              pt: 0,
-              pb: 0,
-            }}
-          >
-            <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo' target='_self'>
-              Onffline
-            </Button>
-          </Box>
-          <Box
+                  {
+                    lastVisitedOnlinePages.length > 0 && (
+                      <>
+                        <Divider />
+                        {lastVisitedOnlinePages.map(({ tg_chat_id }) => (
+                          <MenuItem
+                            key={tg_chat_id}
+                            selected={false}
+                            // onClick={handleRoomClick(tg_chat_id)}
+                            onClick={(e) => {
+                              e.preventDefault()
+                              window.location.href = `/subprojects/todo/${tg_chat_id}`
+                            }}
+                            disabled={String(tg_chat_id) === router.query.tg_chat_id}
+                          >
+                            <ListItemIcon><FolderIcon fontSize="small" /></ListItemIcon>
+                            <Typography variant="inherit">{tg_chat_id}</Typography>
+                            {/* <Link href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</Link> */}
+                          </MenuItem>
+                        ))}
+                      </>
+                    )
+                  }
+                </MenuList>
+              </Menu>
+            </Box>
+          </Stack>
+
+          {/* <Box
             sx={{
               pt: 2,
               pb: 2,
             }}
           >
             <em>Updated {lastRemoteAuditsTsUpdateTimeAgo}</em>
-          </Box>
+          </Box> */}
           <AuditList
             audits={audits}
             onRemoveAudit={handleRemoveAudit}
@@ -457,6 +504,16 @@ const Logic = ({ room }: TLogicProps) => {
                   />
                 )
               }
+              <Box
+                sx={{
+                  pt: 2,
+                  // pb: 2,
+                }}
+              >
+                <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo' target='_self'>
+                  Onffline
+                </Button>
+              </Box>
             </div>
           )
         }

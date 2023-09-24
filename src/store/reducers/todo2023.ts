@@ -5,11 +5,22 @@ import { getRandomString } from '~/utils/getRandomString';
 // import { IRootState } from '~/store/IRootState'
 // import { TAudit } from '~/components/ToDo2023/state'
 
-type TState = {
+type TLastVisitedPage = {
+  tg_chat_id: number;
+  tsVisit: number;
+  // TOOD: label?
+}
+export type TState = {
   localAudits: TAudit[];
+  online: {
+    lastVisitedPages: TLastVisitedPage[];
+  },
 }
 export const initialState: TState = {
   localAudits: [],
+  online: {
+    lastVisitedPages: []
+  },
 }
 
 const _getNextSubjobStatus = (prevStatus: ESubjobStatus): ESubjobStatus => {
@@ -27,12 +38,39 @@ const _getNextSubjobStatus = (prevStatus: ESubjobStatus): ESubjobStatus => {
 //   return keys[nextIndex]
 // }
 
+const rememberPagesLimit: number = 20
+
 export const todo2023Slice: any = createSlice({
   name: 'todo2023',
   initialState,
   reducers: {
     setLocalAudits: (state: any, action: any) => {
       state.localAudits = action.payload
+    },
+    fixVisitedPage: (state: TState, action: { payload: { tg_chat_id: number; } }) => {
+      if (!state.online) {
+        state.online = { ...initialState.online }
+      }
+
+      const isAlreadyExists = state.online.lastVisitedPages.findIndex(({ tg_chat_id }) => tg_chat_id === action.payload.tg_chat_id) !== -1
+      
+      const newArr = state.online.lastVisitedPages?.filter(({ tg_chat_id }) => tg_chat_id !== action.payload.tg_chat_id) || []
+
+      if (isAlreadyExists) {
+        if (newArr.length >= rememberPagesLimit) newArr.pop()
+
+        newArr.unshift({
+          tg_chat_id: action.payload.tg_chat_id,
+          tsVisit: new Date().getTime(),
+        })
+        state.online.lastVisitedPages = newArr
+      } else {
+        newArr.unshift({
+          tg_chat_id: action.payload.tg_chat_id,
+          tsVisit: new Date().getTime(),
+        })
+        state.online.lastVisitedPages = newArr
+      }
     },
     toggleJobDone: (state: TState, action: { payload: { auditId: string; jobId: string } }) => {
       const {
@@ -382,6 +420,7 @@ export const {
   removeSubjob,
 
   replaceAudits,
+  fixVisitedPage,
 } = todo2023Slice.actions
 
 export const reducer = todo2023Slice.reducer

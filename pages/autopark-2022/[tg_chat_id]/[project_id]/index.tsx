@@ -20,6 +20,7 @@ import Head from 'next/head'
 import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import jwt from 'jsonwebtoken'
+import { CreateNewItem } from '~/components/Autopark2022/components/TheProject/components/CreateNewItem'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -54,6 +55,8 @@ export default function MyProjects({
 
   const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
   const hasItems = useMemo(() => items.length > 0, [items])
+
+  const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
 
   return (
     <>
@@ -94,6 +97,16 @@ export default function MyProjects({
           className='backdrop-blur--lite'
         >
           <Grid container spacing={2}>
+            {
+              isOneTimePasswordCorrect && (
+                <Grid item xs={12}>
+                {/* <Button sx={{ mb: 2 }} fullWidth variant="contained" color='primary' onClick={handleAddItem} startIcon={<AddIcon />}>
+                  Добавить расходник
+                </Button> */}
+                <CreateNewItem chat_id={chat_id} project_id={project_id} />
+                </Grid>
+              )
+            }
             <Grid item xs={hasItems ? 6 : 12}>
               <Button
                 startIcon={<ArrowBackIcon />}

@@ -1,6 +1,6 @@
 import { Store } from 'redux'
 // import { IToast } from '@/actions'
-import { TAudit } from '~/components/ToDo2023.offline/state'
+import { TState as TTodo2023State } from './reducers/todo2023'
 
 type TProject = {
   name: string;
@@ -28,8 +28,5 @@ export interface IRootState extends Store {
     x: number;
     isOneTimePasswordCorrect: boolean;
   };
-  todo2023: {
-    localAudits: TAudit[];
-    // TODO: remoteAudits: TAudit[];
-  };
+  todo2023: TTodo2023State;
 }

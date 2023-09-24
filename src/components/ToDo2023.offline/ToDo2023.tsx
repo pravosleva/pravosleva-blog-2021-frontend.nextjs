@@ -1,5 +1,17 @@
-// import { Modal, Box, Typography, Button, TextField, Grid } from '@mui/material'
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import Head from 'next/head'
+import { memo, useCallback, useState } from 'react'
+import {
+  Box,
+  Button,
+  Container,
+  // Grid,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { AddNewBtn, AuditList } from '~/components/ToDo2023.offline/components'
 import { TAudit } from '~/components/ToDo2023.offline/state'
 import { useSelector, useDispatch } from 'react-redux'
@@ -12,19 +24,21 @@ import {
   removeJob,
   toggleSubJobDone,
 } from '~/store/reducers/todo2023'
-import { memo, useCallback } from 'react'
 import { IRootState } from '~/store/IRootState'
 import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
 import Link from '~/components/Link'
-// import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 // import SendIcon from '@mui/icons-material/Send';
-// import { useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 // import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ useSnackbar } from 'notistack'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import FolderIcon from '@mui/icons-material/Folder'
+// import MuiLink from '@mui/material/Link'
 
 export const ToDo2023 = memo(() => {
-  // const router = useRouter()
+  const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const dispatch = useDispatch()
   const handleError = (arg: any) => {
@@ -136,23 +150,95 @@ export const ToDo2023 = memo(() => {
   // }, [useCompare([localAudits])])
   // const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
 
+  const lastVisitedOnlinePages = useSelector((state: IRootState) => state.todo2023.online?.lastVisitedPages || [])
+  //-- NOTE: Menu
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isMenuOpened = Boolean(anchorEl);
+  const handleMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  }, [])
+  const handleMenuClose = useCallback(() => {
+    setAnchorEl(null);
+  }, [])
+  const handleRoomClick = useCallback((tg_chat_id: number) => () => {
+    router.push(`/subprojects/todo/${tg_chat_id}`)
+  }, [])
+  // --
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-      <Container maxWidth="xs">
-        <Box sx={{ py: 2 }}>
-          <Typography variant="h5" display="block" gutterBottom>
-            Audit list
-          </Typography>
-          
+    <>
+      <Head>
+        <title>AuditList</title>
+        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+      </Head>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+        <Container maxWidth="xs">
           <Stack
-            direction='row'
+            direction='column'
             alignItems='start'
             spacing={2}
-            // sx={{ mb: 2 }}
+            sx={{ pt: 2, pb: 2 }}
           >
-            <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/' target='_self'>
-              Home
-            </Button>
+            <Box
+              sx={{
+                // pb: 2,
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}
+            >
+              <Typography variant="h5" display="block" gutterBottom>
+                AuditList
+              </Typography>
+              {
+                lastVisitedOnlinePages?.length > 0 && (
+                  <>
+                    <IconButton
+                      aria-label="more"
+                      id="long-button"
+                      aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                      aria-expanded={isMenuOpened ? 'true' : undefined}
+                      aria-haspopup="true"
+                      onClick={handleMenuOpen}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      id="long-menu"
+                      MenuListProps={{
+                        'aria-labelledby': 'long-button',
+                      }}
+                      anchorEl={anchorEl}
+                      open={isMenuOpened}
+                      onClose={handleMenuClose}
+                      PaperProps={{
+                        // style: {
+                        //   maxHeight: ITEM_HEIGHT * 4.5,
+                        //   width: '20ch',
+                        // },
+                      }}
+                    >
+                      {
+                        lastVisitedOnlinePages.map(({ tg_chat_id }) => (
+                          <MenuItem
+                            key={tg_chat_id}
+                            selected={false}
+                            onClick={handleRoomClick(tg_chat_id)}
+                            disabled={String(tg_chat_id) === router.query.tg_chat_id}
+                          >
+                            <ListItemIcon><FolderIcon fontSize="small" color='error' /></ListItemIcon>
+                            <Typography variant="inherit">{tg_chat_id}</Typography>
+                            {/* <MuiLink href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</MuiLink> */}
+                          </MenuItem>
+                        ))
+                      }
+                    </Menu>
+                  </>
+                )
+              }
+            </Box>
+            
+            
             {/* <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo/1' target='_self'>
               Online /1
             </Button> */}
@@ -164,62 +250,74 @@ export const ToDo2023 = memo(() => {
               )
             */}
           </Stack>
-        </Box>
 
-        <AuditList
-          audits={localAudits}
-          onRemoveAudit={handleRemoveAudit}
-          onAddJob={handleAddJob}
-          onAddSubjob={handleAddSubjob}
-          onToggleJobDone={handleToggleJobDone}
-          onRemoveJob={handleRemoveJob}
-          onToggleSubjob={handleToggleSubjob}
-          isEditable={true}
-        />
-      </Container>
-      {
-        typeof window !== 'undefined' && (
-          <div
-            style={{
-              marginTop: 'auto',
-              position: 'sticky',
-              bottom: '0px',
-              zIndex: 2,
-              padding: '16px',
-              // backgroundColor: '#fff',
-              // borderTop: '1px solid lightgray',
-            }}
-            className='backdrop-blur--lite'
-          >
-            <AddNewBtn
-              cb={{
-                onSuccess: handleAddNewAudit,
-                onError: handleError,
+          <AuditList
+            audits={localAudits}
+            onRemoveAudit={handleRemoveAudit}
+            onAddJob={handleAddJob}
+            onAddSubjob={handleAddSubjob}
+            onToggleJobDone={handleToggleJobDone}
+            onRemoveJob={handleRemoveJob}
+            onToggleSubjob={handleToggleSubjob}
+            isEditable={true}
+          />
+        </Container>
+        {
+          typeof window !== 'undefined' && (
+            <div
+              style={{
+                marginTop: 'auto',
+                position: 'sticky',
+                bottom: '0px',
+                zIndex: 2,
+                padding: '16px',
+                // backgroundColor: '#fff',
+                // borderTop: '1px solid lightgray',
               }}
-              label='Добавить Аудит'
-              muiColor='primary'
-              cfg={{
-                name: {
-                  type: 'text',
-                  label: 'Название',
-                  inputId: 'audit-name',
-                  placeholder: 'Аудит',
-                  defaultValue: '',
-                  reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
-                },
-                description: {
-                  type: 'text',
-                  label: 'Описание',
-                  inputId: 'audit-description',
-                  placeholder: 'Something',
-                  defaultValue: '',
-                  reactHookFormOptions: { required: false, maxLength: 50 }
-                }
-              }}
-            />
-          </div>
-        )
-      }
-    </div>
+              className='backdrop-blur--lite'
+            >
+              <Box sx={{ pt:0, pb: 2 }}>
+                <AddNewBtn
+                  cb={{
+                    onSuccess: handleAddNewAudit,
+                    onError: handleError,
+                  }}
+                  label='Добавить Аудит'
+                  muiColor='primary'
+                  cfg={{
+                    name: {
+                      type: 'text',
+                      label: 'Название',
+                      inputId: 'audit-name',
+                      placeholder: 'Аудит',
+                      defaultValue: '',
+                      reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
+                    },
+                    description: {
+                      type: 'text',
+                      label: 'Описание',
+                      inputId: 'audit-description',
+                      placeholder: 'Something',
+                      defaultValue: '',
+                      reactHookFormOptions: { required: false, maxLength: 50 }
+                    }
+                  }}
+                />
+              </Box>
+              <Stack spacing={2} direction='row' sx={{ width: '100%' }}>
+                <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/' target='_self'>
+                  Home
+                </Button>
+                {lastVisitedOnlinePages?.length > 0 && (
+                  <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href={`/subprojects/todo/${lastVisitedOnlinePages[0].tg_chat_id}`} target='_self'>
+                    {lastVisitedOnlinePages[0].tg_chat_id}
+                  </Button>
+                )}
+              </Stack>
+            </div>
+          )
+        }
+      </div>
+    </>
   )
 })
