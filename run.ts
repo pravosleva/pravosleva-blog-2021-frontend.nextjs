@@ -24,7 +24,7 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3000
 const { parse } = require('url')
 const { join } = require('path')
 const isProd = process.env.NODE_ENV === 'production'
-require('dotenv').config({ path: join(__dirname, isProd? './.env.prod' : './.env.dev') })
+require('dotenv').config({ path: join(__dirname, isProd? './.env.production' : './.env.dev') })
 
 const _customIO = withTodo2023SocketLogic(io)
 
