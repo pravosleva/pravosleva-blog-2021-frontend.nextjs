@@ -1,14 +1,14 @@
-import * as React from 'react';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import ProTip from '~/components/ProTip';
-import Link from '~/components/Link';
-import Copyright from '~/components/Copyright';
-import { event } from '~/utils/googleAnalitycs';
-import { Alert, Stack } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import * as React from 'react'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import ProTip from '~/components/ProTip'
+import Link from '~/components/Link'
+import Copyright from '~/components/Copyright'
+import { event } from '~/utils/googleAnalitycs'
+import { Alert, Stack } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 export default function About() {
   const handleClick = () => {
@@ -35,7 +35,7 @@ export default function About() {
         </Alert>
         <Stack spacing={1}>
           <Button startIcon={<ArrowBackIcon />} variant="contained" color='primary' component={Link} noLinkStyle href="/" shallow>
-            Go to the main page
+            Home
           </Button>
           <Button variant="contained" color='inherit' onClick={handleClick}>
             GA tst 0
@@ -45,5 +45,5 @@ export default function About() {
         <Copyright />
       </Box>
     </Container>
-  );
+  )
 }

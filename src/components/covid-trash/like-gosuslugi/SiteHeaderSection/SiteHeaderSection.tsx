@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 // import styled from 'styled-components'
 import { useStyles } from './styles'
-import { withTranslator } from '~/hocs/with-translator'
+import { withTranslator } from '~/hocs/withTranslator'
 
 interface IProps {
   t: (a: string) => string,

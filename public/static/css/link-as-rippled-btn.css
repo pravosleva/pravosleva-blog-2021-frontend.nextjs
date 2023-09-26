@@ -1,0 +1,64 @@
+a.link-as-rippled-btn {
+  position: relative;
+  display: inline-block;
+  padding: 0.9em 1.7em;
+  margin: 10px 0;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  letter-spacing: 0.1em;
+  border-radius: 40px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #0162c8, #3a8de3);
+  transition: all 0.3s ease;
+}
+
+/* GLOBAL THEMING */
+
+/* 1. LIGHT */
+body.light a.link-as-rippled-btn:hover {
+  background: linear-gradient(90deg, #0162c8, #0162c8);
+}
+/* 2. GRAY */
+body.gray a.link-as-rippled-btn:hover {
+  background: linear-gradient(90deg, #0162c8, #0162c8);
+}
+/* 3. HARD-GRAY */
+body.hard-gray a.link-as-rippled-btn:hover {
+  box-shadow: 0 0 4px 0 rgba(255, 255, 255, 1);
+}
+/* 4. DARK */
+body.dark a.link-as-rippled-btn {
+  background: linear-gradient(90deg, #0162c8, #0162c8);
+}
+body.dark a.link-as-rippled-btn:hover {
+  background: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.2));
+}
+
+@media (max-width: 767px) {
+  a.link-as-rippled-btn {
+    /* width: 100%; */
+    text-align: center;
+  }
+}
+.link-as-rippled-btn > span.ripples {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: animateLinkAsRippledBtn 1s linear infinite;
+}
+@keyframes animateLinkAsRippledBtn {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.5;
+  }
+  100% {
+    width: 500px;
+    height: 500px;
+    opacity: 0.5;
+  }
+}

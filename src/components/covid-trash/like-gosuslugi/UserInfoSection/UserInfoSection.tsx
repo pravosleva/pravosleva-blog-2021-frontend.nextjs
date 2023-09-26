@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { TUserData } from '~/components/covid-trash/like-gosuslugi/UserInfoSection/interfaces'
 // import styled from 'styled-components'
 import { useStyles } from './styles'
-import { withTranslator } from '~/hocs/with-translator'
+import { withTranslator } from '~/hocs/withTranslator'
 import { getRandomInteger } from '~/utils/getRandomInteger'
 import slugify from 'slugify'
 

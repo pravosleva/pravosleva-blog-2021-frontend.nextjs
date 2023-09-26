@@ -52,7 +52,7 @@ export const todo2023Slice: any = createSlice({
         state.online = { ...initialState.online }
       }
 
-      const isAlreadyExists = state.online.lastVisitedPages.findIndex(({ tg_chat_id }) => tg_chat_id === action.payload.tg_chat_id) !== -1
+      const isAlreadyExists = state.online.lastVisitedPages?.findIndex(({ tg_chat_id }) => tg_chat_id === action.payload.tg_chat_id) !== -1
       
       const newArr = state.online.lastVisitedPages?.filter(({ tg_chat_id }) => tg_chat_id !== action.payload.tg_chat_id) || []
 
@@ -402,7 +402,7 @@ export const todo2023Slice: any = createSlice({
     [HYDRATE]: (state, action) => {
       return {
         ...state,
-        ...action.payload.localAudits,
+        ...action.payload.todo2023,
       };
     },
   },

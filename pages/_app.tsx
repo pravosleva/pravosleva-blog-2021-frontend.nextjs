@@ -16,6 +16,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { useStore } from 'react-redux';
 // import { IRootState } from '~/store/IRootState';
 import { SnackbarProvider } from 'notistack'
+import { ThemeProvider as SCThemeProvider } from 'styled-components'
+import { Theme } from '~/ui-kit/Theme'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -54,13 +56,21 @@ function AppWithRedux(props: MyAppProps) {
           <Head>
             <title>Pravosleva</title>
             <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+            <link href="/static/css/layout.css" rel="stylesheet" />
+            <link href="/static/css/global-theming.css" rel="stylesheet" />
+            <link href="/static/css/standart-form.css" rel="stylesheet" />
+            <link href="/static/css/rippled-btn.css" rel="stylesheet" />
+            <link href="/static/css/link-as-rippled-btn.css" rel="stylesheet" />
+            <link href="/static/css/custom-breadcrumbbs.css" rel="stylesheet" />
             {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
           </Head>
-          <ThemeProvider theme={theme}>
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-            <CssBaseline />
-            <Component {...pageProps} />
-          </ThemeProvider>
+          <SCThemeProvider theme={Theme}>
+            <ThemeProvider theme={theme}>
+              {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+              <CssBaseline />
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </SCThemeProvider>
         </CacheProvider>
       </SnackbarProvider>
     </PersistGate>

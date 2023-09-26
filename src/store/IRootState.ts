@@ -1,6 +1,8 @@
 import { Store } from 'redux'
 // import { IToast } from '@/actions'
 import { TState as TTodo2023State } from './reducers/todo2023'
+import { TState as TGlobalThemingState } from './reducers/globalTheme'
+import { TState as TCookieOfferState } from './reducers/cookieOffer'
 
 type TProject = {
   name: string;
@@ -29,4 +31,6 @@ export interface IRootState extends Store {
     isOneTimePasswordCorrect: boolean;
   };
   todo2023: TTodo2023State;
+  globalTheme: TGlobalThemingState;
+  cookieOffer: TCookieOfferState;
 }

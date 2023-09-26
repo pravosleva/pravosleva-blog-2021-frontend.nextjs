@@ -34,7 +34,8 @@ import { useRouter } from 'next/router'
 // import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ useSnackbar } from 'notistack'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import FolderIcon from '@mui/icons-material/Folder'
+// import FolderIcon from '@mui/icons-material/Folder'
+import AccountTreeIcon from '@mui/icons-material/AccountTree'
 // import MuiLink from '@mui/material/Link'
 
 export const ToDo2023 = memo(() => {
@@ -226,7 +227,7 @@ export const ToDo2023 = memo(() => {
                             onClick={handleRoomClick(tg_chat_id)}
                             disabled={String(tg_chat_id) === router.query.tg_chat_id}
                           >
-                            <ListItemIcon><FolderIcon fontSize="small" color='error' /></ListItemIcon>
+                            <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
                             <Typography variant="inherit">{tg_chat_id}</Typography>
                             {/* <MuiLink href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</MuiLink> */}
                           </MenuItem>

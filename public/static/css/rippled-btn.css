@@ -1,0 +1,81 @@
+.rippled-btn {
+  position: relative;
+  display: inline-block;
+  padding: 0.9em 1.7em;
+  margin: 10px 0;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: 40px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #0162c8, #55e7fc);
+}
+
+@media (max-width: 767px) {
+  .rippled-btn {
+    width: 100%;
+  }
+}
+.rippled-btn > span.ripples {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: animateRippledBtn 1s linear infinite;
+}
+@keyframes animateRippledBtn {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.5;
+  }
+  100% {
+    width: 500px;
+    height: 500px;
+    opacity: 0.5;
+  }
+}
+
+/* ORIGINAL SAMPLE
+<script
+  defer
+  dangerouslySetInnerHTML={{
+    __html: `
+const rippledButtons = document.querySelectorAll('.link-as-rippled-btn');
+
+rippledButtons.forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    // e.preventDefault();
+    console.log(e.clientX, e.target.offsetLeft)
+    // const x = e.clientX - e.target.offsetLeft;
+    // const y = e.clientY - e.target.offsetTop;
+    const x = e.clientX - e.target.offsetLeft;
+    const y = e.clientY;
+
+    const ripples = document.createElement('span');
+    ripples.classList.add('ripples');
+
+    // ripples.style.left = x + 'px';
+    // ripples.style.top = y + 'px';
+    ripples.style.left = x + 'px';
+    ripples.style.top = '50%';
+
+    console.log(this)
+    this.appendChild(ripples);
+    console.log(this)
+
+    setTimeout(() => {
+      ripples.remove();
+    }, 1000);
+  })
+})
+`,
+  }}
+/>
+*/

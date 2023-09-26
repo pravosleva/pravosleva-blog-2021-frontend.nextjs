@@ -1,8 +1,11 @@
-import { createSymbiote } from 'redux-symbiote'
 import intl from 'react-intl-universal'
 import enUS from '~/public/static/locales/en-US.json'
 import ruRU from '~/public/static/locales/ru-RU.json'
 // Others...
+import { createSlice } from '@reduxjs/toolkit'
+import { HYDRATE } from "next-redux-wrapper"
+// import { IRootState } from '~/store/IRootState'
+import { getDeafultLangFromCookieOrNavigator } from '~/utils/multilingual/getDeafultLangFromCookieOrNavigator'
 
 export const SUPPOER_LOCALES = [
   {
@@ -21,6 +24,7 @@ export const SUPPOER_LOCALES = [
   },
   // Others...
 ]
+
 const translateFnInit = (lang?: string) => {
   intl
     .init({
@@ -35,34 +39,45 @@ const translateFnInit = (lang?: string) => {
       // Default example comment: After loading CLDR locale data, start to render
       // For example: initDone -> true
     })
-    .catch((_err) => {
-      // console.log(err)
+    .catch((err) => {
+      console.log(err)
     })
   return (str: string) => intl.get(str)
 }
-translateFnInit() // First init
+translateFnInit(getDeafultLangFromCookieOrNavigator(SUPPOER_LOCALES, 'ru-RU')) // First init
 
 export const initialState = {
   current: 'ru-RU',
   suppoerLocales: SUPPOER_LOCALES,
 }
 
-export const { actions: langActions, reducer: lang } = createSymbiote(
+export const langSlice: any = createSlice({
+  name: 'lang',
   initialState,
-  {
-    set: (state, payload) => {
-      translateFnInit(payload)
-
-      return {
-        ...state,
-        current: payload,
-      }
+  reducers: {
+    set: (state, action) => {
+      state.current = action.payload
+      translateFnInit(action.payload)
     },
-    reset: () => {
+    reset: (state) => {
+      state.current = initialState.current
       translateFnInit()
-
-      return { ...initialState }
     },
   },
-  'lang'
-)
+  // Special reducer for hydrating the state. Special case for next-redux-wrapper
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      return {
+        ...state,
+        ...action.payload.lang,
+      };
+    },
+  },
+})
+
+export const {
+  set,
+  reset,
+} = langSlice.actions
+
+export const reducer = langSlice.reducer

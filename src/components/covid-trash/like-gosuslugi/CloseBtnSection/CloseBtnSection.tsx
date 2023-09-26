@@ -1,5 +1,5 @@
 import React from 'react'
-import { withTranslator } from '~/hocs/with-translator'
+import { withTranslator } from '~/hocs/withTranslator'
 import { useStyles } from './styles'
 
 export const CloseBtnSectionConnected = ({ t }: any) => {

@@ -1,4 +1,7 @@
-import axios, { AxiosResponse as IAxiosResponse } from 'axios';
+import axios, {
+  AxiosResponse as IAxiosResponse,
+  AxiosInstance as IAxiosInstance,
+} from 'axios';
 import axiosRetry from 'axios-retry'
 import { TAudit } from '~/components/ToDo2023.offline/state/types';
 
@@ -16,9 +19,10 @@ enum EControllers {
 
 type TLocalResult = {
   isOk: boolean;
-  res: {
+  res?: {
     data: any;
-  }
+  };
+  message?: string;
 };
 
 // type TGetUserDataParams = {
@@ -37,8 +41,8 @@ class httpClientSingletone {
   static _instance = new httpClientSingletone();
   checkStateController: any;
   getSubsidiesController: any;
-  remoteExpressApi: any;
-  localNextApi: any;
+  remoteExpressApi: IAxiosInstance;
+  localNextApi: IAxiosInstance;
   controllers: { [key in EControllers]: any }; // AbortController | null
 
   constructor() {

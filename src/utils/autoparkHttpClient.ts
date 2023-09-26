@@ -1,4 +1,7 @@
-import axios, { AxiosResponse as IAxiosResponse } from 'axios';
+import axios, {
+  AxiosResponse as IAxiosResponse,
+  AxiosInstance as IAxiosInstance,
+} from 'axios';
 import axiosRetry from 'axios-retry'
 
 // const isDev = process.env.NODE_ENV === 'development'
@@ -17,9 +20,10 @@ enum EControllers {
 
 type TLocalResult = {
   isOk: boolean;
-  res: {
+  res?: {
     data: any;
-  }
+  };
+  message?: string;
 };
 
 type TGetUserDataParams = {
@@ -38,7 +42,7 @@ class httpClientSingletone {
   static _instance = new httpClientSingletone();
   checkStateController: any;
   getSubsidiesController: any;
-  api: any;
+  api: IAxiosInstance;
   controllers: { [key: string]: any }; // AbortController | null
 
   constructor() {

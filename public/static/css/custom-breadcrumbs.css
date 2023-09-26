@@ -1,0 +1,23 @@
+.bx_breadcrumbs > ul {
+  font-size: 0.9em;
+
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+}
+.bx_breadcrumbs > ul > li > a,
+.bx_breadcrumbs > ul > li > span {
+  text-decoration: none;
+  color: gray;
+  white-space: nowrap;
+  font-size: inherit;
+}
+.bx_breadcrumbs > ul > li > a::after {
+  content: '/';
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.bx_breadcrumbs > ul > li:last-child > a::after {
+  content: '';
+}

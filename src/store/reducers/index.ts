@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 // import { reducer as formReducer } from 'redux-form'
 // import { counter, initialState as countInitialState } from './counter'
-import { lang } from './lang'
+import { reducer as langReducer } from './lang'
 // import {
 //   scrollDisablingComponents,
 //   initialState as scrollDisablingComponentsInitialState,
@@ -11,10 +11,13 @@ import { lang } from './lang'
 // import { toaster, initialState as toasterInitialState } from './toaster'
 import { reducer as autoparkReducer } from './autopark'
 import { reducer as todo2023Reducer } from './todo2023'
+import { reducer as globalThemeReducer } from './globalTheme'
+import { reducer as cookieOfferReducer } from './cookieOffer'
+import { reducer as scrollDisablingComponentsReducer } from './scrollDisablingComponents'
 
 export const rootReducer = combineReducers({
   // counter,
-  lang,
+  lang: langReducer,
   // scrollDisablingComponents,
   // userInfo,
   // users,
@@ -22,6 +25,9 @@ export const rootReducer = combineReducers({
   // toaster,
   autopark: autoparkReducer,
   todo2023: todo2023Reducer,
+  globalTheme: globalThemeReducer,
+  cookieOffer: cookieOfferReducer,
+  scrollDisablingComponents: scrollDisablingComponentsReducer,
   // Others...
 })
 

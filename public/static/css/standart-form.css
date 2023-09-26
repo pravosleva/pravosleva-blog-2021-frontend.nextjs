@@ -1,0 +1,285 @@
+.box {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+@media (max-width: 767px) {
+  .box {
+    margin-top: 50px;
+  }
+}
+.box h2 {
+  margin: 0 0 40px 0;
+  padding: 0;
+  color: #0162c8;
+  text-align: left;
+  background: linear-gradient(45deg, #0162c8, #00ff95 80%);
+  background-clip: text;
+  background: -webkit-linear-gradient(45deg, #0162c8, #00ff95 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.box h2.error {
+  background: linear-gradient(45deg, #f44336, #f44336 80%);
+  background-clip: text;
+  background: -webkit-linear-gradient(45deg, #f44336, #f44336 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.box h2.gradient-animate-effect {
+  color: #fff;
+  /*
+  background: linear-gradient(45deg, #0162c8, #0162c8, #0162c8, #fff, #f44336, #fff, #0162c8 80%);
+  background: -webkit-linear-gradient(45deg, #0162c8, #0162c8, #0162c8, #fff, #f44336, #fff, #0162c8 80%);
+  */
+  background: linear-gradient(
+    110deg,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #fff,
+    /* #f44336, */
+    /* #ff781e, */
+    #ffc15f,
+    #fff,
+    #0162c8 80%
+  );
+  background: -webkit-linear-gradient(
+    110deg,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #fff,
+    /* #f44336, */
+    /* #ff781e, */
+    #ffc15f,
+    #fff,
+    #0162c8 80%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200%;
+  animation: animate 4s linear infinite;
+}
+@keyframes animate {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 200%;
+  }
+}
+.box .inputBox {
+  position: relative;
+}
+.box .inputBox input {
+  padding: 8px 0;
+  margin-bottom: 35px;
+}
+.box .inputBox input,
+.box .inputBox textarea {
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  border-bottom: 2px solid lightgray;
+}
+.box .inputBox input::placeholder,
+.box .inputBox textarea::placeholder {
+  color: transparent;
+}
+.box .inputBox textarea {
+  padding: 8px 0;
+  min-height: 150px;
+  margin-bottom: 35px;
+  resize: vertical;
+  max-height: 300px;
+}
+
+.box button {
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+  background: lightgray;
+  color: #fff;
+  margin-bottom: 0;
+
+  padding: 0.9em 1.7em;
+  font-size: 0.9em;
+  letter-spacing: 0.1em;
+  border-radius: 40px;
+  overflow: hidden;
+}
+.box button:disabled {
+  opacity: 0.4;
+}
+
+.box .inputBox.inputBox--btns {
+  display: flex;
+  justify-content: flex-end;
+}
+.box .inputBox.inputBox--btns > button:not(:last-child) {
+  margin-right: 10px;
+}
+.box .inputBox button {
+  border-radius: 40px;
+}
+.box button[type='submit'] {
+  /* background: #0162c8; */
+  background: linear-gradient(90deg, #0162c8, #55e7fc);
+  color: #fff;
+}
+
+.box form .inputBox label {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  color: lightgray;
+  font-size: 0.9em;
+  transition: 0.5s;
+  pointer-events: none;
+}
+
+.box .inputBox input:focus ~ label,
+.box .inputBox textarea:focus ~ label,
+.box .inputBox input:valid ~ label,
+.box .inputBox textarea:valid ~ label,
+.box .inputBox input:not(:placeholder-shown) ~ label {
+  top: -18px;
+  left: 0;
+  color: #0162c8;
+  font-size: 12px;
+  font-weight: bold;
+}
+.box .inputBox input:focus,
+.box .inputBox textarea:focus,
+.box .inputBox input:valid,
+.box .inputBox textarea:valid {
+  border-bottom: 2px solid #0162c8;
+}
+
+/* Additional */
+.box .inputBox input:invalid ~ label,
+.box .inputBox textarea:invalid ~ label {
+  color: #f44336;
+}
+/*
+.box .inputBox input:invalid {
+  border-bottom-color: #f44336;
+}
+*/
+
+/* GLOBAL THEMING */
+/* 1. LIGHT: by default */
+/* 2. GRAY */
+body.gray .box .inputBox input,
+body.gray .box .inputBox textarea {
+  border-bottom: 2px solid #708090;
+}
+body.gray .box form .inputBox label {
+  color: #708090;
+}
+body.gray .box button[type='button'] {
+  background: gray;
+  color: #fff;
+}
+/* 3. HARD-GRAY */
+body.hard-gray .box .inputBox input,
+body.hard-gray .box .inputBox textarea {
+  border-bottom: 2px solid #fff;
+}
+body.hard-gray .box form .inputBox label {
+  color: #fff;
+}
+body.hard-gray .box button[type='button'] {
+  background: gray;
+  color: #fff;
+}
+body.hard-gray .box h2.gradient-animate-effect {
+  color: #fff;
+  /*
+  background: linear-gradient(45deg, #0162c8, #0162c8, #0162c8, #fff, #f44336, #fff, #0162c8 80%);
+  background: -webkit-linear-gradient(45deg, #0162c8, #0162c8, #0162c8, #fff, #f44336, #fff, #0162c8 80%);
+  */
+  background: linear-gradient(110deg, #0162c8, #0162c8, #fff, #fff, #fff, #fff, #fff, #f44336, #fff, #0162c8 80%);
+  background: -webkit-linear-gradient(
+    110deg,
+    #0162c8,
+    #0162c8,
+    #fff,
+    #fff,
+    #fff,
+    #fff,
+    #fff,
+    #f44336,
+    #fff,
+    #0162c8 80%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200%;
+  animation: animate 4s linear infinite;
+}
+/* 4. DARK */
+body.dark .box button[type='button'] {
+  background: gray;
+  color: #fff;
+}
+body.dark .box .inputBox input:invalid ~ label,
+body.dark .box .inputBox textarea:invalid ~ label {
+  color: #ff781e;
+}
+body.dark .box h2.gradient-animate-effect {
+  color: #fff;
+  /*
+  background: linear-gradient(45deg, #0162c8, #0162c8, #0162c8, #fff, #f44336, #fff, #0162c8 80%);
+  background: -webkit-linear-gradient(45deg, #0162c8, #0162c8, #0162c8, #fff, #f44336, #fff, #0162c8 80%);
+  */
+  background: linear-gradient(
+    110deg,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #fff,
+    #ff781e,
+    #fff,
+    #0162c8 80%
+  );
+  background: -webkit-linear-gradient(
+    110deg,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #0162c8,
+    #fff,
+    #ff781e,
+    #fff,
+    #0162c8 80%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200%;
+  animation: animate 4s linear infinite;
+}

@@ -1,6 +1,6 @@
 import React from 'react'
 // import styled from 'styled-components'
-import { withTranslator } from '~/hocs/with-translator'
+import { withTranslator } from '~/hocs/withTranslator'
 import { useStyles } from './styles'
 
 export const GreenCardSectionConnected = ({

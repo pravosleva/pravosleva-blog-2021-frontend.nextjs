@@ -41,8 +41,9 @@ import { OneTimeLoginFormBtn } from '../Autopark2022/components/OneTimeLoginForm
 import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { useRouter } from 'next/router'
-import FolderIcon from '@mui/icons-material/Folder'
+// import FolderIcon from '@mui/icons-material/Folder'
 // import MuiLink from '@mui/material/Link'
+import AccountTreeIcon from '@mui/icons-material/AccountTree'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'http://pravosleva.ru'
 
@@ -424,7 +425,7 @@ const Logic = ({ room }: TLogicProps) => {
                             }}
                             disabled={String(tg_chat_id) === router.query.tg_chat_id}
                           >
-                            <ListItemIcon><FolderIcon fontSize="small" /></ListItemIcon>
+                            <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
                             <Typography variant="inherit">{tg_chat_id}</Typography>
                             {/* <Link href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</Link> */}
                           </MenuItem>

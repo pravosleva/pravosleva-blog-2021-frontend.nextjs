@@ -14,9 +14,11 @@ const _getNextSubjobStatus = (prevStatus: ESubjobStatus): ESubjobStatus => {
 class Singleton {
   private static instance: Singleton;
   _state: Map<TOwnerTGChatId, TAudit[]>;
+  // _connections: Map<string, TOwnerTGChatId>;
 
   private constructor() {
     this._state = new Map()
+    // this._connections = new Map()
   }
 
   public static getInstance(): Singleton {
