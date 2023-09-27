@@ -105,5 +105,7 @@
   "COVID-TRASH_TARGET-TEXT": "Действителен",
   "COVID-TRASH_PASSPORT": "Паспорт",
   "COVID-TRASH_INTL-PASSPORT-ID": "",
-  "COVID-TRASH_DATE-OF-BIRTH": "Дата рождения"
+  "COVID-TRASH_DATE-OF-BIRTH": "Дата рождения",
+
+  "AUDITLIST_OFFLINE": "Аудит Offline"
 }

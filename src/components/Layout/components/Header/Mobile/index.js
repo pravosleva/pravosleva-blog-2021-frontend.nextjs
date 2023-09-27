@@ -38,7 +38,7 @@ const HamburgerButton = styled.button`
   height: 100%;
   background: transparent;
   ${(p) =>
-    p.issidebaropened &&
+    p.isSidebarOpened &&
     css`
       margin-right: 0;
     `}
@@ -88,7 +88,7 @@ const Nav = styled('div')`
 const MobileHeader = ({
   // withMobileMenu:
   sidebarToggler,
-  issidebaropened,
+  isSidebarOpened,
   topDocRef,
 
   // withTranslator:
@@ -128,8 +128,15 @@ const MobileHeader = ({
   }, [])
 
   return (
-    <Headroom>
-      <header style={{ boxShadow: '0 0 4px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.28)' }}>
+    <Headroom
+      style={{
+        zIndex: 3,
+      }}
+    >
+      <header
+        style={{
+          boxShadow: '0 0 4px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.28)',
+        }}>
         <Nav ref={topDocRef}>
           <ul
             style={{
@@ -250,8 +257,8 @@ const MobileHeader = ({
                 alignItems: 'center',
               }}
             >
-              <HamburgerButton onClick={sidebarToggler} issidebaropened={issidebaropened}>
-                {issidebaropened ? <CrossCloseIcon /> : <HamburgerIcon />}
+              <HamburgerButton onClick={sidebarToggler} isSidebarOpened={isSidebarOpened}>
+                {isSidebarOpened ? <CrossCloseIcon /> : <HamburgerIcon />}
               </HamburgerButton>
             </li>
           </ul>

@@ -105,5 +105,7 @@
   "COVID-TRASH_TARGET-TEXT": "Valid",
   "COVID-TRASH_PASSPORT": "Рassport (ID number)",
   "COVID-TRASH_INTL-PASSPORT-ID": "International passport (ID number)",
-  "COVID-TRASH_DATE-OF-BIRTH": "Date of birth"
+  "COVID-TRASH_DATE-OF-BIRTH": "Date of birth",
+
+  "AUDITLIST_OFFLINE": "AuditList Offline"
 }

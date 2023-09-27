@@ -20,6 +20,7 @@ type TLink = {
   link: string;
   colorCode?: "primary" | "inherit" | "info" | "success" | "warning" | "error" | "secondary" | undefined;
   variantCode?: 'text' | 'outlined' | 'contained';
+  tragetAttrValue: '_self' | '_blank';
 }
 const links: TLink[] = [
   {
@@ -27,6 +28,7 @@ const links: TLink[] = [
     link: '/subprojects/todo',
     colorCode: 'primary',
     variantCode: 'contained',
+    tragetAttrValue: '_self',
   },
   // {
   //   name: 'Viselitsa 2023',
@@ -39,18 +41,21 @@ const links: TLink[] = [
     link: 'https://t.me/pravosleva_bot?start=autopark',
     colorCode: 'primary',
     variantCode: 'contained',
+    tragetAttrValue: '_blank',
   },
   {
     name: 'KanBan 2021',
-    link: 'https://gosuslugi.pravosleva.ru/express-helper/chat/',
+    link: 'https://pravosleva.ru/express-helper/chat/',
     colorCode: 'primary',
     variantCode: 'outlined',
+    tragetAttrValue: '_blank',
   },
   {
     name: 'Code Samples 2020',
     link: 'http://code-samples.space',
     colorCode: 'primary',
     variantCode: 'outlined',
+    tragetAttrValue: '_blank',
   },
 ]
 
@@ -83,9 +88,9 @@ export default function Index() {
             sx={{ mb: 2 }}
           >
             {
-              links.map(({ name, link, colorCode, variantCode }, i) => (
+              links.map(({ name, link, colorCode, variantCode, tragetAttrValue }, i) => (
                 <Grid item xs={12} sm={12} md={6} lg={6} key={i}>
-                  <Button fullWidth endIcon={<ArrowForwardIcon />} variant={variantCode || "contained"} color={colorCode || 'primary'} component={Link} noLinkStyle href={link} target='_self'>
+                  <Button fullWidth endIcon={<ArrowForwardIcon />} variant={variantCode || "contained"} color={colorCode || 'primary'} component={Link} noLinkStyle href={link} target={tragetAttrValue}>
                     {name}
                   </Button>
                 </Grid>

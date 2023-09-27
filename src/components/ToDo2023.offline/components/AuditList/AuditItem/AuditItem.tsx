@@ -1,17 +1,18 @@
 import { TAudit, TSubJob } from "~/components/ToDo2023.offline/state"
 import { JobList } from './JobList'
 import { stateHelper } from '~/components/ToDo2023.offline/state'
-import Badge from "@mui/material/Badge"
+// import Badge from "@mui/material/Badge"
 // import SettingsIcon from '@mui/icons-material/Settings'
 import { useCallback, useState, useMemo, memo } from "react"
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import IconButton from "@mui/material/IconButton"
 // import ReportIcon from '@mui/icons-material/Report'
-import FolderIcon from '@mui/icons-material/Folder'
+// import FolderIcon from '@mui/icons-material/Folder'
 import DeleteIcon from '@mui/icons-material/Delete'
-import TaskAltIcon from '@mui/icons-material/TaskAlt'
+// import TaskAltIcon from '@mui/icons-material/TaskAlt'
 import Typography from "@mui/material/Typography"
+import { CircularWithValueLabel } from "~/components/CircularWithValueLabel"
 
 type TProps = {
   audit: TAudit;
@@ -63,11 +64,12 @@ export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, on
     setIsOpened((val) => !val)
   }, [setIsOpened])
 
-  const incompleteJobsCounter = useMemo<number>(() => {
-    return stateHelper.getIncompleteJobsCounter({
-      audit,
-    })
-  }, [audit.tsUpdate])
+  // const incompleteJobsCounter = useMemo<number>(() => stateHelper.getIncompleteJobsCounter({
+  //   audit,
+  // }), [audit.tsUpdate])
+  const completeJobsPercentage = useMemo(() => stateHelper.getCompleteJobsPercentage({
+    audit,
+  }).value, [audit.tsUpdate])
 
   return (
     <div
@@ -75,15 +77,15 @@ export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, on
         display: 'flex',
         flexDirection: 'column',
         // alignItems: 'center',
-        gap: '16px',
+        gap: '0px',
       }}
     >
       <div
         style={{
           display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '16px',
+          flexDirection: 'column',
+          // alignItems: 'center',
+          gap: '8px',
 
           position: 'sticky',
           top: '0px',
@@ -92,47 +94,75 @@ export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, on
           borderBottom: '1px solid lightgray',
         }}
       >
-        <Badge
-          color="error"
-          badgeContent={incompleteJobsCounter}
-        >
-          {incompleteJobsCounter > 0 ? <FolderIcon /> : <TaskAltIcon color='success' />}
-        </Badge>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '16px',
 
-        <div>{audit.name}</div>
-        
-        <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row' }}>
-          <>
-            {
-              audit.jobs.length > 0 && (
-                <IconButton aria-label="delete" onClick={handleToggle}>
-                  {isOpened ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-              )
-            }
-            {
-              isEditable && (
-                <IconButton
-                  color='error'
-                  aria-label="delete-audit"
-                  onClick={() => {
-                    onRemoveAudit({ auditId: audit.id })
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )
-            }
-          </>
+            // backgroundColor: 'rgba(255,255,255,0.5)',
+            // paddingLeft: '16px',
+            // paddingRight: '16px',
+          }}
+          // className='backdrop-blur--lite'
+        >
+          {/* <Badge
+            color="error"
+            badgeContent={incompleteJobsCounter}
+          >
+            {incompleteJobsCounter > 0 ? <FolderIcon /> : <TaskAltIcon color='success' />}
+          </Badge> */}
+          <div
+            style={{
+              display: 'flex',
+              // justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <CircularWithValueLabel progressValue={completeJobsPercentage} />
+          </div>
+
+          <div>{audit.name}</div>
+          
+          <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row' }}>
+            <>
+              {
+                audit.jobs.length > 0 && (
+                  <IconButton aria-label="delete" onClick={handleToggle}>
+                    {isOpened ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </IconButton>
+                )
+              }
+              {
+                isEditable && (
+                  <IconButton
+                    color='error'
+                    aria-label="delete-audit"
+                    onClick={() => {
+                      onRemoveAudit({ auditId: audit.id })
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                )
+              }
+            </>
+          </div>
         </div>
+        {
+          !!audit.description && (
+            <Typography
+              variant="caption"
+              display="block"
+              gutterBottom
+              sx={{ mb: 1 }}
+            >
+              {audit.description}
+            </Typography>
+          )
+        }
       </div>
-      {
-        !!audit.description && (
-          <Typography variant="caption" display="block" gutterBottom sx={{ mb: 0 }}>
-            {audit.description}
-          </Typography>
-        )
-      }
       {
         audit.jobs.length > 0 && isOpened && (
           <JobList

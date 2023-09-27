@@ -54,7 +54,10 @@ export const AuditList = memo(({ audits, onRemoveAudit, onAddJob, onAddSubjob, o
         display: 'flex',
         flexDirection: 'column',
         // alignItems: 'center',
-        gap: '8px',
+        gap: '16px',
+
+        // border: '1px solid red',
+        // paddingBottom: '16px',
       }}
     >
       {audits.map((audit) => (

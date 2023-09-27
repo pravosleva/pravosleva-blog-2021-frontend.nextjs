@@ -74,7 +74,7 @@ export const ToDo2023 = memo(() => {
 
   const localAudits: TAudit[] = useSelector((state: IRootState) => state.todo2023.localAudits)
   const handleRemoveAudit = useCallback(({ auditId }) => {
-    const isConfirmed = window.confirm('Вы уверены?')
+    const isConfirmed = window.confirm('Аудит будет удален. Вы уверены?')
     if (isConfirmed) dispatch(removeAudit({
       auditId,
     }))
@@ -173,12 +173,26 @@ export const ToDo2023 = memo(() => {
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </Head>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-        <Container maxWidth="xs">
+        <Container
+          maxWidth="xs"
+          sx={{
+            // marginLeft: 0,
+            // marginRight: 0,
+            // paddingLeft: 0,
+            // paddingRight: 0,
+          }}
+        >
           <Stack
             direction='column'
             alignItems='start'
             spacing={2}
-            sx={{ pt: 2, pb: 2 }}
+            sx={{
+              pt: 2,
+              pb: 2,
+
+              // pl: 2,
+              // pr: 2,
+            }}
           >
             <Box
               sx={{
@@ -188,7 +202,11 @@ export const ToDo2023 = memo(() => {
                 width: '100%',
               }}
             >
-              <Typography variant="h5" display="block" gutterBottom>
+              <Typography
+                variant="h5"
+                display="block"
+                // gutterBottom
+              >
                 AuditList
               </Typography>
               {

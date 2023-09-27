@@ -118,6 +118,35 @@ class SingletoneState {
 
     return counter
   }
+
+  _linear({ x, x1, y1, x2, y2 }: { x: number; x1: number; y1: number; x2: number; y2: number; }): number {
+    if (x1 === x2) return (y1 + y2) / 2
+    
+    return ((x - x1) * (y2 - y1)) / (x2 - x1) + y1
+  }
+
+  getCompleteJobsPercentage({
+    audit,
+  }: {
+    audit: TAudit;
+  }): {
+    value: number;
+  } {
+    const totalJobsCounter = audit.jobs.length
+    let completeJobsCounter = 0
+
+    try {
+      for (const job of audit.jobs) if (job.status === EJobStatus.IS_DONE) completeJobsCounter += 1
+    } catch (err) {
+      console.warn(err)
+    }
+
+    return {
+      value: this._linear({
+        x: completeJobsCounter, x1: 0, y1: 0, x2: totalJobsCounter, y2: 100
+      }),
+    }
+  }
   // --
 }
 

@@ -47,6 +47,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t }: any) => (
         <a>{t('FEEDBACK')} & reCAPTCHA v3</a>
       </Link>
     )}
+    {!isCurrentPathCb('/subprojects/todo') && (
+      <Link href="/subprojects/todo" as="/subprojects/todo">
+        <a>{t('AUDITLIST_OFFLINE')}</a>
+      </Link>
+    )}
     {isAuthenticated && !isCurrentPathCb('/profile') && (
       <Link href="/profile" as="/profile">
         <a>{t('PROFILE')}</a>

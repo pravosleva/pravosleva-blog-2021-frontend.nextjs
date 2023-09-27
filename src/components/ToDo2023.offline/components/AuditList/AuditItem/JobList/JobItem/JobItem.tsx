@@ -1,6 +1,12 @@
 import { IJob, stateHelper, EJobStatus } from "~/components/ToDo2023.offline/state"
 import { SubjobList } from './SubjobList'
-import Badge from '@mui/material/Badge'
+import {
+  Badge,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@mui/material'
 // import MailIcon from '@mui/icons-material/Mail'
 // import DoneIcon from '@mui/icons-material/Done'
 // import Button from "@mui/material/Button"
@@ -19,7 +25,9 @@ import { memo, useCallback, useMemo, useState } from "react"
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ReportIcon from '@mui/icons-material/Report'
-import CloseIcon from '@mui/icons-material/Close'
+// import CloseIcon from '@mui/icons-material/Close'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 type TProps = {
   job: IJob;
@@ -66,6 +74,17 @@ export const JobItem = memo(({
   onToggleSubjob,
   isEditable,
 }: TProps) => {
+  //-- NOTE: Menu
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isMenuOpened = Boolean(anchorEl);
+  const handleMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  }, [])
+  const handleMenuClose = useCallback(() => {
+    setAnchorEl(null);
+  }, [])
+  // --
+
   // const audits = useSnapshot<TAudit[]>(stateHelper.state.audits)
   // useEffect(() => {
   //   console.log(`${auditId} ${job.id} -> ${counter}`)
@@ -76,6 +95,7 @@ export const JobItem = memo(({
     //   jobId: job.id,
     // })
     onToggleJobDone({ auditId, jobId: job.id })
+    handleMenuClose()
   }, [auditId, job.id])
 
   const [isOpened, setIsOpened] = useState(false)
@@ -86,6 +106,7 @@ export const JobItem = memo(({
 
   const handleRemoveJob = useCallback(() => {
     onRemoveJob({ auditId, jobId: job.id })
+    handleMenuClose()
   }, [auditId, job.id])
 
   const incompleteSubjobsCounter = useMemo(() => {
@@ -124,7 +145,7 @@ export const JobItem = memo(({
               </IconButton>
             )
           }
-          {
+          {/*
             isEditable && (
               <>
                 <IconButton aria-label="remove-job" onClick={handleRemoveJob}>
@@ -133,6 +154,53 @@ export const JobItem = memo(({
                 <IconButton aria-label="done" onClick={handleDoneJob}>
                   {job.status === EJobStatus.IS_DONE ? <AutorenewIcon /> : <TaskAltIcon />}
                 </IconButton>
+              </>
+            )
+          */}
+          {
+            isEditable && (
+              <>
+                <IconButton
+                  aria-label="more"
+                  id="long-job-button"
+                  aria-controls={isMenuOpened ? 'long-job-menu' : undefined}
+                  aria-expanded={isMenuOpened ? 'true' : undefined}
+                  aria-haspopup="true"
+                  onClick={handleMenuOpen}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="long-job-menu"
+                  MenuListProps={{
+                    'aria-labelledby': 'long-job-button',
+                  }}
+                  anchorEl={anchorEl}
+                  open={isMenuOpened}
+                  onClose={handleMenuClose}
+                  PaperProps={{
+                    // style: {
+                    //   maxHeight: ITEM_HEIGHT * 4.5,
+                    //   width: '20ch',
+                    // },
+                  }}
+                >
+                  <MenuItem
+                    selected={false}
+                    onClick={handleDoneJob}
+                  >
+                    <ListItemIcon>{job.status === EJobStatus.IS_DONE ? <AutorenewIcon /> : <TaskAltIcon />}</ListItemIcon>
+                    <Typography variant="inherit">{job.status === EJobStatus.IS_DONE ? 'Undone' : 'Done'}</Typography>
+                  </MenuItem>
+
+                  <MenuItem
+                    selected={false}
+                    onClick={handleRemoveJob}
+                  >
+                    <ListItemIcon><DeleteIcon fontSize="small" color='error' /></ListItemIcon>
+                    <Typography variant="inherit">Delete</Typography>
+                  </MenuItem>
+                </Menu>
               </>
             )
           }

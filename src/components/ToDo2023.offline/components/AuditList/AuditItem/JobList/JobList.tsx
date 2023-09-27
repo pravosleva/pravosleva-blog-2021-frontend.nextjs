@@ -125,6 +125,10 @@ export const JobList = memo(({
         paddingLeft: '16px',
         // paddingRight: '10px',
         borderLeft: '4px solid lightgray',
+
+        // NOTE: adds
+        // paddingLeft: '16px',
+        // paddingRight: '16px',
       }}
     >
       {jobs.map((job) => (

@@ -88,9 +88,9 @@ export const withMobileMenu = (ComposedComponent) =>
       topDocRef: React.createRef(),
     }),
     withStateHandlers(
-      { issidebaropened: false },
+      { isSidebarOpened: false },
       {
-        sidebarToggler: ({ issidebaropened }, props) => (val) => {
+        sidebarToggler: ({ isSidebarOpened }, props) => (val) => {
           // Need to scroll top:
           if (window) {
             window.scrollTo({
@@ -100,7 +100,7 @@ export const withMobileMenu = (ComposedComponent) =>
           }
 
           return {
-            issidebaropened: val === true || val === false ? val : !issidebaropened,
+            isSidebarOpened: val === true || val === false ? val : !isSidebarOpened,
           }
         },
       }
@@ -109,7 +109,7 @@ export const withMobileMenu = (ComposedComponent) =>
   )(
     ({
       // Sidebar hoc:
-      issidebaropened,
+      isSidebarOpened,
       topDocRef,
       sidebarToggler,
 
@@ -149,13 +149,13 @@ export const withMobileMenu = (ComposedComponent) =>
       }, 500)
 
       useEffect(() => {
-        if (issidebaropened) {
+        if (isSidebarOpened) {
           dispatch(add('Layout_Header_Mobile_hocs_with-mobile-menu'))
         } else {
           dispatch(remove('Layout_Header_Mobile_hocs_with-mobile-menu'))
         }
       }, [
-        issidebaropened,
+        isSidebarOpened,
         // scrollToRef,
         dispatch,
         topDocRef,
@@ -165,8 +165,8 @@ export const withMobileMenu = (ComposedComponent) =>
       const isCurrentPathCb = useCallback(isCurrentPath, [])
 
       return (
-        <Wrapper opened={issidebaropened}>
-          <Sidebar opened={issidebaropened}>
+        <Wrapper opened={isSidebarOpened}>
+          <Sidebar opened={isSidebarOpened}>
             <ul className="bold">
               {/*<li>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9em', fontWeight: '500' }}>
@@ -205,11 +205,16 @@ export const withMobileMenu = (ComposedComponent) =>
                   </a>
                 </li>
               )}
+              <li>
+                <Link href="/subprojects/todo">
+                  <a className={isCurrentPathCb(router.pathname, '/subprojects/todo') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')}</a>
+                </Link>
+              </li>
             </ul>
           </Sidebar>
           <ComposedComponent
             {...props}
-            issidebaropened={issidebaropened}
+            isSidebarOpened={isSidebarOpened}
             sidebarToggler={sidebarToggler}
             // scrollToRef={scrollToRef}
           />

@@ -1,3 +1,10 @@
 import { ToDo2023 } from '~/components/ToDo2023.offline'
+import { Layout } from '~/components/Layout'
 
-export default ToDo2023
+export default () => {
+  return (
+    <Layout>
+      <ToDo2023 />
+    </Layout>
+  )
+}

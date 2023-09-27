@@ -51,7 +51,13 @@ function AppWithRedux(props: MyAppProps) {
   return (
     // @ts-ignore
     <PersistGate persistor={store.__persistor}>
-      <SnackbarProvider maxSnack={3}>
+      <SnackbarProvider
+        maxSnack={3}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
         <CacheProvider value={emotionCache}>
           <Head>
             <title>Pravosleva</title>
@@ -77,4 +83,6 @@ function AppWithRedux(props: MyAppProps) {
   )
 }
 
-export default wrapper.withRedux(AppWithRedux);
+const App = wrapper.withRedux(AppWithRedux)
+
+export default App
