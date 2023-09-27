@@ -29,6 +29,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: all 0.5s ease;
+  font-family: 'system-ui';
 }
 article,
 aside,
@@ -577,9 +578,7 @@ dt {
 th {
   font-weight: bold;
 }
-li {
-  margin-bottom: calc(1.45rem / 2);
-}
+/* li { margin-bottom: calc(1.45rem / 2); } */
 ol li {
   padding-left: 0;
 }
@@ -941,7 +940,7 @@ div.article-body > blockquote {
     min-height: calc(100vh - 50px);
   }
   .universal-container > main > .special-link-wrapper {
-    padding-bottom: 10px;
+    padding-bottom: 50px;
   }
   .universal-container > main > .article-body {
     margin-bottom: 60px;
@@ -967,6 +966,7 @@ div.article-body > blockquote {
   }
   .universal-container > main > .bx_breadcrumbs {
     padding-left: 20px;
+    padding-right: 20px;
   }
   .universal-container > main > .galleries-wrapper {
     padding: 0 20px 0 20px;

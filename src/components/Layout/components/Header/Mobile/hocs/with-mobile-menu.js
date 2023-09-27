@@ -164,6 +164,10 @@ export const withMobileMenu = (ComposedComponent) =>
       const router = useRouter()
       const isCurrentPathCb = useCallback(isCurrentPath, [])
 
+      // useEffect(() => {
+      //   console.log(router)
+      // }, [])
+
       return (
         <Wrapper opened={isSidebarOpened}>
           <Sidebar opened={isSidebarOpened}>
@@ -210,6 +214,16 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a className={isCurrentPathCb(router.pathname, '/subprojects/todo') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')}</a>
                 </Link>
               </li>
+              <li>
+                <Link href="/blog">
+                  <a className={isCurrentPathCb(router.pathname, '/blog') ? 'active' : ''}>{t('BLOG')}</a>
+                </Link>
+              </li>
+              {/* <li>
+                <Link href="/blog/article/ubuntu-first-steps">
+                  <a className={isCurrentPathCb(router.pathname, '/blog/article/[slug]') ? 'active' : ''}>Ubuntu first steps</a>
+                </Link>
+              </li> */}
             </ul>
           </Sidebar>
           <ComposedComponent

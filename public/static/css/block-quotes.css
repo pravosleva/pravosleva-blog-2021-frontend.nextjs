@@ -1,0 +1,119 @@
+/* Some vars */
+/* @import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,700); */
+/* @import url(https://fonts.googleapis.com/css?family=Sanchez:400italic, 400); */
+/* @import url(https://fonts.googleapis.com/css?family=Roboto:100); */
+.brooks {
+  position: relative;
+  font-family: 'Sanchez', serif;
+  /* font-size: 2.4em; */
+  font-size: 1.4em;
+  line-height: 1.5em;
+  font-style: italic;
+}
+.brooks:before {
+  content: '\201C';
+  position: absolute;
+  top: 0.25em;
+  left: -0.15em;
+  color: #e7e6e4;
+  font-size: 6em;
+  z-index: -1;
+}
+
+.ludwig {
+  position: relative;
+  padding-left: 1em;
+  border-left: 0.2em solid #4d91b3;
+  font-family: 'Roboto', serif;
+  font-size: 2.4em;
+  line-height: 1.5em;
+  font-weight: 100;
+}
+.ludwig:before,
+.ludwig:after {
+  content: '\201C';
+  font-family: 'Sanchez';
+  color: #4d91b3;
+}
+.ludwig:after {
+  content: '\201D';
+}
+
+.groucho {
+  position: relative;
+  font-family: 'Sanchez', serif;
+  font-size: 2.4em;
+  line-height: 1.5em;
+}
+.groucho footer {
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 0.6em;
+  font-weight: 700;
+  color: #d3d3cf;
+  float: right;
+}
+.groucho footer:before {
+  content: '\2015';
+}
+.groucho:after {
+  content: '\201D';
+  position: absolute;
+  top: 0.28em;
+  right: 0;
+  font-size: 6em;
+  font-style: italic;
+  color: #e7e6e4;
+  z-index: -1;
+}
+
+/* Some generic stuff. Don't worry about it
+html {
+  background: #f8f8f7;
+  font-size: 16px;
+}
+body {
+  color: #3d748f;
+  font-size: 62.5%;
+}
+.container {
+  width: 80em;
+  margin: 2em auto;
+}
+*/
+
+blockquote {
+  margin-bottom: 30px;
+}
+
+/* NEW 2020.12: See global-theming.css */
+
+body .description-markdown .otro-blockquote {
+  /* font-size: 1.4em; */
+  font-size: 0.9em;
+  width: 100%;
+  border-radius: 4px;
+  margin: 30px auto;
+  font-style: italic;
+  /* padding: 1.2em 30px 1.2em 75px; */
+  padding: 1.2em 30px 1.2em 50px;
+  line-height: 1.6;
+  position: relative;
+  background: transparent;
+}
+body .description-markdown .otro-blockquote::before {
+  font-family: Arial;
+  content: '\201C';
+  font-size: 4em;
+  position: absolute;
+  left: 10px;
+  top: -10px;
+}
+/* body .description-markdown .otro-blockquote::after {
+  content: '';
+} */
+body .description-markdown .otro-blockquote span {
+  display: block;
+  font-style: normal;
+  font-weight: bold;
+  margin-top: 1em;
+}

@@ -153,7 +153,7 @@ const DesktopHeader = ({
                       textDecoration: `none`,
                     }}
                   >
-                    Pravosleva blog
+                    Pravosleva
                   </a>
                 </Link>
               </li>

@@ -130,7 +130,7 @@ const MobileHeader = ({
   return (
     <Headroom
       style={{
-        zIndex: 3,
+        zIndex: 5,
       }}
     >
       <header
@@ -157,7 +157,7 @@ const MobileHeader = ({
               onClick={() => sidebarToggler(false)}
             >
               <Link href="/" as="/">
-                <a style={{ lineHeight: '40px' }}>Pravosleva blog</a>
+                <a style={{ lineHeight: '40px' }}>Pravosleva</a>
               </Link>
             </li>
             {!!suppoerLocales &&

@@ -11,9 +11,13 @@ export const ErrorPage = ({ message }: TProps) => {
         sx={{
           py: 2,
           display: 'flex',
-          justifyContent: 'space-between',
+          flexDirection: 'column',
+          gap: 2,
         }}
       >
+        <Typography variant="h4" component="h1" gutterBottom>
+          Oops...
+        </Typography>
         <Alert sx={{ mb: 2 }} variant="filled" severity="error">
           <Typography variant="body2" component="h2" gutterBottom>
             {message}

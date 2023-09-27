@@ -1,9 +1,10 @@
 import * as React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
-import createEmotionServer from '@emotion/server/create-instance';
+// import createEmotionServer from '@emotion/server/create-instance';
 // import theme from '~/mui/theme';
-import createEmotionCache from '~/createEmotionCache';
+// import createEmotionCache from '~/createEmotionCache';
 import { metrics } from '~/constants'
+import { ServerStyleSheet } from 'styled-components'
 
 const isProd = process.env.NODE_ENV === 'production'
 const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
@@ -50,8 +51,20 @@ export default class MyDocument extends Document {
             integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
             crossOrigin="anonymous"
           />
+
+          <link href="/static/css/layout.css" rel="stylesheet" />
+          <link href="/static/css/global-theming.css" rel="stylesheet" />
+          <link href="/static/css/standart-form.css" rel="stylesheet" />
+          <link href="/static/css/rippled-btn.css" rel="stylesheet" />
+          <link href="/static/css/link-as-rippled-btn.css" rel="stylesheet" />
+          <link href="/static/css/custom-breadcrumbs.css" rel="stylesheet" />
+          <link href="/static/css/block-quotes.css" rel="stylesheet" />
+          <link href="/static/css/article.css" rel="stylesheet" />
+          <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
         </Head>
         <body>
+          <Main />
+          <NextScript />
           {
             isProd && !!YANDEX_COUNTER_ID && (
               <noscript>
@@ -65,8 +78,6 @@ export default class MyDocument extends Document {
               </noscript>
             )
           }
-          <Main />
-          <NextScript />
         </body>
       </Html>
     );
@@ -98,71 +109,82 @@ MyDocument.getInitialProps = async (ctx) => {
   // 3. app.render
   // 4. page.render
 
-  const originalRenderPage = ctx.renderPage;
+  const sheet = new ServerStyleSheet()
 
-  // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
-  // However, be aware that it can have global side effects.
-  const cache = createEmotionCache();
-  const { extractCriticalToChunks } = createEmotionServer(cache);
+  try {
+    const originalRenderPage = ctx.renderPage;
 
-  ctx.renderPage = () =>
-    originalRenderPage({
-      enhanceApp: (App: any) => (props) => <App emotionCache={cache} {...props} />,
-    });
+    // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
+    // However, be aware that it can have global side effects.
+    // const cache = createEmotionCache();
+    // const { extractCriticalToChunks } = createEmotionServer(cache);
 
-  const initialProps = await Document.getInitialProps(ctx);
-  // This is important. It prevents emotion to render invalid HTML.
-  // See https://github.com/mui-org/material-ui/issues/26561#issuecomment-855286153
-  const emotionStyles = extractCriticalToChunks(initialProps.html);
-  const emotionStyleTags = emotionStyles.styles.map((style) => (
-    <style
-      data-emotion={`${style.key} ${style.ids.join(' ')}`}
-      key={style.key}
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: style.css }}
-    />
-  ));
-  const styles = [...React.Children.toArray(initialProps.styles), ...emotionStyleTags]
-  const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
-    <script
-      type="text/javascript"
-      defer
-      dangerouslySetInnerHTML={{
-        __html: `
+    ctx.renderPage = () =>
+      originalRenderPage({
+        // enhanceApp: (App: any) => (props) => <App emotionCache={cache} {...props} />,
+        enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
+      });
+
+    const initialProps = await Document.getInitialProps(ctx);
+    // This is important. It prevents emotion to render invalid HTML.
+    // See https://github.com/mui-org/material-ui/issues/26561#issuecomment-855286153
+    // const emotionStyles = extractCriticalToChunks(initialProps.html);
+    // const emotionStyleTags = emotionStyles.styles.map((style) => (
+    //   <style
+    //     data-emotion={`${style.key} ${style.ids.join(' ')}`}
+    //     key={style.key}
+    //     // eslint-disable-next-line react/no-danger
+    //     dangerouslySetInnerHTML={{ __html: style.css }}
+    //   />
+    // ));
+    const styles = [
+      ...React.Children.toArray(initialProps.styles),
+      sheet.getStyleElement(),
+      // ...emotionStyleTags,
+    ]
+    const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
+      <script
+        type="text/javascript"
+        defer
+        dangerouslySetInnerHTML={{
+          __html: `
 (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
 m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
 (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 ym(${YANDEX_COUNTER_ID}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
-`,
-      }}
-    />
-  ) : null
-  if (!!yaMetrica) styles.push(yaMetrica)
-  const gMetrica = isProd && !!GA_TRACKING_ID ? (
-    <>
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '${GA_TRACKING_ID}', {
-          page_path: window.location.pathname,
-        });
-      `,
+  `,
         }}
       />
-    </>
-  ) : null
-  if (!!gMetrica) styles.push(gMetrica)
+    ) : null
+    if (!!yaMetrica) styles.push(yaMetrica)
+    const gMetrica = isProd && !!GA_TRACKING_ID ? (
+      <>
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_TRACKING_ID}', {
+            page_path: window.location.pathname,
+          });
+        `,
+          }}
+        />
+      </>
+    ) : null
+    if (!!gMetrica) styles.push(gMetrica)
 
-  return {
-    ...initialProps,
-    // Styles fragment is rendered after the app and page rendering finish.
-    styles,
-  };
+    return {
+      ...initialProps,
+      // Styles fragment is rendered after the app and page rendering finish.
+      styles,
+    };
+  } finally {
+    sheet.seal()
+  }
 };

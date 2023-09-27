@@ -5,6 +5,13 @@ export const httpErrorHandler = (obj: AxiosResponse): any | HttpError => {
   if (obj.status === 200) {
     return obj.data
   } else {
-    throw new HttpError(obj.request?.status, obj.request?.statusText)
+    // console.log(obj.request.res)
+    // console.log(obj.data)
+    switch (true) {
+      case !!obj?.data:
+        throw new HttpError(obj.request?.res?.statusCode, obj?.data?.msg || obj.request?.res?.statusMessage)
+      default:
+        throw new HttpError(obj.request?.res?.statusCode, obj.request?.res?.statusMessage)
+    }
   }
 }

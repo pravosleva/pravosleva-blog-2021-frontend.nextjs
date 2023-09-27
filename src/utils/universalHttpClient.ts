@@ -32,7 +32,7 @@ const baseConfig: IAxiosRequestConfig = {
 
 class httpClientSingletone {
   static _instance = new httpClientSingletone();
-  recaptchaV3Controller: any;
+  // recaptchaV3Controller: any;
   api: IAxiosInstance;
   // controllers: { [key: string]: any }; // AbortController | null
 
@@ -51,7 +51,18 @@ class httpClientSingletone {
     return httpClientSingletone._instance;
   }
 
-  public async post(url: string, data: URLSearchParams): Promise<NResponseLocal.IResult> {
+  public async get(url: string): Promise<NResponseLocal.IResult> {
+    return await this.api
+      .get(url)
+      .then(httpErrorHandler) // res -> res.data
+      .then(apiErrorHandler) // data -> data
+      .then((data: any) => ({
+        isOk: true,
+        response: data,
+      }))
+      .catch(axiosUniversalCatch)
+  }
+  public async post(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult> {
     return await this.api
       .post(url, data)
       .then(httpErrorHandler) // res -> res.data

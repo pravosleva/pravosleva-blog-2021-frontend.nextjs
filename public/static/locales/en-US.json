@@ -107,5 +107,7 @@
   "COVID-TRASH_INTL-PASSPORT-ID": "International passport (ID number)",
   "COVID-TRASH_DATE-OF-BIRTH": "Date of birth",
 
-  "AUDITLIST_OFFLINE": "AuditList Offline"
+  "AUDITLIST_OFFLINE": "AuditList Offline",
+  "BLOG": "Blog",
+  "ALL": "All"
 }

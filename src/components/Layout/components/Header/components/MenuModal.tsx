@@ -52,6 +52,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t }: any) => (
         <a>{t('AUDITLIST_OFFLINE')}</a>
       </Link>
     )}
+    {!isCurrentPathCb('/blog') && (
+      <Link href="/blog" as="/blog">
+        <a>{t('BLOG')}</a>
+      </Link>
+    )}
     {isAuthenticated && !isCurrentPathCb('/profile') && (
       <Link href="/profile" as="/profile">
         <a>{t('PROFILE')}</a>

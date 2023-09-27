@@ -1,6 +1,14 @@
 import { createTheme } from '@mui/material/styles';
 import { red, green } from '@mui/material/colors';
 
+export const breakpoints = {
+  xs: 300,
+  sm: 600,
+  md: 900,
+  lg: 1200,
+  xl: 1536
+}
+
 // Create a theme instance.
 const theme = createTheme({
   palette: {
@@ -24,13 +32,7 @@ const theme = createTheme({
     }
   },
   breakpoints: {
-    values: {
-      xs: 300,
-      sm: 600,
-      md: 900,
-      lg: 1200,
-      xl: 1536
-    },
+    values: breakpoints,
   },
   // NOTE: See also https://mui.com/material-ui/customization/theme-components/#theme-default-props
   components: {
