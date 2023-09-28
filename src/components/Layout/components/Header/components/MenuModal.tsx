@@ -30,33 +30,85 @@ const Wrapper = styled('div')`
   flex-direction: column;
 `
 
-const menuItems = ({ isCurrentPathCb, isAuthenticated, t }: any) => (
+const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) => (
   <Wrapper>
     {!isCurrentPathCb('/') && (
       <Link href="/" as="/">
-        <a>{t('HOME')}</a>
+        <a onClick={onHideModal}>{t('HOME')}</a>
       </Link>
     )}
     {!isAuthenticated && !isCurrentPathCb('/auth/login') && (
       <Link href="/auth/login" as="/auth/login">
-        <a>{t('LOGIN')}</a>
+        <a onClick={onHideModal}>{t('LOGIN')}</a>
       </Link>
     )}
     {!isCurrentPathCb('/feedback') && (
       <Link href="/feedback" as="/feedback">
-        <a>{t('FEEDBACK')} & reCAPTCHA v3</a>
+        <a onClick={onHideModal}>{t('FEEDBACK')} & reCAPTCHA v3</a>
       </Link>
     )}
     {!isCurrentPathCb('/subprojects/todo') && (
       <Link href="/subprojects/todo" as="/subprojects/todo">
-        <a>{t('AUDITLIST_OFFLINE')}</a>
+        <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')}</a>
       </Link>
     )}
     {!isCurrentPathCb('/blog') && (
       <Link href="/blog" as="/blog">
-        <a>{t('BLOG')}</a>
+        <a onClick={onHideModal}>{t('BLOG')}</a>
       </Link>
     )}
+
+    {/* -- NOTE: Target Фкешсдуы */}
+    {!isCurrentPathCb('/blog/article/tires-how-to-choose') && (
+      <Link href="/blog/article/tires-how-to-choose" as="/blog/article/tires-how-to-choose">
+        <a onClick={onHideModal}>Выбираем шины и диски</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/blog/article/nginx-logs') && (
+      <Link href="/blog/article/nginx-logs" as="/blog/article/nginx-logs">
+        <a onClick={onHideModal}>How to see NGINX logs</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/blog/article/limp-bizkit-video') && (
+      <Link href="/blog/article/limp-bizkit-video" as="/blog/article/limp-bizkit-video">
+        <a onClick={onHideModal}>Клипы Limp Bizkit</a>
+      </Link>
+    )}
+    {/* -- */}
+
+    {/* -- NOTE: Target search by title */}
+    {!isCurrentPathCb('/blog/sqt/bash') && (
+      <Link href="/blog/sqt/bash" as="/blog/sqt/bash">
+        <a onClick={onHideModal}>#bash</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/blog/sqt/nginx') && (
+      <Link href="/blog/sqt/nginx" as="/blog/sqt/nginx">
+        <a onClick={onHideModal}>#nginx</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/blog/sqt/git') && (
+      <Link href="/blog/sqt/git" as="/blog/sqt/git">
+        <a onClick={onHideModal}>#git</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/blog/sqt/ssl') && (
+      <Link href="/blog/sqt/ssl" as="/blog/sqt/ssl">
+        <a onClick={onHideModal}>#ssl</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/blog/sqt/jsVanilla') && (
+      <Link href="/blog/sqt/jsVanilla" as="/blog/sqt/jsVanilla">
+        <a onClick={onHideModal}>#jsVanilla</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/blog/sqt/cssVanilla') && (
+      <Link href="/blog/sqt/cssVanilla" as="/blog/sqt/cssVanilla">
+        <a onClick={onHideModal}>#cssVanilla</a>
+      </Link>
+    )}
+    {/* -- */}
+
     {isAuthenticated && !isCurrentPathCb('/profile') && (
       <Link href="/profile" as="/profile">
         <a>{t('PROFILE')}</a>
@@ -70,7 +122,8 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t }: any) => (
 
 export const MenuModal = withTranslator(({ isOpened, onHideModal, isAuthenticated, t, resetLang }: IProps) => {
   const router = useRouter()
-  const isCurrentPathCb = useCallback((path) => isCurrentPath(router.pathname, path), [router.pathname])
+  // console.log(router)
+  const isCurrentPathCb = useCallback((path) => isCurrentPath(router.pathname, path) || isCurrentPath(router.asPath, path), [router.pathname, router.asPath])
   const dispatch = useDispatch()
   const handleLogoutCb = useCallback(async () => {
     // const result = await logout()
@@ -111,7 +164,7 @@ export const MenuModal = withTranslator(({ isOpened, onHideModal, isAuthenticate
           modalTitle={t('MENU')}
           // modalSubtitle="process.env"
           closeModal={onHideModal}
-          renderBodyContent={() => menuItems({ isCurrentPathCb, isAuthenticated, t })}
+          renderBodyContent={() => menuItems({ isCurrentPathCb, isAuthenticated, t, onHideModal })}
           renderFooterContent={() => (
             <FooterRow>
               <Button typeName="orange" size="small" width="responsive" onClick={removeAllCookie}>

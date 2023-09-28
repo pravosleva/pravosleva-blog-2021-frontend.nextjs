@@ -86,26 +86,26 @@ const Logic = ({ room }: TLogicProps) => {
       }, ({ data }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
         groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb`, items: [data] })
         setStore({ audits: data.audits })
-        if (data.audits.length > 0) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
+        if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
       })
     }
     socket.on('connect', onConnectListener)
 
     const onConnectErrorListener = (arg: any) => {
       groupLog({ spaceName: '-- connect_error', items: [arg] })
-      enqueueSnackbar('Connect error', { variant: 'error', autoHideDuration: 3000 })
+      if (!!document.hidden) enqueueSnackbar('Connect error', { variant: 'error', autoHideDuration: 3000 })
     }
     socket.on('connect_error', onConnectErrorListener)
     
     const onReconnectErrorListener = (arg: any) => {
       groupLog({ spaceName: '-- reconnect', items: [arg] })
-      enqueueSnackbar('Reconnect', { variant: 'success', autoHideDuration: 3000 })
+      if (!!document.hidden) enqueueSnackbar('Reconnect', { variant: 'success', autoHideDuration: 3000 })
     }
     socket.on('reconnect', onReconnectErrorListener)
 
     const onReconnectAttemptListener = (arg: any) => {
       groupLog({ spaceName: '-- reconnect_attempt', items: [arg] })
-      enqueueSnackbar('Reconnect attempt', { variant: 'info', autoHideDuration: 3000 })
+      if (!!document.hidden) enqueueSnackbar('Reconnect attempt', { variant: 'info', autoHideDuration: 3000 })
     }
     socket.on('reconnect_attempt', onReconnectAttemptListener)
 
@@ -117,16 +117,18 @@ const Logic = ({ room }: TLogicProps) => {
 
     // TODO?
 
-    socket.on('disconnect', () => {
+    const onDisonnectListener = () => {
       groupLog({ spaceName: '-- disconnect', items: ['no data'] })
       setStore({ isConnected: false })
-    })
-
+    }
+    socket.on('disconnect', onDisonnectListener)
     return () => {
+      socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
       socket.off('connect_error', onConnectErrorListener)
       socket.off('reconnect', onReconnectErrorListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
+      socket.off('connect', onConnectListener)
     }
   }, [router.query.tg_chat_id])
 

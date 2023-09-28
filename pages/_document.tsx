@@ -15,6 +15,13 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
+          <meta charSet="utf-8" />
+          <title>Pravosleva</title>
+          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+          <link rel="icon" href="/static/favicon.ico" />
+          <meta name="theme-color" content="#0162c8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
           {/* PWA primary color */}
           {/* <meta name="theme-color" content={theme.palette.primary.main} /> */}
           <meta name="application-name" content="Pravosleva" />
@@ -39,7 +46,7 @@ export default class MyDocument extends Document {
           <link rel="manifest" href="/static/manifest.json" />
           */}
           <link rel="mask-icon" href="/static/icons/safari-pinned-tab.svg" color="#5bbad5" />
-          <link rel="shortcut icon" href="/favicon.ico" />
+          <link rel="shortcut icon" href="/static/favicon.ico" />
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"

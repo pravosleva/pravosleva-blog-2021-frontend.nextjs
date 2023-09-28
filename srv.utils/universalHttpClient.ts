@@ -6,16 +6,16 @@ import axios, {
 import axiosRetry from 'axios-retry'
 
 // import { getNormalizedInputs } from '@/utils/strapi/getNormalizedInputs'
-import { apiErrorHandler, NResponseLocal } from '@/utils/errors/api'
-import { httpErrorHandler } from '@/utils/errors/http/axios'
-import { axiosUniversalCatch } from '@/utils/errors/axiosUniversalCatch'
+import { apiErrorHandler, NResponseLocal } from '~/srv.utils/errors/api'
+import { httpErrorHandler } from '~/srv.utils/errors/http/axios'
+import { axiosUniversalCatch } from '~/srv.utils/errors/axiosUniversalCatch'
 
 const isDev = process.env.NODE_ENV === 'development'
 // const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
 // : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
 
 const baseConfig: IAxiosRequestConfig = {
-  baseURL: isDev ? 'http://localhost:3000' : 'http://pravosleva.ru/',
+  baseURL: isDev ? 'http://localhost:3000/' : 'http://pravosleva.ru/',
   // headers: {
   //   'Origin': 'http://localhost:1337',
   //   'Access-Control-Allow-Origin': '*',
@@ -52,7 +52,6 @@ class httpClientSingletone {
   }
 
   public async get(url: string): Promise<NResponseLocal.IResult> {
-    console.log(url)
     return await this.api
       .get(url)
       .then(httpErrorHandler) // res -> res.data

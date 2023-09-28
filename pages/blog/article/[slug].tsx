@@ -22,14 +22,14 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
   return (
     <>
       <Head>
-        {/* <title>{`Pravosleva${article?.original.title ? ` | ${convertToPlainText(article?.original.title)}` : 'No title'}`}</title> */}
-        {/* {!!article.brief && <meta name="description" content={convertToPlainText(article.brief)} />}
-        {!!article.brief && <meta property="og:description" content={convertToPlainText(article.brief)} />} */}
+        <title>{`Pravosleva${article?.original.title ? ` | ${article?.original.title}` : 'No title'}`}</title>
+        {!!article.brief && <meta name="description" content={article.brief} />}
+        {!!article.brief && <meta property="og:description" content={article.brief} />}
         {!!article.bgSrc && <meta property="vk:image" content={article.bgSrc} />}
         {!!article.bgSrc && <meta property="twitter:image" content={article.bgSrc} />}
         <meta property="og:image:width" content="600" />
         <meta property="og:image:height" content="315" />
-        {/* <meta property="og:title" content={convertToPlainText(article.original.title)} /> */}
+        <meta property="og:title" content={article.original.title} />
         <meta property="og:image" content={article.bgSrc} />
         <meta property="og:type" content="article" />
         {isProd && <meta property="og:url" content={thisPageUrl} />}
@@ -55,7 +55,10 @@ _Article.getInitialProps = wrapper.getInitialPageProps(
 
     switch (true) {
       case !!slugMapping[slug]: {
-        const noteResult = await universalHttpClient.get(`http://code-samples.space/api/notes/${slugMapping[slug].id}`)
+        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${slugMapping[slug].id}`)
+        console.log(`-- ${slug}`)
+        console.log(noteResult)
+        console.log('--')
         if (noteResult.isOk && !!noteResult.response) {
           _pageService.isOk = true
           _pageService.response = noteResult.response

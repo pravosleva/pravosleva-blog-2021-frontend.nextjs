@@ -8,6 +8,7 @@ import { GoHomeSection } from '~/components/GoHomeSection'
 import { withTranslator } from '~/hocs/withTranslator'
 import { TArticle } from '~/components/Article/types'
 import { BreadCrumbs } from '~/components/BreadCrumbs'
+import { PagesGrid } from './components'
 
 type TArticlesListComponentProps = {
   t: (translatableString: string) => string;
@@ -41,19 +42,18 @@ export const ArticlesList = withTranslator(({ t, list, searchQueryTitle, isBlogP
         }
       />
 
-      <div className="article-body">
+      <div
+        className="article-body"
+        style={{
+          boxSizing: 'border-box',
+          // overflowX: 'hidden',
+        }}>
         <Typography variant="h1" component="h1" gutterBottom className='truncate'>
           {isBlogPage ? t(searchQueryTitle.modified) : searchQueryTitle.modified}
         </Typography>
         {
           !!list && Array.isArray(list) && (
-
-            list.map((ps) => {
-              return (
-                <pre key={ps.original._id}>{JSON.stringify(ps, null, 2)}</pre>
-              )
-            })
-            
+            <PagesGrid articles={list} />
           )
         }
       </div>

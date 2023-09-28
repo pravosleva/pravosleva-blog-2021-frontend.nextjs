@@ -55,7 +55,7 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
                     </div>
                   )}
                   <small className="inactive article-wrapper__big-image-as-container__date">
-                    {getFormatedDate2(new Date(article.original.createdAt))}
+                    {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
                   </small>
                 </div>
               </div>

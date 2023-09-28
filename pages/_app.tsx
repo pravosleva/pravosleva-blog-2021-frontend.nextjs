@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Head from 'next/head';
+// import Head from 'next/head';
 import { AppProps } from 'next/app';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -64,11 +64,6 @@ function AppWithRedux(props: MyAppProps) {
         }}
       >
         {/* <CacheProvider value={emotionCache}> */}
-        <Head>
-          <title>Pravosleva</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-          {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
-        </Head>
         <SCThemeProvider theme={Theme}>
           <ThemeProvider theme={theme}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

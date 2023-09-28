@@ -162,11 +162,15 @@ export const withMobileMenu = (ComposedComponent) =>
       ])
 
       const router = useRouter()
-      const isCurrentPathCb = useCallback(isCurrentPath, [])
+      const isCurrentPathCb = useCallback(isCurrentPath, [router.pathname, router.asPath])
 
       // useEffect(() => {
       //   console.log(router)
       // }, [])
+
+      const handleCloseSidebar = useCallback(() => {
+        sidebarToggler(false)
+      }, [])
 
       return (
         <Wrapper opened={isSidebarOpened}>
@@ -183,20 +187,20 @@ export const withMobileMenu = (ComposedComponent) =>
               {!isAuthenticated && (
                 <li>
                   <Link href="/auth/login" as="/auth/login">
-                    <a className={isCurrentPathCb(router.pathname, '/auth/login') ? 'active' : ''}>{t('LOGIN')}</a>
+                    <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/auth/login') ? 'active' : ''}>{t('LOGIN')}</a>
                   </Link>
                 </li>
               )}
               {isAuthenticated && (
                 <li>
                   <Link href="/profile" as="/profile">
-                    <a className={isCurrentPathCb(router.pathname, '/profile') ? 'active' : ''}>{t('PROFILE')}</a>
+                    <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/profile') ? 'active' : ''}>{t('PROFILE')}</a>
                   </Link>
                 </li>
               )}
               <li>
                 <Link href="/feedback">
-                  <a className={isCurrentPathCb(router.pathname, '/feedback') ? 'active' : ''}>{t('FEEDBACK')}</a>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/feedback') ? 'active' : ''}>{t('FEEDBACK')}</a>
                 </Link>
               </li>
               {isAuthenticated && (
@@ -204,6 +208,7 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a
                     className={isCurrentPathCb(router.pathname, '/auth/login') ? 'active' : ''}
                     style={{ cursor: 'pointer' }}
+                    onClick={handleCloseSidebar}
                   >
                     {t('LOGOUT')}
                   </a>
@@ -211,12 +216,12 @@ export const withMobileMenu = (ComposedComponent) =>
               )}
               <li>
                 <Link href="/subprojects/todo">
-                  <a className={isCurrentPathCb(router.pathname, '/subprojects/todo') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')}</a>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/subprojects/todo') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')}</a>
                 </Link>
               </li>
               <li>
                 <Link href="/blog">
-                  <a className={isCurrentPathCb(router.pathname, '/blog') ? 'active' : ''}>{t('BLOG')}</a>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog') ? 'active' : ''}>{t('BLOG')}</a>
                 </Link>
               </li>
               {/* <li>
@@ -224,6 +229,57 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a className={isCurrentPathCb(router.pathname, '/blog/article/[slug]') ? 'active' : ''}>Ubuntu first steps</a>
                 </Link>
               </li> */}
+
+              {/* -- NOTE: Target Article*/}
+              <li>
+                <Link href="/blog/article/tires-how-to-choose">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/tires-how-to-choose') || isCurrentPathCb(router.asPath, '/blog/article/tires-how-to-choose') ? 'active' : ''}>Шины и диски</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/article/nginx-logs">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/nginx-logs') || isCurrentPathCb(router.asPath, '/blog/article/nginx-logs') ? 'active' : ''}>NGINX logs</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/article/limp-bizkit-video">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/limp-bizkit-video') || isCurrentPathCb(router.asPath, '/blog/article/limp-bizkit-video') ? 'active' : ''}>Клипы Limp Bizkit</a>
+                </Link>
+              </li>
+              {/* -- */}
+
+              {/* -- NOTE: Target search by title */}
+              <li>
+                <Link href="/blog/sqt/bash">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/bash') || isCurrentPathCb(router.asPath, '/blog/sqt/bash') ? 'active' : ''}>#bash</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/sqt/nginx">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/nginx') || isCurrentPathCb(router.asPath, '/blog/sqt/nginx') ? 'active' : ''}>#nginx</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/sqt/git">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/git') || isCurrentPathCb(router.asPath, '/blog/sqt/git') ? 'active' : ''}>#git</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/sqt/ssl">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/ssl') || isCurrentPathCb(router.asPath, '/blog/sqt/ssl') ? 'active' : ''}>#ssl</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/sqt/jsVanilla">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/jsVanilla') || isCurrentPathCb(router.asPath, '/blog/sqt/jsVanilla') ? 'active' : ''}>#jsVanilla</a>
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/sqt/cssVanilla">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/cssVanilla') || isCurrentPathCb(router.asPath, '/blog/sqt/cssVanilla') ? 'active' : ''}>#cssVanilla</a>
+                </Link>
+              </li>
+              {/* -- */}
             </ul>
           </Sidebar>
           <ComposedComponent

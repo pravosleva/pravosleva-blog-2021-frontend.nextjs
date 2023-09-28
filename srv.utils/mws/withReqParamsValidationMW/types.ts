@@ -18,7 +18,7 @@ export type THelp = {
         required: boolean
         validate: (val: any) => TValidationResult;
       }
-    }
+    };
     query?: {
       [key: string]: {
         type: string
@@ -26,7 +26,15 @@ export type THelp = {
         required: boolean
         validate: (val: any) => TValidationResult;
       }
-    }
+    };
+    params?: {
+      [key: string]: {
+        type: string
+        descr: string
+        required: boolean
+        validate: (val: any) => TValidationResult;
+      }
+    };
   }
   res?: {
     [key: string]: any

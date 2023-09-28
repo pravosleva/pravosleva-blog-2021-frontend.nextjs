@@ -27,7 +27,7 @@ export const BreadCrumbs = ({
           legend.map(({ link, labelCode, noTranslate }) => {
             if (!link) return (
               <li className='truncate' itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={link}>
-                <span style={{ fontWeight: 'bold', color: 'black', fontFamily: 'system-ui' }}>{noTranslate ? labelCode : t(labelCode)}</span>
+                <span style={{ fontWeight: 'bold', color: 'black', fontFamily: 'Montserrat' }}>{noTranslate ? labelCode : t(labelCode)}</span>
               </li>
             )
 
