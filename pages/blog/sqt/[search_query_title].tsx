@@ -1,6 +1,6 @@
 import { TArticle, TPageService } from '~/components/Article'
 import { universalHttpClient } from '~/utils/universalHttpClient';
-import Head from 'next/head'
+// import Head from 'next/head'
 // import { convertToPlainText } from '~/utils/markdown/convertToPlainText';
 import { ErrorPage } from '~/components/ErrorPage';
 import { Layout } from '~/components/Layout';
@@ -32,20 +32,18 @@ const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => 
   
   return (
     <>
-      <Head>
-        {/* <title>{`Pravosleva${article?.original.title ? ` | ${convertToPlainText(article?.original.title)}` : 'No title'}`}</title> */}
-        {/* {!!article.brief && <meta name="description" content={convertToPlainText(article.brief)} />}
-        {!!article.brief && <meta property="og:description" content={convertToPlainText(article.brief)} />} */}
-        {/* {!!article.bgSrc && <meta property="vk:image" content={article.bgSrc} />}
-        {!!article.bgSrc && <meta property="twitter:image" content={article.bgSrc} />} */}
-        <meta property="og:image:width" content="600" />
-        <meta property="og:image:height" content="315" />
-        {/* <meta property="og:title" content={convertToPlainText(article.original.title)} /> */}
-        {/* <meta property="og:image" content={article.bgSrc} /> */}
-        <meta property="og:type" content="article" />
-        {/* {isProd && <meta property="og:url" content={thisPageUrl} />} */}
-        <meta property="og:site_name" content="pravosleva.ru" />
-      </Head>
+      {/* <Head>
+        <title>Pravosleva | Blog</title>
+        <meta property="og:title" content="Pravosleva | Blog" />
+        <meta name="description" content={`Это то что Вы искали: ${searchQueryTitle.modified}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:determiner" content="the" />
+        <meta property="og:locale" content="ru_RU" />
+        <meta property="og:image" content="https://pravosleva.ru/static/img/logo/logo-pravosleva.jpg" />
+        <meta property="og:description" content={`Это то что Вы искали: ${searchQueryTitle.modified}`} />
+        <meta property="og:url" content="https://pravosleva.ru" />
+        <meta property="og:url" content={thisPageUrl} />
+      </Head> */}
       <Layout>
         <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={searchQueryTitle} />
       </Layout>
@@ -64,7 +62,7 @@ _ArticlesList.getInitialProps = wrapper.getInitialPageProps(
     }
     let list: TArticle[] = []
 
-    const withoutSpaces = search_query_title.replace(/\s/g, '')
+    const withoutSpaces = search_query_title.replace(/\s/g, '').split(',').join(', ')
 
     switch (true) {
       case !!withoutSpaces: {

@@ -14,6 +14,7 @@ import Link from '~/components/Link'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 // import { CarSelectSample } from '~/components/Autopark2022/components/CarSelectSample'
 import { Layout } from '~/components/Layout'
+import Head from 'next/head'
 
 type TLink = {
   name: string;
@@ -69,70 +70,82 @@ export default function Index() {
   //   }
   // }
   return (
-    <Layout>
-      <Container maxWidth="sm">
-        <Box
-          sx={{
-            py: 4,
-          }}
-        >
-          {/* <Typography variant="h4" component="h1" gutterBottom>
-            In progress...
-          </Typography> */}
-
-          <Grid
-            container
-            rowSpacing={2}
-            // columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            columnSpacing={2}
-            sx={{ mb: 2 }}
+    <>
+      <Head>
+        <meta property="og:title" content="Pravosleva | Web exp" />
+        <meta property="og:type" content="website" />
+        {/* <meta property="og:url" content="https://www.imdb.com/title/tt0117500/" /> */}
+        <meta property="og:image" content="https://pravosleva.ru/static/img/logo-pravosleva.jpg" />
+        <meta property="og:description" content="Pravosleva | So, we have unconscious consumption society. What about this?" />
+        <meta property="og:determiner" content="the" />
+        <meta property="og:locale" content="en_GB" />
+        <meta property="og:locale:alternate" content="ru_RU" />
+      </Head>
+      <Layout>
+        <Container maxWidth="sm">
+          <Box
+            sx={{
+              py: 4,
+            }}
           >
-            {
-              links.map(({ name, link, colorCode, variantCode, tragetAttrValue }, i) => (
-                <Grid item xs={12} sm={12} md={6} lg={6} key={i}>
-                  <Button fullWidth endIcon={<ArrowForwardIcon />} variant={variantCode || "contained"} color={colorCode || 'primary'} component={Link} noLinkStyle href={link} target={tragetAttrValue}>
+            {/* <Typography variant="h4" component="h1" gutterBottom>
+              In progress...
+            </Typography> */}
+
+            <Grid
+              container
+              rowSpacing={2}
+              // columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+              columnSpacing={2}
+              sx={{ mb: 2 }}
+            >
+              {
+                links.map(({ name, link, colorCode, variantCode, tragetAttrValue }, i) => (
+                  <Grid item xs={12} sm={12} md={6} lg={6} key={i}>
+                    <Button fullWidth endIcon={<ArrowForwardIcon />} variant={variantCode || "contained"} color={colorCode || 'primary'} component={Link} noLinkStyle href={link} target={tragetAttrValue}>
+                      {name}
+                    </Button>
+                  </Grid>
+                ))
+              }
+            </Grid>
+
+            <Alert sx={{ mb: 2 }} severity="info" variant='filled'>
+              Work in progress...
+              <br />
+              Stack: Next.js / MUI v5-beta / TypeScript
+            </Alert>
+
+            <Stack spacing={2}>
+              {/* <Link href="/about" color="secondary">
+                Go to the about page
+              </Link> */}
+              {/* <Button endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='http://pravosleva.ru/cra/' target='_blank'>
+                Go to CRA version (mui@4.x)
+              </Button> */}
+
+              {/*
+                links.map(({ name, link, colorCode }, i) => (
+                  <Button key={i} endIcon={<ArrowForwardIcon />} variant="contained" color={colorCode} component={Link} noLinkStyle href={link} target='_self'>
                     {name}
                   </Button>
-                </Grid>
-              ))
-            }
-          </Grid>
+                ))
+              */}
 
-          <Alert sx={{ mb: 2 }} severity="info" variant='filled'>
-            Work in progress...
-            <br />
-            Stack: Next.js / MUI v5-beta / TypeScript
-          </Alert>
+              {/* <CarSelectSample /> */}
 
-          <Stack spacing={2}>
-            {/* <Link href="/about" color="secondary">
-              Go to the about page
-            </Link> */}
-            {/* <Button endIcon={<ArrowForwardIcon />} variant="contained" color='primary' component={Link} noLinkStyle href='http://pravosleva.ru/cra/' target='_blank'>
-              Go to CRA version (mui@4.x)
-            </Button> */}
-
-            {/*
-              links.map(({ name, link, colorCode }, i) => (
-                <Button key={i} endIcon={<ArrowForwardIcon />} variant="contained" color={colorCode} component={Link} noLinkStyle href={link} target='_self'>
-                  {name}
-                </Button>
-              ))
-            */}
-
-            {/* <CarSelectSample /> */}
-
-            <Link href='/about' color="primary" shallow>
-              Go to about page
-            </Link>
-            <Link href='https://selection4test.ru' color="primary" target='_blank'>
-              Old trash
-            </Link>
-            {/* <ProTip />
-            <Copyright /> */}
-          </Stack>
-        </Box>
-      </Container>
-    </Layout>
+              <Link href='/about' color="primary" shallow>
+                Go to about page
+              </Link>
+              <Link href='https://selection4test.ru' color="primary" target='_blank'>
+                Old trash
+              </Link>
+              {/* <ProTip />
+              <Copyright /> */}
+            </Stack>
+          </Box>
+        </Container>
+      </Layout>
+    </>
   );
 }

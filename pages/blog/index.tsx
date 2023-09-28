@@ -21,12 +21,13 @@ import { Layout } from '~/components/Layout'
 // import { withTranslator } from '~/hocs/withTranslator'
 // import { metrics } from '@/constants'
 import { wrapper } from '~/store'
-import { universalHttpClient } from '~/utils/universalHttpClient';
+import { universalHttpClient } from '~/utils/universalHttpClient'
 import { NCodeSamplesSpace } from '~/types'
 import { ArticlesList } from '~/components/ArticlesList'
-import { ErrorPage } from '~/components/ErrorPage';
-import { slugMap } from '~/constants/blog/slugMap';
-import { TArticle } from '~/components/Article';
+import { ErrorPage } from '~/components/ErrorPage'
+import { slugMap } from '~/constants/blog/slugMap'
+import { TArticle } from '~/components/Article'
+// import Head from 'next/head'
 
 // const isProd = process.env.NODE_ENV === 'production'
 
@@ -45,9 +46,11 @@ const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TAr
   )
 
   return (
-    <Layout>
-      <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={{ modified: 'ALL', original: 'ALL' }} isBlogPage />
-    </Layout>
+    <>
+      <Layout>
+        <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={{ modified: 'ALL', original: 'ALL' }} isBlogPage />
+      </Layout>
+    </>
   )
 }
 
