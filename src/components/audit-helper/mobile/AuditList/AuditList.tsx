@@ -2,9 +2,10 @@
 import { AuditItem } from './AuditItem'
 // import { IRootState } from '~/store/IRootState'
 import { memo } from 'react'
-import { TAudit, TSubJob } from '../../state'
+import { Alert, Typography } from '@mui/material'
+import { TAudit, TSubJob } from '~/components/audit-helper'
 
-type TProps = {
+type TAuditListProps = {
   audits: TAudit[];
   onUpdateAuditComment: ({
     auditId,
@@ -54,7 +55,7 @@ type TProps = {
   isEditable: boolean;
 }
 
-export const AuditList = memo(({ audits, onUpdateAuditComment, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
+export const AuditList = memo(({ audits, onUpdateAuditComment, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TAuditListProps) => {
   return (
     <div
       style={{
@@ -67,21 +68,33 @@ export const AuditList = memo(({ audits, onUpdateAuditComment, onRemoveAudit, on
         // paddingBottom: '16px',
       }}
     >
-      {audits.map((audit) => (
-        <AuditItem
-          // @ts-ignore
-          audit={audit}
-          key={audit.id}
-          onRemoveAudit={onRemoveAudit}
-          onAddJob={onAddJob}
-          onAddSubjob={onAddSubjob}
-          onToggleJobDone={onToggleJobDone}
-          onRemoveJob={onRemoveJob}
-          onToggleSubjob={onToggleSubjob}
-          isEditable={isEditable}
-          onUpdateAuditComment={onUpdateAuditComment}
-        />
-      ))}
+      {audits.length > 0 ? (
+        audits.map((audit) => (
+          <AuditItem
+            // @ts-ignore
+            audit={audit}
+            key={audit.id}
+            onRemoveAudit={onRemoveAudit}
+            onAddJob={onAddJob}
+            onAddSubjob={onAddSubjob}
+            onToggleJobDone={onToggleJobDone}
+            onRemoveJob={onRemoveJob}
+            onToggleSubjob={onToggleSubjob}
+            isEditable={isEditable}
+            onUpdateAuditComment={onUpdateAuditComment}
+          />
+        ))) : (
+          <Alert
+            // sx={{ mb: 2 }}
+            variant="standard"
+            severity="info"
+          >
+            <Typography variant="body2" component="h2" gutterBottom>
+              Еще ничего не создано
+            </Typography>
+          </Alert>
+        )
+      }
     </div>
   )
 })

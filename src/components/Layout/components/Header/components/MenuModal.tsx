@@ -102,9 +102,9 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>#jsVanilla</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog/sqt/cssVanilla') && (
-      <Link href="/blog/sqt/cssVanilla" as="/blog/sqt/cssVanilla">
-        <a onClick={onHideModal}>#cssVanilla</a>
+    {!isCurrentPathCb('/blog/sqt/telegram') && (
+      <Link href="/blog/sqt/telegram" as="/blog/sqt/telegram">
+        <a onClick={onHideModal}>#telegram</a>
       </Link>
     )}
     {/* -- */}

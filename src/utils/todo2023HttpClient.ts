@@ -3,7 +3,7 @@ import axios, {
   AxiosInstance as IAxiosInstance,
 } from 'axios';
 import axiosRetry from 'axios-retry'
-import { TAudit } from '~/components/ToDo2023.offline/state/types';
+import { TAudit } from '~/components/audit-helper'
 
 const isDev = process.env.NODE_ENV === 'development'
 const remoteExpressApiBaseURL = isDev ? 'http://pravosleva.ru/express-helper/subprojects/gapi/todo-2023' // 'http://localhost:5000/subprojects/gapi/todo-2023'

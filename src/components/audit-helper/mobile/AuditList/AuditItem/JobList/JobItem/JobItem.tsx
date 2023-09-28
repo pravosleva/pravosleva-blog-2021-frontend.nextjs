@@ -1,4 +1,4 @@
-import { IJob, stateHelper, EJobStatus } from "~/components/ToDo2023.offline/state"
+import { IJob, stateHelper, EJobStatus } from "~/components/audit-helper"
 import { SubjobList } from './SubjobList'
 import {
   Badge,
@@ -127,6 +127,7 @@ export const JobItem = memo(({
         style={{
           display: 'flex',
           flexDirection: 'row',
+          // flexWrap: 'wrap',
           alignItems: 'center',
           gap: '16px',
         }}

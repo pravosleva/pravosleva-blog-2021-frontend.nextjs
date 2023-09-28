@@ -14,12 +14,13 @@ import { TArticle } from '~/components/Article/types'
 import Link from '~/components/Link'
 import { slugMap } from '~/constants/blog/slugMap'
 import { Button } from '@mui/material'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
 type TProps = {
   article: TArticle;
 }
 
-const defaultBgUrl = '/static/img/text-1.jpeg'
+const defaultBgUrl = '/static/img/blog/coming-soon.avif'
 
 export const GridItem = ({ article }: TProps) => {
   const { original, bgSrc, brief } = article
@@ -42,6 +43,7 @@ export const GridItem = ({ article }: TProps) => {
       className={classes.gridItemBg}
       style={{
         backgroundImage: `url(${url})`,
+        filter: !!bgSrc? 'none' : 'grayscale(100%)',
       }}
     >
       <div className={classes.gridItemBox}>
@@ -63,6 +65,7 @@ export const GridItem = ({ article }: TProps) => {
                   noLinkStyle
                   href={`/blog/article/${slugMap.get(_id)?.slug}`}
                   target='_self'
+                  endIcon={<ArrowForwardIcon />}
                   sx={{
                     backgroundColor: '#FFC800',
                     color: '#000',

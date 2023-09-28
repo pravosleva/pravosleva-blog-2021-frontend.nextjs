@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { HYDRATE } from "next-redux-wrapper"
-import { EJobStatus, ESubjobStatus, IJob, TAudit } from '~/components/ToDo2023.offline/state';
+import { EJobStatus, ESubjobStatus, IJob, TAudit } from '~/components/audit-helper';
 import { getRandomString } from '~/utils/getRandomString';
 // import { IRootState } from '~/store/IRootState'
 // import { TAudit } from '~/components/ToDo2023/state'

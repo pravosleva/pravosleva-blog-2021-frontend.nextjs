@@ -1,4 +1,4 @@
-import { TAudit } from "../ToDo2023.offline/state/types";
+import { TAudit } from "../audit-helper/types";
 
 export namespace NEvent {
   export enum EServerOutgoing {

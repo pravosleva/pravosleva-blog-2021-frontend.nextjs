@@ -1,4 +1,4 @@
-import { IJob, TSubJob } from "~/components/ToDo2023.offline/state"
+import { IJob, TSubJob } from "~/components/audit-helper"
 import { JobItem } from './JobItem'
 import { memo, useCallback } from "react";
 import Button from "@mui/material/Button";

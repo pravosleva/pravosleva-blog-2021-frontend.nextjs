@@ -4,11 +4,12 @@ import { CustomPinInput } from '~/components/CustomPinInput'
 import { useDebounce } from '~/hooks/useDebounce'
 import { IRootState } from '~/store/IRootState'
 import axios from 'axios'
-import KeyIcon from '@mui/icons-material/Key';
+// import KeyIcon from '@mui/icons-material/Key';
 import axiosRetry from 'axios-retry'
 import { groupLog } from '~/utils/groupLog'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import FingerprintIcon from '@mui/icons-material/Fingerprint'
 
 type TProps = {
   chat_id: string;
@@ -119,7 +120,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
     <>
       {
         !isOneTimePasswordCorrect && !isFormOpened && (
-          <Button endIcon={<KeyIcon />} fullWidth variant="contained" color='primary' onClick={handleOpenForm}>
+          <Button endIcon={<FingerprintIcon />} fullWidth variant="contained" color='primary' onClick={handleOpenForm}>
             Вход
           </Button>
         )

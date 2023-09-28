@@ -1,7 +1,8 @@
 // import { useEffect, useState } from 'react'
 // import axios, { AxiosResponse } from 'axios'
-import { marks } from './car-marks-list-by-uremont.json'
+import json from './car-marks-list-by-uremont.json'
 
+const { marks } = json
 /*
 const baseURL = 'https://api-frontend.uservice.io'
 type TUremontRes = {

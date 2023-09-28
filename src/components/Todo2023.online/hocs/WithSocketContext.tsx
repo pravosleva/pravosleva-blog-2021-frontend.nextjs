@@ -1,6 +1,6 @@
 // import { Socket } from 'socket.io-client'
-import { TAudit } from "~/components/ToDo2023.offline/state/types";
-import createFastContext from "~/context/createFastContext";
+import { TAudit } from '~/components/audit-helper'
+import createFastContext from '~/context/createFastContext'
 
 export type TSocketMicroStore = {
   isConnected: boolean;

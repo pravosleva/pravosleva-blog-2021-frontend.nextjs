@@ -8,9 +8,9 @@ import {
   Stack,
   // Typography
 }from '@mui/material'
-import ProTip from '~/components/ProTip'
+// import ProTip from '~/components/ProTip'
 import Link from '~/components/Link'
-import Copyright from '~/components/Copyright'
+// import Copyright from '~/components/Copyright'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 // import { CarSelectSample } from '~/components/Autopark2022/components/CarSelectSample'
 import { Layout } from '~/components/Layout'
@@ -128,8 +128,8 @@ export default function Index() {
             <Link href='https://selection4test.ru' color="primary" target='_blank'>
               Old trash
             </Link>
-            <ProTip />
-            <Copyright />
+            {/* <ProTip />
+            <Copyright /> */}
           </Stack>
         </Box>
       </Container>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { TAudit } from '~/components/ToDo2023.offline/state/types'
+import { TAudit } from '~/components/audit-helper'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { getTimeAgo } from '~/utils/getTimeAgo'
 

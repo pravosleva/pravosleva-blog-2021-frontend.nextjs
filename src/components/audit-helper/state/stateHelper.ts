@@ -1,5 +1,5 @@
 // import { proxy } from 'valtio';
-import { TAudit, EJobStatus, ESubjobStatus, IJob } from './types'
+import { TAudit, EJobStatus, ESubjobStatus, IJob } from '~/components/audit-helper/types'
 import { standardJobList as _standardJobList } from './constants'
 
 // NOTE: Example https://github.com/pravosleva/express-helper/blob/master/src/server/utils/gcsUsersMapInstance.ts
@@ -98,6 +98,7 @@ class SingletoneState {
     try {
       for (const subjob of job.subjobs) if (subjob.status !== ESubjobStatus.IS_DONE) counter += 1
     } catch (err) {
+      console.log('- 1')
       console.warn(err)
     }
 

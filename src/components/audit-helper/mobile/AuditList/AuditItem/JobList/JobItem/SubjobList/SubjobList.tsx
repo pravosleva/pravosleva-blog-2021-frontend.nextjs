@@ -1,14 +1,17 @@
-import { TSubJob, ESubjobStatus } from "~/components/ToDo2023.offline/state"
-import { styled } from '@mui/material/styles';
-import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
-// import TagFacesIcon from '@mui/icons-material/TagFaces';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-// import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import WhatshotIcon from '@mui/icons-material/Whatshot';
+import { TSubJob, ESubjobStatus } from '~/components/audit-helper/types'
+// import { styled } from '@mui/material/styles'
+import Chip from '@mui/material/Chip'
+import {
+  Box,
+  // Paper,
+}from '@mui/material'
+// import TagFacesIcon from '@mui/icons-material/TagFaces'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+// import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import WhatshotIcon from '@mui/icons-material/Whatshot'
 // import { stateInstance } from '~/components/ToDo2023/state'
-import DoneIcon from '@mui/icons-material/Done';
-import { memo, useCallback } from "react"
+import DoneIcon from '@mui/icons-material/Done'
+import { memo, useCallback } from 'react'
 import { /* VariantType, */ useSnackbar } from 'notistack'
 
 type TProps = {
@@ -28,9 +31,9 @@ type TProps = {
   isEditable: boolean;
 }
 
-const ListItem = styled('li')(({ theme }) => ({
-  margin: theme.spacing(0.5),
-}));
+// const ListItem = styled('li')(({ theme }) => ({
+//   margin: theme.spacing(0.5),
+// }));
 const icons: {
   [key in ESubjobStatus]: {
     component: any;
@@ -74,27 +77,40 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
       style={{
         display: 'flex',
         flexDirection: 'column',
+          
+        // border: '1px solid red',
+        boxSizing: 'border-box',
+        maxWidth: '450px',
       }}
     >
-      <Paper
+      <Box
         sx={{
           display: 'flex',
-          // flexDirection: 'column',
-          justifyContent: 'flex-start',
+          flexDirection: 'column',
           flexWrap: 'wrap',
+          gap: 1,
+          justifyContent: 'flex-start',
           listStyle: 'none',
           boxShadow: 'none',
-          // p: 0.5,
           m: 0,
           p: 0,
           overflowX: 'auto',
+          boxSizing: 'border-box',
+          maxWidth: '100%',
         }}
         component="ul"
       >
         {
           subjobs.map(({ id, status, tsUpdate, name }) => (
-            <ListItem key={`${auditId}-${jobId}-${id}-${tsUpdate}-${status}`}>
+            <li
+              key={`${auditId}-${jobId}-${id}-${tsUpdate}-${status}`}
+              style={{
+                maxWidth: '100%',
+                
+              }}
+            >
               <Chip
+                // className='truncate'
                 icon={icons[status]?.component || <HelpOutlineIcon />}
                 label={name}
                 color={icons[status]?.muiSettings.color || undefined}
@@ -105,10 +121,10 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
                   handleToggleSubjob({ subjobId: id })
                 }}
               />
-            </ListItem>
+            </li>
           ))
         }
-      </Paper>
+      </Box>
     </div>
   )
 }, (prevPs, nextPs) => prevPs.jobTsUpdate === nextPs.jobTsUpdate && prevPs.isEditable === nextPs.isEditable)

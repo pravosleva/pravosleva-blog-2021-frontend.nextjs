@@ -1,6 +1,5 @@
-import { TAudit, TSubJob } from "~/components/ToDo2023.offline/state"
+import { TAudit, TSubJob, stateHelper } from "~/components/audit-helper"
 import { JobList } from './JobList'
-import { stateHelper } from '~/components/ToDo2023.offline/state'
 // import Badge from "@mui/material/Badge"
 // import SettingsIcon from '@mui/icons-material/Settings'
 import { useCallback, useState, useMemo, memo } from "react"
@@ -14,8 +13,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import {
   Typography,
 } from '@mui/material'
-import { CircularWithValueLabel } from "~/components/CircularWithValueLabel"
-import { CommentBtn } from '~/components/ToDo2023.offline/components/CommentBtn'
+import { CircularWithValueLabel } from '~/components/CircularWithValueLabel'
+import { CommentBtn } from '~/components/audit-helper/common/CommentBtn'
 
 type TProps = {
   audit: TAudit;

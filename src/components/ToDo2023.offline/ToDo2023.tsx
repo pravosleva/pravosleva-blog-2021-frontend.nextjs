@@ -1,5 +1,18 @@
 import Head from 'next/head'
 import { memo, useCallback, useState } from 'react'
+import { /* VariantType, */ useSnackbar } from 'notistack'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  addAudit,
+  removeAudit,
+  addJob,
+  addSubjob,
+  toggleJobDone,
+  removeJob,
+  toggleSubJobDone,
+  updateAuditComment,
+} from '~/store/reducers/todo2023'
+import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
 import {
   Box,
   Button,
@@ -12,32 +25,20 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { AddNewBtn, AuditList } from '~/components/ToDo2023.offline/components'
-import { TAudit } from '~/components/ToDo2023.offline/state'
-import { useSelector, useDispatch } from 'react-redux'
-import {
-  addAudit,
-  removeAudit,
-  addJob,
-  addSubjob,
-  toggleJobDone,
-  removeJob,
-  toggleSubJobDone,
-  updateAuditComment,
-} from '~/store/reducers/todo2023'
+// import { AuditList, TAuditListProps } from './AuditList'
+import { useRouter } from 'next/router'
+import { AddNewBtn, AuditList, TAudit, AuditGrid } from '~/components/audit-helper'
 import { IRootState } from '~/store/IRootState'
-import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
 import Link from '~/components/Link'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-// import SendIcon from '@mui/icons-material/Send';
-import { useRouter } from 'next/router'
+// import SendIcon from '@mui/icons-material/Send'
 // import { useCompare } from '~/hooks/useDeepEffect'
-import { /* VariantType, */ useSnackbar } from 'notistack'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 // import FolderIcon from '@mui/icons-material/Folder'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 // import MuiLink from '@mui/material/Link'
+import { useWindowSize } from '~/hooks/useWindowSize'
 
 export const ToDo2023 = memo(() => {
   const router = useRouter()
@@ -74,6 +75,7 @@ export const ToDo2023 = memo(() => {
   }, [])
 
   const localAudits: TAudit[] = useSelector((state: IRootState) => state.todo2023.localAudits)
+  
   const handleRemoveAudit = useCallback(({ auditId }) => {
     const isConfirmed = window.confirm('Аудит будет удален. Вы уверены?')
     if (isConfirmed) dispatch(removeAudit({
@@ -176,178 +178,192 @@ export const ToDo2023 = memo(() => {
   }, [])
   // --
 
-  return (
-    <>
-      <Head>
-        <title>AuditList</title>
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </Head>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-        <Container
-          maxWidth="xs"
-          sx={{
-            // marginLeft: 0,
-            // marginRight: 0,
-            // paddingLeft: 0,
-            // paddingRight: 0,
-          }}
-        >
+  const { isMobile, isDesktop } = useWindowSize()
+
+  switch (true) {
+    case isMobile: return (
+      <>
+        <Head>
+          <title>AuditList</title>
+          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        </Head>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 40px)' }}>
+          <Container maxWidth="xs">
+            <Stack
+              direction='column'
+              alignItems='start'
+              spacing={2}
+              sx={{ pt: 2, pb: 2 }}
+            >
+              <Box
+                sx={{
+                  // pb: 2,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  display="block"
+                  // gutterBottom
+                >
+                  AuditList
+                </Typography>
+                {
+                  lastVisitedOnlinePages?.length > 0 && (
+                    <>
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                        aria-expanded={isMenuOpened ? 'true' : undefined}
+                        aria-haspopup="true"
+                        onClick={handleMenuOpen}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                      <Menu
+                        id="long-menu"
+                        MenuListProps={{
+                          'aria-labelledby': 'long-button',
+                        }}
+                        anchorEl={anchorEl}
+                        open={isMenuOpened}
+                        onClose={handleMenuClose}
+                        PaperProps={{
+                          // style: {
+                          //   maxHeight: ITEM_HEIGHT * 4.5,
+                          //   width: '20ch',
+                          // },
+                        }}
+                      >
+                        {
+                          lastVisitedOnlinePages.map(({ tg_chat_id }) => (
+                            <MenuItem
+                              key={tg_chat_id}
+                              selected={false}
+                              onClick={handleRoomClick(tg_chat_id)}
+                              disabled={String(tg_chat_id) === router.query.tg_chat_id}
+                            >
+                              <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
+                              <Typography variant="inherit">{tg_chat_id}</Typography>
+                              {/* <MuiLink href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</MuiLink> */}
+                            </MenuItem>
+                          ))
+                        }
+                      </Menu>
+                    </>
+                  )
+                }
+              </Box>
+            </Stack>
+  
+            <AuditList
+              audits={localAudits}
+              onRemoveAudit={handleRemoveAudit}
+              onAddJob={handleAddJob}
+              onAddSubjob={handleAddSubjob}
+              onToggleJobDone={handleToggleJobDone}
+              onRemoveJob={handleRemoveJob}
+              onToggleSubjob={handleToggleSubjob}
+              isEditable={true}
+              onUpdateAuditComment={handleUpdateAuditComment}
+            />
+          </Container>
+          {
+            typeof window !== 'undefined' && (
+              <div
+                style={{
+                  marginTop: 'auto',
+                  position: 'sticky',
+                  bottom: '0px',
+                  zIndex: 2,
+                  padding: '16px',
+                  // backgroundColor: '#fff',
+                  // borderTop: '1px solid lightgray',
+                }}
+                className='backdrop-blur--lite'
+              >
+                <Box sx={{ pt:0, pb: 2 }}>
+                  <AddNewBtn
+                    cb={{
+                      onSuccess: handleAddNewAudit,
+                      onError: handleError,
+                    }}
+                    label='Добавить Аудит'
+                    muiColor='primary'
+                    cfg={{
+                      name: {
+                        type: 'text',
+                        label: 'Название',
+                        inputId: 'audit-name',
+                        placeholder: 'Аудит',
+                        defaultValue: '',
+                        reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
+                      },
+                      description: {
+                        type: 'text',
+                        label: 'Описание',
+                        inputId: 'audit-description',
+                        placeholder: 'Something',
+                        defaultValue: '',
+                        reactHookFormOptions: { required: false, maxLength: 50 }
+                      }
+                    }}
+                  />
+                </Box>
+                <Stack spacing={2} direction='row' sx={{ width: '100%' }}>
+                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/' target='_self'>
+                    Home
+                  </Button>
+                  {lastVisitedOnlinePages?.length > 0 && (
+                    <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href={`/subprojects/todo/${lastVisitedOnlinePages[0].tg_chat_id}`} target='_self'>
+                      {lastVisitedOnlinePages[0].tg_chat_id}
+                    </Button>
+                  )}
+                </Stack>
+              </div>
+            )
+          }
+        </div>
+      </>
+    )
+    case isDesktop: return (
+      <>
+        <Head>
+          <title>AuditList</title>
+          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        </Head>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
           <Stack
             direction='column'
             alignItems='start'
             spacing={2}
-            sx={{
-              pt: 2,
-              pb: 2,
-
-              // pl: 2,
-              // pr: 2,
-            }}
+            sx={{ pt: 2, pb: 2 }}
           >
-            <Box
-              sx={{
-                // pb: 2,
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}
-            >
-              <Typography
-                variant="h5"
-                display="block"
-                // gutterBottom
-              >
-                AuditList
-              </Typography>
-              {
-                lastVisitedOnlinePages?.length > 0 && (
-                  <>
-                    <IconButton
-                      aria-label="more"
-                      id="long-button"
-                      aria-controls={isMenuOpened ? 'long-menu' : undefined}
-                      aria-expanded={isMenuOpened ? 'true' : undefined}
-                      aria-haspopup="true"
-                      onClick={handleMenuOpen}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                      id="long-menu"
-                      MenuListProps={{
-                        'aria-labelledby': 'long-button',
-                      }}
-                      anchorEl={anchorEl}
-                      open={isMenuOpened}
-                      onClose={handleMenuClose}
-                      PaperProps={{
-                        // style: {
-                        //   maxHeight: ITEM_HEIGHT * 4.5,
-                        //   width: '20ch',
-                        // },
-                      }}
-                    >
-                      {
-                        lastVisitedOnlinePages.map(({ tg_chat_id }) => (
-                          <MenuItem
-                            key={tg_chat_id}
-                            selected={false}
-                            onClick={handleRoomClick(tg_chat_id)}
-                            disabled={String(tg_chat_id) === router.query.tg_chat_id}
-                          >
-                            <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
-                            <Typography variant="inherit">{tg_chat_id}</Typography>
-                            {/* <MuiLink href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</MuiLink> */}
-                          </MenuItem>
-                        ))
-                      }
-                    </Menu>
-                  </>
-                )
-              }
-            </Box>
-            
-            
-            {/* <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo/1' target='_self'>
-              Online /1
-            </Button> */}
-            {/*
-              isOneTimePasswordCorrect && (
-                <Button onClick={pushForMeowt} fullWidth endIcon={<SendIcon />} variant='outlined' color='secondary'>
-                  Push /1
-                </Button>
-              )
-            */}
-          </Stack>
+            <Typography variant="h1" component="h1" gutterBottom className='truncate'>
+              AuditList
+            </Typography>
+            <AuditGrid
+              audits={localAudits}
+              onRemoveAudit={handleRemoveAudit}
+              onAddJob={handleAddJob}
+              onAddSubjob={handleAddSubjob}
+              onToggleJobDone={handleToggleJobDone}
+              onRemoveJob={handleRemoveJob}
+              onToggleSubjob={handleToggleSubjob}
+              onUpdateAuditComment={handleUpdateAuditComment}
+              onAddNewAudit={handleAddNewAudit}
 
-          <AuditList
-            audits={localAudits}
-            onRemoveAudit={handleRemoveAudit}
-            onAddJob={handleAddJob}
-            onAddSubjob={handleAddSubjob}
-            onToggleJobDone={handleToggleJobDone}
-            onRemoveJob={handleRemoveJob}
-            onToggleSubjob={handleToggleSubjob}
-            isEditable={true}
-            onUpdateAuditComment={handleUpdateAuditComment}
-          />
-        </Container>
-        {
-          typeof window !== 'undefined' && (
-            <div
-              style={{
-                marginTop: 'auto',
-                position: 'sticky',
-                bottom: '0px',
-                zIndex: 2,
-                padding: '16px',
-                // backgroundColor: '#fff',
-                // borderTop: '1px solid lightgray',
-              }}
-              className='backdrop-blur--lite'
-            >
-              <Box sx={{ pt:0, pb: 2 }}>
-                <AddNewBtn
-                  cb={{
-                    onSuccess: handleAddNewAudit,
-                    onError: handleError,
-                  }}
-                  label='Добавить Аудит'
-                  muiColor='primary'
-                  cfg={{
-                    name: {
-                      type: 'text',
-                      label: 'Название',
-                      inputId: 'audit-name',
-                      placeholder: 'Аудит',
-                      defaultValue: '',
-                      reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
-                    },
-                    description: {
-                      type: 'text',
-                      label: 'Описание',
-                      inputId: 'audit-description',
-                      placeholder: 'Something',
-                      defaultValue: '',
-                      reactHookFormOptions: { required: false, maxLength: 50 }
-                    }
-                  }}
-                />
-              </Box>
-              <Stack spacing={2} direction='row' sx={{ width: '100%' }}>
-                <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/' target='_self'>
-                  Home
-                </Button>
-                {lastVisitedOnlinePages?.length > 0 && (
-                  <Button fullWidth endIcon={<ArrowForwardIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href={`/subprojects/todo/${lastVisitedOnlinePages[0].tg_chat_id}`} target='_self'>
-                    {lastVisitedOnlinePages[0].tg_chat_id}
-                  </Button>
-                )}
-              </Stack>
-            </div>
-          )
-        }
-      </div>
-    </>
-  )
+              isEditable={true}
+            />
+          </Stack>
+        </div>
+      </>
+    )
+    default: return (
+      <div>Detect device...</div>
+    )
+  }
 })
