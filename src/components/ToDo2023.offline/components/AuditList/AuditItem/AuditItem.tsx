@@ -11,11 +11,21 @@ import IconButton from "@mui/material/IconButton"
 // import FolderIcon from '@mui/icons-material/Folder'
 import DeleteIcon from '@mui/icons-material/Delete'
 // import TaskAltIcon from '@mui/icons-material/TaskAlt'
-import Typography from "@mui/material/Typography"
+import {
+  Typography,
+} from '@mui/material'
 import { CircularWithValueLabel } from "~/components/CircularWithValueLabel"
+import { CommentBtn } from '~/components/ToDo2023.offline/components/CommentBtn'
 
 type TProps = {
   audit: TAudit;
+  onUpdateAuditComment: ({
+    auditId,
+    comment,
+  }: {
+    auditId: string;
+    comment: string;
+  }) => void;
   onRemoveAudit: ({
     auditId
   }: {
@@ -57,7 +67,7 @@ type TProps = {
   isEditable: boolean;
 }
 
-export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
+export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
   const [isOpened, setIsOpened] = useState(false)
 
   const handleToggle = useCallback(() => {
@@ -162,6 +172,18 @@ export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, on
             </Typography>
           )
         }
+        <CommentBtn
+          initialState={{
+            comment: audit.comment || '',
+          }}
+          onSuccess={({ state }) => {
+            console.log(state)
+            onUpdateAuditComment({
+              auditId: audit.id,
+              comment: state.comment,
+            })
+          }}
+        />
       </div>
       {
         audit.jobs.length > 0 && isOpened && (
@@ -182,5 +204,5 @@ export const AuditItem = memo(({ audit, onRemoveAudit, onAddJob, onAddSubjob, on
     </div>
   )
 }, function arePropsEqual(prevPs, nextPs) {
-  return (prevPs.audit.tsUpdate === nextPs.audit.tsUpdate && prevPs.isEditable === nextPs.isEditable)
+  return (prevPs.audit.tsUpdate === nextPs.audit.tsUpdate && prevPs.isEditable === nextPs.isEditable && prevPs.audit.comment === nextPs.audit.comment)
 })

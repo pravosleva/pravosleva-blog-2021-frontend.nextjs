@@ -459,7 +459,7 @@ pre {
   margin-left: 0;
   margin-right: 0;
   margin-top: 0;
-  margin-bottom: 1.45rem !important;
+  margin-bottom: 1.45rem;
   font-size: 0.85rem;
   line-height: 1.42;
   background: hsla(0, 0%, 0%, 0.04);
@@ -469,6 +469,14 @@ pre {
   word-wrap: normal;
   padding: 1.45rem;
 }
+
+pre.text-wrap {
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+ }
 /*
 @media (min-width: 768px) {
   pre {

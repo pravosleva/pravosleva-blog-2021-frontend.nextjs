@@ -3,7 +3,7 @@ import { JobItem } from './JobItem'
 import { memo, useCallback } from "react";
 import Button from "@mui/material/Button";
 import { todo2023HttpClient } from "~/utils/todo2023HttpClient";
-
+import { useStyles } from './styles'
 import {
   // VariantType,
   useSnackbar,
@@ -61,6 +61,7 @@ export const JobList = memo(({
   onToggleSubjob,
   isEditable,
 }: TProps) => {
+  const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
   const handleActualize = useCallback(async () => {
     let newsCounter = 0
@@ -116,21 +117,7 @@ export const JobList = memo(({
     if (newsCounter === 0) enqueueSnackbar('Уже актуально', { variant: 'success', autoHideDuration: 3000 })
   }, [useCompare(jobs)])
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        // alignItems: 'center',
-        gap: '8px',
-        paddingLeft: '16px',
-        // paddingRight: '10px',
-        borderLeft: '4px solid lightgray',
-
-        // NOTE: adds
-        // paddingLeft: '16px',
-        // paddingRight: '16px',
-      }}
-    >
+    <div className={classes.warpper}>
       {jobs.map((job) => (
         <JobItem
           auditId={auditId}

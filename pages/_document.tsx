@@ -66,7 +66,7 @@ export default class MyDocument extends Document {
           <link href="/static/css/link-as-rippled-btn.css" rel="stylesheet" />
           <link href="/static/css/custom-breadcrumbs.css" rel="stylesheet" />
           <link href="/static/css/block-quotes.css" rel="stylesheet" />
-          <link href="/static/css/article.css" rel="stylesheet" />
+          
           <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
         </Head>
         <body>

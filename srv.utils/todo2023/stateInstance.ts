@@ -103,6 +103,21 @@ class Singleton {
       return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }
+  public updateAuditComment({ room, auditId, comment }: { room: number; auditId: string; comment: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
+    const targetAudits = this._state.get(room)
+    if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })
+
+    const targetAuditIndex = targetAudits.findIndex(({ id }) => id === auditId)
+    if (targetAuditIndex === -1) return Promise.reject({ isOk: false, message: `Audit not found` })
+
+    const tsUpdate = new Date().getTime()
+
+    targetAudits[targetAuditIndex].comment = comment
+    targetAudits[targetAuditIndex].tsUpdate = tsUpdate
+
+    this._state.set(room, targetAudits)
+    return Promise.resolve({ isOk: true, message: 'Audit comment updated', audits: targetAudits })
+  }
   public removeAudit({ room, auditId }: { room: number; auditId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     const targetAudits = this._state.get(room)
     if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })

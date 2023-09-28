@@ -31,6 +31,7 @@ export type TAudit = {
   name: string;
   description?: string;
   jobs: IJob[];
+  comment?: string;
 
   tsCreate: number;
   tsUpdate: number;
@@ -61,6 +62,7 @@ export namespace NEvent {
     AUDITLIST_REPLACE = 'c:auditlist.replace', // NOTE: Full update
     AUDIT_ADD = 'c:audit.add',
     AUDIT_REMOVE = 'c:audit.remove',
+    AUDIT_UPDATE_COMMENT = 'c:audit.update-comment',
   
     JOB_ADD = 'c:job.add',
     JOB_UPDATE = 'c:job.update',
@@ -93,6 +95,10 @@ export namespace NEventData {
     }
     export type TAUDIT_REMOVE_CB_ARG = { data: { room: number; isOk: boolean; audits?: TAudit[]; message?: string } }
     export type TAUDIT_REMOVE_CB = ({ data }: TAUDIT_REMOVE_CB_ARG) => void;
+
+    export type TAUDIT_UPDATE_COMMENT = { room: number; auditId: string; comment: string }
+    export type TAUDIT_UPDATE_COMMENT_CB_ARG = { data: { room: number; isOk: boolean; audits?: TAudit[]; message?: string } }
+    export type TAUDIT_UPDATE_COMMENT_CB = ({ data }: TAUDIT_UPDATE_COMMENT_CB_ARG) => void;
 
     export type TJOB_ADD = { room: number; auditId: string; name: string; subjobs: TSubJob[]; }
     export type TSUBJOB_ADD = { room: number; auditId: string; name: string; jobId: string; }

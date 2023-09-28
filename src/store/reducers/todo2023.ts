@@ -72,6 +72,31 @@ export const todo2023Slice: any = createSlice({
         state.online.lastVisitedPages = newArr
       }
     },
+    updateAuditComment: (state: TState, action: { payload: { auditId: string; comment: string } }) => {
+      const {
+        payload : {
+          auditId,
+          comment,
+        }
+      } = action
+
+      console.groupCollapsed(`UPDATE AUDIT COMMENT: ${auditId}, ${comment}`)
+      try {
+        const targetAuditIndex = state.localAudits.findIndex(({ id }) => id === auditId)
+    
+        console.log(`targetAuditIndex ${targetAuditIndex}`)
+    
+        if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
+    
+        const tsUpdate = new Date().getTime()
+    
+        state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
+        state.localAudits[targetAuditIndex].comment = comment
+      } catch (err) {
+        console.warn(err)
+      }
+      console.groupEnd()
+    },
     toggleJobDone: (state: TState, action: { payload: { auditId: string; jobId: string } }) => {
       const {
         payload : {
@@ -418,6 +443,7 @@ export const {
   removeJob,
   addSubjob,
   removeSubjob,
+  updateAuditComment,
 
   replaceAudits,
   fixVisitedPage,

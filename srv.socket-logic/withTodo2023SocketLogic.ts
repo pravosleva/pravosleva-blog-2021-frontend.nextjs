@@ -105,6 +105,18 @@ export const withTodo2023SocketLogic = (io: Socket) => {
           if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
+    // 9.
+    socket.on(NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT, ({ room, auditId, comment }: NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT, cb?: NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB) => {
+      stateInstance.updateAuditComment({ room, auditId, comment })
+        .then(({ audits }) => {
+          // console.log(`-- audit added: audits.len ${audits.length}`)
+          io.in(String(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+        })
+        .catch((err) => {
+          console.log(err)
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+        })
+    })
 
     io.to(socket.id).emit('tst.action1', {
       data: {

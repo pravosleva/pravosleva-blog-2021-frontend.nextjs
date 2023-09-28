@@ -23,6 +23,7 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
     <>
       <Head>
         <title>{`Pravosleva${article?.original.title ? ` | ${article?.original.title}` : 'No title'}`}</title>
+        <link href="/static/css/article.css" rel="stylesheet" />
         {!!article.brief && <meta name="description" content={article.brief} />}
         {!!article.brief && <meta property="og:description" content={article.brief} />}
         {!!article.bgSrc && <meta property="vk:image" content={article.bgSrc} />}

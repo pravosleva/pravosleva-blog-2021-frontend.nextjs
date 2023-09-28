@@ -46,6 +46,7 @@ import { useRouter } from 'next/router'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'http://pravosleva.ru'
+const isDev = process.env.NODE_ENV === 'development'
 
 type TLogicProps = {
   room: number;
@@ -162,6 +163,21 @@ const Logic = ({ room }: TLogicProps) => {
       }
     }
   }, [useCompare([localAudits])])
+  const handleUpdateAuditComment = useCallback(({
+    auditId,
+    comment,
+  }) => {
+    if (!socketRef.current) throw new Error('socket err')
+      socketRef.current.emit(NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT, {
+        room: roomRef.current,
+        auditId,
+        comment
+      }, (ps : NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB_ARG) => {
+        const { data } = ps
+        // setStore({ audits: data.audits })
+        groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT} | tst`, items: [data] })
+      })
+  }, [])
   const handleRemoveAudit = useCallback(({
     auditId,
   }) => {
@@ -303,6 +319,10 @@ const Logic = ({ room }: TLogicProps) => {
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
 
   useEffect(() => {
+    if (isDev) {
+      dispatch(setIsOneTimePasswordCorrect(true))
+      return
+    }
     autoparkHttpClient.checkJWT({
       tested_chat_id: String(roomRef.current),
     })
@@ -457,6 +477,7 @@ const Logic = ({ room }: TLogicProps) => {
             onRemoveJob={handleRemoveJob}
             onToggleSubjob={handleToggleSubjob}
             isEditable={isOneTimePasswordCorrect}
+            onUpdateAuditComment={handleUpdateAuditComment}
           />
         </Container>
         {

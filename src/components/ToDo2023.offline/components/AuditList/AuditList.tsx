@@ -6,6 +6,13 @@ import { TAudit, TSubJob } from '../../state'
 
 type TProps = {
   audits: TAudit[];
+  onUpdateAuditComment: ({
+    auditId,
+    comment,
+  }: {
+    auditId: string;
+    comment: string;
+  }) => void;
   onRemoveAudit: ({
     auditId
   }: {
@@ -47,7 +54,7 @@ type TProps = {
   isEditable: boolean;
 }
 
-export const AuditList = memo(({ audits, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
+export const AuditList = memo(({ audits, onUpdateAuditComment, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
   return (
     <div
       style={{
@@ -72,6 +79,7 @@ export const AuditList = memo(({ audits, onRemoveAudit, onAddJob, onAddSubjob, o
           onRemoveJob={onRemoveJob}
           onToggleSubjob={onToggleSubjob}
           isEditable={isEditable}
+          onUpdateAuditComment={onUpdateAuditComment}
         />
       ))}
     </div>

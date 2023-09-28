@@ -23,6 +23,7 @@ export namespace NEvent {
 
     AUDIT_ADD = 'c:audit.add',
     AUDIT_REMOVE = 'c:audit.remove', // 3. YES
+    AUDIT_UPDATE_COMMENT = 'c:audit.update-comment',
   
     JOB_ADD = 'c:job.add',
     JOB_UPDATE = 'c:job.update',
@@ -58,6 +59,9 @@ export namespace NEventData {
     }
     export type TAUDIT_REMOVE_CB_ARG = { data: { room: number; audits: TAudit[] } }
     export type TAUDIT_REMOVE_CB = ({ data }: TAUDIT_REMOVE_CB_ARG) => void;
+
+    export type TAUDIT_UPDATE_COMMENT_CB_ARG = { data: { room: number; auditId: string; comments: string } }
+    export type TAUDIT_UPDATE_COMMENT_CB = ({ data }: TAUDIT_UPDATE_COMMENT_CB_ARG) => void;
   }
   export namespace NServerOutgoing {
     export type TAUDITLIST_REPLACE = { audits: TAudit[]; }

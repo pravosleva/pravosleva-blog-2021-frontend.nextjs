@@ -23,6 +23,7 @@ import {
   toggleJobDone,
   removeJob,
   toggleSubJobDone,
+  updateAuditComment,
 } from '~/store/reducers/todo2023'
 import { IRootState } from '~/store/IRootState'
 import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
@@ -129,6 +130,15 @@ export const ToDo2023 = memo(() => {
       auditId,
       jobId,
       subjobId,
+    }))
+  }, [])
+  const handleUpdateAuditComment = useCallback(({
+    auditId,
+    comment,
+  }) => {
+    dispatch(updateAuditComment({
+      auditId,
+      comment
     }))
   }, [])
 
@@ -279,6 +289,7 @@ export const ToDo2023 = memo(() => {
             onRemoveJob={handleRemoveJob}
             onToggleSubjob={handleToggleSubjob}
             isEditable={true}
+            onUpdateAuditComment={handleUpdateAuditComment}
           />
         </Container>
         {

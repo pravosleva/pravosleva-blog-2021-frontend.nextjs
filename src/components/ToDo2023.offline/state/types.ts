@@ -31,6 +31,7 @@ export type TAudit = {
   name: string;
   description?: string;
   jobs: IJob[];
+  comment?: string;
 
   tsCreate: number;
   tsUpdate: number;

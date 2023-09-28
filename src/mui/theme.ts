@@ -20,8 +20,8 @@ const theme = createTheme({
     },
     secondary: {
       // main: '#19857b',
-      // main: '#97f48a',
-      main: '#27c196',
+      main: '#97f48a',
+      // main: '#27c196',
     },
     error: {
       // main: red.A400,
