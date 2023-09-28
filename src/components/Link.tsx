@@ -18,6 +18,7 @@ interface NextLinkComposedProps
 
 export const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComposedProps>(
   function NextLinkComposed(props, ref) {
+    // @ts-ignore
     const { to, linkAs, href, replace, scroll, shallow, prefetch, locale, ...other } = props;
 
     return (
@@ -29,6 +30,7 @@ export const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComp
         scroll={scroll}
         shallow={shallow}
         passHref
+        // @ts-ignore
         locale={locale}
       >
         <Anchor ref={ref} {...other} />

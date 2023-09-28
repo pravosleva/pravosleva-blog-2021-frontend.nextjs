@@ -1,6 +1,6 @@
 import { TArticle, TPageService } from '~/components/Article'
 import { universalHttpClient } from '~/utils/universalHttpClient';
-// import Head from 'next/head'
+import Head from 'next/head'
 // import { convertToPlainText } from '~/utils/markdown/convertToPlainText';
 import { ErrorPage } from '~/components/ErrorPage';
 import { Layout } from '~/components/Layout';
@@ -32,18 +32,18 @@ const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => 
   
   return (
     <>
-      {/* <Head>
-        <title>Pravosleva | Blog</title>
-        <meta property="og:title" content="Pravosleva | Blog" />
+      <Head>
+        <title>Pravosleva | 🔎 Это то что Вы искали: {searchQueryTitle.modified}</title>
+        <meta property="og:title" content="Pravosleva | 🔎 Search" />
         <meta name="description" content={`Это то что Вы искали: ${searchQueryTitle.modified}`} />
-        <meta property="og:type" content="website" />
+        {/* <meta property="og:type" content="website" />
         <meta property="og:determiner" content="the" />
         <meta property="og:locale" content="ru_RU" />
         <meta property="og:image" content="https://pravosleva.ru/static/img/logo/logo-pravosleva.jpg" />
         <meta property="og:description" content={`Это то что Вы искали: ${searchQueryTitle.modified}`} />
-        <meta property="og:url" content="https://pravosleva.ru" />
-        <meta property="og:url" content={thisPageUrl} />
-      </Head> */}
+        <meta property="og:url" content="https://pravosleva.ru" /> */}
+        {/* <meta property="og:url" content={thisPageUrl} /> */}
+      </Head>
       <Layout>
         <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={searchQueryTitle} />
       </Layout>

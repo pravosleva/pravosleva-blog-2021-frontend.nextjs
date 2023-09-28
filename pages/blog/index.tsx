@@ -27,7 +27,7 @@ import { ArticlesList } from '~/components/ArticlesList'
 import { ErrorPage } from '~/components/ErrorPage'
 import { slugMap } from '~/constants/blog/slugMap'
 import { TArticle } from '~/components/Article'
-// import Head from 'next/head'
+import Head from 'next/head'
 
 // const isProd = process.env.NODE_ENV === 'production'
 
@@ -47,6 +47,10 @@ const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TAr
 
   return (
     <>
+      <Head>
+        <title>Pravosleva | Blog</title>
+        <meta property="og:title" content="Pravosleva | Blog" />
+      </Head>
       <Layout>
         <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={{ modified: 'ALL', original: 'ALL' }} isBlogPage />
       </Layout>

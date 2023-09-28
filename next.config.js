@@ -1,7 +1,7 @@
 const webpack = require('webpack')
 const path = require('path')
-// const withPWA = require('next-pwa')
-// const runtimeCaching = require('next-pwa/cache')
+const withPWA = require('next-pwa')
+const runtimeCaching = require('next-pwa/cache')
 
 const fs = require('fs')
 const dotenv = require('dotenv')
@@ -13,15 +13,15 @@ const env = dotenv.parse(fs.readFileSync(envFileName))
 
 const nextConfig = {
   productionBrowserSourceMaps: true,
-  // pwa: {
-  //   // dest: 'public', // NOTE: By default to .next
-  //   runtimeCaching,
-  //   // disable: process.env.NODE_ENV === 'development',
-  //   register: true,
-  //   scope: '/app',
-  //   sw: 'service-worker.js',
-  //   //...
-  // },
+  pwa: {
+    dest: 'public', // NOTE: By default to .next
+    runtimeCaching,
+    // disable: process.env.NODE_ENV === 'development',
+    register: true,
+    scope: '/app',
+    sw: 'service-worker.js',
+    //...
+  },
   exportPathMap: function () {
     return {
       '/': { page: '/' },
@@ -49,4 +49,4 @@ const nextConfig = {
 }
 
 // module.exports = withPWA(withBundleAnalyzer(nextConfig))
-module.exports = nextConfig
+module.exports = withPWA(nextConfig)
