@@ -47,7 +47,7 @@
     "jsonwebtoken": "^9.0.2",
     "marked": "^9.0.3",
     "marked-plaintext": "^0.0.2",
-    "next": "11.x",
+    "next": "^13.5.3",
     "next-pwa": "5.2.21",
     "next-redux-wrapper": "^7.0.5",
     "nextjs-progressbar": "^0.0.16",
