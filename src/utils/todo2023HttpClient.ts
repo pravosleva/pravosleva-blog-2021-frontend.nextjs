@@ -7,10 +7,10 @@ import { TAudit } from '~/components/audit-helper'
 
 const isDev = process.env.NODE_ENV === 'development'
 const remoteExpressApiBaseURL = isDev ? 'http://pravosleva.ru/express-helper/subprojects/gapi/todo-2023' // 'http://localhost:5000/subprojects/gapi/todo-2023'
-: 'https://pravosleva.ru/express-helper/subprojects/gapi/todo-2023' // process.env.API_ENDPOINT || '';
+: 'http://83.220.170.212:9000/express-helper/subprojects/gapi/todo-2023' // process.env.API_ENDPOINT || '';
 
 const localNextApiBaseURL = isDev ? 'http://localhost:3000/express-next-api/todo-2023' // 'http://localhost:5000/subprojects/gapi/todo-2023'
-: 'https://pravosleva.ru/express-next-api/todo-2023' // process.env.API_ENDPOINT || '';
+: 'http://83.220.170.212:9000/express-next-api/todo-2023' // process.env.API_ENDPOINT || '';
 
 enum EControllers {
   GET_JOBS = 'post:/jobs',

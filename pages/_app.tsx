@@ -86,7 +86,7 @@ function AppWithRedux(props: MyAppProps) {
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
 
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
 
         <link rel="icon" href="/static/favicon.ico" />
         <meta name="theme-color" content="#0162c8" />
