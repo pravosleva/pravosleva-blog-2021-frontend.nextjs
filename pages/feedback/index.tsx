@@ -60,7 +60,7 @@ const Feedback = ({ t }: any) => {
               //   }
               // )
             }
-            const newEntryResult = await universalHttpClient.post(
+            const newEntryResult = await universalHttpClient.pravoslevaPost(
               '/express-helper/pravosleva-blog-2023/blog/feedback',
               new URLSearchParams({
                 companyName,

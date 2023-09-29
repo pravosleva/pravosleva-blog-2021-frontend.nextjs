@@ -29,7 +29,7 @@ export default function TodoOnline({
     <>
       <Head>
         <title>AuditList | Online</title>
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
       </Head>
       {
         _pageService.isOk

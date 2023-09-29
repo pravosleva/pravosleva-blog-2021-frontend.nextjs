@@ -35,9 +35,9 @@ export default function MyProjects({
 
   if (userCheckerResponse?.code === 'not_found') return (
     <>
-      <Head>
+      {/* <Head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </Head>
+      </Head> */}
       <ErrorPage message={`Пользователя ${chat_id} не существует. Нужна авторизация через Telegram`} />
     </>
   )
@@ -48,7 +48,7 @@ export default function MyProjects({
   return (
     <>
       <Head>
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}`} />
       </Head>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>

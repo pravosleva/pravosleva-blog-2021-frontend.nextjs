@@ -28,7 +28,7 @@ const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => 
     </Layout>
   )
 
-  // const thisPageUrl = `https://pravosleva.ru/blog/sqt/${article.slug}`
+  // const thisPageUrl = `https://pravosleva.pro/blog/sqt/${article.slug}`
   
   return (
     <>
@@ -39,9 +39,9 @@ const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => 
         {/* <meta property="og:type" content="website" />
         <meta property="og:determiner" content="the" />
         <meta property="og:locale" content="ru_RU" />
-        <meta property="og:image" content="https://pravosleva.ru/static/img/logo/logo-pravosleva.jpg" />
+        <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="og:description" content={`Это то что Вы искали: ${searchQueryTitle.modified}`} />
-        <meta property="og:url" content="https://pravosleva.ru" /> */}
+        <meta property="og:url" content="https://pravosleva.pro" /> */}
         {/* <meta property="og:url" content={thisPageUrl} /> */}
       </Head>
       <Layout>

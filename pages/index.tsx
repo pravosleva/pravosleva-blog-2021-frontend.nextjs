@@ -33,7 +33,7 @@ const links: TLink[] = [
   },
   // {
   //   name: 'Viselitsa 2023',
-  //   link: 'https://pravosleva.ru/dist.viselitsa-2023',
+  //   link: 'https://pravosleva.pro/dist.viselitsa-2023',
   //   colorCode: 'success',
   //   variantCode: 'contained',
   // },
@@ -46,7 +46,7 @@ const links: TLink[] = [
   },
   {
     name: 'KanBan 2021',
-    link: 'https://pravosleva.ru/express-helper/chat/',
+    link: 'https://pravosleva.pro/express-helper/chat/',
     colorCode: 'primary',
     variantCode: 'outlined',
     tragetAttrValue: '_blank',
@@ -75,7 +75,7 @@ export default function Index() {
         <meta property="og:title" content="Pravosleva | Web exp" />
         <meta property="og:type" content="website" />
         {/* <meta property="og:url" content="https://www.imdb.com/title/tt0117500/" /> */}
-        <meta property="og:image" content="https://pravosleva.ru/static/img/logo-pravosleva.jpg" />
+        <meta property="og:image" content="https://pravosleva.pro/static/img/logo-pravosleva.jpg" />
         <meta property="og:description" content="Pravosleva | So, we have unconscious consumption society. What about this?" />
         <meta property="og:determiner" content="the" />
         <meta property="og:locale" content="en_GB" />

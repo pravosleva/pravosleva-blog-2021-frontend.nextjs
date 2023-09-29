@@ -185,7 +185,7 @@ export const ToDo2023 = memo(() => {
       <>
         <Head>
           <title>AuditList</title>
-          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+          {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         </Head>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 40px)' }}>
           <Container maxWidth="xs">
@@ -333,7 +333,7 @@ export const ToDo2023 = memo(() => {
       <>
         <Head>
           <title>AuditList</title>
-          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+          {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         </Head>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
           <Stack

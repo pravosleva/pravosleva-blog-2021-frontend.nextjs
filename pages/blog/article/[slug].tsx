@@ -15,7 +15,7 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
     </Layout>
   )
 
-  // const thisPageUrl = `https://pravosleva.ru/blog/article/${article.slug}`
+  // const thisPageUrl = `https://pravosleva.pro/blog/article/${article.slug}`
   
   return (
     <>
@@ -53,7 +53,7 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
         {/* -- */}
 
         {/* <meta property="og:locale" content="ru_RU" />
-        <meta property="og:image" content={`https://pravosleva.ru/static/img/blog/${article.bgSrc || 'coming-soon.avif'}`} key='og-image' />
+        <meta property="og:image" content={`https://pravosleva.pro/static/img/blog/${article.bgSrc || 'coming-soon.avif'}`} key='og-image' />
         
         <meta property="og:description" content={article.brief} key='og-descr' />
         <meta property="og:url" content={thisPageUrl} />
@@ -68,9 +68,9 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
         <meta property="og:locale:alternate" content="en_US" />
         {
           !!article.bgSrc ? (
-            <meta property="vk:image" content={`https://pravosleva.ru/static/img/blog/${article.bgSrc || 'coming-soon.avif'}`} />
+            <meta property="vk:image" content={`https://pravosleva.pro/static/img/blog/${article.bgSrc || 'coming-soon.avif'}`} />
           ) : (
-            <meta property="og:image" content="https://pravosleva.ru/static/img/logo/logo-pravosleva.jpg" />
+            <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
           )
         }
         <link href="/static/css/article.css" rel="stylesheet" />

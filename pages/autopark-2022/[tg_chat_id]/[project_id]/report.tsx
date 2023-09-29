@@ -12,7 +12,7 @@ import axios from 'axios';
 import { wrapper } from '~/store'
 import { setActiveProject } from '~/store/reducers/autopark'
 import { Report } from '~/components/Autopark2022/components'
-import Head from 'next/head'
+// import Head from 'next/head'
 import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import jwt from 'jsonwebtoken'
@@ -37,9 +37,9 @@ export default function MyProjects({
 }: any) {
   if (userCheckerResponse?.code === 'not_found') return (
     <>
-      <Head>
+      {/* <Head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </Head>
+      </Head> */}
       <ErrorPage message={`Пользователя ${chat_id} не существует. Нужна авторизация через Telegram`} />
     </>
   )
@@ -49,9 +49,9 @@ export default function MyProjects({
 
   return (
     <>
-      <Head>
+      {/* <Head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </Head>
+      </Head> */}
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <Container maxWidth="xs">
           <Box sx={{ p: 2 }} style={{ fontWeight: 'bold' }}>
