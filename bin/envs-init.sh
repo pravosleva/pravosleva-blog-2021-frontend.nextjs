@@ -12,7 +12,7 @@ REACT_APP_CONFIRM_COOKIE_EXPIRES_IN_DAYS=14
 GA_TRACKING_ID=UA-xxxxxxxxx-x
 YANDEX_COUNTER_ID=xxxxxxxx
 RECAPTCHAV3_CLIENT_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxx
-RECAPTCHAV3_VERIFY_URL=http://pravosleva.ru/express-helper/recaptcha-v3/verify" > .env.dev &&
+RECAPTCHAV3_VERIFY_URL=http://pravosleva.pro/express-helper/recaptcha-v3/verify" > .env.dev &&
       echo "REACT_APP_API_ENDPOINT=http://80.87.194.181/api
 REACT_APP_SOCKET_ENDPOINT=http://80.87.194.181
 REACT_APP_AUTH_COOKIE_EXPIRES_IN_DAYS=1
@@ -23,7 +23,7 @@ REACT_APP_CONFIRM_COOKIE_EXPIRES_IN_DAYS=14
 GA_TRACKING_ID=UA-xxxxxxxxx-x
 YANDEX_COUNTER_ID=xxxxxxxx
 RECAPTCHAV3_CLIENT_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxx
-RECAPTCHAV3_VERIFY_URL=http://pravosleva.ru/express-helper/recaptcha-v3/verify" > .env.prod
+RECAPTCHAV3_VERIFY_URL=http://pravosleva.pro/express-helper/recaptcha-v3/verify" > .env.prod
     ;;
     *)
     echo "☠️ SCRIPT: envs-init.sh | Undefined param value" &&

@@ -18,7 +18,7 @@ export const BreadCrumbs = ({
       <ul itemScope itemType="http://schema.org/BreadcrumbList">
         <li itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem">
           <Link href="/" as="/">
-            <a title="Pravosleva.ru" itemProp="item">
+            <a itemProp="item">
               {t('HOME')}
             </a>
           </Link>

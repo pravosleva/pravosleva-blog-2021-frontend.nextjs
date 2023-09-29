@@ -45,7 +45,7 @@ class httpClientSingletone {
     }
     this.api = axios.create(baseConfig)
     this.eHelperApi = axios.create({
-      baseURL: 'https://pravosleva.ru/',
+      baseURL: 'https://pravosleva.pro/',
       validateStatus: (_s: number) => true,
     })
     axiosRetry(this.api, { retries: 10 })

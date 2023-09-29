@@ -11,7 +11,7 @@ import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 // const isDev = process.env.NODE_ENV === 'development'
 // const baseURL = isDev
 //   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-//   : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
+//   : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
 
 type TPageService = {
   isOk: boolean;

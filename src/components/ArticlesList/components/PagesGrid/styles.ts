@@ -22,7 +22,8 @@ export const useStyles = makeStyles((theme) => ({
   },
   gridItemBg: {
     objectFit: 'cover',
-    borderRadius: '8px',
+    // @ts-ignore
+    borderRadius: theme.spacing(2),
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -49,7 +50,7 @@ export const useStyles = makeStyles((theme) => ({
     maxWidth: '100%',
   },
   gridItemDescription: {
-    // marginBottom: 'auto',
+    // marginTop: 'auto',
     // @ts-ignore
     marginBottom: theme.spacing(3),
     height: '100%',

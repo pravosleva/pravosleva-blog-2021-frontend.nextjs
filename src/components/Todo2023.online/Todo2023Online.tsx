@@ -45,7 +45,7 @@ import { useRouter } from 'next/router'
 // import MuiLink from '@mui/material/Link'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 
-const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'http://pravosleva.ru'
+const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
 
 type TLogicProps = {

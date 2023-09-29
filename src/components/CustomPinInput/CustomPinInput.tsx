@@ -27,7 +27,7 @@ type TProps = {
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
   ? 'http://localhost:2021'
-  : 'http://pravosleva.ru/tg-bot-2021'
+  : 'http://pravosleva.pro/tg-bot-2021'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
 // NOTE: See also about axios interceptors https://axios-http.com/docs/interceptors
 api.interceptors.response.use(function(config) {

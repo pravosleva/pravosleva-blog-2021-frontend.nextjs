@@ -9,7 +9,7 @@ import axiosRetry from 'axios-retry'
 // : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
 
 const baseApiURL = {
-  v1: 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022',
+  v1: 'https://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022',
   // v2: 'http://pravosleva.ru:9000/express-helper/pravosleva-bot-2021/autopark-2022'
 }
 
@@ -54,6 +54,7 @@ class httpClientSingletone {
     this.api = axios.create({
       baseURL: baseApiURL.v1,
       validateStatus: (_s: number) => true,
+      withCredentials: true,
     })
     axiosRetry(this.api, { retries: 10 })
     this.controllers = {}
@@ -112,6 +113,7 @@ class httpClientSingletone {
     const opts: any = {
       method: 'POST',
       data,
+
     }
     
     if (typeof window !== 'undefined') {

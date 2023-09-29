@@ -25,7 +25,7 @@ type TProps = {
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-  : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
+  : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
 // Exponential back-off retry delay between requests
 axiosRetry(api, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
@@ -44,7 +44,7 @@ const fetchCreateProject = async ({ chat_id, name, description }: { chat_id: str
 // -- NOTE: Additional service API
 const baseURL2 = isDev
   ? 'http://localhost:5000/car-service'
-  : 'http://pravosleva.ru/express-helper/car-service'
+  : 'http://pravosleva.pro/express-helper/car-service'
 const api2 = axios.create({ baseURL: baseURL2, validateStatus: (_s: number) => true, })
 // Exponential back-off retry delay between requests
 axiosRetry(api2, { retries: 10, retryDelay: axiosRetry.exponentialDelay })

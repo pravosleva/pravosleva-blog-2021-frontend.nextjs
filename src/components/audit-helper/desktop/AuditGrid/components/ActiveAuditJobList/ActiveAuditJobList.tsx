@@ -96,6 +96,7 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
             display: 'flex',
             flexDirection: 'column',
             gap: '0px',
+            minWidth: '100%',
           }}
         >
           <CommentBtn

@@ -15,6 +15,8 @@ import Link from '~/components/Link'
 import { slugMap } from '~/constants/blog/slugMap'
 import { Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+// import PauseIcon from '@mui/icons-material/Pause'
+// import HourglassFullIcon from '@mui/icons-material/HourglassFull'
 
 type TProps = {
   article: TArticle;
@@ -80,27 +82,7 @@ export const GridItem = ({ article }: TProps) => {
                   READ
                 </Button>
               </div>
-            ) : (
-              <div>
-                <Button
-                  // fullWidth
-                  variant='text'
-                  color='primary'
-                  // component={Link}
-                  // noLinkStyle
-                  // href='/blog'
-                  // target='_self'
-                  disabled={true}
-                  sx={{
-                    backgroundColor: 'white',
-                    // color: '#fff',
-                    cursor: 'not-allowed',
-                  }}
-                >
-                  Coming soon...
-                </Button>
-              </div>
-            )
+            ) : null
           }
           <div>{!!createdAt ? getNormalizedDate(createdAt) : 'No date'}</div>
         </div>

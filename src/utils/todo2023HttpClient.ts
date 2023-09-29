@@ -6,8 +6,8 @@ import axiosRetry from 'axios-retry'
 import { TAudit } from '~/components/audit-helper'
 
 const isDev = process.env.NODE_ENV === 'development'
-const remoteExpressApiBaseURL = isDev ? 'http://pravosleva.ru/express-helper/subprojects/gapi/todo-2023' // 'http://localhost:5000/subprojects/gapi/todo-2023'
-: 'http://pravosleva.ru/express-helper/subprojects/gapi/todo-2023' // process.env.API_ENDPOINT || '';
+const remoteExpressApiBaseURL = isDev ? 'http://pravosleva.pro/express-helper/subprojects/gapi/todo-2023' // 'http://localhost:5000/subprojects/gapi/todo-2023'
+: 'http://pravosleva.pro/express-helper/subprojects/gapi/todo-2023' // process.env.API_ENDPOINT || '';
 
 const localNextApiBaseURL = isDev ? 'http://localhost:3000/express-next-api/todo-2023' // 'http://localhost:5000/subprojects/gapi/todo-2023'
 : 'https://pravosleva.pro/express-next-api/todo-2023' // process.env.API_ENDPOINT || '';

@@ -20,7 +20,7 @@ import jwt from 'jsonwebtoken'
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-  : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022'
+  : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
 
 type TPageService = {

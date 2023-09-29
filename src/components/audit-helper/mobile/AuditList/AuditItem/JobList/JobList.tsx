@@ -117,23 +117,29 @@ export const JobList = memo(({
     if (newsCounter === 0) enqueueSnackbar('Уже актуально', { variant: 'success', autoHideDuration: 3000 })
   }, [useCompare(jobs)])
   return (
-    <div className={classes.warpper}>
-      {jobs.map((job) => (
-        <JobItem
-          auditId={auditId}
-          job={job}
-          key={job.id}
-          onToggleJobDone={onToggleJobDone}
-          onRemoveJob={onRemoveJob}
-          onToggleSubjob={onToggleSubjob}
-          isEditable={isEditable}
-        />
-      ))}
+    <>
       {
-        isEditable && (
-          <Button variant="outlined" onClick={handleActualize}>Актуализировать</Button>
-        )
+        !!jobs && jobs.length > 0 ? (
+          <div className={classes.warpper}>
+            {jobs.map((job) => (
+              <JobItem
+                auditId={auditId}
+                job={job}
+                key={job.id}
+                onToggleJobDone={onToggleJobDone}
+                onRemoveJob={onRemoveJob}
+                onToggleSubjob={onToggleSubjob}
+                isEditable={isEditable}
+              />
+            ))}
+            {
+              isEditable && (
+                <Button variant="outlined" onClick={handleActualize}>Актуализировать</Button>
+              )
+            }
+          </div>
+        ) : null
       }
-    </div>
+    </>
   )
 }, (prevPs, nextPs) => prevPs.auditTsUpdate === nextPs.auditTsUpdate && prevPs.isEditable === nextPs.isEditable)
