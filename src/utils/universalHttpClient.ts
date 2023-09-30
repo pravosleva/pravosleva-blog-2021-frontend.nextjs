@@ -57,7 +57,7 @@ class httpClientSingletone {
   }
 
   public async get(url: string): Promise<NResponseLocal.IResult> {
-    console.log(url)
+    // console.log(url)
     return await this.api
       .get(url)
       .then(httpErrorHandler) // res -> res.data

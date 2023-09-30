@@ -1,7 +1,6 @@
 import { Box } from '@mui/material'
 import { ProjectList } from './components'
 import { IRootState } from '~/store/IRootState'
-'./components'
 import { useSelector } from 'react-redux'
 
 type TProps = {

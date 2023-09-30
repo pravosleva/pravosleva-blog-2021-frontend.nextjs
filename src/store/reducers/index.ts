@@ -14,6 +14,7 @@ import { reducer as todo2023Reducer } from './todo2023'
 import { reducer as globalThemeReducer } from './globalTheme'
 import { reducer as cookieOfferReducer } from './cookieOffer'
 import { reducer as scrollDisablingComponentsReducer } from './scrollDisablingComponents'
+import { reducer as pageMetaReducer } from './pageMeta'
 
 export const rootReducer = combineReducers({
   // counter,
@@ -28,6 +29,7 @@ export const rootReducer = combineReducers({
   globalTheme: globalThemeReducer,
   cookieOffer: cookieOfferReducer,
   scrollDisablingComponents: scrollDisablingComponentsReducer,
+  pageMeta: pageMetaReducer,
   // Others...
 })
 

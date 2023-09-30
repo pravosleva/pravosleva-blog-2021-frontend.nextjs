@@ -3,6 +3,7 @@ import { Store } from 'redux'
 import { TState as TTodo2023State } from './reducers/todo2023'
 import { TState as TGlobalThemingState } from './reducers/globalTheme'
 import { TState as TCookieOfferState } from './reducers/cookieOffer'
+import { TState as TPageMetaState } from './reducers/pageMeta'
 
 type TProject = {
   name: string;
@@ -33,4 +34,5 @@ export interface IRootState extends Store {
   todo2023: TTodo2023State;
   globalTheme: TGlobalThemingState;
   cookieOffer: TCookieOfferState;
+  pageMeta: TPageMetaState;
 }

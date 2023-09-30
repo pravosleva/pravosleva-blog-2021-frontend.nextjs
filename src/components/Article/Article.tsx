@@ -9,7 +9,7 @@ import { TArticleComponentProps } from './types'
 import gfm from 'remark-gfm'
 import { BreadCrumbs } from '~/components/BreadCrumbs'
 import { GoHomeSection } from '~/components/GoHomeSection'
-import { convert } from 'html-to-text'
+// import { convert } from 'html-to-text'
 
 export const Article = withTranslator(({ t, article }: TArticleComponentProps) => {
   // React.useEffect(() => {
@@ -17,7 +17,7 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
   //   // Use setTimeout to push onto callback queue so it runs after the DOM is updated
   //   setTimeout(() => Prism.highlightAll(), 1000)
   // }, [])
-  const convertedTitle = convert(article?.original.title)
+  // const convertedTitle = convert(article?.original.title)
 
   return (
     <>
@@ -42,7 +42,7 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
               <div className="article-wrapper">
                 <div className="tiles-grid-item-in-article white article-wrapper__big-image-as-container">
                   <h1 className="article-page-title">
-                    {convertedTitle}
+                    {article?.original.title}
                   </h1>
                   {article?.brief && (
                     <div className="article-wrapper__big-image-as-container__brief">

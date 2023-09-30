@@ -23,19 +23,19 @@ export const getNote = async (req: IRequest, res: IResponse) => {
 
   let url = `http://code-samples.space/api/notes/${id}`
 
-  const notesResult = await universalHttpClient.get(url)
+  const noteResult = await universalHttpClient.get(url)
 
-  console.log('---')
-  console.log(notesResult)
-  console.log('---')
+  // console.log('---')
+  // console.log(noteResult)
+  // console.log('---')
 
-  if (notesResult.isOk && !!notesResult.response) {
-    return res.status(200).send(notesResult.response)
+  if (noteResult.isOk && !!noteResult.response) {
+    return res.status(200).send(noteResult.response)
   }
 
   return res.status(500).send({
     success: false,
-    message: notesResult?.response?.message || 'No message from server',
-    _original: notesResult?.response || null,
+    message: noteResult?.response?.message || 'No message from server',
+    _original: noteResult?.response || null,
   })
 }
