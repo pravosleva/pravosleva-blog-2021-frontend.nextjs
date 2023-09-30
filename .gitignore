@@ -27,3 +27,7 @@ deploy-app-config.json
 # server dist dir
 /server.dist/*
 !/server.dist/.gitkeep
+
+# pwa
+/public/service-worker.*
+/public/workbox-*
