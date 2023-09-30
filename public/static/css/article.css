@@ -264,3 +264,60 @@ code,
   color: #fff;
   padding: 1px 4px;
 }
+
+/* --- MOVED FROM CSS-IN-JS --- */
+
+.article-wrapper {
+  width: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 1), transparent);
+  display: block;
+  position: relative;
+}
+.article-wrapper::after {
+  content: '';
+  /* background: url(${article.bgSrc}); */
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(1);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+}
+.article-wrapper__big-image-as-container {
+  border-radius: 0;
+  width: 100%;
+  min-height: 250px;
+  /* margin: 10px 0 50px 0; */
+  margin-bottom: 50px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+@media (min-width: 768px) {
+  .article-wrapper,
+  .article-wrapper::after {
+    border-radius: 10px;
+  }
+  .article-wrapper__big-image-as-container {
+    /* margin: 50px 0 50px 0; */
+    border-radius: 10px;
+  }
+}
+.article-wrapper__big-image-as-container > * {
+  margin: 0;
+  padding: 20px;
+}
+.article-wrapper__big-image-as-container__brief {
+  margin-bottom: 30px;
+  line-height: 1em;
+  font-family: Montserrat;
+  font-style: italic;
+}
+.article-wrapper__big-image-as-container__date {
+  text-align: right;
+}

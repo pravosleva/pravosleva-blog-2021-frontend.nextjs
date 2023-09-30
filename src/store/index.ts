@@ -62,9 +62,8 @@ const isDev = process.env.NODE_ENV === 'development';
 
 // NOTE: See also https://github.com/fazlulkarimweb/with-next-redux-wrapper-redux-persist
 const makeStore = (_ctx: any) => {
-  console.log('-- 1. makeStore on server')
-  // console.log(_ctx)
-  console.log('--')
+  // console.log('-- 1. makeStore on server')
+  // console.log('--')
   if (_ctx.isServer) {
     // If it's on server side, create a store
     return configureStore({ reducer: rootReducer })

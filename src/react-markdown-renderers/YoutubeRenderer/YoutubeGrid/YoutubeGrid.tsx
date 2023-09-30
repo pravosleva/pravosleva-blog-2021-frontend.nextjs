@@ -5,6 +5,7 @@ import clsx from 'clsx'
 // import { Alert, AlertTitle } from '@material-ui/lab'
 import { Alert, AlertTitle } from '@mui/material'
 import { YoutubeInModal } from '../YoutubeInModal'
+import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 
 type TProps = {
   json: string
@@ -21,6 +22,10 @@ function isJsonString(str: string) {
 }
 
 export const YoutubeGrid = ({ json, inModal }: TProps) => {
+  const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
+
+  if (isServer) return <CircularIndeterminate />
+
   const classes = useStyles()
   const isValidJson = useMemo(() => isJsonString(json), [json])
 

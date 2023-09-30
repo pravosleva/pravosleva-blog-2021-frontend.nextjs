@@ -48,8 +48,34 @@ const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TAr
   return (
     <>
       <Head>
+        {/* -- NOTE: Meta */}
+        {/* <!-- HTML Meta Tags --> */}
         <title>Pravosleva | Blog</title>
+        <meta name="description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
+
+        {/* <!-- Facebook Meta Tags --> */}
+        <meta property="og:url" content="https://pravosleva.pro/blog" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="ru_RU" />
+        <meta property="og:locale:alternate" content="be_BY" />
+        <meta property="og:locale:alternate" content="kk_KZ" />
+        <meta property="og:locale:alternate" content="tt_RU" />
+        <meta property="og:locale:alternate" content="uk_UA" />
+        <meta property="og:locale:alternate" content="en_US" />
+        <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:title" content="Pravosleva | Blog" />
+        <meta property="og:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
+        <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+        <meta property="og:site_name" content="Pravosleva" />
+
+        {/* <!-- Twitter Meta Tags --> */}
+        <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+        <meta property="twitter:domain" content="pravosleva.pro" />
+        <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
+        <meta name="twitter:title" content="Pravosleva | Blog" />
+        <meta name="twitter:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
+        <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+        {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
       </Head>
       <Layout>
         <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={{ modified: 'ALL', original: 'ALL' }} isBlogPage />

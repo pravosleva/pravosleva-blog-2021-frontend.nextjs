@@ -6,6 +6,9 @@ import { TransparentModal } from '~/components/TransparentModal'
 import { YoutubePlayer } from '~/react-markdown-renderers/YoutubeRenderer/YoutubePlayer'
 import { useWindowSize } from '~/hooks/useWindowSize'
 import { makeStyles } from '@mui/styles'
+import { useMemo } from 'react'
+import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
+
 
 type TProps = {
   previewSrc?: string
@@ -32,6 +35,9 @@ export const YoutubeInModal = ({ previewSrc, videoId }: TProps) => {
     }),
   })
   const classes2 = useStyles2({ previewSrc })
+  const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
+
+  if (isServer) return <CircularIndeterminate />
 
   return (
     <>

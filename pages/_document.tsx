@@ -1,5 +1,5 @@
 import * as React from 'react';
-import NextDocument, { Html, Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 // import theme from '~/mui/theme';
 import createEmotionCache from '~/createEmotionCache';
@@ -10,7 +10,7 @@ const isProd = process.env.NODE_ENV === 'production'
 const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
 const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 
-export default class MyDocument extends NextDocument {
+export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
@@ -129,7 +129,7 @@ MyDocument.getInitialProps = async (ctx) => {
         enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
       });
 
-    const initialProps = await NextDocument.getInitialProps(ctx);
+    const initialProps = await Document.getInitialProps(ctx);
     // This is important. It prevents emotion to render invalid HTML.
     // See https://github.com/mui-org/material-ui/issues/26561#issuecomment-855286153
     const emotionStyles = extractCriticalToChunks(initialProps.html);

@@ -14,8 +14,9 @@ type TArticlesListComponentProps = {
   t: (translatableString: string) => string;
   list: TArticle[];
   searchQueryTitle: {
-    original: string,
-    modified: string
+    original: string;
+    withoutSpaces: string;
+    normalized: string;
   },
   isBlogPage?: boolean;
 }
@@ -35,7 +36,7 @@ export const ArticlesList = withTranslator(({ t, list, searchQueryTitle, isBlogP
               link: '/blog',
             },
             {
-              labelCode: searchQueryTitle.modified,
+              labelCode: searchQueryTitle.normalized,
               noTranslate: true,
             },
           ]
@@ -49,7 +50,7 @@ export const ArticlesList = withTranslator(({ t, list, searchQueryTitle, isBlogP
           // overflowX: 'hidden',
         }}>
         <Typography variant="h1" component="h1" gutterBottom className='truncate'>
-          {isBlogPage ? t(searchQueryTitle.modified) : searchQueryTitle.modified}
+          {isBlogPage ? t(searchQueryTitle.original) : searchQueryTitle.normalized}
         </Typography>
         {
           !!list && Array.isArray(list) && (

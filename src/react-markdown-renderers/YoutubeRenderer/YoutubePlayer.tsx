@@ -1,5 +1,7 @@
 import YouTubeVideo from 'react-youtube'
 import { useStyles } from './styles'
+import { useMemo } from 'react'
+import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 
 interface IProps {
   id?: string
@@ -9,6 +11,10 @@ interface IProps {
 
 export const YoutubePlayer = ({ videoId, opts = {} }: IProps) => {
   const classes = useStyles()
+
+  const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
+
+  if (isServer) return <CircularIndeterminate />
 
   return (
     <>

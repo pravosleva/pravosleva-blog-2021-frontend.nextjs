@@ -250,33 +250,33 @@ export const withMobileMenu = (ComposedComponent) =>
 
               {/* -- NOTE: Target search by title */}
               <li>
-                <Link href="/blog/sqt/bash">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/bash') || isCurrentPathCb(router.asPath, '/blog/sqt/bash') ? 'active' : ''}>#bash</a>
+                <Link href="/blog/q/bash">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/bash') || isCurrentPathCb(router.asPath, '/blog/q/bash') ? 'active' : ''}>#bash</a>
                 </Link>
               </li>
               <li>
-                <Link href="/blog/sqt/nginx">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/nginx') || isCurrentPathCb(router.asPath, '/blog/sqt/nginx') ? 'active' : ''}>#nginx</a>
+                <Link href="/blog/q/nginx">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/nginx') || isCurrentPathCb(router.asPath, '/blog/q/nginx') ? 'active' : ''}>#nginx</a>
                 </Link>
               </li>
               <li>
-                <Link href="/blog/sqt/git">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/git') || isCurrentPathCb(router.asPath, '/blog/sqt/git') ? 'active' : ''}>#git</a>
+                <Link href="/blog/q/git">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/git') || isCurrentPathCb(router.asPath, '/blog/q/git') ? 'active' : ''}>#git</a>
                 </Link>
               </li>
               <li>
-                <Link href="/blog/sqt/ssl">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/ssl') || isCurrentPathCb(router.asPath, '/blog/sqt/ssl') ? 'active' : ''}>#ssl</a>
+                <Link href="/blog/q/ssl">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/ssl') || isCurrentPathCb(router.asPath, '/blog/q/ssl') ? 'active' : ''}>#ssl</a>
                 </Link>
               </li>
               <li>
-                <Link href="/blog/sqt/jsVanilla">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/jsVanilla') || isCurrentPathCb(router.asPath, '/blog/sqt/jsVanilla') ? 'active' : ''}>#jsVanilla</a>
+                <Link href="/blog/q/jsVanilla">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/jsVanilla') || isCurrentPathCb(router.asPath, '/blog/q/jsVanilla') ? 'active' : ''}>#jsVanilla</a>
                 </Link>
               </li>
               <li>
-                <Link href="/blog/sqt/telegram">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/sqt/telegram') || isCurrentPathCb(router.asPath, '/blog/sqt/telegram') ? 'active' : ''}>#telegram</a>
+                <Link href="/blog/q/telegram">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/telegram') || isCurrentPathCb(router.asPath, '/blog/q/telegram') ? 'active' : ''}>#telegram</a>
                 </Link>
               </li>
               {/* -- */}

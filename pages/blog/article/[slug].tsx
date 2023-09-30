@@ -18,10 +18,10 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
     </Layout>
   )
 
-  // const thisPageUrl = `https://pravosleva.pro/blog/article/${article.slug}`
+  const thisPageUrl = `https://pravosleva.pro/blog/article/${article.slug}`
   const { title } = useSelector((state: IRootState) => state.pageMeta)
-  console.log('redux:title', title)
-  console.log('props:title', article?.original?.title || JSON.stringify(article))
+  // console.log('redux:title', title)
+  // console.log('props:title', article?.original?.title || JSON.stringify(article))
   // NOTE: Should be like {article.original.title} on ssr
   
   return (
@@ -33,11 +33,18 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
         <meta name="description" content={article.brief || 'Найдётся всё что не нашлось ранее, если оно действительно нужно'} />
 
         {/* <!-- Facebook Meta Tags --> */}
-        <meta property="og:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
-        <meta property="og:type" content="website" />
+        <meta property="og:url" content={thisPageUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:locale" content="ru_RU" />
+        <meta property="og:locale:alternate" content="be_BY" />
+        <meta property="og:locale:alternate" content="kk_KZ" />
+        <meta property="og:locale:alternate" content="tt_RU" />
+        <meta property="og:locale:alternate" content="uk_UA" />
+        <meta property="og:locale:alternate" content="en_US" />
+        <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:title" content={article.original.title} />
         <meta property="og:description" content={article.brief} />
-        <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+        <meta property="og:image" content={!!article.bgSrc ? `https://pravosleva.pro/${article.bgSrc}` : "https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg"} />
         <meta property="og:site_name" content="Pravosleva" />
 
         {/* <!-- Twitter Meta Tags --> */}
@@ -48,35 +55,14 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
         <meta name="twitter:description" content={article.brief} />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
-  
-        {/* <meta property="og:image" content={!!article.bgSrc ? `https://pravosleva.pro/${article.bgSrc}` : "https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg"} /> */}      
-        {/* <link rel="canonical" href='https://pravosleva.pro/'></link> */}
+
+        <link href="/static/css/article.css" rel="stylesheet" />
 
         {/* <meta property="og:image:width" content="1200"/>
         <meta property="og:image:height" content="630"/> */}
 
         {/* <meta property="og:locale" content="ru_RU" />
         <meta property="og:image" content={`https://pravosleva.pro/static/img/blog/${article.bgSrc || 'coming-soon.avif'}`} key='og-image' />
-        
-        <meta property="og:description" content={article.brief} key='og-descr' />
-        <meta property="og:url" content={thisPageUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content="ru_RU"></meta>
-        <meta property="og:locale:alternate" content="be_BY" />
-        <meta property="og:locale:alternate" content="kk_KZ" />
-        <meta property="og:locale:alternate" content="tt_RU" />
-        <meta property="og:locale:alternate" content="uk_UA" />
-        <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:locale:alternate" content="en_US" />
-        {
-          !!article.bgSrc ? (
-            <meta property="vk:image" content={`https://pravosleva.pro/static/img/blog/${article.bgSrc || 'coming-soon.avif'}`} />
-          ) : (
-            <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-          )
-        }
-        <link href="/static/css/article.css" rel="stylesheet" />
         <meta property="og:description" content="Pravosleva | So, we have unconscious consumption society. What about this?" /> */}
       </Head>
       <Layout>
@@ -128,9 +114,9 @@ _Article.getInitialProps = wrapper.getInitialPageProps(
         break
     }
 
-    console.log('-- 0. before makeStore on server')
-    console.log(`_pageService.isOk= ${_pageService.isOk}`)
-    console.log('--')
+    // console.log('-- 0. before makeStore on server')
+    // console.log(`_pageService.isOk= ${_pageService.isOk}`)
+    // console.log('--')
 
     return {
       _pageService,

@@ -37,6 +37,7 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
               }
             ]}
           />
+
           {!!article?.bgSrc && (
             <div>
               <div className="article-wrapper">

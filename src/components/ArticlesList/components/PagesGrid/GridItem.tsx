@@ -1,5 +1,5 @@
 // import { TCRMPage } from '~/store/reducers/crmPages'
-import { useStyles } from './styles'
+// import { useStyles } from './styles'
 // import { Button } from '@material-ui/core'
 // import {
 //   setIsModalOpened,
@@ -22,7 +22,8 @@ type TProps = {
   article: TArticle;
 }
 
-const defaultBgUrl = '/static/img/blog/coming-soon.avif'
+// const defaultBgUrl = '/static/img/blog/coming-soon.avif'
+const defaultBgUrl = '/static/img/blog/coming-soon-v3.jpg'
 
 export const GridItem = ({ article }: TProps) => {
   const { original, bgSrc, brief } = article
@@ -32,7 +33,7 @@ export const GridItem = ({ article }: TProps) => {
     // description,
     title,
   } = original
-  const classes = useStyles()
+  // const classes = useStyles()
   const url = bgSrc || defaultBgUrl
   // const dispatch = useDispatch()
   // const getProject = useCallback((id: string) => {
@@ -42,17 +43,18 @@ export const GridItem = ({ article }: TProps) => {
 
   return (
     <div
-      className={classes.gridItemBg}
+      // className={classes.gridItemBg}
+      className='gridItemBg'
       style={{
         backgroundImage: `url(${url})`,
         filter: !!bgSrc? 'none' : 'grayscale(100%)',
       }}
     >
-      <div className={classes.gridItemBox}>
+      <div className='gridItemBox'>
         {/* NOTE: h3 className='truncate' */}
-        <div className={classes.gridItemTitle}><h3>{title}</h3></div>
-        <div className={classes.gridItemDescription}>{brief}</div>
-        <div className={classes.gridItemAction}>
+        <div className='gridItemTitle'><h3>{title}</h3></div>
+        <div className='gridItemDescription'>{brief}</div>
+        <div className='gridItemAction'>
           {
             slugMap.has(_id) ? (
               <div>

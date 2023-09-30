@@ -77,33 +77,33 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
     {/* -- */}
 
     {/* -- NOTE: Target search by title */}
-    {!isCurrentPathCb('/blog/sqt/bash') && (
-      <Link href="/blog/sqt/bash" as="/blog/sqt/bash">
+    {!isCurrentPathCb('/blog/q/bash') && (
+      <Link href="/blog/q/bash" as="/blog/q/bash">
         <a onClick={onHideModal}>#bash</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog/sqt/nginx') && (
-      <Link href="/blog/sqt/nginx" as="/blog/sqt/nginx">
+    {!isCurrentPathCb('/blog/q/nginx') && (
+      <Link href="/blog/q/nginx" as="/blog/q/nginx">
         <a onClick={onHideModal}>#nginx</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog/sqt/git') && (
-      <Link href="/blog/sqt/git" as="/blog/sqt/git">
+    {!isCurrentPathCb('/blog/q/git') && (
+      <Link href="/blog/q/git" as="/blog/q/git">
         <a onClick={onHideModal}>#git</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog/sqt/ssl') && (
-      <Link href="/blog/sqt/ssl" as="/blog/sqt/ssl">
+    {!isCurrentPathCb('/blog/q/ssl') && (
+      <Link href="/blog/q/ssl" as="/blog/q/ssl">
         <a onClick={onHideModal}>#ssl</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog/sqt/jsVanilla') && (
-      <Link href="/blog/sqt/jsVanilla" as="/blog/sqt/jsVanilla">
+    {!isCurrentPathCb('/blog/q/jsVanilla') && (
+      <Link href="/blog/q/jsVanilla" as="/blog/q/jsVanilla">
         <a onClick={onHideModal}>#jsVanilla</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog/sqt/telegram') && (
-      <Link href="/blog/sqt/telegram" as="/blog/sqt/telegram">
+    {!isCurrentPathCb('/blog/q/telegram') && (
+      <Link href="/blog/q/telegram" as="/blog/q/telegram">
         <a onClick={onHideModal}>#telegram</a>
       </Link>
     )}

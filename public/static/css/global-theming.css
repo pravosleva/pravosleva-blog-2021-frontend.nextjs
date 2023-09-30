@@ -11,6 +11,9 @@ body.light footer {
 body.light .tiles-grid-item-in-article {
   background-color: rgba(0, 64, 130, 0.75);
 }
+.tiles-grid-item-in-article {
+  background-color: rgba(0, 64, 130, 0.75);
+}
 body.light .card {
   border: 2px solid transparent;
   background-color: transparent;

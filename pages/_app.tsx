@@ -18,8 +18,15 @@ import { useStore } from 'react-redux';
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider as SCThemeProvider } from 'styled-components'
 import { Theme } from '~/ui-kit/Theme'
-import '../public/static/css/article.css' 
+// import '../public/static/css/article.css'
 import Head from 'next/head'
+// import '../public/static/css/layout.css'
+// import '../public/static/css/global-theming.css'
+// import '../public/static/css/standart-form.css'
+// import '../public/static/css/rippled-btn.css'
+// import '../public/static/css/link-as-rippled-btn.css'
+// import '../public/static/css/custom-breadcrumbs.css'
+// import '../public/static/css/block-quotes.css'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -60,8 +67,7 @@ function AppWithRedux(props: MyAppProps) {
       <Head>
         <meta charSet="utf-8" />
         <link rel="icon" href="/static/favicon.ico" />
-        {/* <meta httpEquiv='Content-Type' content='text/html;charset=UTF-8' /> */}
-
+        <meta httpEquiv='Content-Type' content='text/html;charset=UTF-8' />
         <meta name="theme-color" content="#0162c8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <meta
