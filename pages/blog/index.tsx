@@ -76,6 +76,8 @@ const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TAr
         <meta name="twitter:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
+
+        <link href="/static/css/blog_sqt_[search_query_title].css" rel="stylesheet" />
       </Head>
       <Layout>
         <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={{ modified: 'ALL', original: 'ALL' }} isBlogPage />
