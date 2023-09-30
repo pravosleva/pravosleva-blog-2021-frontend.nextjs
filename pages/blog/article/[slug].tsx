@@ -22,7 +22,7 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
       <Head>
         <title>{`Pravosleva | ${article.original.title}`}</title>
         {/* <meta property="og:title" content={`Pravosleva | ${article?.original.title}`} /> */}
-        <meta name="description" content={article.brief} key='descr' />
+        <meta name="description" content={article.brief} />
 
         {/* -- NOTE: v2 */}
         <meta property="og:site_name" content="Pravosleva" />

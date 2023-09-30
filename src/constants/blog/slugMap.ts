@@ -59,6 +59,11 @@ export const slugMapping: {[key: string]: TArticleTools} = {
     brief: 'How to detect members in TG bot?',
     bgSrc: '/static/img/blog/logo-telegram.jpg',
   },
+  'google-recaptcha-v3': {
+    id: '6361a593b868e92b04c97bd2',
+    brief: 'React + Express',
+    bgSrc: '/static/img/blog/google-recaptcha-v3.jpg',
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

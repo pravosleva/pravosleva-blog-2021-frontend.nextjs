@@ -70,11 +70,11 @@ function AppWithRedux(props: MyAppProps) {
         <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-32x32.jpg" sizes="32x32" />
         <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-192x192.jpg" sizes="192x192" />
         
-        <title>Pravosleva</title>
-        <meta property="og:title" content="Pravosleva" />
+        {/* <title>Pravosleva</title>
+        <meta property="og:title" content="Pravosleva" /> */}
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="og:description" content="Найдётся всё что не нашлось ранее, если оно действительно нужно" />
-        <meta name="description" content="Найдётся всё что не нашлось ранее, если оно действительно нужно" /> 
+        {/* <meta property="og:description" content="Найдётся всё что не нашлось ранее, если оно действительно нужно" />
+        <meta name="description" content="Найдётся всё что не нашлось ранее, если оно действительно нужно" />  */}
         <meta property="og:url" content="https://pravosleva.pro" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Pravosleva" />
