@@ -69,6 +69,11 @@ export const slugMapping: {[key: string]: TArticleTools} = {
     brief: 'Hey bro, where is my fckn CORS?',
     bgSrc: '/static/img/blog/logo-nginx.jpg',
   },
+  'qr-code-exp': {
+    id: '605cc2e41ead2f48d72e74ad',
+    brief: 'Hey bro, what about QR?',
+    bgSrc: '/static/img/blog/qr-code-v1.jpg',
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {
