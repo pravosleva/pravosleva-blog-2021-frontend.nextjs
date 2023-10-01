@@ -64,6 +64,11 @@ export const slugMapping: {[key: string]: TArticleTools} = {
     brief: 'React + Express',
     bgSrc: '/static/img/blog/google-recaptcha-v3.jpg',
   },
+  'enable-cors-nginx': {
+    id: '6518bd3bdb108f2f99272e20',
+    brief: 'Hey bro, where is my fckn CORS?',
+    bgSrc: '/static/img/blog/logo-nginx.jpg',
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

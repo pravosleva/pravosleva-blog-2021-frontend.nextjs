@@ -4,6 +4,8 @@ import { AuditItem } from './AuditItem'
 import { memo } from 'react'
 import { Alert, Typography } from '@mui/material'
 import { TAudit, TSubJob } from '~/components/audit-helper'
+import { useMemo } from 'react'
+import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 
 type TAuditListProps = {
   audits: TAudit[];
@@ -56,6 +58,10 @@ type TAuditListProps = {
 }
 
 export const AuditList = memo(({ audits, onUpdateAuditComment, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TAuditListProps) => {
+  const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
+
+  if (isServer) return <CircularIndeterminate />
+
   return (
     <div
       style={{

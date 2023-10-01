@@ -8,6 +8,8 @@ import {
 } from '@mui/material'
 import { WithStateContext } from './WithStateContext'
 import { ActiveAuditJobList } from './components/ActiveAuditJobList'
+import { useMemo } from 'react'
+import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 
 export type TAuditListProps = {
   audits: TAudit[];
@@ -81,6 +83,9 @@ export const AuditGrid = ({
   isEditable,
 }: TAuditListProps) => {
   const classes = useStyles()
+  const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
+
+  if (isServer) return <CircularIndeterminate />
 
   return (
     <WithStateContext>

@@ -39,6 +39,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 // import MuiLink from '@mui/material/Link'
 import { useWindowSize } from '~/hooks/useWindowSize'
+import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 
 export const ToDo2023 = memo(() => {
   const router = useRouter()
@@ -362,8 +363,17 @@ export const ToDo2023 = memo(() => {
         </div>
       </>
     )
+
     default: return (
-      <div>Detect device...</div>
+      <>
+        <Head>
+          <title>AuditList</title>
+          {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
+        </Head>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
+          <CircularIndeterminate />
+        </div>
+      </>
     )
   }
 })
