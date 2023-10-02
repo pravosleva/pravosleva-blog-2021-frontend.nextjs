@@ -42,7 +42,7 @@ export const Report = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [apiErr, setApiErr] = useState<string>('')
   // const [mileage, setMileage] = useState<number>(0)
-  const [mileage, setMileage] = useStickyState({}, "autopark.current-mileage")
+  const [mileage, setMileage] = useStickyState<any>({}, "autopark.current-mileage")
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false)
   const handleChangeMileage = useCallback((e: any) => {
     setMileage((s: any) => {

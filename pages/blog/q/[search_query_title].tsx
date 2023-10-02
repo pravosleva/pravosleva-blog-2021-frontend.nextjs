@@ -8,7 +8,7 @@ import { wrapper } from '~/store'
 import { ArticlesList } from '~/components/ArticlesList'
 import { slugMap } from '~/constants/blog/slugMap'
 import { NCodeSamplesSpace } from '~/types'
-import { setSQT } from '~/store/reducers/siteSearch'
+import { addSQT } from '~/store/reducers/siteSearch'
 
 // const isProd = process.env.NODE_ENV === 'production'
 
@@ -89,7 +89,7 @@ _ArticlesList.getInitialProps = wrapper.getInitialPageProps(
 
     switch (true) {
       case !!withoutSpaces: {
-        store.dispatch(setSQT({
+        store.dispatch(addSQT({
           original: search_query_title,
           withoutSpaces,
           normalized,
