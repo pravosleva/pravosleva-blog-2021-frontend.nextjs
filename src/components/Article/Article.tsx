@@ -1,4 +1,4 @@
-import React from 'react'
+// import { useMemo } from 'react'
 // import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/timeConverter'
@@ -38,7 +38,7 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
             ]}
           />
 
-          {!!article?.bgSrc && (
+          {!!article?.bg && (
             <div>
               <div className="article-wrapper">
                 <div className="tiles-grid-item-in-article white article-wrapper__big-image-as-container">
@@ -96,7 +96,7 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
         }
         .article-wrapper::after {
           content: '';
-          background: url(${article.bgSrc});
+          background: url(${!!article.bg ? article.bg.src : '/static/img/blog/coming-soon-v3.jpg'});
           background-repeat: no-repeat;
           background-size: cover;
           background-position: center;

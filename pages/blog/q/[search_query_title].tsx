@@ -8,6 +8,7 @@ import { wrapper } from '~/store'
 import { ArticlesList } from '~/components/ArticlesList'
 import { slugMap } from '~/constants/blog/slugMap'
 import { NCodeSamplesSpace } from '~/types'
+import { setSQT } from '~/store/reducers/siteSearch'
 
 // const isProd = process.env.NODE_ENV === 'production'
 
@@ -83,11 +84,16 @@ _ArticlesList.getInitialProps = wrapper.getInitialPageProps(
     }
     let list: TArticle[] = []
 
-    const withoutSpaces = search_query_title.replace(/\s/g, '')
-    const normalized = search_query_title.replace(/\s/g, '').split(',').join(', ')
+    const withoutSpaces = typeof search_query_title === 'string' ? search_query_title.replace(/\s/g, '') : ''
+    const normalized = !!withoutSpaces ? search_query_title.replace(/\s/g, '').split(',').join(', ') : ''
 
     switch (true) {
       case !!withoutSpaces: {
+        store.dispatch(setSQT({
+          original: search_query_title,
+          withoutSpaces,
+          normalized,
+        }))
         const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?limit=20&q_title_all_words=${withoutSpaces}`)
         if (noteResult.isOk && !!noteResult?.response?.data && Array.isArray(noteResult.response.data)) {
           _pageService.isOk = true
@@ -99,7 +105,7 @@ _ArticlesList.getInitialProps = wrapper.getInitialPageProps(
             },
             slug: slugMap.get(_id)?.slug || null,
             brief: slugMap.get(_id)?.brief || null,
-            bgSrc: slugMap.get(_id)?.bgSrc || null,
+            bg: slugMap.get(_id)?.bg || null,
           }))]
         } else {
           _pageService.isOk = false

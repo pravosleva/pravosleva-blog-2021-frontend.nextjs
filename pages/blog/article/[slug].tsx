@@ -36,6 +36,8 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
         <meta property="og:url" content={thisPageUrl} />
         <meta property="og:type" content="article" />
         <meta property="og:locale" content="ru_RU" />
+        <meta property="article:publisher" content="https://pravosleva.pro/" />
+        <meta property="article:section" content={article.original.title} />
         <meta property="og:locale:alternate" content="be_BY" />
         <meta property="og:locale:alternate" content="kk_KZ" />
         <meta property="og:locale:alternate" content="tt_RU" />
@@ -44,11 +46,33 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:title" content={article.original.title} />
         <meta property="og:description" content={article.brief} />
-        <meta property="og:image" content={!!article.bgSrc ? `https://pravosleva.pro/${article.bgSrc}` : "https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg"} />
+        {
+          !!article.bg ? (
+            <>
+              <meta property="og:image" content={article.bg.src} />
+              <meta property="og:image:secure_url" content={article.bg.src} />
+              <meta property='og:image:width' content={String(article.bg.size.w)} />
+              <meta property='og:image:height' content={String(article.bg.size.h)} />
+              <meta property='og:image:type' content={article.bg.type} />
+              <meta property="og:image:alt" content="img alt =)" />
+            </>
+          ) : (
+            <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+          )
+        }
+        
         <meta property="og:site_name" content="Pravosleva" />
 
         {/* <!-- Twitter Meta Tags --> */}
-        <meta name="twitter:card" content={!!article.bgSrc ? `https://pravosleva.pro/${article.bgSrc}` : "https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg"} />
+        {
+          !!article.bg ? (
+            <>
+              <meta name="twitter:card" content={`https://pravosleva.pro/${article.bg.src}`} />
+            </>
+          ) : (
+            <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+          )
+        }
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
         <meta name="twitter:title" content={article.original.title} />
@@ -99,7 +123,7 @@ _Article.getInitialProps = wrapper.getInitialPageProps(
 
             slug,
             brief: slugMapping[slug].brief,
-            bgSrc: slugMapping[slug].bgSrc,
+            bg: slugMapping[slug].bg,
           }
         } else {
           _pageService.isOk = false

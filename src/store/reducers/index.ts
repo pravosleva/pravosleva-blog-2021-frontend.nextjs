@@ -15,6 +15,7 @@ import { reducer as globalThemeReducer } from './globalTheme'
 import { reducer as cookieOfferReducer } from './cookieOffer'
 import { reducer as scrollDisablingComponentsReducer } from './scrollDisablingComponents'
 import { reducer as pageMetaReducer } from './pageMeta'
+import { reducer as siteSearchReducer } from './siteSearch'
 
 export const rootReducer = combineReducers({
   // counter,
@@ -30,6 +31,7 @@ export const rootReducer = combineReducers({
   cookieOffer: cookieOfferReducer,
   scrollDisablingComponents: scrollDisablingComponentsReducer,
   pageMeta: pageMetaReducer,
+  siteSearch: siteSearchReducer,
   // Others...
 })
 

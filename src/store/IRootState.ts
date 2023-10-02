@@ -4,6 +4,7 @@ import { TState as TTodo2023State } from './reducers/todo2023'
 import { TState as TGlobalThemingState } from './reducers/globalTheme'
 import { TState as TCookieOfferState } from './reducers/cookieOffer'
 import { TState as TPageMetaState } from './reducers/pageMeta'
+import { NSiteSearchState } from './reducers/siteSearch'
 
 type TProject = {
   name: string;
@@ -35,4 +36,5 @@ export interface IRootState extends Store {
   globalTheme: TGlobalThemingState;
   cookieOffer: TCookieOfferState;
   pageMeta: TPageMetaState;
+  siteSearch: NSiteSearchState.TState;
 }

@@ -118,7 +118,7 @@ BlogSQT.getInitialProps = wrapper.getInitialPageProps(
           },
           slug: slugMap.get(_id)?.slug || null,
           brief: slugMap.get(_id)?.brief || null,
-          bgSrc: slugMap.get(_id)?.bgSrc || null,
+          bg: slugMap.get(_id)?.bg || null,
         }))]
         break
       default:

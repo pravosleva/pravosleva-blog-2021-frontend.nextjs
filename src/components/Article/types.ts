@@ -4,7 +4,14 @@ export type TArticle = {
   slug: string;
   original: NCodeSamplesSpace.TNote;
   brief: string;
-  bgSrc?: string;
+  bg?: {
+    src: string;
+    size: {
+      w: number;
+      h: number;
+    };
+    type: string;
+  };
 }
 
 export type TPageService = {

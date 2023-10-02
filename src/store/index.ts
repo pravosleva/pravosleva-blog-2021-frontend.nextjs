@@ -73,7 +73,7 @@ const makeStore = (_ctx: any) => {
     // const storage = require('redux-persist/lib/storage')
     const persistConfig = {
       key: 'nextjs',
-      whitelist: ['todo2023'], // only counter will be persisted, add other reducers if needed
+      whitelist: ['todo2023', 'siteSearch'], // only counter will be persisted, add other reducers if needed
       storage, // if needed, use a safer storage
     };
     const persistedReducer = persistReducer(persistConfig, rootReducer); // Create a new reducer with our existing reducer

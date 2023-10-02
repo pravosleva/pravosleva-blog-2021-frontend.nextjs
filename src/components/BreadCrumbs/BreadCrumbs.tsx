@@ -1,18 +1,24 @@
 import Link from 'next/link'
 
+export namespace NBreadCrumbs {
+  export type TLegendItem = {
+    link?: string;
+    labelCode: string;
+    noTranslate?: boolean;
+  }
+  export type TProps = {
+    t: (_s: string) => string;
+    // lastLabel: string;
+    legend: TLegendItem[]
+  }
+}
+
+
 export const BreadCrumbs = ({
   t,
   // lastLabel,
   legend
-}: {
-  t: (_s: string) => string;
-  // lastLabel: string;
-  legend: {
-    link?: string;
-    labelCode: string;
-    noTranslate?: boolean;
-  }[]
-}) => {
+}: NBreadCrumbs.TProps) => {
   return (
     <div className="bx_breadcrumbs">
       <ul itemScope itemType="http://schema.org/BreadcrumbList">

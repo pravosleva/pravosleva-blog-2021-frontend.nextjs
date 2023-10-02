@@ -74,8 +74,22 @@ function AppWithRedux(props: MyAppProps) {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
-
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        <link rel="stylesheet" href="/static/css/gosuslugi.css" />
+        <link href="/static/css/layout.css" rel="stylesheet" />
+        <link href="/static/css/global-theming.css" rel="stylesheet" />
+        <link href="/static/css/standart-form.css" rel="stylesheet" />
+        <link href="/static/css/rippled-btn.css" rel="stylesheet" />
+        <link href="/static/css/link-as-rippled-btn.css" rel="stylesheet" />
+        <link href="/static/css/custom-breadcrumbs.css" rel="stylesheet" />
+        <link href="/static/css/block-quotes.css" rel="stylesheet" />
+        <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
+        <link
+          rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
+          integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
+          crossOrigin="anonymous"
+        />
       </Head>
       {
         isServer ? (

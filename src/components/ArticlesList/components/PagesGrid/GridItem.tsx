@@ -26,7 +26,7 @@ type TProps = {
 const defaultBgUrl = '/static/img/blog/coming-soon-v3.jpg'
 
 export const GridItem = ({ article }: TProps) => {
-  const { original, bgSrc, brief } = article
+  const { original, bg, brief } = article
   const {
     _id,
     createdAt,
@@ -34,7 +34,7 @@ export const GridItem = ({ article }: TProps) => {
     title,
   } = original
   // const classes = useStyles()
-  const url = bgSrc || defaultBgUrl
+  const url = bg?.src || defaultBgUrl
   // const dispatch = useDispatch()
   // const getProject = useCallback((id: string) => {
   //   dispatch(setIsModalOpened(true))
@@ -47,7 +47,8 @@ export const GridItem = ({ article }: TProps) => {
       className='gridItemBg'
       style={{
         backgroundImage: `url(${url})`,
-        filter: !!bgSrc? 'none' : 'grayscale(100%)',
+        filter: !!bg?.src? 'none' : 'grayscale(100%)',
+        opacity: !!bg?.src? 1 : 0.5,
       }}
     >
       <div className='gridItemBox'>

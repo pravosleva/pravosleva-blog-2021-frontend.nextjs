@@ -948,6 +948,12 @@ div.article-body > blockquote {
     min-height: calc(100vh - 50px);
   }
   .universal-container > main > .special-link-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+
     padding-bottom: 50px;
   }
   .universal-container > main > .article-body {
@@ -970,7 +976,10 @@ div.article-body > blockquote {
     padding: 10px 20px 20px 20px;
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    gap: 16px;
   }
   .universal-container > main > .bx_breadcrumbs {
     padding-left: 20px;

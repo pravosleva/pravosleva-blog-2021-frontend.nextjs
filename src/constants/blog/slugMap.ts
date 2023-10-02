@@ -1,78 +1,141 @@
-type TArticleTools = {
-  id: string;
-  brief: string;
-  bgSrc?: string;
-}
+import { TArticleTools } from './types'
+import { list as articlesListAboutBash } from './bash'
+import { list as articlesListAboutNginx } from './nginx'
+
 export const slugMapping: {[key: string]: TArticleTools} = {
+  ...articlesListAboutBash,
+  ...articlesListAboutNginx,
   'google-sheets-api-quota': {
     id: '64c8d7dbdb108f2f99272e0c',
     brief: 'Чтоб не забыть',
-    bgSrc: '/static/img/blog/logo-google-sheets-photo.webp',
+    bg: {
+      size: {
+        w: 1200,
+        h: 600,
+      },
+      src: 'https://pravosleva.pro/static/img/blog/logo-google-sheets-photo.webp',
+      type: 'image/webp',
+    },
   },
   'limp-bizkit-video': {
     id: '607ca37d1f56f10aa3679bf7',
-    brief: 'Клипы в закреп',
-    bgSrc: '/static/img/blog/limp-bizkit-default.jpg',
+    brief: 'Everybody jumps from the sound of the shotgun In my neighborhood everybody got one!',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/limp-bizkit-default.jpg',
+      size: {
+        w: 1280,
+        h: 720,
+      },
+      type: 'image/jpg',
+    },
   },
   'ubuntu-first-steps': {
     id: '5fd277957d536a022794e44c',
     brief: 'Настройка Ubuntu с нуля, чтоб не забыть',
-    bgSrc: '/static/img/blog/logo-ubuntu.webp',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-ubuntu.webp',
+      size: {
+        w: 900,
+        h: 506,
+      },
+      type: 'image/webp',
+    }
   },
   'tires-how-to-choose': {
     id: '634c5496b868e92b04c97bba',
     brief: 'Чтоб не забыть',
-    bgSrc: '/static/img/blog/tires-default.jpeg',
-  },
-  'bash-quaint-files-copy': {
-    id: '605b35611ead2f48d72e74a3',
-    brief: 'Скрипт в функции просматривает директории (и поддиректории) srcDir и копирует...',
-    bgSrc: '/static/img/blog/logo-bash.png',
-  },
-  'nginx-get-public-ip': {
-    id: '602cfad280b2f31ebde37da0',
-    brief: 'How to get IP from NGINX',
-    bgSrc: '/static/img/blog/logo-nginx.jpg',
-  },
-  'nginx-logs': {
-    id: '650b202fdb108f2f99272e15',
-    brief: 'How to see NGINX logs',
-    bgSrc: '/static/img/blog/logo-nginx.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/tires-default.jpeg',
+      size: {
+        w: 362,
+        h: 139,
+      },
+      type: 'image/jpeg',
+    },
   },
   'js-vanilla-fetch-retry': {
     id: '62a78bc4f1c6891e3676f755',
     brief: 'Hot to make fetchRetry with JS vanilla',
-    bgSrc: '/static/img/blog/logo-js.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-js.jpg',
+      size: {
+        w: 900,
+        h: 506,
+      },
+      type: 'image/jpg',
+    }
   },
   'web-api-is-browser-tab-active': {
     id: '61b8dc2ac2f1fd2a1ac7cab0',
     brief: 'Is browser tab active?',
-    bgSrc: '/static/img/blog/logo-js.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-js.jpg',
+      size: {
+        w: 900,
+        h: 506,
+      },
+      type: 'image/jpg',
+    },
   },
   'web-api-memory-stat': {
     id: '63ea0aef5ce46c7f363d448e',
     brief: 'Memory stat exp',
-    bgSrc: '/static/img/blog/logo-js.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-js.jpg',
+      size: {
+        w: 900,
+        h: 506,
+      },
+      type: 'image/jpg',
+    },
   },
   'telegram-bot-detect-members': {
     id: '64108f285ce46c7f363d44a0',
     brief: 'How to detect members in TG bot?',
-    bgSrc: '/static/img/blog/logo-telegram.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-telegram.jpg',
+      size: {
+        w: 840,
+        h: 472,
+      },
+      type: 'image/jpg',
+    },
   },
   'google-recaptcha-v3': {
     id: '6361a593b868e92b04c97bd2',
     brief: 'React + Express',
-    bgSrc: '/static/img/blog/google-recaptcha-v3.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/google-recaptcha-v3.jpg',
+      size: {
+        w: 1200,
+        h: 630,
+      },
+      type: 'image/jpg',
+    },
   },
   'enable-cors-nginx': {
     id: '6518bd3bdb108f2f99272e20',
     brief: 'Hey bro, where is my fckn CORS?',
-    bgSrc: '/static/img/blog/logo-nginx.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-nginx.jpg',
+      size: {
+        w: 384,
+        h: 220,
+      },
+      type: 'image/jpg',
+    },
   },
   'qr-code-exp': {
     id: '605cc2e41ead2f48d72e74ad',
     brief: 'Hey bro, what about QR?',
-    bgSrc: '/static/img/blog/qr-code-v1.jpg',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/qr-code-v1.jpg',
+      size: {
+        w: 518,
+        h: 346,
+      },
+      type: 'image/jpg',
+    },
   },
 }
 
