@@ -7,9 +7,6 @@ export default () => {
     <Layout>
       <ResponsiveBlock
         isLimitedForDesktop
-        style={{
-          paddingBottom: '30px',
-        }}
       >
         <ToDo2023 />
       </ResponsiveBlock>

@@ -337,7 +337,7 @@ export const ToDo2023 = memo(() => {
           <title>AuditList</title>
           {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         </Head>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)', paddingBottom: '50px' }}>
           <Stack
             direction='column'
             alignItems='start'

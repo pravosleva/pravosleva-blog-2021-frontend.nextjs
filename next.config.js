@@ -23,7 +23,7 @@ const nextConfig = {
   // poweredByHeader: false,
   // generateEtags: false,
 
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
   pwa: {
     dest: 'public', // NOTE: By default to .next
     runtimeCaching,
