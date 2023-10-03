@@ -478,7 +478,7 @@ pre.text-wrap {
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
  }
 /*
-@media (min-width: 768px) {
+@media (min-width: 601px) {
   pre {
     min-height: 70px;
     resize: vertical;
@@ -938,7 +938,7 @@ div.article-body > blockquote {
   background-color: #e9ecef;
 } */
 
-@media (min-width: 768px) {
+@media (min-width: 601px) {
   .universal-container {
     padding: 0 20px 0 20px;
     margin: 0 auto;
@@ -951,8 +951,6 @@ div.article-body > blockquote {
     display: flex;
     flex-direction: row;
     gap: 16px;
-
-    padding-bottom: 50px;
   }
   
   .universal-container > main > * > .special-link-wrapper {
@@ -962,7 +960,7 @@ div.article-body > blockquote {
     align-items: center;
     gap: 16px;
   }
-  .universal-container > main > * > .special-link-wrapper--tags {
+  .special-link-wrapper--tags {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -975,7 +973,7 @@ div.article-body > blockquote {
     margin-bottom: 60px;
   }
 }
-@media (max-width: 767px) {
+@media (max-width: 600px) {
   .universal-container {
     padding: 0;
     margin: 0 auto;
@@ -990,8 +988,6 @@ div.article-body > blockquote {
     display: flex;
     flex-direction: column;
     gap: 16px;
-
-    padding: 10px 20px 20px 20px;
   }
   .universal-container > main > * > .special-link-wrapper {
     width: 100%;
@@ -1001,7 +997,7 @@ div.article-body > blockquote {
     align-items: center;
     gap: 16px;
   }
-  .universal-container > main > * > .special-link-wrapper--tags {
+  .special-link-wrapper--tags {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -1031,13 +1027,13 @@ div.article-body > blockquote {
   justify-content: center;
   align-items: center;
 }
-@media (max-width: 767px) {
+@media (max-width: 600px) {
   .loader-wrapper-for-image {
     margin: 0;
     min-height: 220px;
   }
 }
-@media (min-width: 768px) {
+@media (min-width: 601px) {
   .loader-wrapper-for-image {
     margin: 0;
     min-height: 270px;
@@ -1060,15 +1056,4 @@ div.article-body > blockquote {
   height: 20px;
   border-radius: 10px;
 }
-/* @media (max-width: 767px) { .badge {} } */
-
-@media (max-width: 767px) {
-  .min-height-limited--withoutHeader {
-    min-height: calc(100dvh - 40px);
-  }
-}
-@media (min-width: 768px) {
-  .min-height-limited--withoutHeader {
-    min-height: calc(100dvh - 50px);
-  }
-}
+/* @media (max-width: 600px) { .badge {} } */

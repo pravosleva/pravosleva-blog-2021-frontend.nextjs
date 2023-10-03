@@ -1,7 +1,10 @@
 // import { useMemo } from 'react'
 import NextNProgress from 'nextjs-progressbar'
+import clsx from 'clsx'
 import DesktopHeader from './components/Header/Desktop'
 import MobileHeader from './components/Header/Mobile'
+import { useStyles } from './useStyles'
+import classes from './Layout.module.scss'
 
 type TProps = {
   children: React.ReactNode;
@@ -9,22 +12,19 @@ type TProps = {
 
 export const Layout = ({ children }: TProps) => {
   // const fullYear = useMemo(() => new Date().getFullYear(), [])
+  const styles = useStyles()
 
   return (
     <>
       <DesktopHeader />
       <MobileHeader />
       <NextNProgress color="#FFF" startPosition={0.3} stopDelayMs={200} height={2} options={{ showSpinner: false }} />
-      <div className="universal-container">
-        <main
-          className='min-height-limited--withoutHeader'
-          style={{
-            // padding: '20px 0 20px 0',
-            // border: '2px solid red',
-            boxSizing: 'border-box',
-          }}
-        >{children}</main>
-      </div>
+      <main
+        // className="universal-container"
+        className={clsx(styles.content, classes.limitedHeight)}
+      >
+        {children}
+      </main>
       <footer
         style={{
           minHeight: '70px',

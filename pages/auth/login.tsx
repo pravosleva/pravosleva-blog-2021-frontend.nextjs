@@ -1,10 +1,22 @@
-import { Alert, Box, Button, Container, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  // Container,
+  Stack,
+  Typography,
+} from "@mui/material";
 import Link from "~/components/Link";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
+// <ResponsiveBlock isLimited>
 
 export default function AuthLogin() {
   return (
-    <Container maxWidth="sm">
+    <ResponsiveBlock
+      isLimited
+      isPaddedMobile
+    >
       <Box sx={{ py: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Login
@@ -18,6 +30,6 @@ export default function AuthLogin() {
           </Button>
         </Stack>
       </Box>
-    </Container>
+    </ResponsiveBlock>
   );
 }

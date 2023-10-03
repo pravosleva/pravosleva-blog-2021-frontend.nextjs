@@ -5,6 +5,7 @@ import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from '~/createEmotionCache';
 import { metrics } from '~/constants'
 import { ServerStyleSheet } from 'styled-components'
+import { ServerStyleSheets } from '@mui/styles';
 
 const isProd = process.env.NODE_ENV === 'production'
 const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
@@ -98,7 +99,8 @@ MyDocument.getInitialProps = async (ctx) => {
   // 3. app.render
   // 4. page.render
 
-  const sheet = new ServerStyleSheet()
+  const styledSheet = new ServerStyleSheet()
+  const muiSheet = new ServerStyleSheets();
 
   try {
     const originalRenderPage = ctx.renderPage;
@@ -111,7 +113,8 @@ MyDocument.getInitialProps = async (ctx) => {
     ctx.renderPage = () =>
       originalRenderPage({
         // enhanceApp: (App: any) => (props) => <App emotionCache={cache} {...props} />,
-        enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
+        // enhanceApp: (App) => (props) => styledSheet.collectStyles(<App {...props} />),
+        enhanceApp: (App) => (props) => styledSheet.collectStyles(muiSheet.collect(<App {...props} />)),
       });
 
     const initialProps = await Document.getInitialProps(ctx);
@@ -128,8 +131,13 @@ MyDocument.getInitialProps = async (ctx) => {
     ));
     const styles = [
       ...React.Children.toArray(initialProps.styles),
-      sheet.getStyleElement(),
+      // initialProps.styles,
+      styledSheet.getStyleElement(),
+      muiSheet.getStyleElement(),
+      
       ...emotionStyleTags,
+      // {muiSheet.getStyleElement()},
+      // {styledSheet.getStyleElement()}
     ]
     const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
       <script
@@ -173,5 +181,7 @@ gtag('config', '${GA_TRACKING_ID}', {
       // Styles fragment is rendered after the app and page rendering finish.
       styles,
     };
-  } finally { sheet.seal() }
+  } finally {
+    styledSheet.seal()
+  }
 };

@@ -25,6 +25,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+// import { Container } from '~/mui/ResponsiveBlock/components/Container'
 // import { AuditList, TAuditListProps } from './AuditList'
 import { useRouter } from 'next/router'
 import { AddNewBtn, AuditList, TAudit, AuditGrid } from '~/components/audit-helper'
@@ -189,7 +190,7 @@ export const ToDo2023 = memo(() => {
           {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         </Head>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 40px)' }}>
-          <Container maxWidth="xs">
+          <Container maxWidth="md">
             <Stack
               direction='column'
               alignItems='start'
@@ -341,7 +342,7 @@ export const ToDo2023 = memo(() => {
             direction='column'
             alignItems='start'
             spacing={2}
-            sx={{ pt: 2, pb: 2 }}
+            sx={{ pt: 6, pb: 2 }}
           >
             <Typography variant="h1" component="h1" gutterBottom className='truncate'>
               AuditList

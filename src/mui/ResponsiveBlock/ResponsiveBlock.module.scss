@@ -1,0 +1,82 @@
+@import '~/mui/scss-vars/monitors.scss';
+
+.redBorder {
+  border: 1px solid red;
+}
+
+@media(max-width: #{$sm}px) {
+  .zero-pad-mob {
+    padding: 0px !important;
+  }
+}
+
+@media(max-width: #{$sm}px) {
+  .isLimitedForDesktop {
+    padding: 0 !important;
+  }
+}
+@media(min-width: calc(#{$sm}px + 1px)){
+  .isLimitedForDesktop {
+    max-width: calc(960px + 40px + 4px);
+    // border: 2px solid red;
+
+    padding: 0px 16px 0px 16px;
+  }
+}
+
+@media(max-width: #{$sm}px) {
+  .isPaddedMobile {
+    padding: 0px 16px 0px 16px;
+  }
+}
+@media(min-width: calc(#{$sm}px + 1px)){
+  .isPaddedMobile {
+    padding: 0px 16px 0px 16px;
+  }
+}
+
+@media(max-width: #{$sm}px) {
+  .isLastSection {
+    padding-bottom: 30px;
+  }
+}
+@media(min-width: calc(#{$sm}px + 1px)){
+  .isLastSection {
+    padding-bottom: 50px;
+  }
+}
+
+@media(max-width: #{$sm}px) {
+  .isLimited {
+    width: 100%;
+  }
+}
+@media(min-width: calc(#{$sm}px + 1px)){
+  .isLimited {
+    max-width: calc(
+      960px + 40px + 4px
+    );
+  }
+}
+
+@media(max-width: #{$sm}px) {
+  .isLimited {
+    width: 100%;
+  }
+}
+@media(min-width: calc(#{$sm}px + 1px)){
+  .isLimited {
+    max-width: calc(
+      960px + 40px + 4px
+    );
+  }
+}
+
+.centered {
+  margin: 0 auto;
+  // border: 1px solid red;
+}
+
+.limitedWidth {
+  max-width: 960px;
+}

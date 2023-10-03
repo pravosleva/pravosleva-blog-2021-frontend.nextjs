@@ -101,6 +101,8 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
           backgroundColor: '#fff',
           zIndex: 2,
           borderBottom: '1px solid lightgray',
+
+          paddingTop: '16px',
         }}
       >
         <div

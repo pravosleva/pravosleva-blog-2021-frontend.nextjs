@@ -65,7 +65,7 @@ nextApp
       if (err) throw err
       console.log(`> Ready on http://localhost:${PORT}`)
 
-      axios
+      if (!isDev) axios
         .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
           resultId: state.auxCounter,
           chat_id: 432590698, // NOTE: Den Pol
@@ -87,7 +87,7 @@ nextApp
   .catch(async (ex: any) => {
     state.errsCounter += 1
     console.error(ex.stack)
-    await axios
+    if (!isDev) await axios
       .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
         resultId: state.errsCounter,
         chat_id: 432590698, // NOTE: Den Pol

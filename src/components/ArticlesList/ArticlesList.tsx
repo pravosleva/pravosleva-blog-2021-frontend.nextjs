@@ -7,6 +7,7 @@ import { BreadCrumbs, NBreadCrumbs } from '~/components/BreadCrumbs'
 import { PagesGrid } from './components'
 import { useCompare } from '~/hooks/useDeepEffect'
 // import { useSearch } from '~/hooks/useSearch'
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 type TArticlesListComponentProps = {
   t: (translatableString: string) => string;
@@ -46,29 +47,48 @@ export const ArticlesList = withTranslator(({ t, list, searchQueryTitle, isBlogP
 
   return (
     <>
-      <BreadCrumbs
-        t={t}
-        // lastLabel={article?.original.title}
-        legend={legend}
-      />
+      <ResponsiveBlock
+        isPaddedMobile
+        isLimited
+      >
+        <BreadCrumbs
+          t={t}
+          // lastLabel={article?.original.title}
+          legend={legend}
+        />
+      </ResponsiveBlock>
 
-      <div
-        className="article-body"
+      <ResponsiveBlock
+        isLimited
+        isPaddedMobile
         style={{
-          boxSizing: 'border-box',
-          // overflowX: 'hidden',
-        }}>
-        <Typography variant="h1" component="h1" gutterBottom className='truncate'>
-          {isBlogPage ? t(searchQueryTitle.original) : searchQueryTitle.normalized}
-        </Typography>
-        {
-          !!list && Array.isArray(list) && (
-            <PagesGrid articles={list} />
-          )
-        }
-      </div>
+          paddingBottom: '50px',
+        }}
+      >
+        <div
+          className="article-body"
+          style={{
+            boxSizing: 'border-box',
+            // overflowX: 'hidden',
+          }}>
+          <Typography variant="h1" component="h1" gutterBottom className='truncate'>
+            {isBlogPage ? t(searchQueryTitle.original) : searchQueryTitle.normalized}
+          </Typography>
+          {
+            !!list && Array.isArray(list) && (
+              <PagesGrid articles={list} />
+            )
+          }
+        </div>
+      </ResponsiveBlock>
 
-      <GoHomeSection t={t} />
+      <ResponsiveBlock
+        isLimited
+        isLastSection
+        isPaddedMobile
+      >
+        <GoHomeSection t={t} />
+      </ResponsiveBlock>
     </>
   )
 })

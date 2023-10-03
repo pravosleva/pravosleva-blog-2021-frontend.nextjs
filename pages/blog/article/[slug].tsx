@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { IRootState } from '~/store/IRootState'
 import { setTitle } from '~/store/reducers/pageMeta'
 
-const _Article = ({ _pageService, article }: { _pageService: TPageService, article: TArticle }) => {
+const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService, article: TArticle }) => {
   if (!_pageService?.isOk) return (
     <Layout>
       <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'} />
@@ -105,7 +105,7 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
   )
 }
 
-_Article.getInitialProps = wrapper.getInitialPageProps(
+BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => async (ctx: any) => {
     const { query: { slug } } = ctx
@@ -158,4 +158,4 @@ _Article.getInitialProps = wrapper.getInitialPageProps(
   }
 )
 
-export default _Article
+export default BlogArticleSlug

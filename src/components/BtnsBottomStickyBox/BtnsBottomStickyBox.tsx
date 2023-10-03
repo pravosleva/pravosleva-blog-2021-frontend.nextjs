@@ -22,7 +22,7 @@ export const BtnsBottomStickyBox = ({ children }: any) => {
         backgroundColor: '#FFF',
         boxShadow: '0px 0px 5px 5px rgba(0, 0, 0, 0.3)',
         // padding: '20px',
-        border: '1px dashed red',
+        // border: '1px dashed red',
       }}
     >
       <CustomBox maxWidth='xs'>

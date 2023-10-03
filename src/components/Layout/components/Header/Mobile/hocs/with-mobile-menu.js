@@ -11,12 +11,13 @@ import { isCurrentPath } from '@/utils/routing/isCurrentPath'
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback'
 // import { showAsyncToast } from '@/actions'
 import { withTranslator } from '@/hocs/withTranslator'
+import { breakpoints } from '~/mui/theme'
 // import { userInfoActions } from '@/store/reducers/user-info'
 
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  @media (max-width: 767px) {
+  @media (max-width: ${breakpoints.sm}px) {
     top: 0;
     bottom: 0;
     position: relative;
@@ -27,10 +28,10 @@ const Wrapper = styled.div`
 const Sidebar = styled.div`
   background-color: white;
   overflow-y: auto;
-  @media (min-width: 768px) {
+  @media (min-width: ${breakpoints.sm + 1}px) {
     display: none;
   }
-  @media (max-width: 767px) {
+  @media (max-width: ${breakpoints.sm}px) {
     min-height: calc(100vh - 40px);
     height: 100%;
     min-width: 100%;
@@ -231,7 +232,7 @@ export const withMobileMenu = (ComposedComponent) =>
               </li> */}
 
               {/* -- NOTE: Target Article*/}
-              <li>
+              {/* <li>
                 <Link href="/blog/article/tires-how-to-choose">
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/tires-how-to-choose') || isCurrentPathCb(router.asPath, '/blog/article/tires-how-to-choose') ? 'active' : ''}>Шины и диски</a>
                 </Link>
@@ -240,10 +241,10 @@ export const withMobileMenu = (ComposedComponent) =>
                 <Link href="/blog/article/nginx-logs">
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/nginx-logs') || isCurrentPathCb(router.asPath, '/blog/article/nginx-logs') ? 'active' : ''}>NGINX logs</a>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/blog/article/limp-bizkit-video">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/limp-bizkit-video') || isCurrentPathCb(router.asPath, '/blog/article/limp-bizkit-video') ? 'active' : ''}>Клипы Limp Bizkit</a>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/limp-bizkit-video') || isCurrentPathCb(router.asPath, '/blog/article/limp-bizkit-video') ? 'active' : ''}>Limp Bizkit</a>
                 </Link>
               </li>
               {/* -- */}

@@ -32,11 +32,11 @@ const Wrapper = styled('div')`
 
 const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) => (
   <Wrapper>
-    {!isCurrentPathCb('/') && (
+    {/* !isCurrentPathCb('/') && (
       <Link href="/" as="/">
         <a onClick={onHideModal}>{t('HOME')}</a>
       </Link>
-    )}
+    ) */}
     {!isAuthenticated && !isCurrentPathCb('/auth/login') && (
       <Link href="/auth/login" as="/auth/login">
         <a onClick={onHideModal}>{t('LOGIN')}</a>
@@ -64,16 +64,16 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>Выбираем шины и диски</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog/article/nginx-logs') && (
+    {/* !isCurrentPathCb('/blog/article/nginx-logs') && (
       <Link href="/blog/article/nginx-logs" as="/blog/article/nginx-logs">
         <a onClick={onHideModal}>How to see NGINX logs</a>
       </Link>
-    )}
-    {!isCurrentPathCb('/blog/article/limp-bizkit-video') && (
+    ) */}
+    {/* !isCurrentPathCb('/blog/article/limp-bizkit-video') && (
       <Link href="/blog/article/limp-bizkit-video" as="/blog/article/limp-bizkit-video">
         <a onClick={onHideModal}>Клипы Limp Bizkit</a>
       </Link>
-    )}
+    ) */}
     {/* -- */}
 
     {/* -- NOTE: Target search by title */}

@@ -37,7 +37,7 @@ type TPageService = {
   response?: NCodeSamplesSpace.TNotesListResponse;
 }
 
-const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TArticle[]; }) => {
+const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: TArticle[]; }) => {
   if (!_pageService?.isOk) return (
     <Layout>
       <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'} />
@@ -86,7 +86,7 @@ const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TAr
   )
 }
 
-BlogSQT.getInitialProps = wrapper.getInitialPageProps(
+BlogIndex.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => async (ctx: any) => {
     // const { query: { tg_chat_id } } = ctx
@@ -134,4 +134,4 @@ BlogSQT.getInitialProps = wrapper.getInitialPageProps(
   }
 )
 
-export default BlogSQT
+export default BlogIndex

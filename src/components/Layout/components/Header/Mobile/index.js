@@ -13,6 +13,7 @@ import { isCurrentPath } from '@/utils/routing/isCurrentPath'
 // import { ThemeToggler } from '../../ThemeToggler'
 import { withTranslator } from '@/hocs/withTranslator'
 import { LangLink } from '../components/LangLink'
+import { breakpoints } from '~/mui/theme'
 // import { userInfoActions } from '@/store/reducers/user-info'
 import loadable from '@loadable/component'
 
@@ -22,10 +23,10 @@ const Identicon = loadable(() => import(/* webpackChunkName: "identicon" */ 'rea
 
 // Could be used if !ssr
 export const MobileHeaderLoader = styled.div`
-  @media (min-width: 768px) {
+  @media (min-width: ${breakpoints.sm + 1}px) {
     display: none;
   }
-  @media (max-width: 767px) {
+  @media (max-width: ${breakpoints.sm}px) {
     height: 40px;
     background-color: transparent;
   }
@@ -72,7 +73,7 @@ const Nav = styled('div')`
     text-decoration: none;
     background-color: transparent;
   }
-  @media (min-width: 768px) {
+  @media (min-width: ${breakpoints.sm + 1}px) {
     display: none;
   }
 `
@@ -148,7 +149,7 @@ const MobileHeader = ({
           >
             <li
               style={{
-                marginLeft: '20px',
+                marginLeft: '16px',
                 marginRight: 'auto',
                 marginBottom: '0px',
                 fontFamily: 'Montserrat',

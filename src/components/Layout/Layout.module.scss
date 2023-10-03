@@ -1,0 +1,15 @@
+@import '~/mui/scss-vars/monitors.scss';
+
+.limitedHeight {
+  box-sizing: border-box;
+}
+@media (max-width: #{$sm}px) {
+  .limitedHeight {
+    min-height: calc(100dvh - 40px);
+  }
+}
+@media (min-width: calc(#{$sm}px + 1px)) {
+  .limitedHeight {
+    min-height: calc(100dvh - 50px);
+  }
+}

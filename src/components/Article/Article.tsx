@@ -9,7 +9,11 @@ import { TArticleComponentProps } from './types'
 import gfm from 'remark-gfm'
 import { BreadCrumbs } from '~/components/BreadCrumbs'
 import { GoHomeSection } from '~/components/GoHomeSection'
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { convert } from 'html-to-text'
+import clsx from 'clsx'
+// import styles from './Article.module.scss'
+import { breakpoints } from '~/mui/theme'
 
 export const Article = withTranslator(({ t, article }: TArticleComponentProps) => {
   // React.useEffect(() => {
@@ -23,60 +27,80 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
     <>
       {!!article ? (
         <>
-          <BreadCrumbs
-            t={t}
-            // lastLabel={article?.original.title}
-            legend={[
-              {
-                labelCode: 'BLOG',
-                link: '/blog',
-              },
-              {
-                labelCode: article?.original.title,
-                noTranslate: true,
-              }
-            ]}
-          />
+          <ResponsiveBlock
+            isPaddedMobile
+            isLimited
+          >
+            <BreadCrumbs
+              t={t}
+              // lastLabel={article?.original.title}
+              legend={[
+                {
+                  labelCode: 'BLOG',
+                  link: '/blog',
+                },
+                {
+                  labelCode: article?.original.title,
+                  noTranslate: true,
+                }
+              ]}
+            />
+          </ResponsiveBlock>
 
           {!!article?.bg && (
-            <div>
+            <ResponsiveBlock
+              isLimitedForDesktop
+            >
               <div className="article-wrapper">
-                <div className="tiles-grid-item-in-article white article-wrapper__big-image-as-container">
-                  <h1 className="article-page-title">
+                <div className={clsx('tiles-grid-item-in-article', 'white', 'article-wrapper__big-image-as-container')}>
+                  <h1 className='article-page-title'>
                     {article?.original.title}
                   </h1>
                   {article?.brief && (
-                    <div className="article-wrapper__big-image-as-container__brief">
+                    <div className='article-wrapper__big-image-as-container__brief'>
                       <ReactMarkdown
                         children={article.brief}
                       />
                     </div>
                   )}
-                  <small className="inactive article-wrapper__big-image-as-container__date">
+                  <small className={clsx("inactive", 'article-wrapper__big-image-as-container__date')}>
                     {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
                   </small>
                 </div>
               </div>
-            </div>
+            </ResponsiveBlock>
           )}
 
-          <div className="article-body">
-            {!!article.original.description ? (
-              <div className="description-markdown">
-                <ReactMarkdown
-                  
-                  renderers={baseRenderers}
-                  // @ts-ignore
-                  plugins={[gfm, { singleTilde: false }]}
-                  children={article.original.description}
-                />
-              </div>
-            ) : (
-              'No body'
-            )}
-          </div>
-
-          <GoHomeSection t={t} />
+          <ResponsiveBlock
+            isLimited
+            isPaddedMobile
+            style={{
+              paddingBottom: '30px',
+            }}
+          >
+            <div className="article-body">
+              {!!article.original.description ? (
+                <div className="description-markdown">
+                  <ReactMarkdown
+                    
+                    renderers={baseRenderers}
+                    // @ts-ignore
+                    plugins={[gfm, { singleTilde: false }]}
+                    children={article.original.description}
+                  />
+                </div>
+              ) : (
+                'No body'
+              )}
+            </div>
+          </ResponsiveBlock>
+          <ResponsiveBlock
+            isLimited
+            isLastSection
+            isPaddedMobile
+          >
+            <GoHomeSection t={t} />
+          </ResponsiveBlock>
         </>
       ) : (
         <>
@@ -108,39 +132,10 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
           position: absolute;
           z-index: -1;
         }
-        .article-wrapper__big-image-as-container {
-          border-radius: 0;
-          width: 100%;
-          min-height: 250px;
-          // margin: 10px 0 50px 0;
-          margin-bottom: 50px;
-
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-        @media (min-width: 768px) {
-          .article-wrapper,
+        @media (min-width: ${breakpoints.sm}px) {
           .article-wrapper::after {
             border-radius: 10px;
           }
-          .article-wrapper__big-image-as-container {
-            // margin: 50px 0 50px 0;
-            border-radius: 10px;
-          }
-        }
-        .article-wrapper__big-image-as-container > * {
-          margin: 0;
-          padding: 20px;
-        }
-        .article-wrapper__big-image-as-container__brief {
-          margin-bottom: 30px;
-          line-height: 1em;
-          font-family: Montserrat;
-          font-style: italic;
-        }
-        .article-wrapper__big-image-as-container__date {
-          text-align: right;
         }
       `}</style>
     </>

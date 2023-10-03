@@ -7,6 +7,7 @@ import { ErrorPage } from '~/components/ErrorPage'
 import jwt from 'jsonwebtoken'
 // import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 // const isDev = process.env.NODE_ENV === 'development'
 // const baseURL = isDev
@@ -33,8 +34,16 @@ export default function TodoOnline({
       </Head>
       {
         _pageService.isOk
-        ? <Todo2023Online room={chat_id} />
-        : <ErrorPage message={_pageService.message || 'ERR: No _pageService.message'} />
+        ? (
+          <ResponsiveBlock
+            isLimited
+            style={{
+              paddingBottom: '30px',
+            }}
+          >
+            <Todo2023Online room={chat_id} />
+          </ResponsiveBlock>
+        ) : <ErrorPage message={_pageService.message || 'ERR: No _pageService.message'} />
       }
     </>
   );

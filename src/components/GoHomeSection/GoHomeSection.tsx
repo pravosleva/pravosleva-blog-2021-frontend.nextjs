@@ -79,7 +79,7 @@ export const GoHomeSection = ({
   return (
     <div className='page-control-box-wrapper'>
 
-      <div className="special-link-wrapper fade-in-effect unselectable">
+      <div className="special-link-wrapper--tags fade-in-effect unselectable">
         {
           defaultBtns.map(({ as, href, Component }, i: number) => (
             <Link href={href} as={as} key={`${href}-${i}`}>

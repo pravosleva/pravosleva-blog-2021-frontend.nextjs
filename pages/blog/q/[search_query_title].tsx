@@ -22,7 +22,7 @@ type TPageProps = {
   },
 }
 
-const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
+const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
   if (!_pageService?.isOk) return (
     <Layout>
       <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'} />
@@ -73,7 +73,7 @@ const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => 
   )
 }
 
-_ArticlesList.getInitialProps = wrapper.getInitialPageProps(
+BlogQST.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => async (ctx: any) => {
     const { query: { search_query_title } } = ctx
@@ -132,4 +132,4 @@ _ArticlesList.getInitialProps = wrapper.getInitialPageProps(
   }
 )
 
-export default _ArticlesList
+export default BlogQST
