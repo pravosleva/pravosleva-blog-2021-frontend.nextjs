@@ -29,12 +29,14 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
       <Head>
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
-        <title>{title}</title>
+        <title>Pravosleva | {title}</title>
         <meta name="description" content={article.brief || 'Найдётся всё что не нашлось ранее, если оно действительно нужно'} />
 
         {/* <!-- Facebook Meta Tags --> */}
         <meta property="og:url" content={thisPageUrl} />
-        <meta property="og:type" content="article" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={article.original.title} />
+
         <meta property="og:locale" content="ru_RU" />
         <meta property="article:publisher" content="https://pravosleva.pro/" />
         <meta property="article:section" content={article.original.title} />
@@ -44,7 +46,7 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
         <meta property="og:locale:alternate" content="uk_UA" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:title" content={article.original.title} />
+        
         <meta property="og:description" content={article.brief} />
         {
           !!article.bg ? (
@@ -54,30 +56,37 @@ const _Article = ({ _pageService, article }: { _pageService: TPageService, artic
               <meta property='og:image:width' content={String(article.bg.size.w)} />
               <meta property='og:image:height' content={String(article.bg.size.h)} />
               <meta property='og:image:type' content={article.bg.type} />
-              <meta property="og:image:alt" content="img alt =)" />
+              <meta property="og:image:alt" content="img alt sample" />
             </>
           ) : (
-            <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+            <>
+              <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+              <meta property="og:image:secure_url" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+            </>
           )
         }
         
         <meta property="og:site_name" content="Pravosleva" />
 
         {/* <!-- Twitter Meta Tags --> */}
-        {
-          !!article.bg ? (
-            <>
-              <meta name="twitter:card" content={`https://pravosleva.pro/${article.bg.src}`} />
-            </>
-          ) : (
-            <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-          )
-        }
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
         <meta name="twitter:title" content={article.original.title} />
         <meta name="twitter:description" content={article.brief} />
-        <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+        {
+          !!article.bg ? (
+            <>
+              <meta name="twitter:card" content="summary_large_image" />
+              <meta name="twitter:image" content={article.bg.src} />
+            </>
+          ) : (
+            <>
+              <meta name="twitter:card" content="summary" />
+              <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
+            </>
+          )
+        }
+        
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
         <link href="/static/css/article.css" rel="stylesheet" />

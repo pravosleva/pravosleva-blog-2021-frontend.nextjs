@@ -13,22 +13,24 @@ const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="en">
+      <Html lang="en" prefix="og: http://ogp.me/ns#">
         <Head>
+          <meta charSet="utf-8" />
+          <meta httpEquiv='Content-Type' content='text/html;charset=UTF-8' />
           <link rel="shortcut icon" href="/static/img/logo/favicon.ico" />
 
           <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-76x76.jpg" sizes="76x76"></link>
           <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-120x120.jpg" sizes="120x120"></link>
           <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-152x152.jpg" sizes="152x152"></link>
           <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-180x180.jpg" sizes="180x180"></link>
-          {/* <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-16x16.jpg" sizes="16x16" /> */}
+          <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-16x16.jpg" sizes="16x16" />
           <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-32x32.jpg" sizes="32x32" />
           <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-192x192.jpg" sizes="192x192" />
+          <link rel="apple-touch-icon" sizes="180x180" href="https://pravosleva.pro/static/img/logo/apple-touch-icon.png" />
+          <link rel="icon" type="image/png" sizes="32x32" href="https://pravosleva.pro/static/img/logo/favicon-32x32.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="https://pravosleva.pro/static/img/logo/favicon-16x16.png" />
 
-          <link rel="apple-touch-icon" sizes="180x180" href="/static/img/logo/apple-touch-icon.png" />
-          <link rel="icon" type="image/png" sizes="32x32" href="/static/img/logo/favicon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="/static/img/logo/favicon-16x16.png" />
-          <link rel="manifest" href="/site.webmanifest" />
+          <link rel="manifest" href="/static/manifest.json" />
           <link rel="mask-icon" href="/static/img/logo/safari-pinned-tab.svg" color="#5bbad5" />
           <meta name="msapplication-TileColor" content="#0162c8" />
           <meta name="theme-color" content="#0162c8" />
@@ -43,8 +45,6 @@ export default class MyDocument extends Document {
           <meta name="mobile-web-app-capable" content="yes" />
           
           <meta name="msapplication-tap-highlight" content="no" />
-          <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />
           
           <link
             rel="stylesheet"

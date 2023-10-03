@@ -63,7 +63,7 @@ const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TAr
         <meta property="og:locale:alternate" content="uk_UA" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:title" content="Pravosleva | Blog" />
+        <meta property="og:title" content="Blog" />
         <meta property="og:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="og:site_name" content="Pravosleva" />
@@ -72,7 +72,7 @@ const BlogSQT = ({ _pageService, list }: { _pageService: TPageService; list: TAr
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
-        <meta name="twitter:title" content="Pravosleva | Blog" />
+        <meta name="twitter:title" content="Blog" />
         <meta name="twitter:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}

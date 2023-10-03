@@ -50,7 +50,7 @@ const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => 
         <meta property="og:locale:alternate" content="uk_UA" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:title" content="🔎 Search" />
+        <meta property="og:title" content='🔎 Look what I found' />
         <meta property="og:description" content={`What about ${searchQueryTitle.normalized}`} />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="og:site_name" content="Pravosleva" />
@@ -59,7 +59,7 @@ const _ArticlesList = ({ _pageService, list, searchQueryTitle }: TPageProps) => 
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
-        <meta name="twitter:title" content="🔎 Search" />
+        <meta name="twitter:title" content='🔎 Look what I found' />
         <meta name="twitter:description" content={`What about ${searchQueryTitle.normalized}`} />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}

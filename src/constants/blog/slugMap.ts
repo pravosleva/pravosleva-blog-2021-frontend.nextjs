@@ -1,10 +1,12 @@
 import { TArticleTools } from './types'
 import { list as articlesListAboutBash } from './bash'
+import { list as articlesListAboutJSVanilla, bg as bgJSVanilla } from './js-vanilla'
 import { list as articlesListAboutNginx } from './nginx'
 
 export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
   ...articlesListAboutNginx,
+  ...articlesListAboutJSVanilla,
   'google-sheets-api-quota': {
     id: '64c8d7dbdb108f2f99272e0c',
     brief: 'Чтоб не забыть',
@@ -23,8 +25,8 @@ export const slugMapping: {[key: string]: TArticleTools} = {
     bg: {
       src: 'https://pravosleva.pro/static/img/blog/limp-bizkit-default.jpg',
       size: {
-        w: 1280,
-        h: 720,
+        w: 1200,
+        h: 630,
       },
       type: 'image/jpg',
     },
@@ -53,41 +55,15 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/jpeg',
     },
   },
-  'js-vanilla-fetch-retry': {
-    id: '62a78bc4f1c6891e3676f755',
-    brief: 'Hot to make fetchRetry with JS vanilla',
-    bg: {
-      src: 'https://pravosleva.pro/static/img/blog/logo-js.jpg',
-      size: {
-        w: 900,
-        h: 506,
-      },
-      type: 'image/jpg',
-    }
-  },
   'web-api-is-browser-tab-active': {
     id: '61b8dc2ac2f1fd2a1ac7cab0',
     brief: 'Is browser tab active?',
-    bg: {
-      src: 'https://pravosleva.pro/static/img/blog/logo-js.jpg',
-      size: {
-        w: 900,
-        h: 506,
-      },
-      type: 'image/jpg',
-    },
+    bg: bgJSVanilla,
   },
   'web-api-memory-stat': {
     id: '63ea0aef5ce46c7f363d448e',
-    brief: 'Memory stat exp',
-    bg: {
-      src: 'https://pravosleva.pro/static/img/blog/logo-js.jpg',
-      size: {
-        w: 900,
-        h: 506,
-      },
-      type: 'image/jpg',
-    },
+    brief: 'Get page memory stat',
+    bg: bgJSVanilla,
   },
   'telegram-bot-detect-members': {
     id: '64108f285ce46c7f363d44a0',

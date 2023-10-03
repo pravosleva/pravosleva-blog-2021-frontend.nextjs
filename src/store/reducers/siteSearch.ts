@@ -33,7 +33,7 @@ export const siteSearchSlice: any = createSlice({
         if (state.sqt.length >= limits.sqt) {
           const newArr: any[] = []
           state.sqt.forEach((item, i) => {
-            if (i < limits.sqt) newArr.push(item)
+            if (i <= limits.sqt) newArr.push(item)
           })
           newArr.pop()
           state.sqt = newArr

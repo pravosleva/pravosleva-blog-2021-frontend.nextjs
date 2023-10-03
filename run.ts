@@ -1,5 +1,6 @@
 // const moduleAlias = require('module-alias')
 // moduleAlias()
+import axios from 'axios'
 import betterModuleAlias from 'better-module-alias'
 import packageJson from './package.json'
 betterModuleAlias(__dirname, packageJson._moduleAliases)
@@ -32,6 +33,11 @@ const _customIO = withTodo2023SocketLogic(io)
 // app.use('*', ipDetectorMW, geoipLiteMW)
 // NOTE: For example: const ip = req.clientIp; const geo = req.geo;
 
+const state = {
+  auxCounter: 0,
+  errsCounter: 0,
+}
+
 nextApp
   .prepare()
   .then(() => {
@@ -54,11 +60,43 @@ nextApp
     })
 
     server.listen(PORT, (err: any) => {
+      state.auxCounter += 1
+
       if (err) throw err
       console.log(`> Ready on http://localhost:${PORT}`)
+
+      axios
+        .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
+          resultId: state.auxCounter,
+          chat_id: 432590698, // NOTE: Den Pol
+          ts: new Date().getTime(),
+          eventCode: 'aux_service',
+          about: `\`/frontend.nextjs\` 🚀 Started on TCP ${PORT}`,
+          targetMD: `\`\`\`\n${JSON.stringify(
+            {
+              NODE_ENV: process.env.NODE_ENV,
+            },
+            null,
+            2
+          )}\n\`\`\``,
+        })
+        .then((res) => res.data)
+        .catch((err) => err)
     })
   })
-  .catch((ex: any) => {
+  .catch(async (ex: any) => {
+    state.errsCounter += 1
     console.error(ex.stack)
+    await axios
+      .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
+        resultId: state.errsCounter,
+        chat_id: 432590698, // NOTE: Den Pol
+        ts: new Date().getTime(),
+        eventCode: 'aux_service',
+        about: `\`/frontend.nextjs\` ⛔ Errored`,
+        targetMD: `\`\`\`\n${ex.stack}\n\`\`\``,
+      })
+      .then((res) => res.data)
+      .catch((err) => err)
     process.exit(1)
   })

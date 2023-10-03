@@ -69,15 +69,17 @@ export default function Index() {
   //     console.log(err)
   //   }
   // }
+
+  // NOTE: Только пепел знает, что значит сгореть дотла.
   return (
     <>
       <Head>
-        <meta property="og:title" content="Pravosleva | Web exp" />
+        <meta property="og:title" content="Web exp" />
 
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
-        <title>Pravosleva | Blog</title>
-        <meta name="description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
+        <title>Pravosleva</title>
+        <meta name="description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое.' />
 
         {/* <!-- Facebook Meta Tags --> */}
         <meta property="og:url" content="https://pravosleva.pro/blog" />
@@ -89,7 +91,7 @@ export default function Index() {
         <meta property="og:locale:alternate" content="uk_UA" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
+        <meta property="og:description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое' />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="og:site_name" content="Pravosleva" />
 
@@ -97,8 +99,8 @@ export default function Index() {
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
-        <meta name="twitter:title" content="Pravosleva | Web exp" />
-        <meta name="twitter:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
+        <meta name="twitter:title" content="Web exp" />
+        <meta name="twitter:description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
       </Head>

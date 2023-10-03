@@ -4,7 +4,7 @@ const bg = {
   src: 'https://pravosleva.pro/static/img/blog/logo-bash.png',
   size: {
     w: 1200,
-    h: 675,
+    h: 630,
   },
   type: 'image/png',
 }
@@ -17,7 +17,7 @@ export const list: {[key: string]: TArticleTools} = {
   },
   'bash-write-git-commit-hash-to-static-file': {
     id: '6238cb7f52ac7d093d671313',
-    brief: 'Как записать хэш git коммита в статический файл при сборке',
+    brief: 'Как извлечь хэш git коммита при сборке',
     bg,
   }
 }

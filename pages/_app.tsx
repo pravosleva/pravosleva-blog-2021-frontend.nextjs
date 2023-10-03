@@ -65,9 +65,6 @@ function AppWithRedux(props: MyAppProps) {
   return (
     <>
       <Head>
-        <meta charSet="utf-8" />
-        <link rel="icon" href="/static/favicon.ico" />
-        <meta httpEquiv='Content-Type' content='text/html;charset=UTF-8' />
         <meta name="theme-color" content="#0162c8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <meta
