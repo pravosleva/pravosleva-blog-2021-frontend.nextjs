@@ -18,7 +18,6 @@ export const useStyles = makeStyles((theme) => ({
       gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
     },
     gridAutoFlow: 'dense',
-    
   },
   gridItemBg: {
     objectFit: 'cover',

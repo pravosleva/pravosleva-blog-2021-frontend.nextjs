@@ -19,5 +19,15 @@ export const list: {[key: string]: TArticleTools} = {
     id: '6238cb7f52ac7d093d671313',
     brief: 'Как извлечь хэш git коммита при сборке',
     bg,
-  }
+  },
+  'bash-search-remove-files-and-dirs': {
+    id: '5fd270747d536a022794e442',
+    brief: 'Чтобы найти иголку в стоге сена, достаточно сжечь сено и провести магнитом над пеплом',
+    bg,
+    // bg: {
+    //   src: 'https://pravosleva.pro/static/img/blog/logo-bash-900x600.jpg',
+    //   size: { w: 900, h: 600 },
+    //   type: 'image/jpg',
+    // },
+  },
 }
