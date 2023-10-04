@@ -8,9 +8,10 @@ import classes from './Layout.module.scss'
 
 type TProps = {
   children: React.ReactNode;
+  noFooter?: boolean;
 }
 
-export const Layout = ({ children }: TProps) => {
+export const Layout = ({ children, noFooter }: TProps) => {
   // const fullYear = useMemo(() => new Date().getFullYear(), [])
   const styles = useStyles()
 
@@ -25,19 +26,26 @@ export const Layout = ({ children }: TProps) => {
       >
         {children}
       </main>
-      <footer
-        style={{
-          minHeight: '70px',
-          // border: '2px dashed red',
-        }}
-      >
-        <div style={{ margin: '0 auto', maxWidth: 960 + 40, lineHeight: '70px' }}>
-          <span style={{ margin: '0 20px 0 20px' }}>© 2018</span>
-        </div>
-      </footer>
-      {/* <ScrollTopBtn onClick={scrollTop} isShowed={showScroll} themeName={currentTheme}>
-        <i className="fas fa-arrow-up"></i>
-      </ScrollTopBtn> */}
+
+      {
+        !noFooter && (
+          <>
+            <footer
+              style={{
+                minHeight: '70px',
+                // border: '2px dashed red',
+              }}
+            >
+              <div style={{ margin: '0 auto', maxWidth: 960 + 40, lineHeight: '70px' }}>
+                <span style={{ margin: '0 20px 0 20px' }}>© 2018</span>
+              </div>
+            </footer>
+            {/* <ScrollTopBtn onClick={scrollTop} isShowed={showScroll} themeName={currentTheme}>
+              <i className="fas fa-arrow-up"></i>
+            </ScrollTopBtn> */}
+          </>
+        )
+      }
     </>
   )
 }

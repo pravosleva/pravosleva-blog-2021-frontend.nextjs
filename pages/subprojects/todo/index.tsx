@@ -4,7 +4,7 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 export default () => {
   return (
-    <Layout>
+    <Layout noFooter>
       <ResponsiveBlock
         isLimitedForDesktop
       >

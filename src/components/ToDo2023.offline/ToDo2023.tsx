@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useState, useRef } from 'react'
 import { /* VariantType, */ useSnackbar } from 'notistack'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -41,6 +41,7 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree'
 // import MuiLink from '@mui/material/Link'
 import { useWindowSize } from '~/hooks/useWindowSize'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
 export const ToDo2023 = memo(() => {
   const router = useRouter()
@@ -181,6 +182,16 @@ export const ToDo2023 = memo(() => {
   // --
 
   const { isMobile, isDesktop } = useWindowSize()
+
+  const desktopPageEndRef = useRef(null)
+  const scrollToBottom = useCallback(() => {
+    try {
+      // @ts-ignore
+      desktopPageEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    } catch (err) {
+      console.log(err)
+    }
+  }, [])
 
   switch (true) {
     case isMobile: return (
@@ -337,15 +348,32 @@ export const ToDo2023 = memo(() => {
           <title>AuditList</title>
           {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         </Head>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)', paddingBottom: '50px' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 'calc(100dvh - 50px)',
+            // paddingBottom: '50px',
+          }}
+        >
           <Stack
             direction='column'
             alignItems='start'
-            spacing={2}
-            sx={{ pt: 6, pb: 2 }}
+            spacing={0}
+            sx={{ pt: 12, pb: 0 }}
           >
             <Typography variant="h1" component="h1" gutterBottom className='truncate'>
-              AuditList
+              AuditList <IconButton
+                aria-label="more"
+                id="to-bottom"
+                // aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                // aria-expanded={isMenuOpened ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={scrollToBottom}
+                color='primary'
+              >
+                <ArrowDownwardIcon />
+              </IconButton>
             </Typography>
             <AuditGrid
               audits={localAudits}
@@ -360,6 +388,7 @@ export const ToDo2023 = memo(() => {
 
               isEditable={true}
             />
+            <div ref={desktopPageEndRef} />
           </Stack>
         </div>
       </>

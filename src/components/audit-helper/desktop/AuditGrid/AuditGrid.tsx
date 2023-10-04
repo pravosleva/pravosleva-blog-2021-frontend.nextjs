@@ -3,13 +3,13 @@ import { TAudit, TSubJob, AddNewBtn } from '~/components/audit-helper'
 import { useStyles } from './styles'
 import {
   Alert,
-  Box,
   Typography,
 } from '@mui/material'
 import { WithStateContext } from './WithStateContext'
 import { ActiveAuditJobList } from './components/ActiveAuditJobList'
 import { useMemo } from 'react'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
+import clsx from 'clsx'
 
 export type TAuditListProps = {
   audits: TAudit[];
@@ -82,18 +82,30 @@ export const AuditGrid = ({
 
   isEditable,
 }: TAuditListProps) => {
-  const classes = useStyles()
+  const styles = useStyles()
   const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
 
   if (isServer) return <CircularIndeterminate />
 
   return (
     <WithStateContext>
-      <div className={classes.wrapper}>
-        <div className={classes.leftSideWrapper}>
+      <div className={styles.wrapper}>
+        <div className={clsx(styles.leftSideWrapper)}>
           {
             isEditable ? (
-              <Box sx={{ pt:0, pb: 1 }}>
+              <div
+                className={clsx(
+                  styles.stickyTopPanel,
+                  'backdrop-blur--lite',
+                )}
+                style={{
+                  // height: '50px',
+                  // display: 'flex',
+                  // alignItems: 'center',
+                  padding: '64px 0 16px 0',
+                  // border: '1px solid red',
+                }}
+              >
                 <AddNewBtn
                   cb={{
                     onSuccess: onAddNewAudit,
@@ -122,20 +134,24 @@ export const AuditGrid = ({
                     }
                   }}
                 />
-              </Box>
+              </div>
             ) : null
           }
           {
             audits.length > 0 ? (
-              audits.map((audit) => (
-                <div className={classes.auditItem}>
-                  <AuditGridItem
-                    audit={audit}
-                    isEditable={isEditable}
-                    onRemoveAudit={onRemoveAudit}
-                  />
-                </div>
-              ))
+              <div className={clsx(styles.auditListWrapper)}>
+                {
+                  audits.map((audit) => (
+                    <div className={styles.auditItem}>
+                      <AuditGridItem
+                        audit={audit}
+                        isEditable={isEditable}
+                        onRemoveAudit={onRemoveAudit}
+                      />
+                    </div>
+                  ))
+                }
+              </div>
             ) : (
               <Alert
                 // sx={{ mb: 2 }}
@@ -149,7 +165,7 @@ export const AuditGrid = ({
             )
           }
         </div>
-        <div className={classes.rightSideWrapper}>
+        <div className={styles.rightSideWrapper}>
           
           <ActiveAuditJobList
             audits={audits}

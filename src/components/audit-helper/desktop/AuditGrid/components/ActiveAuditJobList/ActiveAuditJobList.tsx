@@ -5,6 +5,7 @@ import { TAudit, TSubJob, IJob } from '~/components/audit-helper'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { CommentBtn } from '~/components/audit-helper/common/CommentBtn'
 // import { Stack } from '@mui/material'
+// import { useStyles as useExternalGridStyles } from '~/components/audit-helper/desktop/AuditGrid/styles'
 
 type TProps = {
   audits: TAudit[];
@@ -53,6 +54,7 @@ type TProps = {
 
 
 export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
+  // const externalStyles = useExternalGridStyles()
   const [activeAuditId, _setStore] = useStore((store: TDesktopAuditState) => store.activeAuditId)
   const targetJobs = useMemo<IJob[]>(() => {
     try {
@@ -97,37 +99,55 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
             flexDirection: 'column',
             gap: '0px',
             minWidth: '100%',
+            // border: '1px solid red',
           }}
         >
-          <CommentBtn
-            key={activeAuditComment}
-            initialState={{
-              comment: activeAuditComment || '',
+          <div
+            // className={externalStyles.stickyTopPanel}
+            style={{
+              padding: '64px 0 0 0',
+              // border: '1px solid red',
             }}
-            onSuccess={({ state }) => {
-              // console.log(state)
-              if (!!activeAuditId) onUpdateAuditComment({
-                auditId: activeAuditId,
-                comment: state.comment,
-              })
-            }}
-          />
-          {
-            !!activeAuditId && (
-              <JobList
-                jobs={targetJobs}
-                auditId={activeAuditId}
-                auditTsUpdate={auditTsUpdate}
-                onAddJob={onAddJob}
-                onAddSubjob={onAddSubjob}
-                onToggleJobDone={onToggleJobDone}
-                onRemoveJob={onRemoveJob}
-                onToggleSubjob={onToggleSubjob}
+          >
+            <CommentBtn
+              key={activeAuditComment}
+              initialState={{
+                comment: activeAuditComment || '',
+              }}
+              onSuccess={({ state }) => {
+                // console.log(state)
+                if (!!activeAuditId) onUpdateAuditComment({
+                  auditId: activeAuditId,
+                  comment: state.comment,
+                })
+              }}
+            />
+          </div>
 
-                isEditable={isEditable}
-              />
-            )
-          }
+          <div
+            style={{
+              // NOTE: Exp
+              maxHeight: '100dvh',
+              overflowY: 'auto',
+            }}
+          >
+            {
+              !!activeAuditId && (
+                <JobList
+                  jobs={targetJobs}
+                  auditId={activeAuditId}
+                  auditTsUpdate={auditTsUpdate}
+                  onAddJob={onAddJob}
+                  onAddSubjob={onAddSubjob}
+                  onToggleJobDone={onToggleJobDone}
+                  onRemoveJob={onRemoveJob}
+                  onToggleSubjob={onToggleSubjob}
+
+                  isEditable={isEditable}
+                />
+              )
+            }
+          </div>
         </div>
       )
     default: return null

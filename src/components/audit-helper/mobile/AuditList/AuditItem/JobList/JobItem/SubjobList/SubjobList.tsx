@@ -81,6 +81,7 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
         // border: '1px solid red',
         boxSizing: 'border-box',
         maxWidth: '450px',
+        paddingLeft: '16px',
       }}
     >
       <Box

@@ -23,6 +23,7 @@ export const ProjectsPage = () => {
           display="block"
           // gutterBottom
           sx={{ pb: 2 }}
+          className='truncate'
         >
           Projects
         </Typography>

@@ -6,15 +6,37 @@ export const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
 
     // alignItems: 'center',
-    gap: '8px',
-    paddingLeft: '16px',
+    gap: '16px',
+
+    // NOTE: Exp
+    // paddingLeft: '16px',
+    
     // paddingRight: '10px',
     borderLeft: '4px solid lightgray',
 
-    '& > div:first-child': {
-      // border: '1px solid red',
+    // '& > div:first-child': {
+    //   // border: '1px solid red',
+    //   // @ts-ignore
+    //   paddingTop: theme.spacing(1),
+    // },
+  },
+
+  buttonWrapper: {
+    width: '100%',
+    // backgroundColor: '#fff',
+    paddingLeft: '16px',
+    paddingRight: '16px',
+    paddingTop: '16px',
+  },
+  desktopStickyBottomButton: {
+    // @ts-ignore
+    [theme.breakpoints.up('md')]: {
       // @ts-ignore
-      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(2),
+
+      position: 'sticky',
+      bottom: 0,
+      zIndex: 1,
     },
   },
 }))

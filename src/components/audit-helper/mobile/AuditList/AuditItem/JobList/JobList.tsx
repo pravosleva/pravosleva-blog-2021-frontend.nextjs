@@ -8,7 +8,8 @@ import {
   // VariantType,
   useSnackbar,
 } from 'notistack'
-import { useCompare } from "~/hooks/useDeepEffect";
+import { useCompare } from "~/hooks/useDeepEffect"
+import clsx from "clsx"
 
 type TProps = {
   jobs: IJob[],
@@ -134,7 +135,9 @@ export const JobList = memo(({
             ))}
             {
               isEditable && (
-                <Button variant="outlined" onClick={handleActualize}>Актуализировать</Button>
+                <div className={clsx(classes.buttonWrapper, classes.desktopStickyBottomButton, 'backdrop-blur--lite')}>
+                  <Button fullWidth variant="outlined" onClick={handleActualize}>Актуализировать</Button>
+                </div>
               )
             }
           </div>

@@ -122,7 +122,15 @@ export const JobItem = memo(({
   }, [job.status, job.tsUpdate])
   
   return (
-    <div>
+    <div
+      style={{
+        // NOTE: job header + subjobs
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+      }}
+      className='desktop-job-box'
+    >
       <div
         style={{
           display: 'flex',
@@ -130,7 +138,9 @@ export const JobItem = memo(({
           // flexWrap: 'wrap',
           alignItems: 'center',
           gap: '16px',
+          paddingLeft: '16px',
         }}
+        className='desktop-sticky-top-job-header'
       >
         <Badge  color='error' badgeContent={incompleteSubjobsCounter}>
           {Icon}

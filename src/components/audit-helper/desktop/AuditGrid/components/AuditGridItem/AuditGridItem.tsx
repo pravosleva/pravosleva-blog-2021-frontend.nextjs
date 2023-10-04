@@ -59,7 +59,7 @@ type TProps = {
   isEditable: boolean;
 }
 export const AuditGridItem = ({ audit, isEditable, onRemoveAudit }: TProps) => {
-  const classes = useStyles()
+  const styles = useStyles()
   const completeJobsPercentage = useMemo(() => stateHelper.getCompleteJobsPercentage({
     audit,
   }).value, [audit.tsUpdate])
@@ -71,17 +71,17 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit }: TProps) => {
   const isAuditActive = useMemo<boolean>(() => activeAuditId === audit.id, [activeAuditId])
 
   return (
-    <div className={clsx(classes.wrapper, { [classes.activeWrapper]: isAuditActive })}>
-      <div className={classes.display}>
-        <div className={classes.circleBox}>
+    <div className={clsx(styles.wrapper, { [styles.activeWrapper]: isAuditActive })}>
+      <div className={styles.display}>
+        <div className={styles.circleBox}>
           <CircularWithValueLabel progressValue={completeJobsPercentage} />
         </div>
-        <div className={classes.displayTitle}>
-          <div className={classes.name}>{audit.name}</div>
-          <div className={classes.description}>{audit.description}</div>
+        <div className={styles.displayTitle}>
+          <div className={styles.name}>{audit.name}</div>
+          <div className={styles.description}>{audit.description}</div>
         </div>
       </div>
-      <div className={classes.actions}>
+      <div className={styles.actions}>
         <IconButton
           color={isAuditActive ? 'info' : 'default'}
           aria-label="select-audit"

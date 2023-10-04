@@ -4,14 +4,9 @@ import axios, {
 } from 'axios';
 import axiosRetry from 'axios-retry'
 
-// const isDev = process.env.NODE_ENV === 'development'
-// const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-// : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
-
-const baseApiURL = {
-  v1: 'https://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022',
-  // v2: 'http://pravosleva.ru:9000/express-helper/pravosleva-bot-2021/autopark-2022'
-}
+const isDev = process.env.NODE_ENV === 'development'
+const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
+  : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
 
 enum EControllers {
   CHECK_USER = 'check-user',
@@ -52,7 +47,7 @@ class httpClientSingletone {
       );
     }
     this.api = axios.create({
-      baseURL: baseApiURL.v1,
+      baseURL: baseApiURL,
       validateStatus: (_s: number) => true,
       withCredentials: true,
     })
