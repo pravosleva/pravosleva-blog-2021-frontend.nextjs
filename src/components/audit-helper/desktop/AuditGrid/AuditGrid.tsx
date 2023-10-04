@@ -142,7 +142,7 @@ export const AuditGrid = ({
               <div className={clsx(styles.auditListWrapper)}>
                 {
                   audits.map((audit) => (
-                    <div className={styles.auditItem}>
+                    <div className={styles.auditItem} key={audit.id}>
                       <AuditGridItem
                         audit={audit}
                         isEditable={isEditable}

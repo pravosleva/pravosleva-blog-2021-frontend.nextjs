@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { memo, useCallback, useState, useRef } from 'react'
+import { memo, useCallback, useState, useRef, useEffect } from 'react'
 import { /* VariantType, */ useSnackbar } from 'notistack'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -42,6 +42,7 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import { useWindowSize } from '~/hooks/useWindowSize'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import { useIsInViewport } from '~/hooks/useIsInViewport'
 
 export const ToDo2023 = memo(() => {
   const router = useRouter()
@@ -183,11 +184,22 @@ export const ToDo2023 = memo(() => {
 
   const { isMobile, isDesktop } = useWindowSize()
 
-  const desktopPageEndRef = useRef(null)
+  const desktopPageContentTopRef = useRef(null)
+  const desktopPageContentBottomRef = useRef(null)
+
+  const isBottomInViewport = useIsInViewport({ elm: desktopPageContentBottomRef.current });
+  const [isScrollToBottomVisible, setIsScrollToBottomVisible] = useState<boolean>(false)
+  useEffect(() => {
+    console.log(`isBottomInViewport= ${isBottomInViewport}`)
+    setTimeout(() => {
+      setIsScrollToBottomVisible(!isBottomInViewport)
+    }, 0)
+    
+  }, [isBottomInViewport, typeof window, localAudits.length])
   const scrollToBottom = useCallback(() => {
     try {
       // @ts-ignore
-      desktopPageEndRef.current?.scrollIntoView({ behavior: "smooth" })
+      desktopPageContentTopRef.current?.scrollIntoView({ behavior: "smooth" })
     } catch (err) {
       console.log(err)
     }
@@ -363,7 +375,7 @@ export const ToDo2023 = memo(() => {
             sx={{ pt: 12, pb: 0 }}
           >
             <Typography variant="h1" component="h1" gutterBottom className='truncate'>
-              AuditList <IconButton
+              AuditList {isScrollToBottomVisible && <IconButton
                 aria-label="more"
                 id="to-bottom"
                 // aria-controls={isMenuOpened ? 'long-menu' : undefined}
@@ -373,8 +385,9 @@ export const ToDo2023 = memo(() => {
                 color='primary'
               >
                 <ArrowDownwardIcon />
-              </IconButton>
+              </IconButton>}
             </Typography>
+            <div ref={desktopPageContentTopRef} />
             <AuditGrid
               audits={localAudits}
               onRemoveAudit={handleRemoveAudit}
@@ -388,7 +401,7 @@ export const ToDo2023 = memo(() => {
 
               isEditable={true}
             />
-            <div ref={desktopPageEndRef} />
+            <div ref={desktopPageContentBottomRef} />
           </Stack>
         </div>
       </>
