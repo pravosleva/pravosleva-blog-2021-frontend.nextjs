@@ -20,14 +20,18 @@ const projects = [
       as: '/subprojects/todo',
     },
   },
-  // {
-  //   id: 2,
-  //   title: 'Two',
-  //   img: {
-  //     src: '/static/img/coding.jpg',
-  //     alt: 'loading...',
-  //   },
-  // },
+  {
+    id: 2,
+    title: 'SEO exp',
+    img: {
+      src: '/static/img/projects/blog.jpg',
+      alt: 'loading...',
+    },
+    link: {
+      href: '/blog',
+      as: '/blog',
+    },
+  },
 ]
 
 export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }) => {

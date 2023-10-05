@@ -56,6 +56,10 @@ TodoOnline.getInitialProps = wrapper.getInitialPageProps(
       isOk: true,
     }
 
+    // -- NOTE: Disable autosync
+    // store.dispatch(autoSyncDisable())
+    // --
+
     // const result = await autoparkHttpClient.checkJWT({
     //   tested_chat_id: tg_chat_id,
     // })

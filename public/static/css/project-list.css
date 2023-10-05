@@ -56,17 +56,21 @@
 
   transition: .3s;
 }
-.projects-grid--item > figure:hover figcaption{
-  color: #fff;
+.projects-grid--item > figure:hover figcaption {
+  /* color: #fff; */
   --_i: 0%;
 }
 .projects-grid--item > figure:hover img {
   transform: scale(1.2);
 }
+
+.projects-grid--item > figure figcaption span {
+  color: #fff;
+}
 @supports not (-webkit-mask-clip: text) {
   .projects-grid--item > figure figcaption {
    -webkit-mask: none;
-   color: #fff;
+   /* color: #fff; */
   }
 }
 
@@ -82,7 +86,7 @@
 }
 
 @media(max-width: 600px) {
-  .projects-grid--item > figure figcaption{
+  .projects-grid--item > figure figcaption {
     --_i: 0%;
   }
 }

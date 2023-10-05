@@ -14,12 +14,17 @@ export type TState = {
   localAudits: TAudit[];
   online: {
     lastVisitedPages: TLastVisitedPage[];
-  },
+    isAutoSyncWithLocalEnabled: boolean;
+  };
+  backupInfo?: {
+    ts: number;
+  };
 }
 export const initialState: TState = {
   localAudits: [],
   online: {
-    lastVisitedPages: []
+    lastVisitedPages: [],
+    isAutoSyncWithLocalEnabled: false,
   },
 }
 
@@ -44,8 +49,20 @@ export const todo2023Slice: any = createSlice({
   name: 'todo2023',
   initialState,
   reducers: {
-    setLocalAudits: (state: any, action: any) => {
+    autoSyncToggle: (state: TState) => {
+      state.online.isAutoSyncWithLocalEnabled = !state.online.isAutoSyncWithLocalEnabled
+    },
+    autoSyncDisable: (state: TState) => {
+      state.online.isAutoSyncWithLocalEnabled = false
+    },
+
+    setLocalAudits: (state: TState, action: any) => {
       state.localAudits = action.payload
+      const ts = new Date().getTime()
+
+      state.backupInfo = {
+        ts,
+      }
     },
     fixVisitedPage: (state: TState, action: { payload: { tg_chat_id: number; } }) => {
       if (!state.online) {
@@ -92,6 +109,9 @@ export const todo2023Slice: any = createSlice({
     
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
         state.localAudits[targetAuditIndex].comment = comment
+        state.backupInfo = {
+          ts: tsUpdate,
+        }
       } catch (err) {
         console.warn(err)
       }
@@ -132,6 +152,9 @@ export const todo2023Slice: any = createSlice({
           state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs = state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs.map((sj) => ({ ...sj, status: ESubjobStatus.IN_PROGRESS }))
         }
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
+        state.backupInfo = {
+          ts: tsUpdate,
+        }
     
         console.log(`tsUpdate ${tsUpdate}`)
         console.log(`nextStatus ${nextStatus}`)
@@ -177,6 +200,9 @@ export const todo2023Slice: any = createSlice({
           state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].status = EJobStatus.IN_PROGRESS
         }
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
+        state.backupInfo = {
+          ts: tsUpdate,
+        }
       } catch (err) {
         console.warn(err)
       }
@@ -195,8 +221,10 @@ export const todo2023Slice: any = createSlice({
         if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
 
         state.localAudits.splice(targetAuditIndex, 1)
-
-        // this.saveDataToLS()
+        const ts = new Date().getTime()
+        state.backupInfo = {
+          ts,
+        }
       } catch (err) {
         console.warn(err)
       }
@@ -249,6 +277,10 @@ export const todo2023Slice: any = createSlice({
           tsCreate,
           tsUpdate: tsCreate,
         })
+        const ts = new Date().getTime()
+        state.backupInfo = {
+          ts,
+        }
       } catch (err) {
         console.warn(err)
       }
@@ -290,6 +322,9 @@ export const todo2023Slice: any = createSlice({
           tsUpdate: tsCreate,
         })
         state.localAudits[targetAuditIndex].tsUpdate = tsCreate
+        state.backupInfo = {
+          ts: tsCreate,
+        }
       } catch (err) {
         console.warn(err)
       }
@@ -324,6 +359,7 @@ export const todo2023Slice: any = createSlice({
         const tsUpdate = new Date().getTime()
 
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
+        state.backupInfo = { ts: tsUpdate }
       } catch (err) {
         console.warn(err)
       }
@@ -364,6 +400,7 @@ export const todo2023Slice: any = createSlice({
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].status = EJobStatus.IN_PROGRESS
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].tsUpdate = tsUpdate
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
+        state.backupInfo = { ts: tsUpdate }
       } catch (err) {
         console.warn(err)
       }
@@ -406,6 +443,7 @@ export const todo2023Slice: any = createSlice({
   
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].tsUpdate = tsUpdate
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
+        state.backupInfo = { ts: tsUpdate }
       } catch (err) {
         console.warn(err)
       }
@@ -420,6 +458,7 @@ export const todo2023Slice: any = createSlice({
       } = action
 
       state.localAudits = audits
+      state.backupInfo = { ts: new Date().getTime() }
     },
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
@@ -447,6 +486,8 @@ export const {
 
   replaceAudits,
   fixVisitedPage,
+  autoSyncToggle,
+  autoSyncDisable,
 } = todo2023Slice.actions
 
 export const reducer = todo2023Slice.reducer

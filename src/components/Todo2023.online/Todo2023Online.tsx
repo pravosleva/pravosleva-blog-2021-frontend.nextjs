@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   replaceAudits,
   fixVisitedPage,
+  autoSyncToggle,
 } from '~/store/reducers/todo2023'
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
@@ -34,7 +35,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import SaveIcon from '@mui/icons-material/Save'
 import { useLastUpdatedAuditTs } from './hooks/useLastUpdatedAuditTs'
-import { useTimeAgo } from '~/hooks/useTimeAgo'
+// import { useTimeAgo } from '~/hooks/useTimeAgo'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import Link from '~/components/Link';
 import { OneTimeLoginFormBtn } from '../Autopark2022/components/OneTimeLoginFormBtn'
@@ -44,6 +45,10 @@ import { useRouter } from 'next/router'
 // import FolderIcon from '@mui/icons-material/Folder'
 // import MuiLink from '@mui/material/Link'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
+import { getNormalizedDateTime } from '~/utils/timeConverter'
+import SyncIcon from '@mui/icons-material/Sync'
+import { autoSyncDisable } from '~/store/reducers/todo2023'
+import Brightness1Icon from '@mui/icons-material/Brightness1'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -64,12 +69,16 @@ const Logic = ({ room }: TLogicProps) => {
     roomRef.current = Number(router.query.tg_chat_id)
   }, [router.query.tg_chat_id])
   const [isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
-  const [audits] = useStore((store: TSocketMicroStore) => store.audits)
+  const [remoteAudits] = useStore((store: TSocketMicroStore) => store.audits)
   const socketRef = useRef<Socket | null>(null)
   const localAudits = useSelector((store: IRootState) => store.todo2023.localAudits)
   const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
+    // -- NOTE: Disable anyway!
+    dispatch(autoSyncDisable())
+    // --
+
     const socket: Socket = io(NEXT_APP_SOCKET_API_ENDPOINT, {
       reconnection: true,
       transports: ['websocket', 'polling'],
@@ -143,9 +152,8 @@ const Logic = ({ room }: TLogicProps) => {
     setAnchorEl(null);
   }, [])
   // --
-  const handlePush = useCallback(() => {
-    const isConfirmed = window.confirm('⚠️ Удаленный кэш будет перезаписан! Вы уверены?')
-    if (isConfirmed) {
+  const handlePush = useCallback(({ noConfirmMessage }: { noConfirmMessage: boolean }) => () => {
+    const doIt = () => {
       try {
         handleMenuClose()
         if (!socketRef.current) throw new Error('socket err')
@@ -161,6 +169,12 @@ const Logic = ({ room }: TLogicProps) => {
       } catch (err) {
         console.warn(err)
       }
+    }
+
+    if (noConfirmMessage) doIt()
+    else {
+      const isConfirmed = window.confirm('⚠️ Удаленный кэш будет перезаписан! Вы уверены?')
+      if (isConfirmed) doIt()
     }
   }, [useCompare([localAudits])])
   const handleUpdateAuditComment = useCallback(({
@@ -304,16 +318,16 @@ const Logic = ({ room }: TLogicProps) => {
       // groupLog({ spaceName: 'local backup', items: [`Local backup for ${room}`] })
       handleMenuClose()
       dispatch(replaceAudits({
-        audits,
+        audits: remoteAudits,
       }))
       enqueueSnackbar('Local backup saved', { variant: 'success', autoHideDuration: 3000 })
     }
-  }, [useCompare([audits])])
+  }, [useCompare([remoteAudits])])
 
   const { last: lastLocalAudits } = useLastUpdatedAuditTs({ audits: localAudits })
-  const { last: lastRemoteAudits } = useLastUpdatedAuditTs({ audits })
+  const { last: lastRemoteAudits } = useLastUpdatedAuditTs({ audits: remoteAudits })
   // const { timeAgoText: lastRemoteAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastRemoteAudits.tsUpdate.value, delay: 5000 })
-  const { timeAgoText: lastLocalAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastLocalAudits.tsUpdate.value, delay: 5000 })
+  // const { timeAgoText: lastLocalAuditsTsUpdateTimeAgo } = useTimeAgo({ date: lastLocalAudits.tsUpdate.value, delay: 5000 })
 
   const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
@@ -346,6 +360,49 @@ const Logic = ({ room }: TLogicProps) => {
   //   router.push(`/subprojects/todo/${tg_chat_id}`)
   // }, [])
 
+  // -- Automatic restore if necessary
+  const isEmpryRemoteListUpdatedInThisSessionRef = useRef<boolean>(false)
+  const syncToolTimeoutRef = useRef<NodeJS.Timeout>()
+  const lastLocalBackupTime = useSelector((store: IRootState) => store.todo2023.backupInfo?.ts)
+  useEffect(() => {
+    if (isConnected && remoteAudits.length === 0 && !isEmpryRemoteListUpdatedInThisSessionRef.current) {
+      const doIt = () => {
+        if (isOneTimePasswordCorrect) {
+          if (localAudits.length > 0) {
+            const isConfirmed = window.confirm(`🌐 Похоже, удаленный список пуст.\nХотите восстановить его тем что у вас есть${!!lastLocalBackupTime ? ` c ${getNormalizedDateTime(lastLocalBackupTime)}` : ''}?`)
+
+            if (isConfirmed) handlePush({ noConfirmMessage: true })()
+          }
+        }
+      }
+      syncToolTimeoutRef.current = setTimeout(doIt, 5000)
+
+      return () => {
+        if (!!syncToolTimeoutRef.current) clearTimeout(syncToolTimeoutRef.current)
+      }
+    }
+    return 
+  }, [
+    isOneTimePasswordCorrect,
+    remoteAudits.length,
+    localAudits.length,
+    isConnected
+  ])
+  // --
+
+  // -- NOTE: Optional autosync with persist
+  const isAutoSyncEnabled = useSelector((state: IRootState) => state.todo2023.online.isAutoSyncWithLocalEnabled)
+  useEffect(() => {
+    if (isOneTimePasswordCorrect && isAutoSyncEnabled)
+      dispatch(replaceAudits({
+        audits: remoteAudits,
+      }))
+  }, [isAutoSyncEnabled, useCompare([remoteAudits])])
+  const autoSyncOptionToggle = useCallback(() => {
+    dispatch(autoSyncToggle())
+  }, [])
+  // --
+
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
@@ -365,8 +422,19 @@ const Logic = ({ room }: TLogicProps) => {
                 width: '100%',
               }}
             >
-              <Typography variant="h5" display="block" gutterBottom>
-                {isConnected ? '🟢' : '🔴'} {room}
+              <Typography
+                variant="h5"
+                display="block"
+                // gutterBottom
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}
+              >
+                <Brightness1Icon color={isConnected ? 'success' : 'error'} />
+                <span>{room}</span>
               </Typography>
               {/*
               <Button
@@ -377,7 +445,18 @@ const Logic = ({ room }: TLogicProps) => {
                 onClick={handlePush}
               >Push from LS (Save)</Button>
             */}
-              <IconButton
+              <div>
+                <IconButton
+                  aria-label="autosync-toggler"
+                  id="autosync-toggler"
+                  // aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                  // aria-expanded={isMenuOpened ? 'true' : undefined}
+                  // aria-haspopup="true"
+                  onClick={autoSyncOptionToggle}
+                >
+                  <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
+                </IconButton>
+                <IconButton
                 aria-label="more"
                 id="long-button"
                 aria-controls={isMenuOpened ? 'long-menu' : undefined}
@@ -405,14 +484,20 @@ const Logic = ({ room }: TLogicProps) => {
                 <MenuList>
                   {
                     isOneTimePasswordCorrect && (
-                      <MenuItem
-                        selected={false}
-                        onClick={handlePush}
-                        disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
-                      >
-                        <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
-                        <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
-                      </MenuItem>
+                      <>
+                        <MenuItem selected={false} onClick={autoSyncOptionToggle}>
+                          <ListItemIcon><SyncIcon fontSize="small" color={isAutoSyncEnabled ? 'success' : 'error'} /></ListItemIcon>
+                          <Typography variant="inherit">Autosync {isAutoSyncEnabled ? 'ON' : 'Off'}</Typography>
+                        </MenuItem>
+                        <MenuItem
+                          selected={false}
+                          onClick={handlePush({ noConfirmMessage: false })}
+                          disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
+                        >
+                          <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
+                          <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
+                        </MenuItem>
+                      </>
                     )
                   }
                   <CopyToClipboard
@@ -427,10 +512,10 @@ const Logic = ({ room }: TLogicProps) => {
                   <MenuItem
                     selected={false}
                     onClick={handleLocalBackup}
-                    disabled={audits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
+                    disabled={isAutoSyncEnabled || (remoteAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value)}
                   >
                     <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
-                    <Typography variant="inherit">Local backup ({audits.length}){!!lastLocalAuditsTsUpdateTimeAgo ? ` ${lastLocalAuditsTsUpdateTimeAgo}` : ''}</Typography>
+                    <Typography variant="inherit">Local backup ({remoteAudits.length})</Typography>
                   </MenuItem>
                   {
                     lastVisitedOnlinePages.length > 0 && (
@@ -457,6 +542,7 @@ const Logic = ({ room }: TLogicProps) => {
                   }
                 </MenuList>
               </Menu>
+              </div>
             </Box>
           </Stack>
 
@@ -469,7 +555,7 @@ const Logic = ({ room }: TLogicProps) => {
             <em>Updated {lastRemoteAuditsTsUpdateTimeAgo}</em>
           </Box> */}
           <AuditList
-            audits={audits}
+            audits={remoteAudits}
             onRemoveAudit={handleRemoveAudit}
             onAddJob={handleAddJob}
             onAddSubjob={handleAddSubjob}
