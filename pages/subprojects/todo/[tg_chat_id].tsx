@@ -37,9 +37,7 @@ export default function TodoOnline({
         ? (
           <ResponsiveBlock
             isLimited
-            style={{
-              paddingBottom: '30px',
-            }}
+            // style={{ paddingBottom: '30px' }}
           >
             <Todo2023Online room={chat_id} />
           </ResponsiveBlock>
