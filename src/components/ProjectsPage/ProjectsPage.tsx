@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 // import classes from './ProjectsPage.module.scss'
@@ -29,15 +30,19 @@ const projects = [
   // },
 ]
 
-const getRandomValue = ({ items }: { items: any[] }) => {
-  if (!Array.isArray(items)) return 'getRandomValue ERR: Incorrect arg'
-  const randomIndex = Math.floor(Math.random() * items.length)
-
-  return items[randomIndex]
-}
-
-
 export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }) => {
+  const getRandomValue = ({ items }: { items: any[] }) => {
+    if (!Array.isArray(items)) return 'getRandomValue ERR: Incorrect arg'
+    const randomIndex = Math.floor(Math.random() * items.length)
+  
+    return items[randomIndex]
+  }
+  
+  const [headerText, setHeaderText] = useState<string>('')
+  useEffect(() => {
+    setHeaderText(`${getRandomValue({ items: ['🐱', '😸', '😼', '🐾'] })} ${getRandomValue({ items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'] })}`)
+  }, [])
+
   return (
     <>
     <ResponsiveBlock
@@ -70,7 +75,7 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
             sx={{ pb: 2 }}
             className='truncate'
           >
-            {getRandomValue({ items: ['🐱', '😸', '😼', '🐾'] })} {getRandomValue({ items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'] })}
+            {headerText}
           </Typography>
           {/* <div>check it out...</div> */}
           <div

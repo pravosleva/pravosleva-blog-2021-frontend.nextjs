@@ -80,3 +80,9 @@
 .projects-grid--item > figure:hover span.v2 {
   transform: scale(1.2);
 }
+
+@media(max-width: 600px) {
+  .projects-grid--item > figure figcaption{
+    --_i: 0%;
+  }
+}
