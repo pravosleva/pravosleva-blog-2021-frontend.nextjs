@@ -22,6 +22,7 @@ export const ProjectItem = ({ title, img, link }: TProps) => {
             style={{
               backgroundImage: `url(${img.src})`,
               backgroundPosition: 'center',
+              backgroundSize: 'cover',
               borderRadius: 'inherit',
             }}
           >
