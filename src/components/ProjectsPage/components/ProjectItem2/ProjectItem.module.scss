@@ -15,9 +15,12 @@
   // border: 1px solid red;
   position: relative;
   // width: 320px;
-  padding: 3em;
+  padding: 3em 2em;
   color: #fff;
   height: 100%;
+}
+.card p {
+  margin-bottom: 0px;
 }
 
 @media(max-width: #{$sm}px) {

@@ -275,7 +275,9 @@ code,
 }
 .article-wrapper::after {
   content: '';
+
   /* background: url(${article.bgSrc}); */
+
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

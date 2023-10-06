@@ -87,7 +87,6 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
               {!!article.original.description ? (
                 <div className="description-markdown">
                   <ReactMarkdown
-                    
                     renderers={baseRenderers}
                     // @ts-ignore
                     plugins={[gfm, { singleTilde: false }]}
@@ -117,30 +116,12 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
       )}
       
       <style jsx>{`
-        .article-wrapper {
-          width: 100%;
-          background: linear-gradient(rgba(255, 255, 255, 1), transparent);
-          display: block;
-          position: relative;
-        }
         .article-wrapper::after {
           content: '';
           background: url(${!!article.bg ? article.bg.src : '/static/img/blog/coming-soon-v3.jpg'});
           background-repeat: no-repeat;
           background-size: cover;
           background-position: center;
-          filter: grayscale(1);
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          position: absolute;
-          z-index: -1;
-        }
-        @media (min-width: ${breakpoints.sm}px) {
-          .article-wrapper::after {
-            border-radius: 10px;
-          }
         }
       `}</style>
     </>
