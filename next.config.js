@@ -15,6 +15,8 @@ const env = dotenv.parse(fs.readFileSync(envFileName))
 // const withSass = require('@zeit/next-sass')
 // const withBundleAnalyzer = require('@zeit/next-bundle-analyzer')
 
+const isDev = process.env.NODE_ENV === 'development'
+
 const nextConfig = {
   // cssModules: true,
   // cssLoaderOptions: {
@@ -25,10 +27,16 @@ const nextConfig = {
   // poweredByHeader: false,
   // generateEtags: false,
   // sassOptions: {
-  //   includePaths: [path.join(__dirname, 'src')],
+  //   localIdentName: "next-cfg-0__[folder]__[name]__[local]___[hash:base64:5]",
+  //   sourceMap: true,
+  //   outputStyle: 'compressed',
+  //   includePaths: [
+  //     'node_modules',
+  //     path.resolve(__dirname, '/src'),
+  //   ],
   // },
 
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: isDev,
   pwa: {
     dest: 'public', // NOTE: By default to .next
     runtimeCaching,
@@ -60,7 +68,7 @@ const nextConfig = {
             loader: "css-loader",
             options: {
               modules: {
-                localIdentName: "next-cfg-2__[folder]__[name]__[local]___[hash:base64:5]",
+                localIdentName: isDev ? "next-cfg-2__[folder]__[name]__[local]___[hash:base64:5]" : "[name]__[local]___[hash:base64:5]",
               },
             },
           },
@@ -69,8 +77,8 @@ const nextConfig = {
             loader: "sass-loader",
             options: {
               sassOptions: {
-                localIdentName: "next-cfg-3__[folder]__[name]__[local]___[hash:base64:5]",
-                sourceMap: true,
+                localIdentName: isDev ? "next-cfg-3__[folder]__[name]__[local]___[hash:base64:5]" : "[name]__[local]___[hash:base64:5]",
+                sourceMap: isDev,
                 outputStyle: 'compressed',
                 includePaths: [
                   'node_modules',

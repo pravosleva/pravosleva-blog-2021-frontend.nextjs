@@ -299,7 +299,7 @@ code,
   flex-direction: column;
   justify-content: space-between;
 }
-@media (min-width: 768px) {
+@media (min-width: 601px) {
   .article-wrapper,
   .article-wrapper::after {
     border-radius: 10px;

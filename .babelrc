@@ -1,14 +1,19 @@
 {
   "presets": [
     [
-      "next/babel"
+      "next/babel",
+      {
+        "styled-jsx": {
+          "plugins": ["styled-jsx-plugin-sass"]
+        }
+      },
     ]
   ],
   "plugins": [
     // [
     //   "@dr.pogodin/babel-plugin-react-css-modules",
     //   {
-    //     "generateScopedName": "babel__[name]__[local]___[hash:base64:5]"
+    //     "generateScopedName": "babel-cfg__[name]__[local]___[hash:base64:5]"
     //   }
     // ],
     ["styled-components", { "ssr": true }],

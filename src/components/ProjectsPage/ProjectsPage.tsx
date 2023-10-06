@@ -50,7 +50,7 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
 
   return (
     <>
-    <ResponsiveBlock
+      <ResponsiveBlock
         isPaddedMobile
         isLimited
         style={{
@@ -59,7 +59,12 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
       >
         <BreadCrumbs
           t={t}
-          legend={[]}
+          legend={[
+            {
+              labelCode: 'HOME',
+              noTranslate: false
+            }
+          ]}
         />
       </ResponsiveBlock>
     

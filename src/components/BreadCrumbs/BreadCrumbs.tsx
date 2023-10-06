@@ -13,7 +13,6 @@ export namespace NBreadCrumbs {
   }
 }
 
-
 export const BreadCrumbs = ({
   t,
   // lastLabel,
@@ -22,13 +21,6 @@ export const BreadCrumbs = ({
   return (
     <div className="bx_breadcrumbs">
       <ul itemScope itemType="http://schema.org/BreadcrumbList">
-        <li itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem">
-          <Link href="/" as="/">
-            <a itemProp="item">
-              {t('HOME')}
-            </a>
-          </Link>
-        </li>
         {
           legend.map(({ link, labelCode, noTranslate }) => {
             if (!link) return (

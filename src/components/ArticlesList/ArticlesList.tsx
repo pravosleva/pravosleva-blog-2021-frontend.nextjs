@@ -28,10 +28,11 @@ export const ArticlesList = withTranslator(({ t, list, searchQueryTitle, isBlogP
   // }, [useCompare([searchQueryTitle])])
 
   const legend = useMemo(() => {
-    let defaultResult: NBreadCrumbs.TLegendItem[] = [{ labelCode: 'BLOG' }]
+    let defaultResult: NBreadCrumbs.TLegendItem[] = [{ labelCode: 'HOME', link:'/', noTranslate: false }, { labelCode: 'BLOG' }]
     if (isBlogPage) return defaultResult
 
     defaultResult = [
+      { labelCode: 'HOME', link:'/', noTranslate: false },
       {
         labelCode: 'BLOG',
         link: '/blog',

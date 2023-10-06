@@ -1,3 +1,5 @@
+@import '~/mui/scss-vars/monitors.scss';
+
 .projects-grid--item-v2 {
   // border: 1px dashed red;
 
@@ -15,16 +17,22 @@
   // width: 320px;
   padding: 3em;
   color: #fff;
-  transform: rotateY(30deg) rotateX(15deg);
-  transform-style: preserve-3d;
-  transition: transform 1s;
-  
-  &:hover {
-    // transform: rotateY(-30deg) rotateX(-15deg);
-    transform: rotateY(0deg) rotateX(0deg);
-  }
-
   height: 100%;
+}
+
+@media(max-width: #{$sm}px) {
+  .card {}
+}
+@media(min-width: calc(#{$sm + 1}px + 1px)) {
+  .card {
+    transform: rotateY(30deg) rotateX(15deg);
+    transform-style: preserve-3d;
+    transition: transform 1s;
+
+    &:hover {
+      transform: rotateY(0deg) rotateX(0deg);
+    }
+  }
 }
 
 .layers {

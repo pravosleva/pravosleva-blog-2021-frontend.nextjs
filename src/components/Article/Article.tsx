@@ -36,6 +36,11 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
               // lastLabel={article?.original.title}
               legend={[
                 {
+                  link:'/',
+                  labelCode: 'HOME',
+                  noTranslate: false
+                },
+                {
                   labelCode: 'BLOG',
                   link: '/blog',
                 },
