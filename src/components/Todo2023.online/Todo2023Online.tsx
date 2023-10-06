@@ -337,7 +337,7 @@ const Logic = ({ room }: TLogicProps) => {
 
   useEffect(() => {
     if (isDev) {
-      dispatch(setIsOneTimePasswordCorrect(true))
+      // dispatch(setIsOneTimePasswordCorrect(true))
       return
     }
     autoparkHttpClient.checkJWT({
@@ -665,7 +665,7 @@ const Logic = ({ room }: TLogicProps) => {
       </>
     )
     case isDesktop: return (
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <ResponsiveBlock
           style={{
             position: 'fixed',
@@ -729,6 +729,7 @@ const Logic = ({ room }: TLogicProps) => {
             </div>
           </div>
         </ResponsiveBlock>
+        
         <AuditGrid
           onAddNewAudit={handleAddNewAudit}
           audits={remoteAudits}
@@ -741,6 +742,24 @@ const Logic = ({ room }: TLogicProps) => {
           isEditable={isOneTimePasswordCorrect}
           onUpdateAuditComment={handleUpdateAuditComment}
         />
+        
+        {
+          isBrowser && !isOneTimePasswordCorrect && (
+            <div
+              style={{
+                marginTop: 'auto',
+                position: 'sticky',
+                bottom: '0px',
+                zIndex: 2,
+                padding: '16px',
+              }}
+              className='backdrop-blur--lite'
+            >
+              {/* <pre>{JSON.stringify({ isOneTimePasswordCorrect, isBrowser }, null, 2)}</pre> */}
+              <OneTimeLoginFormBtn chat_id={String(room)} />
+            </div>
+          )
+        }
       </div>
     )
     default: return (
