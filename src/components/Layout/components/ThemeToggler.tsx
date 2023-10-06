@@ -26,7 +26,7 @@ export const ThemeToggler = withTranslator(({ t }: any) => {
           <i className={`${themeIcon} theme-toggler`}></i>
         </span>
       </li>
-      <style jsx>{`
+      {/* <style jsx>{`
         @media (min-width: 768px) {
           .min-width-span {
             min-width: 47px;
@@ -45,7 +45,7 @@ export const ThemeToggler = withTranslator(({ t }: any) => {
             margin-right: 10px;
           }
         }
-      `}</style>
+      `}</style> */}
     </>
   )
 })

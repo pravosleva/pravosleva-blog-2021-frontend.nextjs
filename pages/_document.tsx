@@ -114,7 +114,8 @@ MyDocument.getInitialProps = async (ctx) => {
       originalRenderPage({
         // enhanceApp: (App: any) => (props) => <App emotionCache={cache} {...props} />,
         // enhanceApp: (App) => (props) => styledSheet.collectStyles(<App {...props} />),
-        enhanceApp: (App) => (props) => styledSheet.collectStyles(muiSheet.collect(<App {...props} />)),
+        // enhanceApp: (App) => (props) => styledSheet.collectStyles(muiSheet.collect(<App {...props} />)),
+        enhanceApp: (App: any) => (props) => styledSheet.collectStyles(muiSheet.collect(<App emotionCache={cache} {...props} />)),
       });
 
     const initialProps = await Document.getInitialProps(ctx);
@@ -134,10 +135,7 @@ MyDocument.getInitialProps = async (ctx) => {
       // initialProps.styles,
       styledSheet.getStyleElement(),
       muiSheet.getStyleElement(),
-      
       ...emotionStyleTags,
-      // {muiSheet.getStyleElement()},
-      // {styledSheet.getStyleElement()}
     ]
     const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
       <script

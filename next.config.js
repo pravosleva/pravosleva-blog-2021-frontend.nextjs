@@ -2,6 +2,8 @@ const webpack = require('webpack')
 const path = require('path')
 const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
+// NOTE: https://github.com/PaulLeCam/react-leaflet/issues/881
+// const withTM = require("next-transpile-modules")([])
 
 const fs = require('fs')
 const dotenv = require('dotenv')
@@ -16,12 +18,15 @@ const env = dotenv.parse(fs.readFileSync(envFileName))
 const nextConfig = {
   // cssModules: true,
   // cssLoaderOptions: {
-  //   localIdentName: '[local]__[hash:base64:5]',
+  //   localIdentName: 'next-cfg-0__[folder]_[local]__[hash:base64:5]',
   //   camelCase: true,
   // },
   // compress: true,
   // poweredByHeader: false,
   // generateEtags: false,
+  // sassOptions: {
+  //   includePaths: [path.join(__dirname, 'src')],
+  // },
 
   productionBrowserSourceMaps: true,
   pwa: {
@@ -43,27 +48,40 @@ const nextConfig = {
     config.plugins.push(new webpack.EnvironmentPlugin(['NODE_ENV']))
 
     // SASS support:
-    // config.module.rules = [
-    //   ...config.module.rules,
-    //   {
-    //     test: /\.scss$/,
-    //     use: [
-    //       {
-    //         loader: 'sass-loader',
-    //         options: {
-    //           sassOptions: {
-    //             sourceMap: true,
-    //             outputStyle: 'compressed',
-    //             includePaths: [
-    //               'node_modules',
-    //               path.resolve(__dirname, '/common/styled-mui/template'),
-    //             ],
-    //           },
-    //         },
-    //       },
-    //     ],
-    //   },
-    // ];
+    config.module.rules = [
+      ...config.module.rules,
+      {
+        test: /\.(css|scss$)/,
+        use: [
+          // NOTE: Step 1. Creates style nodes from JS strings
+          { loader: "style-loader" },
+          // NOTE: Step 2. Translates CSS into CommonJS
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName: "next-cfg-2__[folder]__[name]__[local]___[hash:base64:5]",
+              },
+            },
+          },
+          // NOTE: Step 3. Compiles Sass to CSS
+          {
+            loader: "sass-loader",
+            options: {
+              sassOptions: {
+                localIdentName: "next-cfg-3__[folder]__[name]__[local]___[hash:base64:5]",
+                sourceMap: true,
+                outputStyle: 'compressed',
+                includePaths: [
+                  'node_modules',
+                  path.resolve(__dirname, '/src'),
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ];
 
     return config
   },

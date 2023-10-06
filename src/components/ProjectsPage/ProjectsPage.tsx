@@ -3,7 +3,7 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 // import classes from './ProjectsPage.module.scss'
 import { Stack, Typography } from '@mui/material'
-import { ProjectItem } from './components'
+import { ProjectItem } from './components/ProjectItem2'
 import { BreadCrumbs } from '../BreadCrumbs'
 import { withTranslator } from '~/hocs/withTranslator'
 
@@ -11,6 +11,7 @@ const projects = [
   {
     id: 1,
     title: 'AuditList 2023',
+    description: 'We can do it better!',
     img: {
       src: '/static/img/projects/audit-v2.jpg',
       alt: 'loading...',
@@ -52,6 +53,9 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
     <ResponsiveBlock
         isPaddedMobile
         isLimited
+        style={{
+          paddingBottom: '30px',
+        }}
       >
         <BreadCrumbs
           t={t}
@@ -85,13 +89,20 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
           <div
             style={{
               width: '100%',
+              paddingBottom: '50px',
             }}
             className='projects-grid'
           >
             {
-              projects.map(({ id, title, img, link }) => {
+              projects.map(({ id, title, description, img, link }) => {
                 return (
-                  <ProjectItem key={id} title={title} img={img} link={link} />
+                  <ProjectItem
+                    key={id}
+                    title={title}
+                    img={img}
+                    link={link}
+                    description={description}
+                  />
                 )
               })
             }

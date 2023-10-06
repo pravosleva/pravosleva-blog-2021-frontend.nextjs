@@ -99,7 +99,7 @@ const Logic = ({ room }: TLogicProps) => {
       }, ({ data }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
         groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb`, items: [data] })
         setStore({ audits: data.audits })
-        if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
+        // if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
       })
     }
     socket.on('connect', onConnectListener)

@@ -21,6 +21,7 @@
     "~": "./"
   },
   "dependencies": {
+    "@dr.pogodin/babel-plugin-react-css-modules": "^6.11.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.4.1",
     "@emotion/server": "latest",
@@ -38,6 +39,7 @@
     "better-module-alias": "^1.2.1",
     "body-parser": "^1.20.2",
     "clsx": "^1.1.1",
+    "css-loader": "^6.8.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-request-id": "^3.0.0",
@@ -73,12 +75,15 @@
     "redux-persist": "^6.0.0",
     "redux-symbiote": "^3.4.0",
     "remark-gfm": "1.x",
-    "sass": "^1.68.0",
+    "sass": "^1.69.0",
+    "sass-loader": "^13.3.2",
     "slugify": "^1.6.0",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
+    "style-loader": "^3.3.3",
     "styled-components": "^6.0.8",
-    "use-sync-external-store": "^1.2.0"
+    "use-sync-external-store": "^1.2.0",
+    "webpack": "5.x"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Button, TextField } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useForm, RegisterOptions as TRegisterOptions } from "react-hook-form"
@@ -54,21 +54,21 @@ export const AddNewBtn = ({
   });
 
   const [isOpened, setIsOpened] = useState(false);
-  const handleClickOpen = () => {
+  const handleClickOpen = useCallback(() => {
     setIsOpened(true)
-  };
-  const handleClose = () => {
+  }, [setIsOpened]);
+  const handleClose = useCallback(() => {
     setIsOpened(false)
-  };
-  const handleSuccess = (vals: any) => {
+  }, [setIsOpened]);
+  const handleSuccess = useCallback((vals: any) => {
     // console.log(formState)
     cb.onSuccess(vals)
     setIsOpened(false)
     reset()
-  }
-  const handleError = (arg: any) => {
+  }, [cb, setIsOpened, reset])
+  const handleError = useCallback((arg: any) => {
     cb.onError(arg)
-  }
+  }, [cb])
 
   return (
     <>
