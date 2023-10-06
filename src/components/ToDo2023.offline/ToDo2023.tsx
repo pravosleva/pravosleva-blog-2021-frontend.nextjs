@@ -417,7 +417,7 @@ export const ToDo2023 = memo(() => {
                 <span>
                   <Button
                     size='small'
-                    // endIcon={<ArrowForwardIcon />}
+                    endIcon={<ArrowForwardIcon />}
                     variant='outlined'
                     color='primary'
                     component={Link}
@@ -434,9 +434,9 @@ export const ToDo2023 = memo(() => {
                   <span>
                     <Button
                       size='small'
-                      // endIcon={<ArrowForwardIcon />}
-                      // variant='outlined'
-                      variant='text'
+                      endIcon={<ArrowForwardIcon />}
+                      variant='outlined'
+                      // variant='text'
                       color='primary'
                       component={Link}
                       noLinkStyle

@@ -15,4 +15,9 @@ export const list: {[key: string]: TArticleTools} = {
     brief: 'Hot to make fetchRetry with JS vanilla',
     bg,
   },
+  'js-vanilla-retryable-http-client-on-generators-sample': {
+    id: '651ece106917cd0d733cddb5',
+    brief: 'Fetch retry sample',
+    bg,
+  },
 }

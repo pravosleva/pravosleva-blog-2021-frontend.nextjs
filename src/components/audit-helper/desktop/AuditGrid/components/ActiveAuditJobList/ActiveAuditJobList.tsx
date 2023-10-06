@@ -57,9 +57,11 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
   // const externalStyles = useExternalGridStyles()
   const [activeAuditId, _setStore] = useStore((store: TDesktopAuditState) => store.activeAuditId)
   const targetJobs = useMemo<IJob[]>(() => {
+    if (!activeAuditId) return []
+
     try {
       const targetAuditIndex = audits.findIndex(({ id }) => id === activeAuditId)
-      if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
+      if (targetAuditIndex === -1) throw new Error('ERR1 Oops... Audit not found!')
 
       return audits[targetAuditIndex].jobs
     } catch (err) {
@@ -68,9 +70,11 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
     }
   }, [activeAuditId, useCompare([audits])])
   const auditTsUpdate = useMemo<number>(() => {
+    if (!activeAuditId) return 0
+
     try {
       const targetAuditIndex = audits.findIndex(({ id }) => id === activeAuditId)
-      if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
+      if (targetAuditIndex === -1) throw new Error('ERR2 Oops... Audit not found!')
 
       return audits[targetAuditIndex].tsUpdate
     } catch (err) {
@@ -79,9 +83,11 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
     }
   }, [activeAuditId, useCompare([audits])])
   const activeAuditComment = useMemo<string>(() => {
+    if (!activeAuditId) return ''
+
     try {
       const targetAuditIndex = audits.findIndex(({ id }) => id === activeAuditId)
-      if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
+      if (targetAuditIndex === -1) throw new Error('ERR3 Oops... Audit not found!')
 
       return audits[targetAuditIndex].comment || ''
     } catch (err) {

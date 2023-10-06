@@ -12,7 +12,7 @@ import {
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ useSnackbar } from 'notistack'
-import { /* AddNewBtn, */ AddNewBtn, AuditList } from '~/components/audit-helper'
+import { /* AddNewBtn, */ AddNewBtn, AuditList, AuditGrid } from '~/components/audit-helper'
 import {
   Box,
   Button,
@@ -49,6 +49,9 @@ import { getNormalizedDateTime } from '~/utils/timeConverter'
 import SyncIcon from '@mui/icons-material/Sync'
 import { autoSyncDisable } from '~/store/reducers/todo2023'
 import Brightness1Icon from '@mui/icons-material/Brightness1'
+import { useWindowSize } from '~/hooks/useWindowSize'
+import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -393,243 +396,361 @@ const Logic = ({ room }: TLogicProps) => {
   // -- NOTE: Optional autosync with persist
   const isAutoSyncEnabled = useSelector((state: IRootState) => state.todo2023.online.isAutoSyncWithLocalEnabled)
   useEffect(() => {
-    if (isOneTimePasswordCorrect && isAutoSyncEnabled)
-      dispatch(replaceAudits({
-        audits: remoteAudits,
-      }))
-  }, [isAutoSyncEnabled, useCompare([remoteAudits])])
+    console.groupCollapsed('- EFF')
+    console.log('isOneTimePasswordCorrect', isOneTimePasswordCorrect)
+    console.log('isAutoSyncEnabled', isAutoSyncEnabled)
+    console.log('remoteAudits.length', remoteAudits.length)
+    if (isOneTimePasswordCorrect && isAutoSyncEnabled && remoteAudits.length > 0) {
+      console.log('sunc: will be set to', remoteAudits)
+      dispatch(replaceAudits({ audits: remoteAudits }))
+    } else {
+      console.log('sync: will be skiped', remoteAudits)
+    }
+    console.groupEnd()
+  }, [isOneTimePasswordCorrect, isAutoSyncEnabled, useCompare([remoteAudits])])
   const autoSyncOptionToggle = useCallback(() => {
     dispatch(autoSyncToggle())
   }, [])
   // --
 
-  return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-        <Container maxWidth="xs">
-          <Stack
-            direction='column'
-            alignItems='start'
-            spacing={2}
-            sx={{ pt: 2, pb: 2 }}
+  const { isMobile, isDesktop } = useWindowSize()
+
+  const MemoizedMenu = useMemo(() => {
+    return (
+      <>
+        <span>
+          <IconButton
+            aria-label="more"
+            id="long-button"
+            aria-controls={isMenuOpened ? 'long-menu' : undefined}
+            aria-expanded={isMenuOpened ? 'true' : undefined}
+            aria-haspopup="true"
+            onClick={handleMenuOpen}
           >
-            <Box
-              sx={{
-                // pt: 2,
-                // pb: 0,
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-              }}
-            >
-              <Typography
-                variant="h5"
-                display="block"
-                // gutterBottom
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: '16px',
-                }}
-              >
-                <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                <span>{room}</span>
-              </Typography>
-              {/*
-              <Button
-                startIcon={<UploadIcon />}
-                fullWidth
-                variant="contained"
-                color='secondary'
-                onClick={handlePush}
-              >Push from LS (Save)</Button>
-            */}
-              <div>
-                <IconButton
-                  aria-label="autosync-toggler"
-                  id="autosync-toggler"
-                  // aria-controls={isMenuOpened ? 'long-menu' : undefined}
-                  // aria-expanded={isMenuOpened ? 'true' : undefined}
-                  // aria-haspopup="true"
-                  onClick={autoSyncOptionToggle}
-                >
-                  <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
-                </IconButton>
-                <IconButton
-                aria-label="more"
-                id="long-button"
-                aria-controls={isMenuOpened ? 'long-menu' : undefined}
-                aria-expanded={isMenuOpened ? 'true' : undefined}
-                aria-haspopup="true"
-                onClick={handleMenuOpen}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="long-menu"
-                MenuListProps={{
-                  'aria-labelledby': 'long-button',
-                }}
-                anchorEl={anchorEl}
-                open={isMenuOpened}
-                onClose={handleMenuClose}
-                PaperProps={{
-                  // style: {
-                  //   maxHeight: ITEM_HEIGHT * 4.5,
-                  //   width: '20ch',
-                  // },
-                }}
-              >
-                <MenuList>
-                  {
-                    isOneTimePasswordCorrect && (
-                      <>
-                        <MenuItem selected={false} onClick={autoSyncOptionToggle}>
-                          <ListItemIcon><SyncIcon fontSize="small" color={isAutoSyncEnabled ? 'success' : 'error'} /></ListItemIcon>
-                          <Typography variant="inherit">Autosync {isAutoSyncEnabled ? 'ON' : 'Off'}</Typography>
-                        </MenuItem>
-                        <MenuItem
-                          selected={false}
-                          onClick={handlePush({ noConfirmMessage: false })}
-                          disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
-                        >
-                          <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
-                          <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
-                        </MenuItem>
-                      </>
-                    )
-                  }
-                  <CopyToClipboard
-                    text={`/subprojects/todo/${room}`}
-                    onCopy={handleCopyLink}
-                  >
-                    <MenuItem selected={false}>
-                      <ListItemIcon><ContentCopyIcon fontSize="small" /></ListItemIcon>
-                      <Typography variant="inherit">Copy link</Typography>
-                    </MenuItem>
-                  </CopyToClipboard>
+            <MoreVertIcon />
+          </IconButton>
+        </span>
+        <Menu
+          id="long-menu"
+          MenuListProps={{
+            'aria-labelledby': 'long-button',
+          }}
+          anchorEl={anchorEl}
+          open={isMenuOpened}
+          onClose={handleMenuClose}
+          PaperProps={{
+            // style: {
+            //   maxHeight: ITEM_HEIGHT * 4.5,
+            //   width: '20ch',
+            // },
+          }}
+        >
+          <MenuList>
+            {
+              isOneTimePasswordCorrect && (
+                <>
+                  <MenuItem selected={false} onClick={autoSyncOptionToggle}>
+                    <ListItemIcon><SyncIcon fontSize="small" color={isAutoSyncEnabled ? 'success' : 'error'} /></ListItemIcon>
+                    <Typography variant="inherit">Autosync {isAutoSyncEnabled ? 'ON' : 'Off'}</Typography>
+                  </MenuItem>
                   <MenuItem
                     selected={false}
-                    onClick={handleLocalBackup}
-                    disabled={isAutoSyncEnabled || (remoteAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value)}
+                    onClick={handlePush({ noConfirmMessage: false })}
+                    disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
                   >
-                    <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
-                    <Typography variant="inherit">Local backup ({remoteAudits.length})</Typography>
+                    <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
+                    <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
                   </MenuItem>
-                  {
-                    lastVisitedOnlinePages.length > 0 && (
-                      <>
-                        <Divider />
-                        {lastVisitedOnlinePages.map(({ tg_chat_id }) => (
-                          <MenuItem
-                            key={tg_chat_id}
-                            selected={false}
-                            // onClick={handleRoomClick(tg_chat_id)}
-                            onClick={(e) => {
-                              e.preventDefault()
-                              window.location.href = `/subprojects/todo/${tg_chat_id}`
-                            }}
-                            disabled={String(tg_chat_id) === router.query.tg_chat_id}
-                          >
-                            <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
-                            <Typography variant="inherit">{tg_chat_id}</Typography>
-                            {/* <Link href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</Link> */}
-                          </MenuItem>
-                        ))}
-                      </>
-                    )
-                  }
-                </MenuList>
-              </Menu>
-              </div>
-            </Box>
-          </Stack>
-
-          {/* <Box
-            sx={{
-              pt: 2,
-              pb: 2,
-            }}
-          >
-            <em>Updated {lastRemoteAuditsTsUpdateTimeAgo}</em>
-          </Box> */}
-          <AuditList
-            audits={remoteAudits}
-            onRemoveAudit={handleRemoveAudit}
-            onAddJob={handleAddJob}
-            onAddSubjob={handleAddSubjob}
-            onToggleJobDone={handleToggleJobDone}
-            onRemoveJob={handleRemoveJob}
-            onToggleSubjob={handleToggleSubjob}
-            isEditable={isOneTimePasswordCorrect}
-            onUpdateAuditComment={handleUpdateAuditComment}
-          />
-        </Container>
-        {
-          isBrowser && (
-            <div
-              style={{
-                marginTop: 'auto',
-                position: 'sticky',
-                bottom: '0px',
-                zIndex: 2,
-                padding: '16px',
-                // backgroundColor: '#fff',
-                // borderTop: '1px solid lightgray',
-              }}
-              className='backdrop-blur--lite'
+                </>
+              )
+            }
+            <CopyToClipboard
+              text={`/subprojects/todo/${room}`}
+              onCopy={handleCopyLink}
             >
-              {
-                isOneTimePasswordCorrect ? (
-                  <AddNewBtn
-                    cb={{
-                      onSuccess: handleAddNewAudit,
-                      onError: handleError,
-                    }}
-                    label='Добавить Аудит'
-                    muiColor='primary'
-                    cfg={{
-                      name: {
-                        type: 'text',
-                        label: 'Название',
-                        inputId: 'audit-name',
-                        placeholder: 'Аудит',
-                        defaultValue: '',
-                        reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
-                      },
-                      description: {
-                        type: 'text',
-                        label: 'Описание',
-                        inputId: 'audit-description',
-                        placeholder: 'Something',
-                        defaultValue: '',
-                        reactHookFormOptions: { required: false, maxLength: 50 }
-                      }
-                    }}
-                  />
-                ) : (
-                  <OneTimeLoginFormBtn
-                    chat_id={String(room)}
-                  />
-                )
-              }
+              <MenuItem selected={false}>
+                <ListItemIcon><ContentCopyIcon fontSize="small" /></ListItemIcon>
+                <Typography variant="inherit">Copy link</Typography>
+              </MenuItem>
+            </CopyToClipboard>
+            <MenuItem
+              selected={false}
+              onClick={handleLocalBackup}
+              disabled={isAutoSyncEnabled || (remoteAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value)}
+            >
+              <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
+              <Typography variant="inherit">Local backup ({remoteAudits.length})</Typography>
+            </MenuItem>
+            {
+              lastVisitedOnlinePages.length > 0 && (
+                <>
+                  <Divider />
+                  {lastVisitedOnlinePages.map(({ tg_chat_id }) => (
+                    <MenuItem
+                      key={tg_chat_id}
+                      selected={false}
+                      // onClick={handleRoomClick(tg_chat_id)}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        window.location.href = `/subprojects/todo/${tg_chat_id}`
+                      }}
+                      disabled={String(tg_chat_id) === router.query.tg_chat_id}
+                    >
+                      <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
+                      <Typography variant="inherit">{tg_chat_id}</Typography>
+                      {/* <Link href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</Link> */}
+                    </MenuItem>
+                  ))}
+                </>
+              )
+            }
+          </MenuList>
+        </Menu>
+      </>
+    )
+  }, [
+    lastVisitedOnlinePages.length,
+    remoteAudits.length,
+    lastLocalAudits.tsUpdate.value,
+    lastRemoteAudits.tsUpdate.value,
+    localAudits.length,
+    handlePush,
+    isAutoSyncEnabled,
+    autoSyncOptionToggle,
+    isOneTimePasswordCorrect,
+    isMenuOpened,
+  ])
+
+  switch (true) {
+    case isMobile: return (
+      <>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+          <Container maxWidth="xs">
+            <Stack
+              direction='column'
+              alignItems='start'
+              spacing={2}
+              sx={{ pt: 2, pb: 2 }}
+            >
               <Box
                 sx={{
-                  pt: 2,
-                  // pb: 2,
+                  // pt: 2,
+                  // pb: 0,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '100%',
                 }}
               >
-                <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo' target='_self'>
-                  Onffline
-                </Button>
+                <Typography
+                  variant="h5"
+                  display="block"
+                  // gutterBottom
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: '16px',
+                  }}
+                >
+                  <Brightness1Icon color={isConnected ? 'success' : 'error'} />
+                  <span>{room}</span>
+                </Typography>
+                {/*
+                <Button
+                  startIcon={<UploadIcon />}
+                  fullWidth
+                  variant="contained"
+                  color='secondary'
+                  onClick={handlePush}
+                >Push from LS (Save)</Button>
+              */}
+                <div>
+                  <IconButton
+                    aria-label="autosync-toggler"
+                    id="autosync-toggler"
+                    // aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                    // aria-expanded={isMenuOpened ? 'true' : undefined}
+                    // aria-haspopup="true"
+                    onClick={autoSyncOptionToggle}
+                  >
+                    <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
+                  </IconButton>
+                  {MemoizedMenu}
+                </div>
               </Box>
+            </Stack>
+
+            {/* <Box
+              sx={{
+                pt: 2,
+                pb: 2,
+              }}
+            >
+              <em>Updated {lastRemoteAuditsTsUpdateTimeAgo}</em>
+            </Box> */}
+            <AuditList
+              audits={remoteAudits}
+              onRemoveAudit={handleRemoveAudit}
+              onAddJob={handleAddJob}
+              onAddSubjob={handleAddSubjob}
+              onToggleJobDone={handleToggleJobDone}
+              onRemoveJob={handleRemoveJob}
+              onToggleSubjob={handleToggleSubjob}
+              isEditable={isOneTimePasswordCorrect}
+              onUpdateAuditComment={handleUpdateAuditComment}
+            />
+          </Container>
+          {
+            isBrowser && (
+              <div
+                style={{
+                  marginTop: 'auto',
+                  position: 'sticky',
+                  bottom: '0px',
+                  zIndex: 2,
+                  padding: '16px',
+                  // backgroundColor: '#fff',
+                  // borderTop: '1px solid lightgray',
+                }}
+                className='backdrop-blur--lite'
+              >
+                {
+                  isOneTimePasswordCorrect ? (
+                    <AddNewBtn
+                      cb={{
+                        onSuccess: handleAddNewAudit,
+                        onError: handleError,
+                      }}
+                      label='Добавить Аудит'
+                      muiColor='primary'
+                      cfg={{
+                        name: {
+                          type: 'text',
+                          label: 'Название',
+                          inputId: 'audit-name',
+                          placeholder: 'Аудит',
+                          defaultValue: '',
+                          reactHookFormOptions: { required: true, maxLength: 20, minLength: 3 }
+                        },
+                        description: {
+                          type: 'text',
+                          label: 'Описание',
+                          inputId: 'audit-description',
+                          placeholder: 'Something',
+                          defaultValue: '',
+                          reactHookFormOptions: { required: false, maxLength: 50 }
+                        }
+                      }}
+                    />
+                  ) : (
+                    <OneTimeLoginFormBtn
+                      chat_id={String(room)}
+                    />
+                  )
+                }
+                <Box
+                  sx={{
+                    pt: 2,
+                    // pb: 2,
+                  }}
+                >
+                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo' target='_self'>
+                    Onffline
+                  </Button>
+                </Box>
+              </div>
+            )
+          }
+        </div>
+      </>
+    )
+    case isDesktop: return (
+      <div>
+        <ResponsiveBlock
+          style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            width: '100%',
+            zIndex: 3,
+            height: '50px',
+            lineHeight: '50px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div
+              style={{
+                lineHeight: 'inherit',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '16px',
+              }}
+            >
+              <span>
+                <Button
+                  size='small'
+                  startIcon={<ArrowBackIcon />}
+                  variant='outlined'
+                  color='primary'
+                  component={Link}
+                  noLinkStyle
+                  href={'/subprojects/todo'}
+                  target='_self'
+                >
+                  Offline
+                </Button>
+              </span>
+              <Brightness1Icon color={isConnected ? 'success' : 'error'} />
+              <span>{room}</span>
             </div>
-          )
-        }
+            <div>
+              {
+                isOneTimePasswordCorrect && (
+                  <IconButton
+                    aria-label="autosync-toggler"
+                    id="autosync-toggler"
+                    // aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                    // aria-expanded={isMenuOpened ? 'true' : undefined}
+                    // aria-haspopup="true"
+                    onClick={autoSyncOptionToggle}
+                  >
+                    <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
+                  </IconButton>
+                )
+              }
+              {MemoizedMenu}
+            </div>
+          </div>
+        </ResponsiveBlock>
+        <AuditGrid
+          onAddNewAudit={handleAddNewAudit}
+          audits={remoteAudits}
+          onRemoveAudit={handleRemoveAudit}
+          onAddJob={handleAddJob}
+          onAddSubjob={handleAddSubjob}
+          onToggleJobDone={handleToggleJobDone}
+          onRemoveJob={handleRemoveJob}
+          onToggleSubjob={handleToggleSubjob}
+          isEditable={isOneTimePasswordCorrect}
+          onUpdateAuditComment={handleUpdateAuditComment}
+        />
       </div>
-    </>
-  )
+    )
+    default: return (
+      <>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
+          <CircularIndeterminate />
+        </div>
+      </>
+    )
+  }
 }
 
 type TProps = {

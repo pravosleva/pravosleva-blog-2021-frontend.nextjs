@@ -135,35 +135,53 @@ export const AuditGrid = ({
                   }}
                 />
               </div>
-            ) : null
-          }
-          {
-            audits.length > 0 ? (
-              <div className={clsx(styles.auditListWrapper)}>
-                {
-                  audits.map((audit) => (
-                    <div className={styles.auditItem} key={audit.id}>
-                      <AuditGridItem
-                        audit={audit}
-                        isEditable={isEditable}
-                        onRemoveAudit={onRemoveAudit}
-                      />
-                    </div>
-                  ))
-                }
-              </div>
             ) : (
-              <Alert
-                // sx={{ mb: 2 }}
-                variant="standard"
-                severity="info"
+              <div
+                className={clsx(
+                  styles.stickyTopPanel,
+                  'backdrop-blur--lite',
+                )}
+                style={{
+                  // height: '50px',
+                  // display: 'flex',
+                  // alignItems: 'center',
+                  padding: '64px 0 16px 0',
+                  // border: '1px solid red',
+                }}
               >
-                <Typography variant="body2" component="h2" gutterBottom>
-                  Еще ничего не создано
-                </Typography>
-              </Alert>
+                Not editable audit
+              </div>
             )
           }
+          <div className={clsx(styles.auditListWrapper)}>
+            {
+              audits.length > 0 ? (
+                <>
+                  {
+                    audits.map((audit) => (
+                      <div className={styles.auditItem} key={audit.id}>
+                        <AuditGridItem
+                          audit={audit}
+                          isEditable={isEditable}
+                          onRemoveAudit={onRemoveAudit}
+                        />
+                      </div>
+                    ))
+                  }
+                </>
+              ) : (
+                <Alert
+                  // sx={{ mb: 2 }}
+                  variant="standard"
+                  severity="info"
+                >
+                  <Typography variant="body2" component="h2" gutterBottom>
+                    Еще ничего не создано
+                  </Typography>
+                </Alert>
+              )
+            }
+          </div>
         </div>
         <div className={styles.rightSideWrapper}>
           
