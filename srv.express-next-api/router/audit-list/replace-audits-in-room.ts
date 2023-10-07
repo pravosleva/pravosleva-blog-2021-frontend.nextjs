@@ -1,6 +1,6 @@
 import { Request as IRequest, Response as IResponse } from 'express'
 import { IJob, TAudit, TSubJob } from '~/srv.socket-logic/types';
-import { stateInstance } from '~/srv.utils/todo2023/stateInstance'
+import { stateInstance } from '~/srv.utils/audit-list/stateInstance'
 
 type TAnalysis = { isOk: boolean; message?: string }
 

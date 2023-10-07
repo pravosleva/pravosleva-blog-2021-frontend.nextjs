@@ -360,7 +360,7 @@ const Logic = ({ room }: TLogicProps) => {
   }, [])
   const lastVisitedOnlinePages = useSelector((state: IRootState) => state.todo2023.online?.lastVisitedPages || [])
   // const handleRoomClick = useCallback((tg_chat_id: number) => () => {
-  //   router.push(`/subprojects/todo/${tg_chat_id}`)
+  //   router.push(`/subprojects/audit-list/${tg_chat_id}`)
   // }, [])
 
   // -- Automatic restore if necessary
@@ -465,7 +465,7 @@ const Logic = ({ room }: TLogicProps) => {
               )
             }
             <CopyToClipboard
-              text={`/subprojects/todo/${room}`}
+              text={`/subprojects/audit-list/${room}`}
               onCopy={handleCopyLink}
             >
               <MenuItem selected={false}>
@@ -492,13 +492,13 @@ const Logic = ({ room }: TLogicProps) => {
                       // onClick={handleRoomClick(tg_chat_id)}
                       onClick={(e) => {
                         e.preventDefault()
-                        window.location.href = `/subprojects/todo/${tg_chat_id}`
+                        window.location.href = `/subprojects/audit-list/${tg_chat_id}`
                       }}
                       disabled={String(tg_chat_id) === router.query.tg_chat_id}
                     >
                       <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
                       <Typography variant="inherit">{tg_chat_id}</Typography>
-                      {/* <Link href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</Link> */}
+                      {/* <Link href={`/subprojects/audit-list/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</Link> */}
                     </MenuItem>
                   ))}
                 </>
@@ -654,7 +654,7 @@ const Logic = ({ room }: TLogicProps) => {
                     // pb: 2,
                   }}
                 >
-                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/todo' target='_self'>
+                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/audit-list' target='_self'>
                     Onffline
                   </Button>
                 </Box>
@@ -701,7 +701,7 @@ const Logic = ({ room }: TLogicProps) => {
                   color='primary'
                   component={Link}
                   noLinkStyle
-                  href={'/subprojects/todo'}
+                  href={'/subprojects/audit-list'}
                   target='_self'
                 >
                   Offline

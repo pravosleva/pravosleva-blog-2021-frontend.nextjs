@@ -17,8 +17,8 @@ const projects = [
       alt: 'loading...',
     },
     link: {
-      href: '/subprojects/todo',
-      as: '/subprojects/todo',
+      href: '/subprojects/audit-list',
+      as: '/subprojects/audit-list',
     },
   },
   {

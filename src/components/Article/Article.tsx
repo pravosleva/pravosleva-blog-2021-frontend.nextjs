@@ -13,7 +13,7 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { convert } from 'html-to-text'
 import clsx from 'clsx'
 // import styles from './Article.module.scss'
-import { breakpoints } from '~/mui/theme'
+// import { breakpoints } from '~/mui/theme'
 
 export const Article = withTranslator(({ t, article }: TArticleComponentProps) => {
   // React.useEffect(() => {

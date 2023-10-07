@@ -18,7 +18,7 @@ import { ProjectsPage } from '~/components/ProjectsPage'
 // const links: TLink[] = [
 //   {
 //     name: 'Todo 2023',
-//     link: '/subprojects/todo',
+//     link: '/subprojects/audit-list',
 //     colorCode: 'primary',
 //     variantCode: 'contained',
 //     tragetAttrValue: '_self',

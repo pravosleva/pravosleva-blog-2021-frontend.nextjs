@@ -2,9 +2,9 @@ import express from 'express'
 import { withReqParamsValidationMW } from '~/srv.utils/mws/withReqParamsValidationMW'
 import { replaceAuditsInRoom, rules as replaceAuditsInRoomRules } from './replace-audits-in-room'
 
-const todo2023Api = express()
+const auditListApi = express()
 
-todo2023Api.post(
+auditListApi.post(
   '/replace-audits-in-room',
   withReqParamsValidationMW({
     rules: replaceAuditsInRoomRules,
@@ -13,5 +13,5 @@ todo2023Api.post(
 )
 
 export {
-  todo2023Api,
+  auditListApi,
 }

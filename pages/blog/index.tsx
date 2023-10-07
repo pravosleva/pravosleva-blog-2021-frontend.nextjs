@@ -104,7 +104,7 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
     // if (result?.ok === true) store.dispatch(setIsOneTimePasswordCorrect(true))
     // if (typeof result === 'string') errorMsg = result
 
-    const notesResult = await universalHttpClient.get('/express-next-api/code-samples-proxy/api/notes?limit=20')
+    const notesResult = await universalHttpClient.get('/express-next-api/code-samples-proxy/api/notes')
     let list: TArticle[] = []
 
     switch (true) {

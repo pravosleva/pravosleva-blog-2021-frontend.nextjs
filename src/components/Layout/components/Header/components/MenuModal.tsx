@@ -47,8 +47,8 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>{t('FEEDBACK')} & reCAPTCHA v3</a>
       </Link>
     )}
-    {!isCurrentPathCb('/subprojects/todo') && (
-      <Link href="/subprojects/todo" as="/subprojects/todo">
+    {!isCurrentPathCb('/subprojects/audit-list') && (
+      <Link href="/subprojects/audit-list" as="/subprojects/audit-list">
         <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')}</a>
       </Link>
     )}

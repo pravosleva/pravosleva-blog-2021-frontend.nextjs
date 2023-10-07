@@ -216,8 +216,8 @@ export const withMobileMenu = (ComposedComponent) =>
                 </li>
               )}
               <li>
-                <Link href="/subprojects/todo">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/subprojects/todo') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')}</a>
+                <Link href="/subprojects/audit-list">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/subprojects/audit-list') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')}</a>
                 </Link>
               </li>
               <li>

@@ -180,7 +180,7 @@ export const ToDo2023 = memo(() => {
     setAnchorEl(null);
   }, [])
   const handleRoomClick = useCallback((tg_chat_id: number) => () => {
-    router.push(`/subprojects/todo/${tg_chat_id}`)
+    router.push(`/subprojects/audit-list/${tg_chat_id}`)
   }, [])
   // --
 
@@ -275,7 +275,7 @@ export const ToDo2023 = memo(() => {
                             >
                               <ListItemIcon><AccountTreeIcon fontSize="small" /></ListItemIcon>
                               <Typography variant="inherit">{tg_chat_id}</Typography>
-                              {/* <MuiLink href={`/subprojects/todo/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</MuiLink> */}
+                              {/* <MuiLink href={`/subprojects/audit-list/${tg_chat_id}`} variant='overline' underline="hover">{tg_chat_id}</MuiLink> */}
                             </MenuItem>
                           ))
                         }
@@ -352,7 +352,7 @@ export const ToDo2023 = memo(() => {
                       color='primary'
                       component={Link}
                       noLinkStyle
-                      href={`/subprojects/todo/${lastVisitedOnlinePages[0].tg_chat_id}`}
+                      href={`/subprojects/audit-list/${lastVisitedOnlinePages[0].tg_chat_id}`}
                       target='_self'
                     >
                       {lastVisitedOnlinePages[0].tg_chat_id}
@@ -422,7 +422,7 @@ export const ToDo2023 = memo(() => {
                     color='primary'
                     component={Link}
                     noLinkStyle
-                    href={`/subprojects/todo/${lastVisitedOnlinePages[0].tg_chat_id}`}
+                    href={`/subprojects/audit-list/${lastVisitedOnlinePages[0].tg_chat_id}`}
                     target='_self'
                   >
                     Online {lastVisitedOnlinePages[0].tg_chat_id}
@@ -440,7 +440,7 @@ export const ToDo2023 = memo(() => {
                       color='primary'
                       component={Link}
                       noLinkStyle
-                      href={'/subprojects/todo/123'}
+                      href={'/subprojects/audit-list/123'}
                       target='_self'
                     >
                       Online 123
