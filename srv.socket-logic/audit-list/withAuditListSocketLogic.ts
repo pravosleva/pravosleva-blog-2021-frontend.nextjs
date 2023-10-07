@@ -5,9 +5,9 @@ import { NEvent, NEventData } from './types'
 import {
   stateInstance,
   // connectionsInstance,
-} from '~/srv.utils/audit-list'
+} from '~/srv.socket-logic/audit-list/utils'
 
-const getRoomName = (tg_chat_id: number): string => `audit-list:${tg_chat_id}`
+const getChannelName = (tg_chat_id: number): string => `audit-list:${tg_chat_id}`
 
 export const withAuditListSocketLogic = (io: Socket) => {
   io.on('connection', function (socket: any) {
@@ -18,7 +18,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       //   socket.leave(connectionsInstance.get(socket.id))
       // }
 
-      socket.join(getRoomName(room))
+      socket.join(getChannelName(room))
       // connectionsInstance.set(socket.id, room)
 
       const pages = stateInstance.getKeys()
@@ -30,7 +30,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       stateInstance.set(room, audits)
       // cb({ data: { room, audits: stateInstance.get(room) || [], message: `stateInstance.size= ${stateInstance.size}` }})
       // NOTE: broadcast to all
-      io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits: stateInstance.get(room) || [] });
+      io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits: stateInstance.get(room) || [] });
     })
     // TODO?: /express-next-api/todo2023/auditlist.replace { room, audits }
     // 3.
@@ -38,7 +38,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       stateInstance.removeAudit({ room, auditId })
         .then(({ audits }) => {
           // NOTE: broadcast to all
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
           // cb({ data: { room, isOk, audits, message: `stateInstance.size= ${stateInstance.size}` }})
         })
         .catch((err) => {
@@ -49,7 +49,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.JOB_ADD, ({ room, auditId, name, subjobs }: NEventData.NServerIncoming.TJOB_ADD, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addJob({ room, auditId, name, subjobs })
         .then(({ audits }) => {
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
           cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
@@ -59,7 +59,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.SUBJOB_ADD, ({ room, auditId, name, jobId }: NEventData.NServerIncoming.TSUBJOB_ADD, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addSubjob({ room, auditId, name, jobId })
         .then(({ audits }) => {
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
           cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
@@ -69,7 +69,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.JOB_TOGGLE_DONE, ({ room, auditId, jobId, }: NEventData.NServerIncoming.TJOB_TOGGLE_DONE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.toggleJobDone({ room, auditId, jobId })
         .then(({ audits }) => {
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
           cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
@@ -79,7 +79,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.JOB_REMOVE, ({ room, auditId, jobId, }: NEventData.NServerIncoming.TJOB_REMOVE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.removeJob({ room, auditId, jobId })
         .then(({ audits }) => {
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
           cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
@@ -89,7 +89,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.SUBJOB_TOGGLE_DONE, ({ room, auditId, jobId, subjobId, }: NEventData.NServerIncoming.TSUBJOB_TOGGLE_DONE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.toggleSubjobDone({ room, auditId, jobId, subjobId })
         .then(({ audits }) => {
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
           cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
@@ -100,7 +100,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       stateInstance.addAudit({ room, name, description, jobs })
         .then(({ audits }) => {
           // console.log(`-- audit added: audits.len ${audits.length}`)
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
           console.log(err)
@@ -112,7 +112,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       stateInstance.updateAuditComment({ room, auditId, comment })
         .then(({ audits }) => {
           // console.log(`-- audit added: audits.len ${audits.length}`)
-          io.in(getRoomName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
         })
         .catch((err) => {
           console.log(err)

@@ -5,7 +5,7 @@ import betterModuleAlias from 'better-module-alias'
 import packageJson from './package.json'
 betterModuleAlias(__dirname, packageJson._moduleAliases)
 
-import { withAuditListSocketLogic } from '~/srv.socket-logic'
+import { rootSocketLogic } from '~/srv.socket-logic'
 
 const next = require('next')
 const { api } = require('~/srv.express-next-api')
@@ -27,7 +27,7 @@ const { join } = require('path')
 const isProd = process.env.NODE_ENV === 'production'
 require('dotenv').config({ path: join(__dirname, isProd? './.env.production' : './.env.dev') })
 
-const enhancedIO = withAuditListSocketLogic(io)
+const enhancedIO = rootSocketLogic(io)
 
 // app.use(addRequestId) // NOTE: New additional field req.id
 // app.use('*', ipDetectorMW, geoipLiteMW)
