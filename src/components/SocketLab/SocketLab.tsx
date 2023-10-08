@@ -96,6 +96,7 @@ export const Logic = () => {
     socket.on(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
 
     return () => {
+      // NOTE: See also https://socket.io/docs/v4/client-api/#socketoffeventname
       socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
       socket.off(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
