@@ -1,14 +1,14 @@
 import { useCallback, useRef, useEffect } from 'react'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
-import { WithSocketContextHOC, useStore, NEvent, TSocketMicroStore } from './withSocketContextHOC'
+import { WithSocketContextHOC, useStore, NEvent, TSocketMicroStore, initialState } from './withSocketContextHOC'
 import io, { Socket } from 'socket.io-client'
 import { useSnackbar, SnackbarMessage as TSnackbarMessage, OptionsObject as IOptionsObject } from 'notistack'
 import { groupLog } from '~/utils/groupLog'
 import { Button, Stack } from '@mui/material'
 
-const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
+const NEXT_APP_SOCKET_API_ENDPOINT = isDev ? 'http://localhost:3000' : (process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro')
 
 type TStandartTargetCallback = {
   ok: boolean;
@@ -20,6 +20,7 @@ type TStandartCommonEvent = {
 
 export const Logic = () => {
   const [isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
+  const [isConnectedToPrivateRoom] = useStore((store: TSocketMicroStore) => store.isConnectedToPrivateRoom)
   const socketRef = useRef<Socket | null>(null)
   const { enqueueSnackbar } = useSnackbar()
   const showNotif = useCallback((msg: TSnackbarMessage, opts?: IOptionsObject) => {
@@ -28,12 +29,11 @@ export const Logic = () => {
   const handleWannaBeConnected = useCallback(() => {
     if (!!socketRef.current) {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_CONNECTED_TO_ROOM, { roomId: 'sample' }, (data: TStandartTargetCallback) => {
-        // console.log(data)
         if (data.ok) {
-          setStore({ isConnected: true })
+          setStore({ isConnectedToPrivateRoom: true })
           showNotif(data?.message || 'Connected to private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000 })
         } else {
-          setStore({ isConnected: false })
+          setStore({ isConnectedToPrivateRoom: false })
           showNotif(data?.message || 'Connection to private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000 })
         }
       })
@@ -44,19 +44,59 @@ export const Logic = () => {
   }, [])
 
   useEffect(() => {
-    const socket: Socket = io(isDev ? 'http://localhost:3000' : NEXT_APP_SOCKET_API_ENDPOINT, {
+    const socket: Socket = io(NEXT_APP_SOCKET_API_ENDPOINT, {
       reconnection: true,
       transports: ['websocket', 'polling'],
       secure: isProd,
     })
     socketRef.current = socket
 
-    const onSomebodyConnectedToRoom = (data: TStandartCommonEvent) => {
-      // groupLog({ spaceName: `-- ${NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM}`, items: [data] })
+    // -- NOTE: Common
+    const onConnectListener = () => {
+      groupLog({ spaceName: '-- connect', items: ['no args'] })
+      setStore({ isConnected: true })
+    }
+    socket.on('connect', onConnectListener)
 
+    const onConnectErrorListener = (arg: any) => {
+      groupLog({ spaceName: '-- connect_error', items: [arg] })
+      showNotif('Connect error', { variant: 'error', autoHideDuration: 3000 })
+    }
+    socket.on('connect_error', onConnectErrorListener)
+
+    const onReconnectErrorListener = (arg: any) => {
+      groupLog({ spaceName: '-- reconnect', items: [arg] })
+      showNotif('Reconnect', { variant: 'success', autoHideDuration: 3000 })
+    }
+    socket.on('reconnect', onReconnectErrorListener)
+
+    const onReconnectAttemptListener = (arg: any) => {
+      groupLog({ spaceName: '-- reconnect_attempt', items: [arg] })
+      showNotif('Reconnect attempt', { variant: 'info', autoHideDuration: 3000 })
+    }
+    socket.on('reconnect_attempt', onReconnectAttemptListener)
+
+    const onDisonnectListener = () => {
+      groupLog({ spaceName: '-- disconnect', items: ['no data'] })
+      setStore(initialState)
+    }
+    socket.on('disconnect', onDisonnectListener)
+    // --
+
+    const onSomebodyConnectedToRoom = (data: TStandartCommonEvent) => {
+      groupLog({ spaceName: `-- ${NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM}`, items: [data] })
       showNotif(data?.message || 'Somebody connected', { variant: 'info', autoHideDuration: 5000 })
     }
     socket.on(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
+
+    return () => {
+      socket.off('disconnect', onDisonnectListener)
+      socket.off(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
+      socket.off('connect_error', onConnectErrorListener)
+      socket.off('reconnect', onReconnectErrorListener)
+      socket.off('reconnect_attempt', onReconnectAttemptListener)
+      socket.off('connect', onConnectListener)
+    }
   }, [])
   return (
     <ResponsiveBlock
@@ -68,11 +108,12 @@ export const Logic = () => {
         padding: '32px 0 32px 0',
       }}
     >
-      <h1>SocketLab exp</h1>
+      <h1>SocketLab exp 🧪</h1>
       <Stack spacing={1}>
       <div>isConnected: {String(isConnected)}</div>
+      <div>isConnectedToPrivateRoom: {String(isConnectedToPrivateRoom)}</div>
       {
-        !isConnected && (
+        !isConnectedToPrivateRoom && (
           <Button
             size='small'
             // startIcon={<UploadIcon />}

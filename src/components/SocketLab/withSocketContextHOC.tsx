@@ -3,10 +3,13 @@ import createFastContext from '~/context/createFastContext'
 
 export type TSocketMicroStore = {
   isConnected: boolean;
+  isConnectedToPrivateRoom: boolean;
 }
-const { Provider, useStore } = createFastContext<TSocketMicroStore>({
+export const initialState = {
   isConnected: false,
-});
+  isConnectedToPrivateRoom: false,
+}
+const { Provider, useStore } = createFastContext<TSocketMicroStore>(initialState);
 
 export const WithSocketContextHOC = ({ children }: any) => {
   return (
