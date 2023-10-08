@@ -34,7 +34,7 @@ const enhancedIO = rootSocketLogic(io)
 // NOTE: For example: const ip = req.clientIp; const geo = req.geo;
 
 const state = {
-  auxCounter: 0,
+  startsCounter: 0,
   errsCounter: 0,
 }
 
@@ -60,14 +60,14 @@ nextApp
     })
 
     server.listen(PORT, (err: any) => {
-      state.auxCounter += 1
+      state.startsCounter += 1
 
       if (err) throw err
       console.log(`> Ready on http://localhost:${PORT}`)
 
       if (!isDev) axios
         .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
-          resultId: state.auxCounter,
+          resultId: state.startsCounter,
           chat_id: 432590698, // NOTE: Den Pol
           ts: new Date().getTime(),
           eventCode: 'aux_service',

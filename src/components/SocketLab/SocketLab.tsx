@@ -38,7 +38,7 @@ export const Logic = () => {
         }
       })
     } else {
-      showNotif('FRON: Socket was not connected yet?', { variant: 'error', autoHideDuration: 7000 })
+      showNotif('FRONT: Socket was not connected yet?', { variant: 'error', autoHideDuration: 7000 })
       groupLog({ spaceName: '⛔ FRONT: Socket was not connected yet?', items: ['socketRef.current', socketRef.current] })
     }
   }, [])

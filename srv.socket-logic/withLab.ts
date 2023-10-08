@@ -15,6 +15,8 @@ namespace NEvent {
   }
 }
 
+// const state = new Map()
+
 export const withLab = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
 
@@ -33,7 +35,7 @@ export const withLab = (io: Socket) => {
         socketId: socket.id,
         message: 'BACK: Somebody connected to private channel',
       })
-      if (!!cb) cb({ ok: true, message: `You\'re connected to ${channelName}` })
+      if (!!cb) cb({ ok: true, message: `You\'re connected to ${channelName}. Socket id ${socket.id}` })
     })
   })
 }
