@@ -27,6 +27,7 @@ export namespace NEvent {
   export enum ServerOutgoing {
     TEST = 'lab:server:tst-action',
     SOMEBODY_CONNECTED_TO_ROOM = 'lab:server:somebody-connected',
+    COMMON_MESSAGE = 'lab:server:common-message',
   }
 }
 

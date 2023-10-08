@@ -85,13 +85,20 @@ export const Logic = () => {
 
     const onSomebodyConnectedToRoom = (data: TStandartCommonEvent) => {
       groupLog({ spaceName: `-- ${NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM}`, items: [data] })
-      showNotif(data?.message || 'Somebody connected', { variant: 'info', autoHideDuration: 5000 })
+      showNotif(data?.message || 'Somebody connected', { variant: 'info', autoHideDuration: 7000 })
     }
     socket.on(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
+
+    const onCommonMessage = (data: TStandartCommonEvent) => {
+      groupLog({ spaceName: `-- ${NEvent.ServerOutgoing.COMMON_MESSAGE}`, items: [data] })
+      showNotif(data?.message || 'Common message', { variant: 'info', autoHideDuration: 7000 })
+    }
+    socket.on(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
 
     return () => {
       socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
+      socket.off(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
       socket.off('connect_error', onConnectErrorListener)
       socket.off('reconnect', onReconnectErrorListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
