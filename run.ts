@@ -71,7 +71,7 @@ nextApp
           chat_id: 432590698, // NOTE: Den Pol
           ts: new Date().getTime(),
           eventCode: 'aux_service',
-          about: `\`/frontend.nextjs\` 🚀 Started on TCP ${PORT}`,
+          about: `\`/frontend.nextjs\`\n🚀 Started on TCP ${PORT}...`,
           targetMD: `\`\`\`\n${JSON.stringify(
             {
               NODE_ENV: process.env.NODE_ENV,
@@ -93,7 +93,7 @@ nextApp
         chat_id: 432590698, // NOTE: Den Pol
         ts: new Date().getTime(),
         eventCode: 'aux_service',
-        about: `\`/frontend.nextjs\` ⛔ Errored`,
+        about: `\`/frontend.nextjs\`\n⛔ Errored`,
         targetMD: `\`\`\`\n${ex.stack}\n\`\`\``,
       })
       .then((res) => res.data)
