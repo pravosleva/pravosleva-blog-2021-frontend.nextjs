@@ -9,9 +9,9 @@ import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTimeLoginFormBtn'
 import { Container } from '@mui/material'
-import jwt from 'jsonwebtoken'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { CreateNewProject } from '~/components/Autopark2022/components/ProjectList/components/CreateNewProject'
+import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -107,23 +107,34 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
       isOk: true,
       hasAuthenticated: false,
     }
-    try {
-      const { cookies } = ctx.req
-
-      const authCookieName = 'autopark-2022.jwt'
-      const secretKey = 'super-secret'
-      if (!!cookies[authCookieName]) {
-        const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
-
-        _pageService.hasAuthenticated = decodedToken?.chat_id === tg_chat_id
-        if (_pageService.hasAuthenticated) store.dispatch(setIsOneTimePasswordCorrect(true))
+    const baseProps = await getInitialPropsBase(ctx)
+    switch (true) {
+      case !tg_chat_id || isNaN(Number(tg_chat_id)):
+        _pageService.hasAuthenticated = false
+        _pageService.message = `Incorrect page param (number expected), received: \`${tg_chat_id}\``
+        break
+      // NOTE: For ssr only?
+      case baseProps.authData.oneTime.jwt.isAuthorized: {
+        _pageService.hasAuthenticated = true
+        store.dispatch(setIsOneTimePasswordCorrect(true))
+        break
       }
-    } catch (err) {
-      // @ts-ignore
-      _pageService.message = err?.message || 'No err.message'
+      case baseProps.authData.oneTime.jwt._service.isErrored: {
+        _pageService.hasAuthenticated = false
+        _pageService.message = baseProps.authData.oneTime.jwt._service.message || 'ERR1 (No err.message)'
+        break
+      }
+      default:
+        break
     }
     // -
 
-    return { userCheckerResponse: result, errorMsg, isUserExists: result?.ok, chat_id: tg_chat_id, _pageService }
+    return {
+      userCheckerResponse: result,
+      errorMsg,
+      isUserExists: result?.ok,
+      chat_id: tg_chat_id,
+      _pageService,
+    }
   }
 )

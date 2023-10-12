@@ -748,7 +748,8 @@ const Logic = ({ room }: TLogicProps) => {
             <div
               style={{
                 marginTop: 'auto',
-                position: 'sticky',
+                // position: 'sticky',
+                position: 'fixed',
                 bottom: '0px',
                 zIndex: 2,
                 padding: '16px',

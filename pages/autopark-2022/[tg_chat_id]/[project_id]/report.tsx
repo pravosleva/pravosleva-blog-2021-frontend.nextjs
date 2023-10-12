@@ -15,7 +15,7 @@ import { Report } from '~/components/Autopark2022/components'
 // import Head from 'next/head'
 import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
-import jwt from 'jsonwebtoken'
+import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase';
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -175,22 +175,32 @@ MyProjects.getInitialProps = wrapper.getInitialPageProps(
     const _pageService: TPageService = {
       isOk: true,
     }
-    try {
-      const { cookies } = ctx.req
-
-      const authCookieName = 'autopark-2022.jwt'
-      const secretKey = 'super-secret'
-      if (!!cookies[authCookieName]) {
-        const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
-
-        if (decodedToken?.chat_id === chat_id) store.dispatch(setIsOneTimePasswordCorrect(true))
+    const baseProps = await getInitialPropsBase(ctx)
+    switch (true) {
+      case !chat_id || isNaN(Number(chat_id)):
+        _pageService.message = `Incorrect page param (number expected), received: \`${chat_id}\``
+        break
+      // NOTE: For ssr only?
+      case baseProps.authData.oneTime.jwt.isAuthorized: {
+        store.dispatch(setIsOneTimePasswordCorrect(true))
+        break
       }
-    } catch (err) {
-      // @ts-ignore
-      _pageService.message = err?.message || 'No err.message'
+      case baseProps.authData.oneTime.jwt._service.isErrored: {
+        _pageService.message = baseProps.authData.oneTime.jwt._service.message || 'ERR1 (No err.message)'
+        break
+      }
+      default:
+        break
     }
     // -
 
-    return { userCheckerResponse: userDataResult, projectDataResponse: projectDataResult?.projectData || null, errorMsg, isUserExists: userDataResult?.ok, chat_id, project_id, _pageService }
+    return {
+      userCheckerResponse: userDataResult,
+      projectDataResponse: projectDataResult?.projectData || null,
+      errorMsg,
+      isUserExists: userDataResult?.ok,
+      chat_id, project_id,
+      _pageService,
+    }
   }
 )
