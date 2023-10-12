@@ -5,6 +5,7 @@ import DesktopHeader from './components/Header/Desktop'
 import MobileHeader from './components/Header/Mobile'
 import { useStyles } from './useStyles'
 import classes from './Layout.module.scss'
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 type TProps = {
   children: React.ReactNode;
@@ -36,9 +37,11 @@ export const Layout = ({ children, noFooter }: TProps) => {
                 // border: '2px dashed red',
               }}
             >
-              <div style={{ margin: '0 auto', maxWidth: 960 + 40, lineHeight: '70px' }}>
-                <span style={{ margin: '0 16px 0 16px' }}>© 2018</span>
-              </div>
+              <ResponsiveBlock isLimited isPaddedMobile>
+                <div style={{ lineHeight: '70px' }}>
+                  <span>© 2018</span>
+                </div>
+              </ResponsiveBlock>
             </footer>
             {/* <ScrollTopBtn onClick={scrollTop} isShowed={showScroll} themeName={currentTheme}>
               <i className="fas fa-arrow-up"></i>
