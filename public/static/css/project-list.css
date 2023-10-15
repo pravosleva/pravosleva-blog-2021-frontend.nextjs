@@ -2,7 +2,7 @@
   display: grid;
   /* column-gap: 32px;
   row-gap: 32px; */
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-auto-flow: dense;
 }
 @media(max-width: 600px) {
@@ -111,6 +111,7 @@
   /* &:nth-child(2) { --bi: linear-gradient(#555 5em, #0000 3em), linear-gradient(60deg, #880E4F, #1A237E); } */
   /* &:nth-child(2) { --bi: linear-gradient(90deg, rgba(1,98,200,1) 0%, rgba(0,0,0,0.5) 50%, rgba(255,120,30,0.75) 100%); } */
   &:nth-child(2) { --bi: repeating-linear-gradient(30deg, #111 0 0.25em, #333 0 1em); }
+  &:nth-child(3) { --bi: linear-gradient(90deg, rgba(1,98,200,1) 50%, rgba(255,120,30,0.75) 100%); }
 }
 
 .card {

@@ -3,7 +3,7 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 // import classes from './ProjectsPage.module.scss'
 import { Stack, Typography } from '@mui/material'
-import { ProjectItem } from './components/ProjectItem2'
+import { ProjectItem } from './components/ProjectItem'
 import { BreadCrumbs } from '../BreadCrumbs'
 import { withTranslator } from '~/hocs/withTranslator'
 
@@ -31,6 +31,19 @@ const projects = [
     link: {
       href: '/blog',
       as: '/blog',
+    },
+  },
+  {
+    id: 3,
+    title: 'My AutoPark 2022',
+    description: 'Car service book',
+    img: {
+      src: '/static/img/projects/autopark.jpg',
+      alt: 'loading...',
+    },
+    link: {
+      href: 'https://t.me/pravosleva_bot?start=autopark',
+      as: 'https://t.me/pravosleva_bot?start=autopark',
     },
   },
 ]
@@ -99,14 +112,20 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
             className='projects-grid'
           >
             {
-              projects.map(({ id, title, description, img, link }) => {
+              projects.map(({
+                id,
+                title,
+                // description,
+                img,
+                link,
+              }) => {
                 return (
                   <ProjectItem
                     key={id}
                     title={title}
                     img={img}
                     link={link}
-                    description={description}
+                    // description={description}
                   />
                 )
               })
