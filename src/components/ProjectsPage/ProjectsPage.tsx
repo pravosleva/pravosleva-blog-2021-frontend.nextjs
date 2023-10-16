@@ -3,7 +3,7 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 // import classes from './ProjectsPage.module.scss'
 import { Stack, Typography } from '@mui/material'
-import { ProjectItem } from './components/ProjectItem'
+import { ProjectItem } from './components/ProjectItem3'
 import { BreadCrumbs } from '../BreadCrumbs'
 import { withTranslator } from '~/hocs/withTranslator'
 
@@ -35,7 +35,7 @@ const projects = [
   },
   {
     id: 3,
-    title: 'My AutoPark 2022',
+    title: 'AutoPark 2022',
     description: 'Car service book',
     img: {
       src: '/static/img/projects/autopark.jpg',
@@ -115,7 +115,7 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
               projects.map(({
                 id,
                 title,
-                // description,
+                description,
                 img,
                 link,
               }) => {
@@ -125,7 +125,7 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
                     title={title}
                     img={img}
                     link={link}
-                    // description={description}
+                    description={description}
                   />
                 )
               })
