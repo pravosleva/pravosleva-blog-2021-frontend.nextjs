@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 import { breakpoints } from '~/mui/theme';
 
-
 type TProps = {
   maxWidth?: 'md';
   isPaddedMobile?: boolean;

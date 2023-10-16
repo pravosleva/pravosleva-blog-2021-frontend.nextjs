@@ -4,6 +4,7 @@ const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
 // NOTE: https://github.com/PaulLeCam/react-leaflet/issues/881
 // const withTM = require("next-transpile-modules")([])
+// const withCSS = require('@zeit/next-css')
 
 const fs = require('fs')
 const dotenv = require('dotenv')
@@ -69,6 +70,7 @@ const nextConfig = {
             options: {
               modules: {
                 localIdentName: isDev ? "next-cfg-2__[folder]__[name]__[local]___[hash:base64:5]" : "[name]__[local]___[hash:base64:5]",
+                // localIdentName: "[local]",
               },
             },
           },

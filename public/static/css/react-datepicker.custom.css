@@ -1,0 +1,49 @@
+.standartList
+  > li
+  > div:last-child
+  > div
+  > div
+  > .react-datepicker__input-container
+  > input {
+  border-radius: 0 0 8px 8px;
+}
+.react-datepicker-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
+.react-datepicker-wrapper input,
+.react-datepicker-wrapper button,
+.react-datepicker-wrapper textarea {
+  border-radius: unset;
+  font-size: 13px;
+}
+.react-datepicker__input-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+.react-datepicker__input-container > input {
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  font-family: Montserrat;
+  height: 100%;
+  border: none;
+  padding: 10px;
+  text-align: center;
+
+  background-color: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  cursor: pointer;
+}
+.react-datepicker-ignore-onclickoutside {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.react-datepicker__day--highlighted-custom-1 {
+  color: blue;
+}
+
+.react-datepicker-popper {
+  z-index: 3 !important;
+}

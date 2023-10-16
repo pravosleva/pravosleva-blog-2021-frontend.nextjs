@@ -46,6 +46,19 @@ const projects = [
       as: 'https://t.me/pravosleva_bot?start=autopark',
     },
   },
+  {
+    id: 4,
+    title: 'TeamScoring 2019',
+    description: 'How much is your forecast, lier?',
+    img: {
+      src: '/static/img/projects/autopark.jpg',
+      alt: 'loading...',
+    },
+    link: {
+      href: '/team-scoring/legacy',
+      as: '/team-scoring/legacy',
+    },
+  },
 ]
 
 export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }) => {
