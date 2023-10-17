@@ -1,6 +1,7 @@
 export * from './Block'
 export * from './Btn'
 export * from './ClosableSearchPanelToggler'
+export * from './FlexColumn'
 export * from './InternalContentWrapper'
 export * from './Note'
 export * from './Pie'

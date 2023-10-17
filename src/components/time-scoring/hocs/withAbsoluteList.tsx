@@ -1,14 +1,15 @@
 /* eslint-disable import/no-unresolved */
-import React, { Fragment } from 'react'
+import React from 'react'
 import { compose, withStateHandlers } from 'recompose'
 import styled, { css } from 'styled-components'
 import ReactHtmlParser from 'react-html-parser'
 // import moment from 'moment'
 import { SpeedGraph } from '~/ui-kit.special/SpeedGraph'
 import { DistributionFunctionGraph } from '~/ui-kit.special/DistributionFunctionGraph'
-import { Block, Note, StickyH2 } from '~/ui-kit.special'
+import { Block, FlexColumn, Note, StickyH2 } from '~/ui-kit.special'
 import { TTask } from '~/components/time-scoring/types'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
+import { Alert, EType } from '~/react-markdown-renderers/Alert'
 
 const Wrapper = styled("div")`
   width: 100%;
@@ -148,15 +149,21 @@ export const withAbsoluteList = (ComposedComponent: any) =>
         {/* @ts-ignore */}
         <InternalListWrapper opened={props.listOpened}>
           <Content>
-            <ResponsiveBlock>
+            <ResponsiveBlock
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0px',
+              }}
+            >
               {props.activeEmployee &&
               props.taskList
                 .filter((e: TTask) => e.employee === props.activeEmployee)
                 .filter(
                   (e: TTask) => e.startDate && e.realFinishDate && e.forecastFinishDate
                 ) ? (
-                <Fragment>
-                  <>
+                <>
+                  <FlexColumn>
                     <StickyH2>
                       <i
                         className="fa fa-chart-line"
@@ -219,7 +226,8 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                         })(props.activeEmployee)}
                       />
                     </Block>
-
+                  </FlexColumn>
+                  <FlexColumn>
                     <StickyH2>
                       <i
                         className="fa fa-chart-bar"
@@ -251,10 +259,10 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                         }
                       />
                     </Block>
-                  </>
-                </Fragment>
+                  </FlexColumn>
+                </>
               ) : (
-                <>
+                <FlexColumn>
                   <StickyH2>
                     <i
                       className="fa fa-wrench"
@@ -276,8 +284,71 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                       <em>Please, select the employee...</em>
                     </Note>
                   </Block>
-                </>
+                </FlexColumn>
               )}
+              
+              <FlexColumn>
+                <StickyH2>
+                  <i
+                    className="fa fa-info"
+                    style={{ marginRight: "15px" }}
+                  />
+                  About
+                </StickyH2>
+                <Block>
+                  <Note>
+                    <p>По мотивам статьи <b>Joel Spolsky <a href='https://www.joelonsoftware.com/2007/10/26/evidence-based-scheduling/' target='_blank'>Evidence Based Scheduling</a></b> <a href='https://habr.com/ru/articles/186410/' target='_blank'>Перевод на Хабре: Доказательное Планирование</a>.</p>
+                    <p>
+                      Эта страница предназначена для корректировки прогноза исполнителя (к примеру, программиста на выполнение фичи, или эффективнного менеджера на реализацию продукта),
+                      на основании анализа скорости выполнения предыдущих задач исполнителя.
+                    </p>
+                    <h3>Какая проблема решалась?</h3>
+                    <p>
+                      Основная идея — избавить команду от необходимости бесполезных созвонов, абстрактных прогнозов и ретроспектив по результатам про*банных дэдлайнов.
+                      Пример: <b>Продукт-Менеджер</b> ставит задачу и, как обычно, интересуется:
+                    </p>
+                    <p>
+                      <b>— Когда точно будет готова фича? Бизнес хочет знать!</b>
+                    </p>
+                    <p>
+                      Спойлер: Неожиданно, мы снова проваливаем дедлайны и разбираем эту ситуацию на совещании...
+                    </p>
+                    <p>
+                      Куда проще действовать по схеме: <b>"Парень, ты же в курсе, как работает твоя команда, задай пару вопросов исполнителю и посмотри <em>Прогноз</em>"</b>
+                    </p>
+                    <p>
+                      Самое интересное, <em>Прогноз</em> учитывает все деструктивные факторы, негативно влияющие на скорость выполнения фичи:
+                      <ul>
+                        <li>Частоту перерывов в работе</li>
+                        <li>Литры кофе в перерывах</li>
+                        <li>Выкуренные пачки сигарет</li>
+                        <li>Разговоры по телефону</li>
+                        <li>Невовлеченность в рабочий процесс по иным причинам</li>
+                        <li>Оказывается, Доказательное Планирование прекрасно работает даже в случаях, когда вы просто добавляете потерянное время к времени выполнения текущей задачи. Как бы странно это не звучало, применение ДП в таком случае даст даже лучшие результаты.</li>
+                      </ul>
+                    </p>
+                    <p>
+                      <Alert
+                        type={EType.info}
+                        text='Перечисленные выше причины (вроде бы) обеспечивают адекватный прогноз с возможностью ранжировать исполнителей по AVG коэффициентам'
+                      />
+                    </p>
+                    <p>
+                    <h3>Что НЕ учитывает Прогноз:</h3>
+                    <ul>
+                      <li>Рост разраба над собой</li>
+                      <li>Иные причины повышения собственной эффективности</li>
+                    </ul>
+                    </p>
+                    <p>
+                      <Alert
+                        type={EType.danger}
+                        text='По этим причинам наиболее старые задачи рекомендуется удалять из списка.'
+                      />
+                    </p>
+                  </Note>
+                </Block>
+              </FlexColumn>
             </ResponsiveBlock>
           </Content>
           <ListDesktopToggler onClick={() => props.listToggler()}>
