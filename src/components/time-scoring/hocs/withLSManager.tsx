@@ -64,23 +64,32 @@ export const withLSManager = (ComposedComponent: any) => compose(
         }
         return { ...prevState, activeComplexity: val }
       },
-      setStep: (prevState) => () => {
-        const { stepCounter } = prevState
-        let newStep
+      initStep: (prevState) => (val?: number) => {
+        switch (val) {
+          case 0:
+          case 1:
+          case 2: {
+            return { ...prevState, stepCounter: val }
+          }
+          default: {
+            const { stepCounter } = prevState
+            let newStep
 
-        if (stepCounter === 0) newStep = 1
-        if (stepCounter === 1) newStep = 2
-        if (stepCounter === 2) newStep = 0
+            if (stepCounter === 0) newStep = 1
+            if (stepCounter === 1) newStep = 2
+            if (stepCounter === 2) newStep = 0
 
-        groupLog({
-          spaceName: '- setStep',
-          items: [
-            `prev: ${stepCounter}`,
-            `next: ${newStep}`
-          ],
-        })
+            groupLog({
+              spaceName: '- initStep',
+              items: [
+                `prev: ${stepCounter}`,
+                `next: ${newStep}`
+              ],
+            })
 
-        return { ...prevState, stepCounter: newStep }
+            return { ...prevState, stepCounter: newStep }
+          }
+        }
       },
     },
   ),
@@ -455,7 +464,10 @@ export const withLSManager = (ComposedComponent: any) => compose(
         .then(() => props.activeEmployeeToggler(''))
         .catch((error: any) => console.log(error))
     },
-    createNewTask: (props) => () => {
+    createNewTask: (props) => ({ cb }: { cb?: {
+      onSuccess: (e: { isOk: boolean; message?: string; isFirst?: boolean }) => void;
+      onError: (e: { isOk: boolean; message?: string; isFirst?: boolean }) => void;
+    }}) => {
       props
         .getFieldFromLS('employeeNames')
         .then(async (arr: any) => {
@@ -543,6 +555,10 @@ export const withLSManager = (ComposedComponent: any) => compose(
                     newTaskList = [...taskListFromLS, newTask]
                     props.setStateFieldValue('taskList', newTaskList)
                     props.setFieldValueToLS('taskList', newTaskList)
+
+                    const firstString = newTask.description.split('\n')[0]
+                    const symbolsLimit = 10
+                    if (!!cb) cb.onSuccess({ isOk: true, message: `Создано: ${firstString.substring(0, symbolsLimit)}${firstString.length > symbolsLimit ? '...' : ''}` })
                     return
                   }
                   // newTaskList = [newTask];
@@ -562,11 +578,17 @@ export const withLSManager = (ComposedComponent: any) => compose(
                   newTaskList = [newTask]
                   props.setStateFieldValue('taskList', newTaskList)
                   props.setFieldValueToLS('taskList', newTaskList)
+                  if (!!cb) cb.onSuccess({ isOk: true, message: 'Ваша первая задача создана', isFirst: true })
                 })
             })
-            .catch((error) => groupLog({ spaceName: 'createNewTask () FAILED', items: [error] }))
+            .catch((err) => {
+              groupLog({ spaceName: 'createNewTask () FAILED', items: [err] })
+              if (!!cb) cb.onError({ isOk: false, message: `#1 ${err?.message || 'No err.message'}` })
+            })
         })
-        .catch((error: any) => console.log(error))
+        .catch((err: any) => {
+          if (!!cb) cb.onError({ isOk: false, message: `#2 ${err?.message || 'No err.message'}` })
+        })
     },
     assign: (props) => (id: any) => {
       props
@@ -691,7 +713,7 @@ export const withLSManager = (ComposedComponent: any) => compose(
         })
         .catch((error: any) => console.log(error))
     },
-    setRealFinishDate: (props) => (ts: number, id: number) => {
+    setRealFinishDate: (props) => (ts: number | undefined, id: number) => {
       // date is moment obj; date.valueOf() =ms (number)
       // console.log(date.valueOf(), id);
       props
@@ -700,7 +722,9 @@ export const withLSManager = (ComposedComponent: any) => compose(
           const requiredTask = taskListFromLS.filter(
             (task) => task.id === id,
           )[0]
-          requiredTask.realFinishDate = ts
+
+          if (!ts) delete requiredTask.realFinishDate
+          else requiredTask.realFinishDate = ts
 
           const newTaskList = [
             ...taskListFromLS.filter((task) => task.id !== id),

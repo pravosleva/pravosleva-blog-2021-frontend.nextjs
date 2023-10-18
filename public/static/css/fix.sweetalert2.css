@@ -1,0 +1,116 @@
+* {
+  --std-m-1: 16px;
+  --std-m-2: 32px;
+  --std-m-3: 48px;
+  --std-m-4: 64px;
+  --std-m-0625: .625em;
+  --std-m-1-swal-like: .8em;
+  --std-m-2-swal-like: 1em;
+  --std-m-3-swal-like: 2em;
+  --std-m-4-swal-like: 2.5em;
+  --std-m-5-swal-like: 3em;
+  --std-m-6-swal-like: 3.5em;
+
+  --std-width-sm: 330px;
+
+  --blue: rgb(38, 114, 182);
+  --blue-focus-border: rgba(38, 114, 182, 0.5);
+  --blue-secondary: #dce7f2;
+  --green: #168f48;
+  --green-focus-border: rgba(22, 143, 72, 0.5);
+  --red: #E63232;
+  --red-focus-border: rgba(230, 50, 50, 0.5);
+  --red-light: #E63232;
+  --red-light-focus-border: rgba(230, 50, 50, 0.5);
+  --sp-yellow: #fcbf2c;
+  --sp-2022-blue: rgb(53, 131, 195);
+  --sp-2022-salat: rgb(180, 204, 56);
+  --sp-2022-graphite: #262626;
+
+  --modals-fade-out-delay-time: 1s;
+}
+
+/* --- SWAL */
+.swal2-modal,
+.swal2-popup {
+  border-radius: 16px !important;
+}
+.swal2-popup {
+  padding: 1.25em 0 !important;
+}
+.swal2-validation-message {
+  padding: 0 1.6em;
+  width: calc(100% + 1.6em * 2);
+  transform: translateX(-1.6em);
+}
+.swal2-actions button,
+.swal2-modal input,
+.swal2-modal textarea {
+  border-radius: 8px !important;
+  /* border: 1px solid red; */
+}
+
+.swal2-textarea {
+  resize: vertical;
+  min-height: 250px;
+}
+
+.swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+  background: rgba(255,255,255,.8);
+}
+.swal2-popup {
+  border-radius: 10px;
+  box-shadow: 1px 1px 10px rgb(0 0 0 / 30%);
+}
+.swal2-container {
+  padding: var(--std-m-6-swal-like) var(--std-m-2-swal-like) var(--std-m-6-swal-like) var(--std-m-2-swal-like) !important;
+}
+
+.swal2-actions button {
+  border-radius: 8px;
+}
+/* --- */
+
+.swal2-progressline,
+.swal2-progress-step-line {
+  transform: translate(0, -50%);
+}
+/*
+.swal2-title, .swal2-popup .swal2-textarea, .swal2-popup .swal2-input, .swal2-popup .swal2-select {
+  font-family: Montserrat;
+  background-color: inherit;
+  color: inherit;
+}
+@media (min-width: 767px) {
+  .swal2-popup .swal2-textarea {
+    min-height: 16.5em;
+  }
+}
+*/
+
+@keyframes fadeInFromNone {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+  1% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
+.fadeIn {
+  animation: fadeInFromNone 1.5s ease-out;
+  color: rgba(0, 0, 0, 0.2);
+}
+.fullWidth {
+  width: 100%;
+}
+@media (max-width: 767px) {
+  .fullWidth {
+    width: 100%;
+  }
+}

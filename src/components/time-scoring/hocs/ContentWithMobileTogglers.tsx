@@ -22,19 +22,22 @@ const Container = styled("div")<{
       border: 1px solid red;
     `}
 `
-const Fab = styled("button")`
+const Fab = styled("button").attrs({
+  className: 'backdrop-blur--lite'
+})`
   width: 56px;
   height: 56px;
   position: absolute;
   border-radius: 50%;
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
-    0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+    0 3px 1px -2px rgba(0, 0, 0, 0.2); */
   /* background-color: #29B6F6; */
   /* background-color: rgba(27,123, 255,0.8); */
-  background-color: rgba(106, 197, 232,0.8);
-  color: #fff;
+  background-color: transparent;
+  border: 2px solid #6efacc;
+  color: #6efacc;
   outline: none;
 
   transition: background-color 0.5s ease-in-out;
@@ -47,7 +50,8 @@ const ListMobileToggler = styled(Fab)<{
   z-index: 4;
   ${(p) => p.opened &&
     css`
-      background-color: #1b7bff;
+      background-color: #6efacc;
+      color: #000;
     `}
   @media(min-width: 768px) {
     display: none;
@@ -62,7 +66,8 @@ const SidebarMobileToggler = styled(Fab)<{
   z-index: 4;
   ${(p) => p.opened &&
     css`
-      background-color: #1b7bff;
+      background-color: #6efacc;
+      color: #000;
     `}
   @media(min-width: 768px) {
     display: none;
@@ -91,7 +96,7 @@ export const ContentWithMobileTogglers = (props: TProps) => (
       }}
       opened={props.listOpened}
     >
-      <i className="fa fa-chart-line" style={{ fontSize: "30px" }} />
+      <i className="fa fa-chart-line" style={{ fontSize: "20px" }} />
     </ListMobileToggler>
 
     <SidebarMobileToggler
@@ -104,7 +109,7 @@ export const ContentWithMobileTogglers = (props: TProps) => (
       }}
       opened={props.sidebarOpened}
     >
-      <i className="fa fa-cogs" style={{ fontSize: "30px" }} />
+      <i className="fas fa-ellipsis-v" style={{ fontSize: "20px" }} />
     </SidebarMobileToggler>
 
     {props.content ? props.content({ ...props }) : null}

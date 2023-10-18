@@ -13,6 +13,7 @@ export const SettingFlexBtn = styled('button')<{ assigned?: boolean; }>`
   }
   border-radius: unset;
   padding: 10px 25px;
+  font-size: 15px;
   ${(p) =>
     p.disabled &&
     p.disabled === true &&

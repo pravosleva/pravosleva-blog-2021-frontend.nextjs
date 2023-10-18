@@ -16,7 +16,9 @@ type TProps = {
 type TResult = {
   averageSpeed: number;
   averageValue: number;
+  date0: number;
   date50: number;
+  date100: number;
 }
 
 export const getAverageResult = ({
@@ -28,7 +30,13 @@ export const getAverageResult = ({
   // 24.10= 1543006800000 | 22.10= 1542834000000 (разница= 172800000)
   // console.log(testStart, testFinish);
 
-  const result: any = {}
+  const result: TResult = {
+    averageSpeed: 0,
+    averageValue: 0,
+    date0: 0,
+    date50: 0,
+    date100: 0,
+  }
   // const testDiff = testFinish - testStart;
 
   if (theTaskList.length === 0 || testDiff === 0) {
@@ -63,10 +71,17 @@ export const getAverageResult = ({
     //   // `testPredSorted= ${testPredSorted}`,
     // ]);
 
+    const bestDate = testPredSorted[0]
+    const worstDate = testPredSorted[testPredSorted.length - 1]
+
     result.averageSpeed = arithmeticalMean(speeds)
     result.averageValue = averageValue
+
+    result.date0 = bestDate + testStart
     result.date50 = averageValue + testStart
-    // console.log(result.date50);
+    result.date100 = worstDate + testStart
+    // console.log(testPredSorted)
+    // console.log(result.date0, result.date50, result.date100);
   }
   return result
 }

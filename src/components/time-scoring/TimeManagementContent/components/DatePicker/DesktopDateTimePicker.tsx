@@ -35,8 +35,8 @@ export const DesktopDateTimePicker = memo(({
       }}
       value={
         selectedDate
-          ? `${label}: ${moment(selectedDate).format('MMM Do dd, HH:mm')}`
-          : `SET ${label}`
+          ? `${label} ${moment(selectedDate).format('MMM Do dd, HH:mm')}`
+          : `⚡ УСТАНОВИТЬ ${label} ⚡`
       }
       // dateFormat='MMM Do dd, hh:mm'
       // @ts-ignore

@@ -225,6 +225,11 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog') ? 'active' : ''}>{t('BLOG')}</a>
                 </Link>
               </li>
+              <li>
+                <Link href="/blog/article/team-scoring">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
+                </Link>
+              </li>
               {/* <li>
                 <Link href="/blog/article/ubuntu-first-steps">
                   <a className={isCurrentPathCb(router.pathname, '/blog/article/[slug]') ? 'active' : ''}>Ubuntu first steps</a>

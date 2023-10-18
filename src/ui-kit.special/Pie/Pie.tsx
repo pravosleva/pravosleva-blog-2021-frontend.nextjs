@@ -6,16 +6,19 @@ import { useCompare } from '~/hooks/useDeepEffect'
 import { TTask } from '~/components/time-scoring/types'
 
 const Wrapper = styled('div')`
+  // position: relative;
+  display: flex;
+  
   width: 100%;
   margin: 0 auto;
 
   @media (max-width: 767px) {
   }
   @media (min-width: 768px) {
-    max-width: 900px;
+    // max-width: 900px;
     box-shadow: rgba(51, 51, 51, 0.2) 0px 0px 4px;
 
-    border-radius: 10px;
+    // border-radius: 10px;
     > div,
     > div > div,
     > div > div > div,
@@ -102,6 +105,11 @@ export const Pie = ({ taskList }: TProps) => {
   return (
     <Wrapper>
       <Chart
+        style={{
+          position: 'sticky',
+          top: 0,
+          left: 0,
+        }}
         chartType="PieChart"
         graphID="ScatterChart"
         // data={[['Age', 'Weight'], ['a', 12], ['b', 5.5]]}

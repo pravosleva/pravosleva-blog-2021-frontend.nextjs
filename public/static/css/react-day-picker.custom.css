@@ -131,10 +131,20 @@
   text-align: center;
   cursor: pointer;
 }
-.DayPicker-Day {
-  width: 40px;
-  height: 40px;
-  font-size: 13px;
+
+@media(max-width: 600px) {
+  .DayPicker-Day {
+    width: 40px;
+    height: 40px;
+    font-size: 13px;
+  }
+}
+@media(min-width: 601px) {
+  .DayPicker-Day {
+    width: 37px;
+    height: 37px;
+    font-size: 10px;
+  }
 }
 
 .DayPicker-WeekNumber {

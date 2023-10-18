@@ -1,5 +1,9 @@
 import moment from 'moment'
-import { useMemo, useCallback, memo } from 'react'
+import {
+  useMemo,
+  useCallback, memo,
+  // useEffect,
+} from 'react'
 import InfiniteCalendar, {
   Calendar,
   withMultipleDates,
@@ -28,7 +32,7 @@ const Layout = styled('div').attrs({
   flex-direction: column;
   justify-content: center;
   background-color: rgba(0,0,0,0.7);
-  z-index: 2;
+  z-index: 4;
 `
 
 type TProps = TTask & {
@@ -36,7 +40,7 @@ type TProps = TTask & {
   setForecastFinishDate: any;
   setRealFinishDate: any;
   stepCounter: number;
-  setStep: any;
+  initStep: any;
 
   isModalOpened: boolean;
   onOpen: (_e: any) => void;
@@ -58,12 +62,15 @@ export const MobileInfiniteCalendar = memo(({
   setForecastFinishDate,
   setRealFinishDate,
   stepCounter,
-  setStep,
+  initStep,
 
   isModalOpened,
   onOpen,
   onClose,
 }: TProps) => {
+  // useEffect(() => {
+  //   initStep()
+  // }, [])
 
   const selectedDates = useMemo(() => {
     const arr = []
@@ -91,7 +98,7 @@ export const MobileInfiniteCalendar = memo(({
   //     setForecastFinishDate,
   //     setRealFinishDate,
   //     stepCounter,
-  //     setStep,
+  //     initStep,
   //   })
   // }, [useCompare([selectedDates])])
 
@@ -109,27 +116,32 @@ export const MobileInfiniteCalendar = memo(({
 
         switch (stepCounter) {
           case 0:
-            return setStartDate(
+            setStartDate(
               new Date(e).getTime(),
               id,
             )
+            break
           case 1:
-            return setForecastFinishDate(
+            setForecastFinishDate(
               new Date(e).getTime(),
               id,
             )
+            break
           case 2:
-            return setRealFinishDate(
+            setRealFinishDate(
               new Date(e).getTime(),
               id,
             )
+            break
           default:
-            return []
+            // return []
+            break
         }
+        return stepCounter + 1
       })
-      .then(() => setStep())
+      .then((v) => initStep(v))
       .catch(console.warn)
-  }, [id, setStartDate, setForecastFinishDate, setRealFinishDate, setStep])
+  }, [id, setStartDate, setForecastFinishDate, setRealFinishDate, initStep, stepCounter])
 
   const theme = useMemo(() => {
     return {
@@ -192,12 +204,42 @@ export const MobileInfiniteCalendar = memo(({
               }
             />
             <Block style={{ marginTop: '16px' }}>
-              <Btn onClick={onClose(id)} fullWidth color='primary'>Ok</Btn>
+              <Btn
+                onClick={onClose(id)}
+                fullWidth
+                color='primary'
+                hasWhiteBorder
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}
+              >
+                <span>Ok</span>
+                {/* <i className="fas fa-check-circle"></i> */}
+              </Btn>
             </Block>
           </Layout>
         ) : (
           <Block>
-            <Btn onClick={onOpen} fullWidth color='primary'>Open</Btn>
+            <Btn
+              onClick={onOpen}
+              fullWidth
+              color='primary'
+              hasWhiteBorder
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '16px',
+              }}
+            >
+              {/* <i className="fas fa-calendar"></i> */}
+              {/* <span /> */}
+              <span>Calendar</span>
+              <i className="fas fa-arrow-right"></i>
+            </Btn>
           </Block>
         )
       }

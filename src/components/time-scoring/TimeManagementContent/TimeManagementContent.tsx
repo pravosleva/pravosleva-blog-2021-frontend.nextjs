@@ -38,6 +38,13 @@ import { TTask } from '~/components/time-scoring/types'
 import { useCompare } from '~/hooks/useDeepEffect'
 // import DatePicker from 'react-date-picker'
 
+// -- NOTE: Custom toast usage
+// toast(
+//   'Sorry, could not be reassigned.\nMay be in future...',
+//   { autoHideDuration: 7000, variant: 'warning' },
+// )
+// --
+
 const DesktopOnly = styled('div')`
   @media (max-width: 767px) {
     display: none;
@@ -50,14 +57,21 @@ const MobileOnly = styled('div')`
 `
 
 const Wrapper = styled('div')<{ test?: boolean; }>`
+  overflowX; hidden;
+  display: flex;
+  flex-direction: column;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
   ${(p) => p.test &&
     css`
       border: 1px solid red;
     `}
   width: 100%;
+  min-height: 100dvh;
   height: 100%;
   box-sizing: border-box;
-  overflow-y: auto;
 
   padding: 0 50px 50px 50px;
   @media (max-width: 767px) {
@@ -67,18 +81,21 @@ const Wrapper = styled('div')<{ test?: boolean; }>`
   top: 0;
   background-image: linear-gradient(
     to right,
-    rgba(98, 178, 208, 0.9),
+    // rgba(98, 178, 208, 0.9),
+    rgba(255,120,30,1),
     rgba(32, 107, 235, 0.9),
     #1b7bff
   );
   color: white;
 
-  overflow-x: hidden;
   & ul {
     margin-left: 0;
   }
 `
-const Item = styled('li')<{ active?: boolean; }>`
+const Item = styled('li').attrs({
+  className: 'backdrop-blur--subdark',
+})<{ active?: boolean; }>`
+  backdrop-filter: unset;
   cursor: pointer;
   padding: 0;
   border: 1px solid transparent;
@@ -114,20 +131,27 @@ const StartFinishDatesFlexContainer = styled('div')`
     justify-content: center;
   }
 `
-const TopSpaceWrapper = styled('div')`
-  width: 100%;
+const TopSpaceWrapper = styled('div').attrs({
+  // className: 'backdrop-blur--subdark',
+})<{ test?: boolean }>`
+  ${(p) => p.test &&
+    css`
+      border: 1px dashed red;
+    `}
 
+  overflowX; hidden;
+  width: 100%;
   position: sticky;
   top: 0;
   z-index: 2;
   /* background-color: rgba(27,123,255,0.8); */
   /* background-color: rgba(0,0,0,0.2); */
-  background-image: linear-gradient(
+  /* background-image: linear-gradient(
     to right,
     rgba(255, 255, 255, 0.45),
     rgba(32, 107, 235, 0.9),
     rgba(0, 0, 0, 0.45)
-  );
+  ); */
   @media (min-width: 768px) {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -135,60 +159,69 @@ const TopSpaceWrapper = styled('div')`
 
   display: flex;
   flex-direction: column;
+  gap: 0;
 `
-const TopSpaceInternalBox = styled('div')`
-  padding: 40px 0 20px 0;
-  @media (max-width: 767px) {
-    padding: 10px 0 0px 0;
-  }
+const TopSpaceInternalBox = styled('div')<{ test?: boolean }>`
+  ${(p) => p.test &&
+    css`
+      border: 1px dashed red;
+    `}
+  padding: 0;
 
   display: flex;
   flex-direction: column;
 `
-const BtnsWrapper = styled('div')`
+// const BtnsWrapper = styled('div')`
+//   width: 100%;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   flex-wrap: wrap;
+//   gap: 16px;
+//   margin-bottom: 16px;
+//   @media (max-width: 767px) {
+//     margin-bottom: 16px;
+//   }
+// `
+const BtnsGrid = styled('div').attrs({
+  className: 'backdrop-blur--subdark',
+})`
   width: 100%;
-
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  & > button {
-    margin-bottom: 10px;
-  }
-
-  & > button:not(:last-child) {
-    margin-right: 10px;
-  }
-
-  @media (max-width: 767px) {
-    margin-bottom: 20px;
-  }
+  padding: 16px 16px 16px 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  // @media (max-width: 767px) { margin-bottom: 16px; }
 `
-const StarsWrapper = styled('div')`
-  // border: 1px solid red;
+const StarsExternalWrapper = styled('div').attrs({
+  className: 'backdrop-blur--subdark',
+})`
+  border: none;
+  z-index: 1;
+`
 
-  margin: 20px auto 0px auto;
-  @media (max-width: 767px) {
-    margin: 0px auto 10px auto;
-  }
+const StarsWrapper = styled('div')`
+  margin: 0 auto;
+  padding: 0px 0 16px 0;
   width: 100%;
   max-width: 300px;
   display: flex;
   justify-content: space-evenly;
 `
 const DiagramWrapper = styled('div')`
-  margin: 20px 10px 0px;
-  @media (max-width: 767px) {
-    margin: 20px 0px 0px 0px;
+  margin: 0px;
+  overflowX: hidden;
+  @media (max-width: 600px) {
+    width: 100vw !important;
   }
 `
-const ToolsPanelToggler = styled('div')`
+const ToolsPanelToggler = styled('div').attrs({
+  className: 'backdrop-blur--subdark',
+})`
   cursor: pointer;
   border-radius: inherit;
 
-  &:hover {
-    background-color: rgba(27, 123, 255, 0.2);
-  }
+  // &:hover { background-color: rgba(27, 123, 255, 0.2); }
   height: 30px;
   display: flex;
   justify-content: center;
@@ -199,7 +232,10 @@ type TProps = {
   taskList: TTask[];
   addNewEmployeeToLS: any;
   removeEmployeeFromLS: any;
-  createNewTask: any;
+  createNewTask: ({ cb }: { cb?: {
+    onSuccess: (e: { isOk: boolean; message?: string; isFirst?: boolean }) => void;
+    onError: (e: { isOk: boolean; message?: string; isFirst?: boolean }) => void;
+  }}) => void;
   activeTaskID: any;
   activeTaskIDToggler: any;
   assign: any;
@@ -212,7 +248,7 @@ type TProps = {
   activeEmployee: any;
   activeComplexity: any;
   stepCounter: any;
-  setStep: any;
+  initStep: any;
   listToggler: any;
 
   complexityToggler: any;
@@ -239,7 +275,7 @@ export const TimeManagementContent = ({
   activeEmployee,
   activeComplexity,
   stepCounter,
-  setStep,
+  initStep,
   listToggler,
   
   complexityToggler,
@@ -313,35 +349,69 @@ export const TimeManagementContent = ({
     activeTaskIDToggler(id)
   }, [setIsModalOpened, activeTaskIDToggler])
 
-  return (
-    <>
-      <Wrapper>
-        <TopSpaceWrapper>
-          <TopSpaceInternalBox>
-            <BtnsWrapper>
-              <Btn onClick={addNewEmployeeToLS}>
-                <i className="fa fa-plus" />
-                {' '}
-                <i className="fa fa-user-circle" />
-              </Btn>
-              {employeeNames &&
-              Array.isArray(employeeNames) &&
-              employeeNames.length > 0 ? (
-                <>
-                  <Btn onClick={() => removeEmployeeFromLS()}>
-                    <i className="fa fa-minus" />
-                    {' '}
-                    <i className="fa fa-user-circle" />
-                  </Btn>
-                  <Btn onClick={createNewTask}>Create task</Btn>
-                </>
-                ) : null}
-              <ClosableSearchPanelToggler onChange={handleSearchValueChange} />
-            </BtnsWrapper>
+  const Diagram = useMemo(() => {
+    return taskList.length > 0 && (
+      <DiagramWrapper>
+        <Pie taskList={informativeTaskList} />
+      </DiagramWrapper>
+    )
+  }, [useCompare([taskList, informativeTaskList])])
 
-            {isToolsOpened && (
+  const MemoizedTopSpaceWrapper = useMemo(() => {
+    return (
+      <TopSpaceWrapper>
+        <TopSpaceInternalBox>
+          <BtnsGrid>
+            <Btn
+              color='secondary-outlined'
+              onClick={addNewEmployeeToLS}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+            >
+              <i className="fa fa-plus" />
+              <i className="fa fa-user-circle" />
+            </Btn>
+            {employeeNames &&
+            Array.isArray(employeeNames) &&
+            employeeNames.length > 0 ? (
               <>
+                <Btn color='secondary-outlined' onClick={() => {
+                  createNewTask({
+                    cb: {
+                      onSuccess: ({ isOk, message, isFirst }) => {
+                        toast(
+                          isFirst ? 'Ваша первая задача создана, теперь установите для нее дату startDate' : (message || 'Что-то пошло не так...'),
+                          { autoHideDuration: 10000, variant: isOk ? 'success' : 'error', preventDuplicate: true },
+                        )
+                      },
+                      onError: ({ isOk, message }) => {
+                        toast(
+                          message || `Что-то пошло не так... ${JSON.stringify({ isOk, message })}`,
+                          { autoHideDuration: 10000, variant: 'error' },
+                        )
+                      },
+                    }
+                  })
+                }} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa fa-plus" />
+                  <span>Task</span>
+                </Btn>
+                <Btn
+                  color='secondary-outlined'
+                  onClick={() => removeEmployeeFromLS()}
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+                >
+                  <i className="fa fa-minus" />
+                  <i className="fa fa-user-circle" />
+                </Btn>
+              </>
+              ) : null}
+          </BtnsGrid>
+
+          {isToolsOpened && (
+            <>
+              <StarsExternalWrapper>
                 <StarsWrapper onClick={(e) => e.stopPropagation()}>
+                  <ClosableSearchPanelToggler onChange={handleSearchValueChange} />
                   {[1, 2, 3, 4, 5].map((rate) => (
                     <span
                       style={{ cursor: 'pointer' }}
@@ -378,23 +448,26 @@ export const TimeManagementContent = ({
                     />
                   </span>
                 </StarsWrapper>
+              </StarsExternalWrapper>
+              {Diagram}
+            </>
+          )}
+        </TopSpaceInternalBox>
+        <ToolsPanelToggler onClick={handleToggleToolsPanel}>
+          {isToolsOpened ? (
+            <i className="fas fa-chevron-up" />
+          ) : (
+            <i className="fas fa-chevron-down" />
+          )}
+        </ToolsPanelToggler>
+      </TopSpaceWrapper>
+    )
+  }, [isToolsOpened, useCompare([employeeNames]), activeComplexity, createNewTask, handleSearchValueChange, removeEmployeeFromLS, complexityToggler, handleToggleToolsPanel, Diagram])
 
-                {taskList.length > 0 && (
-                  <DiagramWrapper>
-                    <Pie taskList={informativeTaskList} />
-                  </DiagramWrapper>
-                )}
-              </>
-            )}
-          </TopSpaceInternalBox>
-          <ToolsPanelToggler onClick={handleToggleToolsPanel}>
-            {isToolsOpened ? (
-              <i className="fas fa-chevron-up" />
-            ) : (
-              <i className="fas fa-chevron-down" />
-            )}
-          </ToolsPanelToggler>
-        </TopSpaceWrapper>
+  return (
+    <>
+      <Wrapper>
+        {MemoizedTopSpaceWrapper}
 
         <p
           style={{
@@ -531,6 +604,24 @@ export const TimeManagementContent = ({
                                 style={{ fontSize: '12px', color: 'white' }}
                               />
                             </AbsoluteCircleBtn>
+                            {
+                              !!realFinishDate && (
+                                <AbsoluteCircleBtn
+                                  topRightStyles="top: 10px; right: 90px;"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    const isConfirmed = window.confirm('⚠️ Реальное время финиша будет сброшено. Ok?')
+                                    if (isConfirmed) setRealFinishDate(null, id)
+                                  }}
+                                  title='Кнопка сброса параметра "реального финиша" realFinishDate (например, если вы хотите добавить время). Сейчас эта задача формирует статистику.'
+                                >
+                                  <i
+                                    className="fa fa-power-off"
+                                    style={{ fontSize: '14px', color: 'white' }}
+                                  />
+                                </AbsoluteCircleBtn>
+                              )
+                            }
 
                             <MainTitle>
                               <div
@@ -538,51 +629,65 @@ export const TimeManagementContent = ({
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: '8px',
+                                  marginBottom: '8px',
                                 }}
                               >
                                 <b>{employee}</b>
                                 
-                                <CircleBtn
+                                {/* <CircleBtn
                                   onClick={(e) => {
                                     e.stopPropagation()
                                     window.alert('Сложность фичи от 1 до 5')
                                   }}
                                 >
+                                  <>
+                                    <i
+                                      className="fa fa-star"
+                                      style={{
+                                        fontSize: '12px',
+                                        color: '#fff',
+                                        opacity: '0.3'
+                                      }}
+                                    />
+                                    <span style={{ opacity: '0.3', marginLeft: '3px', color: '#fff' }}>{complexity}</span>
+                                  </>
+                                </CircleBtn> */}
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', opacity: '0.3', color: '#fff' }}>
                                   <i
                                     className="fa fa-star"
-                                    style={{
-                                      fontSize: '12px',
-                                      color: 'white',
-                                      opacity: '0.3'
-                                    }}
+                                    style={{ fontSize: '12px' }}
                                   />
-                                </CircleBtn>
-
-                                <span style={{ opacity: '0.3' }}>{complexity}</span>
+                                  <span>{complexity}</span>
+                                </div>
+                                
                                 {!!percentage && (
-                                  <span>
-                                    {`${percentage} %`}
-                                  </span>
+                                  <>
+                                    <span>•</span>
+                                    <span>
+                                      {`${percentage} %`}
+                                    </span>
+                                    <CircleBtn
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        window.alert('Процент отклонения по времени относительно самого неудачного кейса аналогичной сложности')
+                                      }}
+                                    >
+                                      <i
+                                        className="fa fa-question"
+                                        style={{ fontSize: '14px', color: 'white' }}
+                                      />
+                                    </CircleBtn>
+                                  </>
                                 )}
-                                <CircleBtn
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    window.alert('Процент отклонения по времени относительно самого неудачного кейса аналогичной сложности')
-                                  }}
-                                >
-                                  <i
-                                    className="fa fa-question"
-                                    style={{ fontSize: '14px', color: 'white' }}
-                                  />
-                                </CircleBtn>
                               </div>
                               <div>
                                 {/* <small>{description || 'No description'}</small> */}
                                 <Description source={description} />
                                 {hasTaskListAsExperience && isInProgress && (
                                   <>
-                                    <div style={{ opacity: '0.5', marginBottom: '10px' }}>
-                                      <small>{`Ориентировочное время: ${new Date(targetDate).toLocaleDateString()}`}</small>
+                                    <div style={{ opacity: '0.5', marginBottom: '10px', fontWeight: 'bold' }}>
+                                      <small>{`Ориентировочное время ${new Date(targetDate).toLocaleDateString()}`}</small>
                                     </div>
                                     {/*
                                       <ProgressBar
@@ -668,7 +773,7 @@ export const TimeManagementContent = ({
                                       selectedDate={startDate}
                                       setDate={setStartDate}
                                       id={id}
-                                      label="START DATE"
+                                      label="СТАРТ"
                                     />
                                   </div>
                                   <div style={{ flex: '1 1 auto' }}>
@@ -676,7 +781,7 @@ export const TimeManagementContent = ({
                                       selectedDate={realFinishDate}
                                       setDate={setRealFinishDate}
                                       id={id}
-                                      label="REAL FINISH DATE"
+                                      label="РЕАЛЬНЫЙ ФИНИШ"
                                     />
                                   </div>
                                 </StartFinishDatesFlexContainer>
@@ -736,7 +841,7 @@ export const TimeManagementContent = ({
                                       selectedDate={forecastFinishDate}
                                       setDate={setForecastFinishDate}
                                       id={id}
-                                      label="FORECAST DATE"
+                                      label="ПРОГНОЗ ИСПОЛНИТЕЛЯ"
                                     />
                                     {/*
                                       <DatePicker
@@ -815,6 +920,19 @@ export const TimeManagementContent = ({
                           forecastFinishDate = null,
                           complexity,
                         } = task
+                        const hasStat = allTaskList.filter(
+                          ({
+                            employee: e,
+                            complexity: c,
+                            startDate,
+                            realFinishDate,
+                            forecastFinishDate,
+                          }: any) => !!startDate &&
+                            !!realFinishDate &&
+                            !!forecastFinishDate &&
+                            c === complexity &&
+                            e === employee,
+                        ).length > 0
                         return (
                           <li
                             key={Math.random()}
@@ -882,13 +1000,49 @@ export const TimeManagementContent = ({
                                 style={{ fontSize: '12px', color: 'white' }}
                               />
                             </button>
+                            {
+                              !!realFinishDate && (
+                                <button
+                                  style={{
+                                    position: 'absolute',
+                                    top: '50px',
+                                    right: '10px',
+                                    border: 'none',
+                                    outline: 'none',
+                                    cursor: 'pointer',
+                                    width: '30px',
+                                    height: '30px',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'transparent',
+                                    boxShadow: 'rgba(51, 51, 51, 0.2) 0px 0px 4px',
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    // removeTaskFromLS(id)
+                                    const isConfirmed = window.confirm('⚠️ Реальное время финиша будет сброшено. Ok?')
+
+                                    if (isConfirmed) setRealFinishDate(null, id)
+                                  }}
+                                >
+                                  <i
+                                    className="fa fa-power-off"
+                                    style={{ fontSize: '14px', color: 'white' }}
+                                  />
+                                </button>
+                              )
+                            }
                             <div
                               style={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                border: 'none',
-                                lineHeight: '50px',
-                                textAlign: 'center',
+                                gap: '16px',
+                                // border: 'none',
+                                
+                                // textAlign: 'center',
+                                padding: '0 16px 0 16px ',
                                 cursor: 'pointer',
                                 opacity: activeTaskID
                                   ? activeTaskID === id
@@ -899,48 +1053,73 @@ export const TimeManagementContent = ({
                               onClick={() => {
                                 // e.stopPropagation();
                                 activeTaskIDToggler(id)
+                                
+                                const targetStep = !!startDate ? !!forecastFinishDate ? !!realFinishDate ? 0 : 2 : 1 : 0
+                                initStep(targetStep)
                               }}
                             >
-                              <span>
+                              <>
                                 {(() => {
-                                  const dscrAsArr = description.split('\n')
-
-                                  if (dscrAsArr.length > 1) {
-                                    return <strong>{dscrAsArr[0]}</strong>
-                                  }
+                                  // const dscrAsArr = description.split('\n')
+                                  // if (dscrAsArr.length > 1) return (
+                                  //   <div style={{ display: 'flex', flexDirection: 'column', }}>
+                                  //     <strong style={{ lineHeight: '50px' }}>{`#${id}`}</strong>
+                                  //     <span>{dscrAsArr[0]}...</span>
+                                  //   </div>
+                                  // )
+                                  
                                   return (
-                                    <strong>
-                                      #
-                                      {id}
-                                    </strong>
-                                  )
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                      <span style={{ lineHeight: '50px', display: 'flex', flexDirection: 'row', gap: '8px' }}><b>{`#${id}`}</b><span>•</span><span>{employee}</span></span>
+                                      <span>{description}</span>
+                                    </div>
+                                    )
                                 })()}
-                                {employee ? (
-                                  <>
-                                    <br />
-                                    {employee}
-                                  </>
-                                ) : (
-                                  ''
-                                )}
-                              </span>
-
-                              {activeTaskID === id ? (
-                                <i
-                                  style={{ margin: '10px 0 30px 0' }}
-                                  className="fa fa-chevron-circle-up"
-                                />
-                              ) : (
-                                <i
-                                  style={{ margin: '10px 0 30px 0' }}
-                                  className="fa fa-chevron-circle-down"
-                                />
-                              )}
+                                {
+                                  hasStat && !!startDate && !!forecastFinishDate && !realFinishDate &&  (
+                                    <ProgressBar
+                                      startDate={startDate}
+                                      // @ts-ignore
+                                      targetDate={getTargetDate({
+                                        taskList: allTaskList.filter(
+                                          ({
+                                            employee: e,
+                                            complexity: c,
+                                            startDate,
+                                            realFinishDate,
+                                            forecastFinishDate,
+                                          }: any) => !!startDate &&
+                                            !!realFinishDate &&
+                                            !!forecastFinishDate &&
+                                            c === complexity &&
+                                            e === employee,
+                                        ),
+                                        testDiff: forecastFinishDate - startDate,
+                                        testStart: startDate,
+                                      })}
+                                    />
+                                  )
+                                }
+                                <pre style={{ margin: 0 }}>{JSON.stringify({ startDate, forecastFinishDate, realFinishDate, employee }, null, 2)}</pre>
+                                <div style={{ display: 'flex', lineHeight: 'unset', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', }}>
+                                  {activeTaskID === id ? (
+                                    <i
+                                      style={{ marginBottom: '16px' }}
+                                      // className='fa fa-chevron-circle-up'
+                                      className='fas fa-times-circle'
+                                    />
+                                  ) : (
+                                    <i
+                                      // className='fa fa-chevron-circle-down'
+                                      className='fas fa-calendar'
+                                    />
+                                  )}
+                                </div>
+                              </>
                             </div>
+
                             {activeTaskID === id ? (
-                              <div
-                                style={{ marginBottom: '20px' }}
-                              >
+                              <div>
                                 {!sidebarOpened && !listOpened
                                   ? ((step) => {
                                     switch (step) {
@@ -950,12 +1129,11 @@ export const TimeManagementContent = ({
                                             <span
                                               style={{ textAlign: 'center' }}
                                             >
-                                              Step 0:
+                                              Шаг 1.
+                                              {' '}
+                                              {startDate ? 'Переустановите' : 'Установите'}
                                               {' '}
                                               <strong>startDate</strong>
-                                              {startDate
-                                                ? ' (if necessary)'
-                                                : ''}
                                             </span>
                                           </div>
                                         )
@@ -965,14 +1143,13 @@ export const TimeManagementContent = ({
                                             <span
                                               style={{ textAlign: 'center' }}
                                             >
-                                              Step 1:
+                                              Шаг 2.
+                                              {' '}
+                                              {forecastFinishDate ? 'Переустановите' : 'Установите'}
                                               {' '}
                                               <strong>
                                                 forecastFinishDate
                                               </strong>
-                                              {forecastFinishDate
-                                                ? ' (if necessary)'
-                                                : ''}
                                             </span>
                                           </div>
                                         )
@@ -982,12 +1159,11 @@ export const TimeManagementContent = ({
                                             <span
                                               style={{ textAlign: 'center' }}
                                             >
-                                              Step 2:
+                                              Шаг 3.
+                                              {' '}
+                                              {realFinishDate ? 'Переустановите' : 'Установите'}
                                               {' '}
                                               <strong>realFinishDate</strong>
-                                              {realFinishDate
-                                                ? ' (if necessary)'
-                                                : ''}
                                             </span>
                                           </div>
                                         )
@@ -995,7 +1171,8 @@ export const TimeManagementContent = ({
                                         return null
                                     }
                                   })(stepCounter)
-                                  : null}
+                                  : null
+                                }
 
                                 {/* https://github.com/pravosleva/time-management/issues/1 */}
                                 
@@ -1006,7 +1183,7 @@ export const TimeManagementContent = ({
                                   setForecastFinishDate={setForecastFinishDate}
                                   setRealFinishDate={setRealFinishDate}
                                   stepCounter={stepCounter}
-                                  setStep={setStep}
+                                  initStep={initStep}
                                   {...task}
                                   isModalOpened={isModalOpened}
                                   onOpen={handleOpen}
@@ -1022,7 +1199,7 @@ export const TimeManagementContent = ({
                               </div>
                             ) : null}
                             
-                            {startDate && !realFinishDate ? (
+                            {/* startDate && !realFinishDate ? (
                               <>
                                 <div
                                   style={{
@@ -1086,7 +1263,7 @@ export const TimeManagementContent = ({
                                   </em>
                                 </div>
                               </>
-                            ) : null}
+                            ) : null */}
                           </li>
                         )
                       },

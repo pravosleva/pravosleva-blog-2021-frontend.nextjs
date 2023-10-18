@@ -57,6 +57,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>{t('BLOG')}</a>
       </Link>
     )}
+    {!isCurrentPathCb('/blog/article/team-scoring') && (
+      <Link href="/blog/article/team-scoring" as="/blog/article/team-scoring">
+        <a onClick={onHideModal}>About Team Scoring 2019</a>
+      </Link>
+    )}
 
     {/* -- NOTE: Target Фкешсдуы */}
     {!isCurrentPathCb('/blog/article/tires-how-to-choose') && (

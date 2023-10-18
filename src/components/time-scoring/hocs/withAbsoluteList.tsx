@@ -2,7 +2,7 @@
 import React from 'react'
 import { compose, withStateHandlers } from 'recompose'
 import styled, { css } from 'styled-components'
-import ReactHtmlParser from 'react-html-parser'
+// import ReactHtmlParser from 'react-html-parser'
 // import moment from 'moment'
 import { SpeedGraph } from '~/ui-kit.special/SpeedGraph'
 import { DistributionFunctionGraph } from '~/ui-kit.special/DistributionFunctionGraph'
@@ -84,7 +84,9 @@ const InternalListWrapper = styled("div")`
     */
   box-sizing: border-box;
 `
-const ListDesktopToggler = styled("button")`
+const ListDesktopToggler = styled("button").attrs({
+  className: 'backdrop-blur--subdark',
+})`
   position: absolute;
   top: 0;
   right: -30px;
@@ -93,10 +95,10 @@ const ListDesktopToggler = styled("button")`
   padding: 0;
   cursor: pointer;
   border: none;
-  background-color: rgba(255, 255, 255, 0.8);
+  // background-color: rgba(255, 255, 255, 0.8);
   color: inherit;
   font-size: 30px;
-  opacity: 0.3 !important;
+  // opacity: 0.3 !important;
   @media (max-width: 767px) {
     display: none;
   }
@@ -261,31 +263,7 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                     </Block>
                   </FlexColumn>
                 </>
-              ) : (
-                <FlexColumn>
-                  <StickyH2>
-                    <i
-                      className="fa fa-wrench"
-                      style={{ marginRight: "15px" }}
-                    />
-                    TODO
-                  </StickyH2>
-                  <Block>
-                    <Note>
-                      <ul>
-                        {[
-                          "Точность прогноза",
-                          "Эффективность прогноза",
-                          "График эффективности прогнозов за отдельный период",
-                        ].map((e) => (
-                          <li key={Math.random()}>{ReactHtmlParser(e)}</li>
-                        ))}
-                      </ul>
-                      <em>Please, select the employee...</em>
-                    </Note>
-                  </Block>
-                </FlexColumn>
-              )}
+              ) : null}
               
               <FlexColumn>
                 <StickyH2>
@@ -354,13 +332,15 @@ export const withAbsoluteList = (ComposedComponent: any) =>
           <ListDesktopToggler onClick={() => props.listToggler()}>
             {props.listOpened ? (
               <i
-                style={{ fontSize: "16px" }}
-                className="fa fa-angle-double-left"
+                style={{ fontSize: "20px", color: '#fff' }}
+                // className="fa fa-angle-double-left"
+                className='fas fa-chevron-left'
               />
             ) : (
               <i
-                style={{ fontSize: "16px" }}
-                className="fa fa-angle-double-right"
+                style={{ fontSize: "20px", color: '#fff' }}
+                // className="fa fa-angle-double-right"
+                className='fas fa-chevron-right'
               />
             )}
           </ListDesktopToggler>

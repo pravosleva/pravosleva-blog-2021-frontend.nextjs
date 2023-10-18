@@ -7,6 +7,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
   ...articlesListAboutNginx,
   ...articlesListAboutJSVanilla,
+  'team-scoring': {
+    id: '653053616917cd0d733cddb9',
+    brief: 'Можно предсказать будущее! Но только в случае если: Вы располагаете достаточным количеством актуальной статистики.',
+    bg: {
+      size: {
+        w: 1200,
+        h: 630,
+      },
+      src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
+      type: 'image/jpg',
+    },
+  },
   'google-sheets-api-quota': {
     id: '64c8d7dbdb108f2f99272e0c',
     brief: 'Чтоб не забыть',

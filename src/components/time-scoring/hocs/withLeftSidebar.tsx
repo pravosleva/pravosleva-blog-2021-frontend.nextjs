@@ -7,7 +7,7 @@ import styled, { css } from 'styled-components'
 import ReactHtmlParser from 'react-html-parser'
 import { MyDayPicker } from '~/components/time-scoring/TimeManagementContent/components/DatePicker/MyDayPicker'
 import { getAverageResult } from '~/ui-kit.special/utils/scoring/getAverageResult'
-import { Block, FlexColumn, Note, StickyH2, StickyTopBox } from '~/ui-kit.special'
+import { Block, CollapsibleBox, FlexColumn, Note, StickyH2, StickyTopBox } from '~/ui-kit.special'
 import { Btn } from '~/ui-kit.special/Btn/Btn'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { TTask } from '../types'
@@ -147,368 +147,488 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
       },
     },
   ),
-)((props: any) => (
-  <Wrapper>
-    <Sidebar
-      // @ts-ignore
-      opened={props.sidebarOpened}
-    >
-      <ResponsiveBlock>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0px',
-          }}
-        >
-          
-            {props.employeeNames.length > 0 ? (
-              <div style={{
-                marginBottom: '25px',
-              }}>{
-              props.employeeNames.map((employee: string) => {
-                const theTaskList = props.taskList
-                  .filter((e: any) => e.employee === employee)
-                  .filter((e: any) => !!e.startDate && !!e.realFinishDate && !!e.forecastFinishDate)
-                  .filter((e: any) => (!!props.activeComplexity ? e.complexity === props.activeComplexity : true))
-                const selectedStartDays = getSelectedDays(
-                  props.testDates,
-                  employee,
-                  "startDate",
-                )
-                const selectStartDay = (e: any) => props.setTestDate(
-                  "startDate",
-                  new Date(e).getTime(),
-                  employee,
-                )
-                const selectedForecastDays = getSelectedDays(
-                  props.testDates,
-                  employee,
-                  "finishDate",
-                )
-                const selectForecastDay = (e: any) => props.setTestDate(
-                  "finishDate",
-                  new Date(e).getTime(),
-                  employee,
-                )
+)((props: any) => {
+  return (
+    <Wrapper>
+      <Sidebar
+        // @ts-ignore
+        opened={props.sidebarOpened}
+      >
+        <ResponsiveBlock>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0px',
+            }}
+          >
+            
+              {props.employeeNames.length > 0 ? (
+                <div style={{
+                  marginBottom: '25px',
+                }}>{
+                props.employeeNames.map((employee: string) => {
+                  const theTaskList = props.taskList
+                    .filter((e: any) => e.employee === employee)
+                    .filter((e: any) => !!e.startDate && !!e.realFinishDate && !!e.forecastFinishDate)
+                    .filter((e: any) => (!!props.activeComplexity ? e.complexity === props.activeComplexity : true))
+                  const selectedStartDays = getSelectedDays(
+                    props.testDates,
+                    employee,
+                    "startDate",
+                  )
+                  const selectStartDay = (e: any) => props.setTestDate(
+                    "startDate",
+                    new Date(e).getTime(),
+                    employee,
+                  )
+                  const selectedForecastDays = getSelectedDays(
+                    props.testDates,
+                    employee,
+                    "finishDate",
+                  )
+                  const selectForecastDay = (e: any) => props.setTestDate(
+                    "finishDate",
+                    new Date(e).getTime(),
+                    employee,
+                  )
 
-                return (
-                  <Item
-                    key={employee}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      // props.activeEmployeeToggler(employee);
-                    }}
-                    active={props.activeEmployee === employee}
-                    // allIsActive={!props.activeEmployee}
-                  >
-                    <StickyTopBox
-                      onClick={() => props.activeEmployeeToggler(employee)}
+                  const getTestDatesAnalysis = (code: 'date0' | 'date50' | 'date100') => ((code: 'date0' | 'date50' | 'date100') => {
+                    try {
+                      const obj = props.testDates.filter((e: any) => Object.keys(e).includes(employee))[0]
+
+                      if (!obj) throw new Error('⚠️ Проверьте testDates')
+
+                      const result = getAverageResult({
+                        theTaskList,
+                        employee,
+                        testDiff: obj[employee].finishDate - obj[employee].startDate,
+                        testStart: new Date(
+                          props.testDates.filter((e: any) => Object.keys(e).includes(employee))[0]
+                            ? obj[employee].startDate
+                            : null,
+                        ).getTime(),
+                        // testFinish
+                      })
+
+                      if (!result?.[code]) throw new Error('<b>Проверьте параметры ⚠️</b>')
+
+                      if (obj) return new Date(result[code]).toDateString()
+                      
+                      return "-"
+                    } catch (err: any) {
+                      return err?.message || 'No err.message'
+                    }
+                  })(code)
+
+                  const infoSet = new Set()
+                  infoSet.add(getTestDatesAnalysis('date0'))
+                  infoSet.add(getTestDatesAnalysis('date50'))
+                  infoSet.add(getTestDatesAnalysis('date100'))
+
+                  const descr: string[] = [
+                    '<i class="fas fa-thumbs-up" style="min-width: 22px;"></i><span>В лучшем случае</span>',
+                    '<i class="fas fa-balance-scale" style="min-width: 22px;"></i><span>Скорее всего</span>',
+                    '<i class="fas fa-thumbs-down" style="min-width: 22px;"></i><span>В худшем случае</span>',
+                  ]
+                  let infoHtml: string = ''
+                  switch (infoSet.size) {
+                    case 3:
+                      infoHtml = [...infoSet].map((str, i) => `<span style='display:flex;flex-direction:row;gap:8px;align-items:center;'><span style=\'display:flex;flex-direction:row;gap:8px;align-items:center;\'>${descr[i] || 'No descr'}</span><b>${str}</b></span>`).join('')
+                      break
+                    case 2:
+                      infoHtml = [...infoSet].map((str, i) => `<span style='display:flex;flex-direction:row;gap:8px;align-items:center;'><span style=\'display:flex;flex-direction:row;gap:8px;align-items:center;\'>${i === 0 ? descr[0] : descr[descr.length - 1]}</span><b>${str}</b></span>`).join('')
+                      break
+                    case 1:
+                      infoHtml = [...infoSet].map((str) => `<span style='display:flex;flex-direction:row;gap:8px;align-items:center;'><i class="fas fa-balance-scale" style="min-width: 22px;"></i><span>Ожидаемая дата</span><b>${str}</b></span>`).join('')
+                      break
+                    default:
+                      infoHtml = 'Нет данных'
+                      break
+                  }
+
+                  return (
+                    <Item
+                      key={employee}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        // props.activeEmployeeToggler(employee);
+                      }}
+                      active={props.activeEmployee === employee}
+                      // allIsActive={!props.activeEmployee}
                     >
-                      <div
+                      <StickyTopBox
+                        onClick={() => props.activeEmployeeToggler(employee)}
                         style={{
-                          display: 'flex',
-                          marginBottom: '10px',
-                        }}>
-                        <div>
-                          <strong
-                            style={{
-                              textDecoration: "underline",
-                              fontSize: "18px",
-                              // fontWeight: '500',
-                              // fontSize: '1.15em',
-                              // color: 'rgb(0, 191, 255)',
-                              color:
-                                props.activeEmployee === employee
-                                  ? "#e46046"
-                                  : "rgb(0, 191, 255)",
-                            }}
-                          >
-                            <i
-                              className={props.activeEmployee === employee ? "fa fa-chevron-up" : "fa fa-chevron-down"}
-                              style={{ marginRight: "15px" }}
-                            />
-                            {employee}
-                          </strong>
-                        </div>
+                          borderBottom: props.activeEmployee === employee ? '1px solid lightgray' : 'none',
+                        }}
+                      >
                         <div
                           style={{
-                            marginLeft: "auto",
-                            // paddingRight: props.activeEmployee === employee ? '10px' : '0'
-                          }}
-                        >
-                          {
-                            // @ts-ignore
-                            getAverageResult({
-                              theTaskList,
-                              employee,
-                            }).averageSpeed.toFixed(3)
-                          }
-                          {" "}
-                          /
-                          {' '}
-                          {theTaskList.length}
-                        </div>
-                      </div>
-                      {/* rgb(255, 149, 0) */}
+                            display: 'flex',
+                            // marginBottom: '10px',
+                            fontSize: 'smaller',
+                            fontFamily: 'Montserrat',
+                          }}>
+                          <div>
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: '16px',
+                                // fontSize: "18px",
+                                // fontWeight: '500',
+                                // fontSize: '1.15em',
+                                // color: 'rgb(0, 191, 255)',
+                                color:
+                                  props.activeEmployee === employee
+                                    ? "#e46046"
+                                    : "rgb(0, 191, 255)",
+                              }}
+                            >
+                              <i className={props.activeEmployee === employee ? "fa fa-chevron-up" : "fa fa-chevron-down"} />
+                              <div
+                                className='truncate'
+                                style={{
+                                  textDecoration: 'underline',
+                                  textTransform: 'uppercase',
+                                  marginBottom: '0px',
 
-                      <small>
-                        AVG speed
-                        {" "}
-                        <strong>
-                          {
-                            // @ts-ignore
-                            getAverageResult({
-                              theTaskList,
-                              employee,
-                            }).averageSpeed.toFixed(3)
-                          }
-                        </strong>
-                        {" "}
-                        / Total
-                        {' '}
-                        <strong>{theTaskList.length}</strong>
-                      </small>
-                    </StickyTopBox>
-
-                    {/* JSON.stringify(props.testDates.filter((e) => Object.keys(e).includes(employee))) */}
-                    {props.activeEmployee === employee ? (
-                      // && props.testDates
-                      // && props.testDates.filter((e) => Object.keys(e).includes(employee))[0]
-                      <FlexColumn>
-                        <Block>
+                                  fontSize: '1rem',
+                                  lineHeight: 1.1,
+                                  fontWeight: 'bold',
+                                }}
+                              >{employee}</div>
+                            </div>
+                          </div>
                           <div
                             style={{
-                              // border: '1px solid red',
-                              margin: "20px auto 20px auto",
-                              maxWidth: "300px",
-                              display: "flex",
-                              justifyContent: "space-evenly",
+                              marginLeft: "auto",
+                              // paddingRight: props.activeEmployee === employee ? '10px' : '0'
                             }}
-                            onClick={(e) => e.stopPropagation()}
                           >
-                            {[1, 2, 3, 4, 5].map((rate) => (
+                            {
+                              // @ts-ignore
+                              getAverageResult({
+                                theTaskList,
+                                employee,
+                              }).averageSpeed.toFixed(3)
+                            }
+                            {" "}
+                            /
+                            {' '}
+                            {theTaskList.length}
+                          </div>
+                        </div>
+                        {/* rgb(255, 149, 0) */}
+
+                        <small>
+                          AVG speed
+                          {" "}
+                          <strong>
+                            {
+                              // @ts-ignore
+                              getAverageResult({
+                                theTaskList,
+                                employee,
+                              }).averageSpeed.toFixed(3)
+                            }
+                          </strong>
+                          {" "}
+                          / Total
+                          {' '}
+                          <strong>{theTaskList.length}</strong>
+                        </small>
+                      </StickyTopBox>
+
+                      {/* JSON.stringify(props.testDates.filter((e) => Object.keys(e).includes(employee))) */}
+                      {props.activeEmployee === employee ? (
+                        // && props.testDates
+                        // && props.testDates.filter((e) => Object.keys(e).includes(employee))[0]
+                        <FlexColumn>
+                          <Block>
+                            <div
+                              style={{
+                                // border: '1px solid red',
+                                margin: "20px auto 20px auto",
+                                maxWidth: "300px",
+                                display: "flex",
+                                justifyContent: "space-evenly",
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {[1, 2, 3, 4, 5].map((rate) => (
+                                <span
+                                  key={rate}
+                                  onClick={(_e) => {
+                                    // e.stopPropagation();
+                                    if (props.activeComplexity !== rate) { props.complexityToggler(rate) }
+                                  }}
+                                >
+                                  <i
+                                    className="fa fa-star"
+                                    style={{
+                                      transition: "all 0.3s linear",
+                                      color:
+                                        props.activeComplexity >= rate
+                                          ? "gray"
+                                          : "lightgray",
+                                    }}
+                                  />
+                                </span>
+                              ))}
                               <span
-                                key={rate}
                                 onClick={(_e) => {
-                                  // e.stopPropagation();
-                                  if (props.activeComplexity !== rate) { props.complexityToggler(rate) }
+                                  if (props.activeComplexity !== 0) { props.complexityToggler(0) }
                                 }}
                               >
                                 <i
-                                  className="fa fa-star"
+                                  className="fa fa-ban"
                                   style={{
                                     transition: "all 0.3s linear",
                                     color:
-                                      props.activeComplexity >= rate
+                                      props.activeComplexity === 0
                                         ? "gray"
                                         : "lightgray",
                                   }}
                                 />
                               </span>
-                            ))}
-                            <span
-                              onClick={(_e) => {
-                                if (props.activeComplexity !== 0) { props.complexityToggler(0) }
+                            </div>
+                            <Note
+                              style={{
+                                opacity: "0.5",
+                                // marginTop: "10px",
+                                cursor: "default",
                               }}
+                              // onClick={e => e.stopPropagation()}
                             >
-                              <i
-                                className="fa fa-ban"
-                                style={{
-                                  transition: "all 0.3s linear",
-                                  color:
-                                    props.activeComplexity === 0
-                                      ? "gray"
-                                      : "lightgray",
-                                }}
-                              />
-                            </span>
-                          </div>
-                          <Note
-                            style={{
-                              opacity: "0.5",
-                              // marginTop: "10px",
-                              cursor: "default",
-                            }}
-                            // onClick={e => e.stopPropagation()}
-                          >
-                            <small>
-                              Выберите даты старта и прогноза задачи чтобы увидеть
-                              анализ на основании предыдущей статистики данного
-                              исполнителя. Звездочки - сложность фич.
-                            </small>
-                          </Note>
-                          {/* WAY 1 */}
+                              <small>
+                                Выберите даты старта и прогноза задачи чтобы увидеть
+                                анализ на основании предыдущей статистики данного
+                                исполнителя. Звездочки - сложность фич.
+                              </small>
+                            </Note>
+                            {/* WAY 1 */}
 
-                          {/*
-                            <div
-                              style={{ padding: '10px 15px 10px 15px' }}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div style={{ paddingBottom: '5px' }}>
+                            {/*
+                              <div
+                                style={{ padding: '10px 15px 10px 15px' }}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div style={{ paddingBottom: '5px' }}>
+                                  <DatePickerInput
+                                    // https://github.com/buildo/rc-datepicker/blob/master/src/README.md
+                                    onChange={(e) => props.setTestDate('startDate', moment(e).valueOf(), employee)}
+                                    value={(() => {
+                                      const obj = props.testDates.filter((e) => Object.keys(e).includes(employee))[0];
+
+                                      if (obj && obj[employee]) { return moment(obj[employee].startDate); }
+                                      return moment();
+                                    })()}
+                                    className='my-custom-datepicker-component'
+                                    position='top'
+                                    showOnInputClick
+                                  />
+                                </div>
                                 <DatePickerInput
-                                  // https://github.com/buildo/rc-datepicker/blob/master/src/README.md
-                                  onChange={(e) => props.setTestDate('startDate', moment(e).valueOf(), employee)}
+                                  onChange={(e) => props.setTestDate('finishDate', moment(e).valueOf(), employee)}
                                   value={(() => {
                                     const obj = props.testDates.filter((e) => Object.keys(e).includes(employee))[0];
 
-                                    if (obj && obj[employee]) { return moment(obj[employee].startDate); }
+                                    if (obj && obj[employee]) { return moment(obj[employee].finishDate) }
                                     return moment();
                                   })()}
                                   className='my-custom-datepicker-component'
-                                  position='top'
+                                  position='bottom'
                                   showOnInputClick
                                 />
+
                               </div>
-                              <DatePickerInput
-                                onChange={(e) => props.setTestDate('finishDate', moment(e).valueOf(), employee)}
-                                value={(() => {
-                                  const obj = props.testDates.filter((e) => Object.keys(e).includes(employee))[0];
+                            */}
 
-                                  if (obj && obj[employee]) { return moment(obj[employee].finishDate) }
-                                  return moment();
-                                })()}
-                                className='my-custom-datepicker-component'
-                                position='bottom'
-                                showOnInputClick
-                              />
+                            {/* WAY 2 */}
+                            <DayPickerWrapper
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div>
+                                <MyDayPicker
+                                  selectedDays={selectedStartDays}
+                                  onDayClick={selectStartDay}
+                                />
+                              </div>
+                              <div>
+                                <MyDayPicker
+                                  selectedDays={selectedForecastDays}
+                                  onDayClick={selectForecastDay}
+                                />
+                              </div>
+                            </DayPickerWrapper>
 
-                            </div>
-                          */}
-
-                          {/* WAY 2 */}
-                          <DayPickerWrapper
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <div>
-                              <MyDayPicker
-                                selectedDays={selectedStartDays}
-                                onDayClick={selectStartDay}
-                              />
-                            </div>
-                            <div>
-                              <MyDayPicker
-                                selectedDays={selectedForecastDays}
-                                onDayClick={selectForecastDay}
-                              />
-                            </div>
-                          </DayPickerWrapper>
-
-                          <Note>
-                            <em>
-                              date 50% 🫵
-                              {" "}
-                              {(() => {
-                                const obj = props.testDates.filter((e: any) => Object.keys(e).includes(employee))[0]
-
-                                if (!obj) return null
-
-                                const result = getAverageResult({
-                                  theTaskList,
-                                  employee,
-                                  testDiff: obj[employee].finishDate - obj[employee].startDate,
-                                  testStart: new Date(
-                                    props.testDates.filter((e: any) => Object.keys(e).includes(employee))[0]
-                                      ? obj[employee].startDate
-                                      : null,
-                                  ).getTime(),
-                                  // testFinish
-                                })
-
-                                if (obj) return new Date(result.date50).toDateString()
-                                
-                                return "-"
-                              })()}
-                            </em>
-                          </Note>
-                        </Block>
-                      </FlexColumn>
-                    ) : null}
-                  </Item>
-                )
-              })
-            }</div>) : (
-              <FlexColumn>
-                <StickyH2>
-                  <i
-                    className="fa fa-user-circle"
-                    style={{ marginRight: "15px" }}
-                  />
-                  Employees
-                </StickyH2>
-                <Block>
-                  <Note>Добавьте первого исполнителя...</Note>
-                </Block>
-              </FlexColumn>
-            )
-          }
-          
-          <FlexColumn>
-            <StickyH2>
-              <i className="fa fa-info" style={{ marginRight: "15px" }} />
-              By the way...
-            </StickyH2>
-            {/*
-            <p>taskList= {JSON.stringify(props.taskList)}<br />testDates= {JSON.stringify(props.testDates)}</p>
-            */}
-            <Block>
-              <Note>
-                Для объективной статистики у выбранного исполнителя должны быть
-                завершенные задачи с параметрами:
-                <ul>
-                  {[
-                    "<strong>startDate</strong> - время начала выполнения задачи",
-                    "<strong>forecastFinishDate</strong> - прогноз на выполнение",
-                    "<strong>realFinishDate</strong> - время фактического выполнения задачи",
-                  ].map((str) => <li key={Math.random()}>{ReactHtmlParser(str)}</li>)}
-                </ul>
-              </Note>
-            </Block>
-          </FlexColumn>
-
-          <>
-            <StickyBottom>
+                            <Note
+                              style={{ display: 'flex', flexDirection: 'column', gap: '8px', }}
+                              dangerouslySetInnerHTML={{
+                                __html: infoHtml
+                              }}
+                            />
+                          </Block>
+                        </FlexColumn>
+                      ) : null}
+                    </Item>
+                  )
+                })
+              }</div>) : (
+                <FlexColumn>
+                  <StickyH2>
+                    <i
+                      className="fa fa-user-circle"
+                      style={{ marginRight: "15px" }}
+                    />
+                    Employees
+                  </StickyH2>
+                  <Block>
+                    <Note>Добавьте первого исполнителя...</Note>
+                  </Block>
+                </FlexColumn>
+              )
+            }
+            
+            <FlexColumn>
               <StickyH2>
-                <i className="fa fa-info" style={{ marginRight: "15px" }} />
-                Feedback
+                <i className="fa fa-cog" style={{ marginRight: "15px" }} />
+                FAQ
               </StickyH2>
-              <Block
-                style={{
-                  display: 'flex',
-                  gap: '16px',
-                }}
-              >
-                <Btn
-                  color='primary'
-                  onClick={() => {
-                    // @ts-ignore
-                    if (typeof window !== 'undefined') window.open('/', '_self').focus()
-                  }}
-                  style={{ minWidth: '60px' }}
-                >
-                  <i className="fa fa-home" style={{ marginRight: '5px' }} />
-                  {' '}
-                  Home
-                </Btn>
-                <Btn
-                  color='primary'
-                  onClick={() => {
-                    // @ts-ignore
-                    if (typeof window !== 'undefined') window.open('https://gosuslugi.pravosleva.pro/express-helper/chat/#/chat?room=team-scoring-2019', '_blank').focus()
-                  }}
-                  style={{ minWidth: '86px' }}
-                >
-                  <i className="fa fa-comment" style={{ marginRight: '5px' }} />
-                  {' '}
-                  Feedback Chat
-                </Btn>
+              {/*
+              <p>taskList= {JSON.stringify(props.taskList)}<br />testDates= {JSON.stringify(props.testDates)}</p>
+              */}
+              <Block>
+                <Note>
+                  <CollapsibleBox
+                    label='Что нужно для статистики?'
+                    descritpion={
+                      <p>
+                        Для объективной статистики у выбранного исполнителя должны быть
+                        завершенные задачи с параметрами:
+                        <ul>
+                          {[
+                            "<strong>startDate</strong> - время начала выполнения задачи",
+                            "<strong>forecastFinishDate</strong> - прогноз на выполнение",
+                            "<strong>realFinishDate</strong> - время фактического выполнения задачи",
+                          ].map((str) => <li key={Math.random()}>{ReactHtmlParser(str)}</li>)}
+                        </ul>
+                      </p>
+                    }
+                  />
+                  
+                  <CollapsibleBox
+                    label='Что нужно для отображения прогрессбара задачи в работе?'
+                    descritpion={
+                      <p>
+                        <ul>
+                          {[
+                            "Хотябы одна завершенная задача, оцененная по срокам",
+                            "Если Вы используете фильтр Complexity (сложность фич), убедитесь в том, что завершенные задачи такой сложности в принципе есть (это отчасти ответ на следующий вопрос)",
+                          ].map((str) => <li key={Math.random()}>{ReactHtmlParser(str)}</li>)}
+                        </ul>
+                      </p>
+                    }
+                  />
+
+                  <CollapsibleBox
+                    label='Есть завершенные задачи. Почему не отображается прогрессбар?'
+                    descritpion={
+                      <p>
+                        Отключите фильтрацию по звездочкам. Вероятно, для выбранной сложности фич нет завершенных задач
+                      </p>
+                    }
+                  />
+
+                  <CollapsibleBox
+                    label='Что такое AVG Speed?'
+                    descritpion={
+                      <p>
+                        Я рад, что ты спросил(а). Это коэффициент средней скорости (Average speed coeff), который отображает эффективность данного исполнителя.
+                      </p>
+                    }
+                  />
+
+                  <CollapsibleBox
+                    label='Что такое Distribution function?'
+                    descritpion={
+                      <>
+                        <p>
+                          Функция распределения (не знаю, насколько удачно выбрано определение, но оно довольно точное). Привожу оригинал перевода:
+                        </p>
+                        <p>
+                          Система называется «Доказательное планирование» или ДП. Подход сводится к тому, что на основе анализа статистики выполненных работ собираются доказательства, которые потом используются для построения плана на будущее. В результате вы получаете не просто дату выпуска продукта, а и доверительную кривую распределения вероятностей завершения работ в каждый заданный срок. Выглядит она следующим образом
+                        </p>
+                        <p>
+                          <img src='https://habrastorage.org/r/w1560/storage2/489/9d1/1cd/4899d11cd5fef518fe9c221c3efbf690.png' alt='img' style={{ width: '100%' }} />
+                        </p>
+                        <p>
+                          Чем круче кривая, тем более реалистична конкретная дата завершения проекта. <a href='https://habr.com/ru/articles/186410/' target='_blank'>Ссылка на русский перевод</a>
+                        </p>
+                      </>
+                    }
+                  />
+                  
+                  <CollapsibleBox
+                    label='Зачем два календаря в левой панели?'
+                    descritpion={
+                      <p style={{ marginBottom: 0 }}>
+                        Чтоб быстро прикинуть дату на этапе выбора исполнителя. TODO: планируется еще фильтр "по рангу" AVG эффективности для сортировки.
+                      </p>
+                    }
+                  />
+                  
+                </Note>
               </Block>
-            </StickyBottom>
-          </>
-        </div>
-      </ResponsiveBlock>
-    </Sidebar>
-    {/* @ts-ignore */}
-    <ComposedComponent {...props} />
-  </Wrapper>
-))
+            </FlexColumn>
+
+            <>
+              <StickyBottom>
+                <StickyH2>
+                  <i className="far fa-comment" style={{ marginRight: "15px" }} />
+                  Feedback
+                </StickyH2>
+                <Block
+                  style={{
+                    display: 'flex',
+                    gap: '16px',
+                    marginBottom: '16px',
+                  }}
+                >
+                  <Btn
+                    color='primary'
+                    onClick={() => {
+                      // @ts-ignore
+                      if (typeof window !== 'undefined') window.open('/', '_self').focus()
+                    }}
+                    // style={{ minWidth: '60px' }}
+                  >
+                    {/* <i className="fa fa-home" style={{ marginRight: '5px' }} />
+                    {' '} */}
+                    Home
+                  </Btn>
+                  <Btn
+                    color='primary'
+                    onClick={() => {
+                      // @ts-ignore
+                      if (typeof window !== 'undefined') window.open('https://pravosleva.pro/express-helper/chat/#/chat?room=team-scoring-2019', '_blank').focus()
+                    }}
+                    // style={{ minWidth: '86px' }}
+                  >
+                    {/* <i className="fa fa-comment"/> */}
+                    Feedback Chat
+                  </Btn>
+                </Block>
+              </StickyBottom>
+            </>
+          </div>
+        </ResponsiveBlock>
+      </Sidebar>
+      {/* @ts-ignore */}
+      <ComposedComponent {...props} />
+    </Wrapper>
+  )
+})
