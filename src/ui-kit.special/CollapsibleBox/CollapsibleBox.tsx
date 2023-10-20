@@ -35,7 +35,7 @@ export const CollapsibleBox = ({
         <i
           className={isOpened ? "fa fa-chevron-up" : "fa fa-chevron-down"}
         />
-        <h4>{label}</h4>
+        <h4 style={{ marginBottom: isOpened ? '1rem' : '1.45rem' }}>{label}</h4>
       </div>
       {
         isOpened && (

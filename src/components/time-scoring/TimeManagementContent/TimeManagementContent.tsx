@@ -252,7 +252,7 @@ export const TimeManagementContent = ({
           style={{
             textAlign: 'center',
             opacity: '0.5',
-            margin: '30px 0 40px 0',
+            margin: '30px 0 30px 0',
           }}
         >
             {activeEmployee
@@ -782,7 +782,8 @@ export const TimeManagementContent = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '16px',
-                                // border: 'none',
+                                // borderTop: '1px solid rgba(255,120,30,1)',
+                                borderTop: '1px solid #fff',
                                 
                                 // textAlign: 'center',
                                 padding: '0 16px 0 16px ',

@@ -165,9 +165,12 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
             
               {props.employeeNames.length > 0 ? (
                 <div style={{
-                  marginBottom: '25px',
+                  // marginBottom: '25px',
                 }}>{
-                props.employeeNames.map((employee: string) => {
+                props.employeeNames.map((employee: string, i: number, arr: string[]) => {
+                  const isLast = i === arr.length - 1
+                  const isNotActive = props.activeEmployee !== employee
+
                   const theTaskList = props.taskList
                     .filter((e: any) => e.employee === employee)
                     .filter((e: any) => !!e.startDate && !!e.realFinishDate && !!e.forecastFinishDate)
@@ -249,6 +252,9 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
 
                   return (
                     <Item
+                      style={{
+                        marginBottom: isLast && isNotActive ? '32px' : 0,
+                      }}
                       key={employee}
                       onClick={(e) => {
                         e.stopPropagation()
@@ -272,7 +278,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
 
                             lineHeight: 1.65,
                           }}>
-                          <div>
+                          <>
                             <div
                               style={{
                                 display: 'flex',
@@ -310,7 +316,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                                 }}
                               >{employee}</div>
                             </div>
-                          </div>
+                          </>
                           <div
                             style={{
                               marginLeft: "auto",
@@ -515,9 +521,9 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                         завершенные задачи с параметрами:
                         <ul>
                           {[
-                            "<strong>startDate</strong> - время начала выполнения задачи",
-                            "<strong>forecastFinishDate</strong> - прогноз на выполнение",
-                            "<strong>realFinishDate</strong> - время фактического выполнения задачи",
+                            "<code>startDate</code> - время начала выполнения задачи",
+                            "<code>forecastFinishDate</code> - прогноз на выполнение",
+                            "<code>realFinishDate</code> - время фактического выполнения задачи",
                           ].map((str) => <li key={Math.random()}>{ReactHtmlParser(str)}</li>)}
                         </ul>
                       </p>
@@ -561,7 +567,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                     descritpion={
                       <>
                         <p>
-                          Функция распределения данных статистики. Иными словами, проекция накопленного опыта на конкретную задачу, то есть варианты развития тестируемого диапазона между выбранными датами.
+                          Функция распределения данных статистики. Иными словами, проекция накопленного опыта на конкретный кейс, то есть, в нашем случае, варианты развития тестируемого диапазона между выбранными датами.
                         </p>
                         <p>
                           Привожу оригинал перевода:

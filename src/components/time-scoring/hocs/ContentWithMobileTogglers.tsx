@@ -22,11 +22,16 @@ const Container = styled("div")<{
       border: 1px solid red;
     `}
 `
+
 const Fab = styled("button").attrs({
   className: 'backdrop-blur--lite'
 })`
   width: 56px;
   height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   position: absolute;
   border-radius: 50%;
   cursor: pointer;
@@ -58,15 +63,26 @@ const ListMobileToggler = styled(Fab)<{
   }
   position: fixed;
 `
+
 const SidebarMobileToggler = styled(Fab)<{
   opened?: boolean;
+  colored?: boolean;
 }>`
   bottom: calc(32px + 56px);
   right: 16px;
   z-index: 4;
+  ${(p) => p.colored &&
+    css`
+      /* background-color: rgba(255,120,30,1);
+      border-color: rgba(255,120,30,1); */
+      background-color: #ff8c59;
+      border-color: #ff8c59;;
+      color: #000;
+    `}
   ${(p) => p.opened &&
     css`
       background-color: #6efacc;
+      border-color: #6efacc;
       color: #000;
     `}
   @media(min-width: 768px) {
@@ -82,6 +98,7 @@ type TProps = {
   sidebarToggler: (val?: boolean) => void;
   content: any;
   testDates: Date[];
+  activeEmployee?: string;
 }
 
 export const ContentWithMobileTogglers = (props: TProps) => (
@@ -108,8 +125,13 @@ export const ContentWithMobileTogglers = (props: TProps) => (
         groupLog({ spaceName: "props.testDates", items: [props.testDates] })
       }}
       opened={props.sidebarOpened}
+      colored={!!props.activeEmployee}
     >
-      <i className="fas fa-ellipsis-v" style={{ fontSize: "20px" }} />
+      {
+        !!props.activeEmployee
+        ? <i className="fas fa-filter" style={{ fontSize: "16px" }}></i>
+        : <i className="fas fa-ellipsis-v" style={{ fontSize: "20px" }} />
+      }
     </SidebarMobileToggler>
 
     {props.content ? props.content({ ...props }) : null}
