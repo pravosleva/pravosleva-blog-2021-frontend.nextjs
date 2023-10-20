@@ -305,8 +305,8 @@ export const withLSManager = (ComposedComponent: any) => compose(
       // @ts-ignore
       swal
         .fire({
-          title: 'New employee',
-          text: 'Will be added to localStorage',
+          title: 'Новый исполнитель',
+          // text: 'Will be added to localStorage',
           input: 'text',
           inputAttributes: {
             autocapitalize: 'off',
@@ -323,6 +323,7 @@ export const withLSManager = (ComposedComponent: any) => compose(
             if (isExists) return `${value} Already exists in LS!`
             return false
           },
+          confirmButtonColor: '#1b7bff',
           // footer: '<a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">How you can receive it</a>',
         })
         .then((result: any) => {
@@ -407,12 +408,14 @@ export const withLSManager = (ComposedComponent: any) => compose(
             })
 
             const { value: employee } = await swal.fire({
-              title: 'Remove the employee',
-              text: 'From localStorage',
+              title: 'Удалить исполнителя',
+              // text: 'From localStorage',
               input: 'select',
               inputOptions,
-              inputPlaceholder: 'Select a employee',
+              inputPlaceholder: 'Выберите из списка',
               showCancelButton: true,
+              confirmButtonColor: '#1b7bff',
+              footer: '⚠️ Вместе с его задачами',
             })
 
             return { employee, oldArr: arr }
@@ -487,6 +490,7 @@ export const withLSManager = (ComposedComponent: any) => compose(
               allowOutsideClick: false,
               confirmButtonText: 'Next &rarr;',
               // confirmButtonColor: '#4558BB',
+              confirmButtonColor: '#1b7bff',
               showCancelButton: true,
               progressSteps: ['1', '2', '3'],
               // @ts-ignore
@@ -608,6 +612,7 @@ export const withLSManager = (ComposedComponent: any) => compose(
               progressSteps: ['1'],
               // @ts-ignore
               inputValidator: (value) => !value && 'You have to write something!',
+              confirmButtonColor: '#1b7bff',
             })
             .queue([
               {
@@ -801,6 +806,7 @@ export const withLSManager = (ComposedComponent: any) => compose(
           progressSteps: ['1', '2'],
           // @ts-ignore
           inputValidator: (value) => !value && 'You have to write something!',
+          confirmButtonColor: '#1b7bff',
         })
         .queue([
           {

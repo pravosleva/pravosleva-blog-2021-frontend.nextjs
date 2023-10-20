@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from 'react'
+import { useCallback, useState, useRef, useEffect } from 'react'
 import styled, { css } from 'styled-components'
 // import { Btn } from '~/ui-kit.special/Btn'
 import useOnClickOutside from 'use-onclickoutside'
@@ -105,6 +105,12 @@ export const ClosableSearchPanelToggler = ({ onChange }: { onChange: (_e: any) =
     handleChange({ target: { value: '' } })
     handleFocus()
   }, [handleChange, setIsModalOpened])
+
+  useEffect(() => {
+    return () => {
+      handleChange({ target: { value: '' } })
+    }
+  }, [])
 
   return (
     <Wrapper>

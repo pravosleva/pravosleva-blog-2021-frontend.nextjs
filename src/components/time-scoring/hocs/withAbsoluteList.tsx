@@ -166,13 +166,11 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                 ) ? (
                 <>
                   <FlexColumn>
-                    <StickyH2>
-                      <i
-                        className="fa fa-chart-line"
-                        style={{ marginRight: "15px" }}
-                      />
-                      {props.activeEmployee} | Distribution
-                    </StickyH2>
+                    <StickyH2
+                      label={props.activeEmployee}
+                      description='Confidence distribution curve'
+                      Icon={<i className="fa fa-chart-bar" />}
+                    />
                     <Block>
                       <DistributionFunctionGraph
                         activeEmployee={props.activeEmployee}
@@ -230,13 +228,11 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                     </Block>
                   </FlexColumn>
                   <FlexColumn>
-                    <StickyH2>
-                      <i
-                        className="fa fa-chart-bar"
-                        style={{ marginRight: "15px" }}
-                      />
-                      {props.activeEmployee} | Speed
-                    </StickyH2>
+                    <StickyH2
+                      label={props.activeEmployee}
+                      description='Speed distridution'
+                      Icon={<i className="fas fa-tachometer-alt" />}
+                    />
                     <Block>
                       <SpeedGraph
                         activeEmployee={props.activeEmployee}
@@ -266,13 +262,10 @@ export const withAbsoluteList = (ComposedComponent: any) =>
               ) : null}
               
               <FlexColumn>
-                <StickyH2>
-                  <i
-                    className="fa fa-info"
-                    style={{ marginRight: "15px" }}
-                  />
-                  About
-                </StickyH2>
+                <StickyH2
+                  label='About'
+                  Icon={<i className="fas fa-info-circle" />}
+                />
                 <Block>
                   <Note>
                     <p>По мотивам статьи <b>Joel Spolsky <a href='https://www.joelonsoftware.com/2007/10/26/evidence-based-scheduling/' target='_blank'>Evidence Based Scheduling</a></b> <a href='https://habr.com/ru/articles/186410/' target='_blank'>Перевод на Хабре: Доказательное Планирование</a>.</p>

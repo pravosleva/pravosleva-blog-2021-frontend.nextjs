@@ -17,9 +17,6 @@ import moment from 'moment'
 import { useSnackbar, SnackbarMessage as TSnackbarMessage, OptionsObject as IOptionsObject } from 'notistack'
 import {
   // Block,
-  Btn,
-  ClosableSearchPanelToggler,
-  Pie,
   SettingFlexBtn,
 } from '~/ui-kit.special'
 import { getTargetDate } from '~/ui-kit.special/utils/scoring/getTargetDate'
@@ -30,6 +27,7 @@ import {
   CircleBtn,
   Description,
   MainTitle,
+  TopSpace,
 } from './components'
 import { DesktopDateTimePicker } from './components/DatePicker/DesktopDateTimePicker'
 import { MobileInfiniteCalendar } from './components/DatePicker/MobileInfiniteCalendar'
@@ -131,102 +129,6 @@ const StartFinishDatesFlexContainer = styled('div')`
     justify-content: center;
   }
 `
-const TopSpaceWrapper = styled('div').attrs({
-  // className: 'backdrop-blur--subdark',
-})<{ test?: boolean }>`
-  ${(p) => p.test &&
-    css`
-      border: 1px dashed red;
-    `}
-
-  overflowX; hidden;
-  width: 100%;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  /* background-color: rgba(27,123,255,0.8); */
-  /* background-color: rgba(0,0,0,0.2); */
-  /* background-image: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0.45),
-    rgba(32, 107, 235, 0.9),
-    rgba(0, 0, 0, 0.45)
-  ); */
-  @media (min-width: 768px) {
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-  }
-
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-`
-const TopSpaceInternalBox = styled('div')<{ test?: boolean }>`
-  ${(p) => p.test &&
-    css`
-      border: 1px dashed red;
-    `}
-  padding: 0;
-
-  display: flex;
-  flex-direction: column;
-`
-// const BtnsWrapper = styled('div')`
-//   width: 100%;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   flex-wrap: wrap;
-//   gap: 16px;
-//   margin-bottom: 16px;
-//   @media (max-width: 767px) {
-//     margin-bottom: 16px;
-//   }
-// `
-const BtnsGrid = styled('div').attrs({
-  className: 'backdrop-blur--subdark',
-})`
-  width: 100%;
-  padding: 16px 16px 16px 16px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  // @media (max-width: 767px) { margin-bottom: 16px; }
-`
-const StarsExternalWrapper = styled('div').attrs({
-  className: 'backdrop-blur--subdark',
-})`
-  border: none;
-  z-index: 1;
-`
-
-const StarsWrapper = styled('div')`
-  margin: 0 auto;
-  padding: 0px 0 16px 0;
-  width: 100%;
-  max-width: 300px;
-  display: flex;
-  justify-content: space-evenly;
-`
-const DiagramWrapper = styled('div')`
-  margin: 0px;
-  overflowX: hidden;
-  @media (max-width: 600px) {
-    width: 100vw !important;
-  }
-`
-const ToolsPanelToggler = styled('div').attrs({
-  className: 'backdrop-blur--subdark',
-})`
-  cursor: pointer;
-  border-radius: inherit;
-
-  // &:hover { background-color: rgba(27, 123, 255, 0.2); }
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
 
 type TProps = {
   taskList: TTask[];
@@ -322,7 +224,7 @@ export const TimeManagementContent = ({
       .filter(({ description }) => (!!searchValue
         ? description.toLowerCase().indexOf(searchValue.toLowerCase()) > -1
         : true)),
-    [allTaskList, searchValue],
+    [useCompare([allTaskList, searchValue])],
   )
   // -- TOOLS
   const [isToolsOpened, setIsToolsOpened] = useState(false)
@@ -349,125 +251,23 @@ export const TimeManagementContent = ({
     activeTaskIDToggler(id)
   }, [setIsModalOpened, activeTaskIDToggler])
 
-  const Diagram = useMemo(() => {
-    return taskList.length > 0 && (
-      <DiagramWrapper>
-        <Pie taskList={informativeTaskList} />
-      </DiagramWrapper>
-    )
-  }, [useCompare([taskList, informativeTaskList])])
-
-  const MemoizedTopSpaceWrapper = useMemo(() => {
-    return (
-      <TopSpaceWrapper>
-        <TopSpaceInternalBox>
-          <BtnsGrid>
-            <Btn
-              color='secondary-outlined'
-              onClick={addNewEmployeeToLS}
-              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-            >
-              <i className="fa fa-plus" />
-              <i className="fa fa-user-circle" />
-            </Btn>
-            {employeeNames &&
-            Array.isArray(employeeNames) &&
-            employeeNames.length > 0 ? (
-              <>
-                <Btn color='secondary-outlined' onClick={() => {
-                  createNewTask({
-                    cb: {
-                      onSuccess: ({ isOk, message, isFirst }) => {
-                        toast(
-                          isFirst ? 'Ваша первая задача создана, теперь установите для нее дату startDate' : (message || 'Что-то пошло не так...'),
-                          { autoHideDuration: 10000, variant: isOk ? 'success' : 'error', preventDuplicate: true },
-                        )
-                      },
-                      onError: ({ isOk, message }) => {
-                        toast(
-                          message || `Что-то пошло не так... ${JSON.stringify({ isOk, message })}`,
-                          { autoHideDuration: 10000, variant: 'error' },
-                        )
-                      },
-                    }
-                  })
-                }} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                  <i className="fa fa-plus" />
-                  <span>Task</span>
-                </Btn>
-                <Btn
-                  color='secondary-outlined'
-                  onClick={() => removeEmployeeFromLS()}
-                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-                >
-                  <i className="fa fa-minus" />
-                  <i className="fa fa-user-circle" />
-                </Btn>
-              </>
-              ) : null}
-          </BtnsGrid>
-
-          {isToolsOpened && (
-            <>
-              <StarsExternalWrapper>
-                <StarsWrapper onClick={(e) => e.stopPropagation()}>
-                  <ClosableSearchPanelToggler onChange={handleSearchValueChange} />
-                  {[1, 2, 3, 4, 5].map((rate) => (
-                    <span
-                      style={{ cursor: 'pointer' }}
-                      key={rate}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (activeComplexity !== rate) complexityToggler(rate)
-                      }}
-                    >
-                      <i
-                        className="fa fa-star"
-                        style={{
-                          transition: 'all 0.3s linear',
-                          color: '#fff',
-                          opacity: activeComplexity >= rate ? '1' : '0.2',
-                        }}
-                      />
-                    </span>
-                  ))}
-                  <span
-                    style={{ cursor: 'pointer' }}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      if (activeComplexity !== 0) complexityToggler(0)
-                    }}
-                  >
-                    <i
-                      className="fa fa-ban"
-                      style={{
-                        transition: 'all 0.3s linear',
-                        color: '#fff',
-                        opacity: activeComplexity === 0 ? '1' : '0.2',
-                      }}
-                    />
-                  </span>
-                </StarsWrapper>
-              </StarsExternalWrapper>
-              {Diagram}
-            </>
-          )}
-        </TopSpaceInternalBox>
-        <ToolsPanelToggler onClick={handleToggleToolsPanel}>
-          {isToolsOpened ? (
-            <i className="fas fa-chevron-up" />
-          ) : (
-            <i className="fas fa-chevron-down" />
-          )}
-        </ToolsPanelToggler>
-      </TopSpaceWrapper>
-    )
-  }, [isToolsOpened, useCompare([employeeNames]), activeComplexity, createNewTask, handleSearchValueChange, removeEmployeeFromLS, complexityToggler, handleToggleToolsPanel, Diagram])
-
   return (
     <>
       <Wrapper>
-        {MemoizedTopSpaceWrapper}
+        <TopSpace
+          isToolsOpened={isToolsOpened}
+          employeeNames={employeeNames}
+          informativeTaskList={informativeTaskList}
+          activeComplexity={activeComplexity}
+          createNewTask={createNewTask}
+          handleSearchValueChange={handleSearchValueChange}
+          removeEmployeeFromLS={removeEmployeeFromLS}
+          complexityToggler={complexityToggler}
+          handleToggleToolsPanel={handleToggleToolsPanel}
+
+          taskList={taskList}
+          addNewEmployeeToLS={addNewEmployeeToLS}
+        />
 
         <p
           style={{
@@ -511,7 +311,7 @@ export const TimeManagementContent = ({
                         complexity,
                       }) => {
                         const hasTaskListAsExperience =
-                          taskList.filter(
+                          allTaskList.filter(
                             ({
                               employee: e,
                               complexity: c,
@@ -686,7 +486,7 @@ export const TimeManagementContent = ({
                                 <Description source={description} />
                                 {hasTaskListAsExperience && isInProgress && (
                                   <>
-                                    <div style={{ opacity: '0.5', marginBottom: '10px', fontWeight: 'bold' }}>
+                                    <div style={{ opacity: '0.5', marginBottom: '8px', fontWeight: 'bold' }}>
                                       <small>{`Ориентировочное время ${new Date(targetDate).toLocaleDateString()}`}</small>
                                     </div>
                                     {/*
@@ -933,6 +733,27 @@ export const TimeManagementContent = ({
                             c === complexity &&
                             e === employee,
                         ).length > 0
+                        const targetDate = getTargetDate({
+                          taskList: allTaskList.filter(
+                            ({
+                              employee: e,
+                              complexity: c,
+                              startDate,
+                              realFinishDate,
+                              forecastFinishDate,
+                            }: any) => !!startDate &&
+                              !!realFinishDate &&
+                              !!forecastFinishDate &&
+                              c === complexity &&
+                              e === employee,
+                          ),
+                          testDiff:
+                            // @ts-ignore
+                            new Date(forecastFinishDate).getTime() - new Date(startDate).getTime(),
+                          // @ts-ignore
+                          testStart: startDate,
+                        })
+
                         return (
                           <li
                             key={Math.random()}
@@ -1077,30 +898,35 @@ export const TimeManagementContent = ({
                                 })()}
                                 {
                                   hasStat && !!startDate && !!forecastFinishDate && !realFinishDate &&  (
-                                    <ProgressBar
-                                      startDate={startDate}
-                                      // @ts-ignore
-                                      targetDate={getTargetDate({
-                                        taskList: allTaskList.filter(
-                                          ({
-                                            employee: e,
-                                            complexity: c,
-                                            startDate,
-                                            realFinishDate,
-                                            forecastFinishDate,
-                                          }: any) => !!startDate &&
-                                            !!realFinishDate &&
-                                            !!forecastFinishDate &&
-                                            c === complexity &&
-                                            e === employee,
-                                        ),
-                                        testDiff: forecastFinishDate - startDate,
-                                        testStart: startDate,
-                                      })}
-                                    />
+                                    <>
+                                      <div style={{ opacity: '0.5', fontWeight: 'bold' }}>
+                                        <small>{`Ориентировочное время ${new Date(targetDate).toLocaleDateString()}`}</small>
+                                      </div>
+                                      <ProgressBar
+                                        startDate={startDate}
+                                        // @ts-ignore
+                                        targetDate={getTargetDate({
+                                          taskList: allTaskList.filter(
+                                            ({
+                                              employee: e,
+                                              complexity: c,
+                                              startDate,
+                                              realFinishDate,
+                                              forecastFinishDate,
+                                            }: any) => !!startDate &&
+                                              !!realFinishDate &&
+                                              !!forecastFinishDate &&
+                                              c === complexity &&
+                                              e === employee,
+                                          ),
+                                          testDiff: forecastFinishDate - startDate,
+                                          testStart: startDate,
+                                        })}
+                                      />
+                                    </>
                                   )
                                 }
-                                <pre style={{ margin: 0 }}>{JSON.stringify({ startDate, forecastFinishDate, realFinishDate, employee }, null, 2)}</pre>
+                                <pre style={{ margin: 0 }}>{JSON.stringify({ startDate, forecastFinishDate, realFinishDate }, null, 2)}</pre>
                                 <div style={{ display: 'flex', lineHeight: 'unset', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', }}>
                                   {activeTaskID === id ? (
                                     <i

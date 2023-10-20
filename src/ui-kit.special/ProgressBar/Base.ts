@@ -8,7 +8,16 @@ export const ProgressBar = styled('div')<{
   position: relative;
   width: 100%;
   height: 3em;
-  background-color: #1960bc;
+  @media (max-width: 600px) {
+    background-color: #1b7bff;
+    // background-color: rgba(27,123,255, 0.3);
+  }
+  @media (min-width: 601px) {
+    // background-color: #1960bc;
+    // background-color: rgba(25,96,188, 0.5);
+    background-color: rgba(27,123,255, 0.3);
+  }
+  
   border-radius: 1.5em;
   color: #fff;
 

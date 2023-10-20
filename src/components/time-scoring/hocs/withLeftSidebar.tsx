@@ -269,6 +269,8 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                             // marginBottom: '10px',
                             fontSize: 'smaller',
                             fontFamily: 'Montserrat',
+
+                            lineHeight: 1.65,
                           }}>
                           <div>
                             <div
@@ -291,6 +293,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                               <div
                                 className='truncate'
                                 style={{
+
                                   textDecoration: 'underline',
                                   textTransform: 'uppercase',
                                   marginBottom: '0px',
@@ -298,6 +301,12 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                                   fontSize: '1rem',
                                   lineHeight: 1.1,
                                   fontWeight: 'bold',
+
+                                  fontFamily: 'Montserrat',
+                                  // fontWeight: 'bold',
+                                  textRendering: 'optimizeLegibility',
+                                  // fontSize: '1.62671rem',
+                                  // lineHeight: 1.1,
                                 }}
                               >{employee}</div>
                             </div>
@@ -321,8 +330,6 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                             {theTaskList.length}
                           </div>
                         </div>
-                        {/* rgb(255, 149, 0) */}
-
                         <small>
                           AVG speed
                           {" "}
@@ -479,13 +486,10 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                 })
               }</div>) : (
                 <FlexColumn>
-                  <StickyH2>
-                    <i
-                      className="fa fa-user-circle"
-                      style={{ marginRight: "15px" }}
-                    />
-                    Employees
-                  </StickyH2>
+                  <StickyH2
+                    label='Employees'
+                    Icon={<i className="fa fa-user-circle" />}
+                  />
                   <Block>
                     <Note>Добавьте первого исполнителя...</Note>
                   </Block>
@@ -494,17 +498,17 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
             }
             
             <FlexColumn>
-              <StickyH2>
-                <i className="fa fa-cog" style={{ marginRight: "15px" }} />
-                FAQ
-              </StickyH2>
+              <StickyH2
+                label='FAQ'
+                Icon={<i className="fas fa-question-circle" />}
+              />
               {/*
               <p>taskList= {JSON.stringify(props.taskList)}<br />testDates= {JSON.stringify(props.testDates)}</p>
               */}
               <Block>
                 <Note>
                   <CollapsibleBox
-                    label='Что нужно для статистики?'
+                    label='Что нужно для появления статистики?'
                     descritpion={
                       <p>
                         Для объективной статистики у выбранного исполнителя должны быть
@@ -557,7 +561,10 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                     descritpion={
                       <>
                         <p>
-                          Функция распределения (не знаю, насколько удачно выбрано определение, но оно довольно точное). Привожу оригинал перевода:
+                          Функция распределения данных статистики. Иными словами, проекция накопленного опыта на конкретную задачу, то есть варианты развития тестируемого диапазона между выбранными датами.
+                        </p>
+                        <p>
+                          Привожу оригинал перевода:
                         </p>
                         <p>
                           Система называется «Доказательное планирование» или ДП. Подход сводится к тому, что на основе анализа статистики выполненных работ собираются доказательства, которые потом используются для построения плана на будущее. В результате вы получаете не просто дату выпуска продукта, а и доверительную кривую распределения вероятностей завершения работ в каждый заданный срок. Выглядит она следующим образом
@@ -587,13 +594,15 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
 
             <>
               <StickyBottom>
-                <StickyH2>
-                  <i className="far fa-comment" style={{ marginRight: "15px" }} />
-                  Feedback
-                </StickyH2>
+                <StickyH2
+                  label='Feedback'
+                  Icon={<i className="far fa-comment" />}
+                />
                 <Block
                   style={{
                     display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
                     gap: '16px',
                     marginBottom: '16px',
                   }}
@@ -606,9 +615,9 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                     }}
                     // style={{ minWidth: '60px' }}
                   >
-                    {/* <i className="fa fa-home" style={{ marginRight: '5px' }} />
-                    {' '} */}
+                    {/* <i className="fa fa-home" /> */}
                     Home
+                    {/* <i className="fas fa-arrow-left"></i> */}
                   </Btn>
                   <Btn
                     color='primary'
@@ -619,7 +628,17 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                     // style={{ minWidth: '86px' }}
                   >
                     {/* <i className="fa fa-comment"/> */}
-                    Feedback Chat
+                    Feedback
+                  </Btn>
+                  <Btn
+                    color='primary'
+                    onClick={() => {
+                      // @ts-ignore
+                      if (typeof window !== 'undefined') window.open('https://t.me/bash_exp_ru/55', '_blank').focus()
+                    }}
+                    // style={{ minWidth: '86px' }}
+                  >
+                    <i className="fab fa-telegram-plane"></i>
                   </Btn>
                 </Block>
               </StickyBottom>

@@ -69,6 +69,18 @@
 .swal2-actions button {
   border-radius: 8px;
 }
+/* .swal2-styled.swal2-confirm {
+  background-color: #1b7bff;
+} */
+/* .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
+  background: #1b7bff !important;
+} */
+/* .swal2-progress-steps .swal2-progress-step {
+  background: #1b7bff !important;
+} */
+/* .swal2-progress-steps .swal2-progress-step-line {
+  background: #1b7bff !important;
+} */
 /* --- */
 
 .swal2-progressline,

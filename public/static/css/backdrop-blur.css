@@ -29,8 +29,8 @@
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
   .backdrop-blur--subdark {
     background-color: rgba(0, 0, 0, .3);
-    -webkit-backdrop-filter: blur(.1em);
-    backdrop-filter: blur(.1em);
+    -webkit-backdrop-filter: blur(.15em);
+    backdrop-filter: blur(.15em);
   }
 }
 
