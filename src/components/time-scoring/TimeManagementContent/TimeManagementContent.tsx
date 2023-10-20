@@ -1,19 +1,6 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable no-shadow */
-/* eslint-disable max-len */
 import React, { useState, useCallback, useMemo } from 'react'
 import styled, { css } from 'styled-components'
-// https://www.npmjs.com/package/react-datepicker
-// import DatePicker from 'react-datepicker';
-// import 'react-datepicker/dist/react-datepicker.css'
 import moment from 'moment'
-// import InfiniteCalendar, {
-//   Calendar,
-//   withMultipleDates,
-//   defaultMultipleDateInterpolation,
-// } from 'react-infinite-calendar'
-// import 'react-infinite-calendar/styles.css' // only needs to be imported once
 import { useSnackbar, SnackbarMessage as TSnackbarMessage, OptionsObject as IOptionsObject } from 'notistack'
 import {
   // Block,
@@ -34,14 +21,6 @@ import { MobileInfiniteCalendar } from './components/DatePicker/MobileInfiniteCa
 import { groupLog } from '~/utils/groupLog'
 import { TTask } from '~/components/time-scoring/types'
 import { useCompare } from '~/hooks/useDeepEffect'
-// import DatePicker from 'react-date-picker'
-
-// -- NOTE: Custom toast usage
-// toast(
-//   'Sorry, could not be reassigned.\nMay be in future...',
-//   { autoHideDuration: 7000, variant: 'warning' },
-// )
-// --
 
 const DesktopOnly = styled('div')`
   @media (max-width: 767px) {
@@ -276,16 +255,11 @@ export const TimeManagementContent = ({
             margin: '30px 0 40px 0',
           }}
         >
-          <strong>
             {activeEmployee
-              ? `Filtered by ${activeEmployee}`
-              : `All tasks: ${taskList.length}`}
-          </strong>
+              ? <strong>Filtered by {activeEmployee}</strong>
+              : <strong>All tasks ({taskList.length})</strong>
+            }
         </p>
-
-        {/* !activeEmployee && informativeTaskList.length > 0 && (
-          <Pie taskList={informativeTaskList} />
-        ) */}
 
         {
           // activeEmployee
@@ -643,58 +617,6 @@ export const TimeManagementContent = ({
                                       id={id}
                                       label="ПРОГНОЗ ИСПОЛНИТЕЛЯ"
                                     />
-                                    {/*
-                                      <DatePicker
-                                        showMonthDropdown
-                                        onChange={arg => setForecastFinishDate(arg, id)}
-                                        value={
-                                          forecastFinishDate
-                                          ? `FORECAST: ${moment(forecastFinishDate).format('MMM Do dd, HH:mm')}`
-                                          : 'SET FORECAST DATE'
-                                        }
-                                        // showTimeSelect
-                                        timeFormat='HH:mm'
-                                        timeIntervals={60}
-                                        minTime={moment(setHours(setMinutes(new Date(), 0), 8))}
-                                        maxTime={moment(setHours(setMinutes(new Date(), 0), 23))}
-                                        minDate={moment(startDate)}
-                                        fixedHeight
-                                        shouldCloseOnSelect
-                                        openToDate={forecastFinishDate ? moment(forecastFinishDate) : moment()}
-                                        selected={forecastFinishDate ? moment(forecastFinishDate) : null}
-
-                                        // See also https://reactdatepicker.com/
-                                        // maxDate={moment().add(5, "days")}
-                                        // excludeDates={[moment(), moment().subtract(1, "days")]
-                                        // highlightDates={[
-                                        //   { "react-datepicker__day--highlighted-custom-1": [
-                                        //     moment().subtract(4, "days"),
-                                        //     moment().subtract(3, "days"),
-                                        //     moment().subtract(2, "days"),
-                                        //     moment().subtract(1, "days") ]
-                                        //   }
-                                        // ]}
-                                        // includeDates={[moment(), moment().add(1, "days")]}
-                                        // filterDate={this.isWeekday}
-                                        // openToDate={moment("1993-09-28")}
-                                        // renderCustomHeader={({
-                                        //   date,
-                                        //   changeYear,
-                                        //   changeMonth,
-                                        //   decreaseMonth,
-                                        //   increaseMonth,
-                                        //   prevMonthButtonDisabled,
-                                        //   nextMonthButtonDisabled,
-                                        // }) => {}}
-                                        // minTime={setHours(setMinutes(new Date(), 0), 17)}
-                                        // maxTime={setHours(setMinutes(new Date(), 30), 20)}
-                                        // injectTimes={[
-                                        //   setHours(setMinutes(new Date(), 1), 0),
-                                        //   setHours(setMinutes(new Date(), 5), 12),
-                                        //   setHours(setMinutes(new Date(), 59), 23),
-                                        // ]}
-                                      />
-                                      */}
                                   </div>
                                 </div>
                               </>
