@@ -113,7 +113,11 @@ export const ContentWithMobileTogglers = (props: TProps) => (
       }}
       opened={props.listOpened}
     >
-      <i className="fa fa-chart-bar" style={{ fontSize: "20px" }} />
+      {
+        !!props.activeEmployee
+        ? <i className="fa fa-chart-bar" style={{ fontSize: "20px" }} />
+        : <i className="fas fa-info" style={{ fontSize: "18px" }} />
+      }
     </ListMobileToggler>
 
     <SidebarMobileToggler

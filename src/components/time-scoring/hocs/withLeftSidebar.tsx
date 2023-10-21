@@ -410,16 +410,14 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                             </div>
                             <Note
                               style={{
-                                opacity: "0.5",
-                                // marginTop: "10px",
+                                // opacity: "0.5",
+                                marginBottom: "24px",
                                 cursor: "default",
                               }}
                               // onClick={e => e.stopPropagation()}
                             >
                               <small>
-                                Выберите даты старта и прогноза задачи чтобы увидеть
-                                анализ на основании предыдущей статистики данного
-                                исполнителя. Звездочки - сложность фич.
+                                Выберите даты старта и предварительного прогноза от исполнителя:
                               </small>
                             </Note>
                             {/* WAY 1 */}
@@ -517,7 +515,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                     label='Что нужно для появления статистики?'
                     descritpion={
                       <p>
-                        Для объективной статистики у выбранного исполнителя должны быть
+                        Для объективной статистики у конкретного исполнителя должны быть
                         завершенные задачи с параметрами:
                         <ul>
                           {[
@@ -557,7 +555,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                     label='Что такое AVG Speed?'
                     descritpion={
                       <p>
-                        Я рад, что ты спросил(а). Это коэффициент средней скорости (Average speed coeff), который отображает эффективность данного исполнителя.
+                        Я рад, что ты спросил(а). Это коэффициент средней скорости (Average Speed coeff), который косвенно отображает эффективность данного исполнителя.
                       </p>
                     }
                   />
@@ -584,12 +582,21 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                       </>
                     }
                   />
-                  
+
                   <CollapsibleBox
                     label='Зачем два календаря в левой панели?'
                     descritpion={
-                      <p style={{ marginBottom: 0 }}>
+                      <p>
                         Чтоб быстро прикинуть дату на этапе выбора исполнителя. TODO: планируется еще фильтр "по рангу" AVG эффективности для сортировки.
+                      </p>
+                    }
+                  />
+
+                  <CollapsibleBox
+                    label='Как выключить фильтр на мобилке?'
+                    descritpion={
+                      <p style={{ marginBottom: 0 }}>
+                        Зайдите в боковое меню и сверните открытую секцию для исполнителя <b>{props.activeEmployee}</b>
                       </p>
                     }
                   />
