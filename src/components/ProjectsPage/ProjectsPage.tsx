@@ -79,9 +79,9 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
       <ResponsiveBlock
         isPaddedMobile
         isLimited
-        style={{
-          paddingBottom: '30px',
-        }}
+        // style={{
+        //   paddingBottom: '30px',
+        // }}
       >
         <BreadCrumbs
           t={t}

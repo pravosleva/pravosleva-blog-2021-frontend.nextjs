@@ -12,6 +12,7 @@ import { GoHomeSection } from '~/components/GoHomeSection'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { convert } from 'html-to-text'
 import clsx from 'clsx'
+import { useBaseStyles } from '~/mui/useBaseStyles'
 // import styles from './Article.module.scss'
 // import { breakpoints } from '~/mui/theme'
 
@@ -22,6 +23,8 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
   //   setTimeout(() => Prism.highlightAll(), 1000)
   // }, [])
   // const convertedTitle = convert(article?.original.title)
+
+  const baseClasses = useBaseStyles()
 
   return (
     <>
@@ -83,7 +86,7 @@ export const Article = withTranslator(({ t, article }: TArticleComponentProps) =
               paddingBottom: '30px',
             }}
           >
-            <div className="article-body">
+            <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
               {!!article.original.description ? (
                 <div className="description-markdown">
                   <ReactMarkdown

@@ -113,23 +113,29 @@
   padding-left: 0px !important;
 }
 .description-markdown ul {
-  margin: 15px 0 15px 15px;
+  /* margin: 16px 8px 16px 16px; */
   list-style-type: none;
 }
+.description-markdown ol li::marker {
+  font-weight: bold;
+}
+/* .description-markdown ol li {
+  font-weight: bold;
+} */
 /*
 .description-markdown ul li input[type='checkbox'] {
   transform: translateY(5px);
 }
 */
 .description-markdown ul ul {
-  margin: 5px 0 5px 15px;
+  margin: 8px 0 8px 16px;
   list-style-type: none;
 }
 .description-markdown ul input[type='checkbox'] {
-  margin-right: 10px;
+  margin-right: 8px;
 }
 .description-markdown > table {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   border-collapse: collapse;
 }
 .description-markdown > table,

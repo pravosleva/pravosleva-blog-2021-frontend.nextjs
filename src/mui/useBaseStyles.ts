@@ -75,20 +75,49 @@ export const useBaseStyles = makeStyles((theme) => ({
       display: 'flex',
       flexDirection: 'column',
       '& > div:not(:last-child)': {
-        marginBottom: '20px',
+        marginBottom: '24px',
       }
     },
     // @ts-ignore
     [theme.breakpoints.up('sm')]: {
       display: 'grid',
-      columnGap: '20px',
-      rowGap: '20px',
+      columnGap: '24px',
+      rowGap: '24px',
       gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
     },
   },
   subWrapper: {
     '& > div:not(:last-child)': {
-      marginBottom: '20px',
+      marginBottom: '24px',
+    },
+  },
+
+  customizableListingWrapper: {
+    // paddingTop: 0,
+    '& ul': {
+      // border: '1px solid red',
+      // listStyleImage: 'url(/static/svg/yellow-dot.svg)',
+      listStyle: 'outside',
+      listStyleType: "'✪'", // 'disc',
+      '& > li::marker': {
+        // transform: 'translateY(-2px)',
+        color: '#4183c4',
+        // content: '✪',
+      },
+    },
+
+    '& ul, ol': {
+      '& > li': {
+        marginBottom: '8px',
+        paddingLeft: '8px',
+        '& > p': {
+          display: 'inline',
+        },
+        '& > blockquote': {
+          marginTop: '0px !important',
+          marginBottom: '0px !important',
+        },
+      },
     },
   },
 }))

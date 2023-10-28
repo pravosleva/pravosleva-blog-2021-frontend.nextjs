@@ -12,8 +12,8 @@ export const ModalContainer = styled('div')`
   bottom: 0;
   left: 0;
   right: 0;
-  // background: ${themeColor('Transparent Gray-blue')};
-  background: ${themeColor('Transparent Black-hard')};
+  background: ${themeColor('Transparent Gray-blue')};
+  // background: ${themeColor('Transparent Black-hard')};
   backdrop-filter: blur(4px);
   z-index: 1000000;
   padding: 70px 0;

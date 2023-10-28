@@ -96,6 +96,7 @@
     "sweetalert2": "9.17.1",
     "use-onclickoutside": "^0.4.1",
     "use-sync-external-store": "^1.2.0",
+    "valtio": "^1.11.3",
     "webpack": "5.x"
   },
   "devDependencies": {

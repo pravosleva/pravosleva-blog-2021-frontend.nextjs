@@ -63,7 +63,7 @@ const Nav = styled('div')`
   }
   & ul > li > .login-btn {
   }
-  @media (max-width: ${breakpoints.sm}px) {
+  @media (max-width: ${breakpoints.md}px) {
     display: none;
   }
 `

@@ -1,5 +1,5 @@
 import { EJobStatus, ESubjobStatus, NEventData, TAudit } from '~/srv.socket-logic/audit-list/types'
-import { getRandomString } from '~/srv.utils/getRandonString'
+import { getRandomString } from '~/srv.utils/getRandomString'
 
 type TOwnerTGChatId = number
 

@@ -24,12 +24,12 @@
   }
 }
 
-@media(max-width: #{$sm}px) {
+@media(max-width: #{$md}px) {
   .isPaddedMobile {
     padding: 0px 16px 0px 16px;
   }
 }
-@media(min-width: calc(#{$sm}px + 1px)){
+@media(min-width: calc(#{$md}px + 1px)){
   .isPaddedMobile {
     padding: 0px;
   }

@@ -73,7 +73,7 @@ const Nav = styled('div')`
     text-decoration: none;
     background-color: transparent;
   }
-  @media (min-width: ${breakpoints.sm + 1}px) {
+  @media (min-width: ${breakpoints.md + 1}px) {
     display: none;
   }
 `

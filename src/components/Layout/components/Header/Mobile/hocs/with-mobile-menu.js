@@ -28,10 +28,10 @@ const Wrapper = styled.div`
 const Sidebar = styled.div`
   background-color: white;
   overflow-y: auto;
-  @media (min-width: ${breakpoints.sm + 1}px) {
+  @media (min-width: ${breakpoints.md + 1}px) {
     display: none;
   }
-  @media (max-width: ${breakpoints.sm}px) {
+  @media (max-width: ${breakpoints.md}px) {
     min-height: calc(100vh - 40px);
     height: 100%;
     min-width: 100%;
@@ -247,11 +247,11 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/nginx-logs') || isCurrentPathCb(router.asPath, '/blog/article/nginx-logs') ? 'active' : ''}>NGINX logs</a>
                 </Link>
               </li> */}
-              <li>
+              {/* <li>
                 <Link href="/blog/article/limp-bizkit-video">
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/limp-bizkit-video') || isCurrentPathCb(router.asPath, '/blog/article/limp-bizkit-video') ? 'active' : ''}>Limp Bizkit</a>
                 </Link>
-              </li>
+              </li> */}
               {/* -- */}
 
               {/* -- NOTE: Target search by title */}
