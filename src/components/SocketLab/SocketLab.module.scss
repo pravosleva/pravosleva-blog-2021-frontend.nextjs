@@ -1,0 +1,8 @@
+@import '~/mui/scss-vars/colors.scss';
+
+.success {
+  color: #{$green};
+}
+.danger {
+  color: #{$red};
+}

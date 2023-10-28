@@ -5,6 +5,12 @@ import io, { Socket } from 'socket.io-client'
 import { useSnackbar, SnackbarMessage as TSnackbarMessage, OptionsObject as IOptionsObject } from 'notistack'
 import { groupLog } from '~/utils/groupLog'
 import { Button, Stack } from '@mui/material'
+import classes from './SocketLab.module.scss'
+import clsx from 'clsx'
+
+// import SyncAltIcon from '@mui/icons-material/SyncAlt'
+import ImportExportIcon from '@mui/icons-material/ImportExport'
+import CloseIcon from '@mui/icons-material/Close'
 
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -26,12 +32,29 @@ export const Logic = () => {
   const showNotif = useCallback((msg: TSnackbarMessage, opts?: IOptionsObject) => {
     if (!document.hidden) enqueueSnackbar(msg, opts)
   }, [])
+
+  const connectBtnRef = useRef<HTMLButtonElement>(null)
+  const disconnectBtnRef = useRef<HTMLButtonElement>(null)
+  const disableDelayToggler = useCallback(({ elm, ms }: { elm: HTMLButtonElement | null; ms: number }) => {
+    if (!!elm) {
+      elm.disabled = true
+      elm.style.opacity = '0.5'
+      setTimeout(() => {
+        elm.disabled = false
+        elm.style.opacity = '1'
+      }, ms)
+    } else {
+      console.log(elm)
+    }
+  }, [])
+
   const handleWannaBeConnected = useCallback(() => {
     if (!!socketRef.current) {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_CONNECTED_TO_ROOM, { roomId: 'sample' }, (data: TStandartTargetCallback) => {
         if (data.ok) {
           setStore({ isConnectedToPrivateRoom: true })
           showNotif(data?.message || 'Connected to private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000 })
+          disableDelayToggler({ elm: disconnectBtnRef.current, ms: 2000 })
         } else {
           setStore({ isConnectedToPrivateRoom: false })
           showNotif(data?.message || 'Connection to private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000 })
@@ -48,6 +71,7 @@ export const Logic = () => {
         if (data.ok) {
           setStore({ isConnectedToPrivateRoom: false })
           showNotif(data?.message || 'Disconnected from private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000 })
+          disableDelayToggler({ elm: connectBtnRef.current, ms: 2000 })
         } else {
           // setStore({ isConnectedToPrivateRoom: false })
           showNotif(data?.message || 'Disconnection from private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000 })
@@ -107,13 +131,13 @@ export const Logic = () => {
 
     const onCommonMessage = (data: TStandartCommonEvent) => {
       groupLog({ spaceName: `-- ${NEvent.ServerOutgoing.COMMON_MESSAGE}`, items: [data] })
-      showNotif(data?.message || 'Common message', { variant: 'info', autoHideDuration: 7000 })
+      showNotif(data?.message || 'Common message', { variant: 'info', autoHideDuration: 10000 })
     }
     socket.on(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
 
     return () => {
       socket.emit(NEvent.ServerIncoming.WANNA_BE_DISCONNECTED_FROM_ROOM, handleWannaBeDisonnected)
-      // NOTE: See also https://socket.io/docs/v4/client-api/#socketoffeventname
+      // - NOTE: See also https://socket.io/docs/v4/client-api/#socketoffeventname
       socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
       socket.off(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
@@ -121,7 +145,7 @@ export const Logic = () => {
       socket.off('reconnect', onReconnectErrorListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
       socket.off('connect', onConnectListener)
-      // socket.
+      // -
     }
   }, [])
   return (
@@ -136,35 +160,41 @@ export const Logic = () => {
     >
       <h1>SocketLab exp 🧪</h1>
       <Stack spacing={1}>
-      <div>isConnected: {String(isConnected)}</div>
-      <div>isConnectedToPrivateRoom: {String(isConnectedToPrivateRoom)}</div>
-      {
-        !isConnectedToPrivateRoom ? (
-          <Button
-            size='small'
-            // startIcon={<UploadIcon />}
-            // fullWidth
-            variant="outlined"
-            color='primary'
-            onClick={handleWannaBeConnected}
-            endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
-          >
-            <span className='truncate'>Wanna be connected to room id</span>
-          </Button>
-        ) : (
-          <Button
-            size='small'
-            // startIcon={<UploadIcon />}
-            // fullWidth
-            variant="outlined"
-            color='primary'
-            onClick={handleWannaBeDisonnected}
-            endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
-          >
-            <span className='truncate'>Wanna be disconnected from room id</span>
-          </Button>
-        )
-      }
+        <div className='price-grid-2c'>
+          <div><code>isConnected</code></div>
+          <div>{isConnected ? '✅' : '⛔'} <b className={clsx(isConnected ? classes.success : classes.danger)}>{String(isConnected)}</b></div>
+          <div><code>isConnectedToPrivateRoom</code></div>
+          <div>{isConnectedToPrivateRoom ? '✅' : '⛔'} <b className={clsx(isConnectedToPrivateRoom ? classes.success : classes.danger)}>{String(isConnectedToPrivateRoom)}</b></div>
+        </div>
+        {
+          !isConnectedToPrivateRoom ? (
+            <Button
+              ref={connectBtnRef}
+              size='small'
+              startIcon={<ImportExportIcon />}
+              // fullWidth
+              variant="outlined"
+              color='primary'
+              onClick={handleWannaBeConnected}
+              endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
+            >
+              <span className='truncate'>Wanna be connected to room id</span>
+            </Button>
+          ) : (
+            <Button
+              ref={disconnectBtnRef}
+              size='small'
+              startIcon={<CloseIcon />}
+              // fullWidth
+              variant="outlined"
+              color='primary'
+              onClick={handleWannaBeDisonnected}
+              endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
+            >
+              <span className='truncate'>Wanna be disconnected from room id</span>
+            </Button>
+          )
+        }
       </Stack>
     </ResponsiveBlock>
   )

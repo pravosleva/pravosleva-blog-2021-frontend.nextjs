@@ -9,7 +9,7 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutJSVanilla,
   'team-scoring': {
     id: '653053616917cd0d733cddb9',
-    brief: 'Можно предсказать будущее! Но только в случае если: Вы располагаете достаточным количеством актуальной статистики.',
+    brief: 'По мотивам статьи Joel Spolsky',
     bg: {
       size: {
         w: 1200,

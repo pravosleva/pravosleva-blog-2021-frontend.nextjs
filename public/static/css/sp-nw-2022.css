@@ -1,0 +1,21 @@
+.price-grid-2c {
+  display: grid;
+}
+
+@media (max-width: 767px) {
+  .price-grid-2c {
+    /*
+    grid-template-columns: 1fr;
+    grid-gap: 2px;
+    */
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 8px 8px;
+  }
+}
+
+@media (min-width: 768px) {
+  .price-grid-2c {
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 8px 8px;
+  }
+}
