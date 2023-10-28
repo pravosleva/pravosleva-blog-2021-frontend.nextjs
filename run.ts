@@ -71,7 +71,7 @@ nextApp
           chat_id: 432590698, // NOTE: Den Pol
           ts: new Date().getTime(),
           eventCode: 'aux_service',
-          about: `\`/frontend.nextjs\`\n🚀 Started on TCP ${PORT}...`,
+          about: `\`/frontend.nextjs\`\n🚀 Started on TCP ${PORT} https://pravosleva.pro`,
           targetMD: `\`\`\`\n${JSON.stringify(
             {
               NODE_ENV: process.env.NODE_ENV,

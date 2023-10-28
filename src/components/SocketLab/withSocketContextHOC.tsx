@@ -23,6 +23,7 @@ export namespace NEvent {
   export enum ServerIncoming {
     TEST = 'lab:client:tst-action',
     WANNA_BE_CONNECTED_TO_ROOM = 'lab:client:wanna-be-connected-to-room',
+    WANNA_BE_DISCONNECTED_FROM_ROOM = 'lab:client:wanna-be-disconnected-from-room',
   }
   export enum ServerOutgoing {
     TEST = 'lab:server:tst-action',

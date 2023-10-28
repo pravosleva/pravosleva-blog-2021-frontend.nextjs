@@ -38,7 +38,7 @@ class Singleton {
     if (!counter) this.state.counters[channelName] = 1
     else this.state.counters[channelName] += 1
 
-    return Promise.resolve({ isOk: true, instance: this })
+    return Promise.resolve({ isOk: true, instance: this, message: 'Added to reestr' })
   }
   public decSocketInReestr ({ socketId }: { socketId: string }): TOperationResult {
     const roomList = this.state.socketReestr.get(socketId)
@@ -61,7 +61,7 @@ class Singleton {
       }
     }
 
-    return Promise.resolve({ isOk: true, instance: this })
+    return Promise.resolve({ isOk: true, instance: this, message: 'Removed from reestr' })
   }
   public getStateInfo (): {
     list: string[];

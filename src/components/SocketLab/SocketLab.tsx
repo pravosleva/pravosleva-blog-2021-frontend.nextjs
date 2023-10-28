@@ -42,6 +42,22 @@ export const Logic = () => {
       groupLog({ spaceName: '⛔ FRONT: Socket was not connected yet?', items: ['socketRef.current', socketRef.current] })
     }
   }, [])
+  const handleWannaBeDisonnected = useCallback(() => {
+    if (!!socketRef.current) {
+      socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_DISCONNECTED_FROM_ROOM, { roomId: 'sample' }, (data: TStandartTargetCallback) => {
+        if (data.ok) {
+          setStore({ isConnectedToPrivateRoom: false })
+          showNotif(data?.message || 'Disconnected from private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000 })
+        } else {
+          // setStore({ isConnectedToPrivateRoom: false })
+          showNotif(data?.message || 'Disconnection from private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000 })
+        }
+      })
+    } else {
+      showNotif('FRONT: Socket was not connected yet?', { variant: 'error', autoHideDuration: 7000 })
+      groupLog({ spaceName: '⛔ FRONT: Socket was not connected yet?', items: ['socketRef.current', socketRef.current] })
+    }
+  }, [])
 
   useEffect(() => {
     const socket: Socket = io(NEXT_APP_SOCKET_API_ENDPOINT, {
@@ -96,6 +112,7 @@ export const Logic = () => {
     socket.on(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
 
     return () => {
+      socket.emit(NEvent.ServerIncoming.WANNA_BE_DISCONNECTED_FROM_ROOM, handleWannaBeDisonnected)
       // NOTE: See also https://socket.io/docs/v4/client-api/#socketoffeventname
       socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
@@ -104,6 +121,7 @@ export const Logic = () => {
       socket.off('reconnect', onReconnectErrorListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
       socket.off('connect', onConnectListener)
+      // socket.
     }
   }, [])
   return (
@@ -121,7 +139,7 @@ export const Logic = () => {
       <div>isConnected: {String(isConnected)}</div>
       <div>isConnectedToPrivateRoom: {String(isConnectedToPrivateRoom)}</div>
       {
-        !isConnectedToPrivateRoom && (
+        !isConnectedToPrivateRoom ? (
           <Button
             size='small'
             // startIcon={<UploadIcon />}
@@ -131,7 +149,19 @@ export const Logic = () => {
             onClick={handleWannaBeConnected}
             endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
           >
-            Wanna be connected to room id
+            <span className='truncate'>Wanna be connected to room id</span>
+          </Button>
+        ) : (
+          <Button
+            size='small'
+            // startIcon={<UploadIcon />}
+            // fullWidth
+            variant="outlined"
+            color='primary'
+            onClick={handleWannaBeDisonnected}
+            endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
+          >
+            <span className='truncate'>Wanna be disconnected from room id</span>
           </Button>
         )
       }
