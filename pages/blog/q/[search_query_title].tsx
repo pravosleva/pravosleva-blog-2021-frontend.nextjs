@@ -37,7 +37,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
       <Head>
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
-        <title>Pravosleva | 🔎 {searchQueryTitle.normalized}</title>
+        <title>🔎 | {searchQueryTitle.normalized}</title>
         <meta name="description" content={`What about ${searchQueryTitle.normalized}`} />
 
         {/* <!-- Facebook Meta Tags --> */}

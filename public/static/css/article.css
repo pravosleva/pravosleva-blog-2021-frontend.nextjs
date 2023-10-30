@@ -307,19 +307,19 @@ code,
   flex-direction: column;
   justify-content: space-between;
 }
-@media (min-width: 601px) {
+@media (min-width: 961px) {
   .article-wrapper,
   .article-wrapper::after {
-    border-radius: 10px;
+    border-radius: 8px;
   }
   .article-wrapper__big-image-as-container {
     /* margin: 50px 0 50px 0; */
-    border-radius: 10px;
+    border-radius: 8px;
   }
 }
 .article-wrapper__big-image-as-container > * {
   margin: 0;
-  padding: 20px;
+  padding: 16px;
 }
 .article-wrapper__big-image-as-container__brief {
   margin-bottom: 30px;

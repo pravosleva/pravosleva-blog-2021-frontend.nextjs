@@ -123,6 +123,10 @@ function AppWithRedux(props: MyAppProps) {
                 vertical: 'top',
                 horizontal: 'center',
               }}
+              style={{
+                borderRadius: '8px',
+                maxWidth: '350px',
+              }}
             >
               <CacheProvider value={emotionCache}>
                 <SCThemeProvider theme={Theme}>

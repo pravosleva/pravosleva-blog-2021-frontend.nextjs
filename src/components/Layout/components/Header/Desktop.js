@@ -224,7 +224,7 @@ const DesktopHeader = ({
                   )}
                   <li style={{ marginBottom: '0px' }}>
                     <MenuFlexWrapper>
-                      <Button onClick={handleMenuOpen} typeName="secondaryWhite" width="narrow" size="xsmall">
+                      <Button onClick={handleMenuOpen} typeName="secondaryWhite" width="auto" size="xsmall">
                         {t('MENU')}
                       </Button>
                     </MenuFlexWrapper>

@@ -29,7 +29,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
       <Head>
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
-        <title>Pravosleva | {title}</title>
+        <title>{title}</title>
         <meta name="description" content={article.brief || 'Найдётся всё что не нашлось ранее, если оно действительно нужно'} />
 
         {/* <!-- Facebook Meta Tags --> */}

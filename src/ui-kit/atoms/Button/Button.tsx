@@ -39,6 +39,9 @@ const types = {
 }
 
 const widths = {
+  auto: css`
+    width: auto;
+  `,
   narrow: css`
     width: 150px;
   `,
@@ -70,10 +73,10 @@ const sizes = {
 
 const attached = {
   right: css`
-    border-radius: 0 6px 6px 0;
+    border-radius: 0 8px 8px 0;
   `,
   left: css`
-    border-radius: 6px 0 0 6px;
+    border-radius: 8px 0 0 8px;
   `,
 }
 
@@ -93,7 +96,7 @@ const getDefaultStyles = () => css`
   align-items: center;
   justify-content: center;
   padding: 0 15px;
-  border-radius: 6px;
+  border-radius: 8px;
 
   text-decoration: none;
   outline: none;

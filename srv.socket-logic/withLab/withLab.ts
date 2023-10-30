@@ -38,6 +38,12 @@ export const withLab = (io: Socket) => {
             socketId: socket.id,
             // message: `BACK: Somebody disconnected (${reason}) / ${connectionsMap.get(channelName)} connected`,
             message: `Somebody disconnected (${reason}) / conns: ${connsCounter}`,
+            notistackProps: {
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+            },
           })
         }
 
@@ -76,6 +82,12 @@ export const withLab = (io: Socket) => {
             socket.broadcast.to(channelName).emit(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, {
               socketId: socket.id,
               message: `Somebody connected to private channel / conns: ${connectionsMap.get(channelName)}`,
+              notistackProps: {
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                },
+              },
             })
           } else console.log(`-- !isOk (wtf#2): ${message || 'No message'}`)
 
@@ -87,7 +99,14 @@ export const withLab = (io: Socket) => {
             const data = getRandomElement({ items: quotesData })
             const connsCounter = instance.getConnectionsCounterByChannelName({ channelName })
             io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
-              message: `${data.quote} (${data.author}) / conns: ${connsCounter}`
+              message: `${data.quote} (${data.author}) / conns: ${connsCounter}`,
+              notistackProps: {
+                variant: 'default',
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                },
+              },
             })
           }
           if (isFirst) {
@@ -112,16 +131,37 @@ export const withLab = (io: Socket) => {
             const looper = loopers[channelName]
             const isLooperExists = !!looper
             const msgList = [`You\'re connected to ${channelName}`]
-            if (isFirst) msgList.push('isFirst')
+            if (isFirst) msgList.push('You\'re first in room')
             if (isLooperExists) msgList.push(looper.getIsStated() ? 'Looper started' : 'Looper wasnt started')
             else msgList.push('Looper not exists (wtf?)')
+            msgList.push('Take quote for each 10 seconds...')
 
-            cb({ ok: true, message: `Added to reestr / ${msgList.join(', ')}` })
+            cb({
+              ok: true,
+              message: `Added to reestr / ${msgList.join(' / ')}`,
+              notistackProps: {
+                variant: 'success',
+                autoHideDuration: 15000,
+                anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                },
+              },
+            })
           }
         })
         .catch((err) => {
           const message = err?.message
-          if (!!cb) cb({ ok: false, message: `Add to reestr ERR / ${message || 'No err.message'}` })
+          if (!!cb) cb({
+            ok: false,
+            message: `Add to reestr ERR / ${message || 'No err.message'}`,
+            notistackProps: {
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+            },
+          })
         })
     })
 
@@ -137,7 +177,16 @@ export const withLab = (io: Socket) => {
             socketId: socket.id,
           })
 
-          if (!!cb) cb({ ok: isOk, message: `Disconnect from private room${!!message ? ` / ${message}` : ''}` })
+          if (!!cb) cb({
+            ok: isOk,
+            message: `Disconnect from private room${!!message ? ` / ${message}` : ''}`,
+            notistackProps: {
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left',
+              },
+            },
+          })
         })
         .catch((err) => {
           const message = err?.message

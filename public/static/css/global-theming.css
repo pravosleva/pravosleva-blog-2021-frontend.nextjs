@@ -8,11 +8,10 @@ body.light footer {
   color: #fff;
   background-color: rgba(0, 0, 0, 0.9);
 }
-body.light .tiles-grid-item-in-article {
-  background-color: rgba(0, 64, 130, 0.75);
-}
+/* body.light .tiles-grid-item-in-article { background-color: rgba(0, 64, 130, 0.75); } */
 .tiles-grid-item-in-article {
-  background-color: rgba(0, 64, 130, 0.75);
+  /* background-color: rgba(1, 98, 200, 0.75); */
+  background-color: rgba(1,98,200,0.75);
 }
 body.light .card {
   border: 2px solid transparent;

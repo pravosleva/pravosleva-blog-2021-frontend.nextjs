@@ -23,7 +23,7 @@ const fadeIn = keyframes`
 export const ModalWindow = styled.div<IProps>`
 display: flex;
 flex-direction: column;
-border-radius: 6px;
+border-radius: 16px;
 position: relative;
 min-height: 60px;
 width: ${(p: any) => sizes[p.size] || sizes.small}px;

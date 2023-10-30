@@ -24,7 +24,7 @@ export const ModalContent = styled('div')<{ size: ESize }>`
   flex-direction: column;
   background: #FFF;
   color: #000;
-  border-radius: 6px;
+  border-radius: 16px;
   padding: 0;
   margin: auto;
   ${(p: any) => getSize(p.size)}

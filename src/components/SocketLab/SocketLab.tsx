@@ -2,7 +2,12 @@ import { useCallback, useRef, useEffect } from 'react'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { WithSocketContextHOC, useStore, NEvent, TSocketMicroStore, initialState } from './withSocketContextHOC'
 import io, { Socket } from 'socket.io-client'
-import { useSnackbar, SnackbarMessage as TSnackbarMessage, OptionsObject as IOptionsObject } from 'notistack'
+import {
+  useSnackbar,
+  SnackbarMessage as TSnackbarMessage,
+  OptionsObject as IOptionsObject,
+  // SharedProps as ISharedProps,
+} from 'notistack'
 import { groupLog } from '~/utils/groupLog'
 import { Button, Stack } from '@mui/material'
 import classes from './SocketLab.module.scss'
@@ -19,9 +24,11 @@ const NEXT_APP_SOCKET_API_ENDPOINT = isDev ? 'http://localhost:3000' : (process.
 type TStandartTargetCallback = {
   ok: boolean;
   message: string;
+  notistackProps?: Partial<IOptionsObject>;
 }
 type TStandartCommonEvent = {
   message: string;
+  notistackProps?: Partial<IOptionsObject>;
 }
 
 export const Logic = () => {
@@ -53,11 +60,11 @@ export const Logic = () => {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_CONNECTED_TO_ROOM, { roomId: 'sample' }, (data: TStandartTargetCallback) => {
         if (data.ok) {
           setStore({ isConnectedToPrivateRoom: true })
-          showNotif(data?.message || 'Connected to private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000 })
+          showNotif(data?.message || 'Connected to private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000, ...(data?.notistackProps || {}) })
           disableDelayToggler({ elm: disconnectBtnRef.current, ms: 2000 })
         } else {
           setStore({ isConnectedToPrivateRoom: false })
-          showNotif(data?.message || 'Connection to private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000 })
+          showNotif(data?.message || 'Connection to private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000, ...(data?.notistackProps || {}) })
         }
       })
     } else {
@@ -70,11 +77,11 @@ export const Logic = () => {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_DISCONNECTED_FROM_ROOM, { roomId: 'sample' }, (data: TStandartTargetCallback) => {
         if (data.ok) {
           setStore({ isConnectedToPrivateRoom: false })
-          showNotif(data?.message || 'Disconnected from private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000 })
+          showNotif(data?.message || 'Disconnected from private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000, ...(data?.notistackProps || {}) })
           disableDelayToggler({ elm: connectBtnRef.current, ms: 2000 })
         } else {
           // setStore({ isConnectedToPrivateRoom: false })
-          showNotif(data?.message || 'Disconnection from private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000 })
+          showNotif(data?.message || 'Disconnection from private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000, ...(data?.notistackProps || {}) })
         }
       })
     } else {
@@ -125,13 +132,13 @@ export const Logic = () => {
 
     const onSomebodyConnectedToRoom = (data: TStandartCommonEvent) => {
       groupLog({ spaceName: `-- ${NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM}`, items: [data] })
-      showNotif(data?.message || 'Somebody connected', { variant: 'info', autoHideDuration: 7000 })
+      showNotif(data?.message || 'Somebody connected', { variant: 'info', autoHideDuration: 10000, ...(data?.notistackProps || {}) })
     }
     socket.on(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, onSomebodyConnectedToRoom)
 
     const onCommonMessage = (data: TStandartCommonEvent) => {
       groupLog({ spaceName: `-- ${NEvent.ServerOutgoing.COMMON_MESSAGE}`, items: [data] })
-      showNotif(data?.message || 'Common message', { variant: 'info', autoHideDuration: 10000 })
+      showNotif(data?.message || 'Common message', { variant: 'info', autoHideDuration: 10000, ...(data?.notistackProps || {}) })
     }
     socket.on(NEvent.ServerOutgoing.COMMON_MESSAGE, onCommonMessage)
 
