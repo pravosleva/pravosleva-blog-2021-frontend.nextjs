@@ -72,7 +72,7 @@ nextApp
           ts: new Date().getTime(),
           eventCode: 'aux_service',
           about: `\`/frontend.nextjs\`\n🚀 Started on TCP ${PORT} https://pravosleva.pro`,
-          targetMD: `\`\`\`\n${JSON.stringify(
+          targetMD: `\`\`\`json\n${JSON.stringify(
             {
               NODE_ENV: process.env.NODE_ENV,
             },
@@ -94,7 +94,7 @@ nextApp
         ts: new Date().getTime(),
         eventCode: 'aux_service',
         about: `\`/frontend.nextjs\`\n⛔ Errored`,
-        targetMD: `\`\`\`\n${ex.stack}\n\`\`\``,
+        targetMD: `\`\`\`json\n${ex.stack}\n\`\`\``,
       })
       .then((res) => res.data)
       .catch((err) => err)
