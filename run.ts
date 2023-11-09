@@ -18,9 +18,13 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server, {
   cors: {
     origin: [
+      // NOTE: Djago dev?
+      'http://localhost:8000',
+      'http://localhost:8080',
       'http://localhost:5173', // NOTE: Vite dev
       'http://localhost:4173', // NOTE: Vite prod preview
-      // 'https://test.smartprice.ru', // NOTE: SP text
+      'https://test.smartprice.ru', // NOTE: SP test
+      'https://smartprice.ru', // NOTE: SP prod
     ],
     // NOTE: See also https://socket.io/docs/v4/handling-cors/
     allowRequest: (req: any, callback: (e: any, isCorrect: boolean) => void) => {
@@ -80,11 +84,12 @@ nextApp
       if (err) throw err
       console.log(`> Ready on http://localhost:${PORT}`)
 
+      const ts = new Date().getTime()
       if (!isDev) axios
         .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
-          resultId: state.startsCounter,
+          resultId: ts,
           chat_id: 432590698, // NOTE: Den Pol
-          ts: new Date().getTime(),
+          ts,
           eventCode: 'aux_service',
           about: `\`/frontend.nextjs\`\n🚀 Started on TCP ${PORT} https://pravosleva.pro`,
           targetMD: `\`\`\`json\n${JSON.stringify(
@@ -102,11 +107,12 @@ nextApp
   .catch(async (ex: any) => {
     state.errsCounter += 1
     console.error(ex.stack)
+    const ts = new Date().getTime()
     if (!isDev) await axios
       .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
-        resultId: state.errsCounter,
+        resultId: ts,
         chat_id: 432590698, // NOTE: Den Pol
-        ts: new Date().getTime(),
+        ts,
         eventCode: 'aux_service',
         about: `\`/frontend.nextjs\`\n⛔ Errored`,
         targetMD: `\`\`\`json\n${ex.stack}\n\`\`\``,
