@@ -62,11 +62,12 @@ export const withLab = (io: Socket) => {
     }
     // -
 
-    socket.on(NEvent.ServerIncoming.TEST, () => {
+    socket.on(NEvent.ServerIncoming.TEST, (data: any) => {
       // io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
       io.to(socket.id).emit(NEvent.ServerOutgoing.TEST, {
         socketId: socket.id,
         message: 'BACK: Test event',
+        yourData: data,
       })
     })
 

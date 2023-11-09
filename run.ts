@@ -15,7 +15,22 @@ const { api } = require('~/srv.express-next-api')
 const isDev = process.env.NODE_ENV !== 'production'
 const app = require('express')()
 const server = require('http').Server(app)
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+  cors: {
+    origin: [
+      'http://localhost:5173', // NOTE: Vite dev
+      'http://localhost:4173', // NOTE: Vite prod preview
+      // 'https://test.smartprice.ru', // NOTE: SP text
+    ],
+    // NOTE: See also https://socket.io/docs/v4/handling-cors/
+    allowRequest: (req: any, callback: (e: any, isCorrect: boolean) => void) => {
+      const hasOriginHeader = !!req.headers.origin
+      callback({ reqHeaders: req.headers }, hasOriginHeader); // No allow requests without 'origin' header
+    },
+    allowedHeaders: ['my-custom-header'],
+    credentials: true,
+  }
+})
 const nextApp = next({ dev: isDev })
 const nextHanlder = nextApp.getRequestHandler()
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000
