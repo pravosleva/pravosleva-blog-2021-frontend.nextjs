@@ -160,7 +160,7 @@ export const rules = {
 }
 
 export const replaceAuditsInRoom = (req: IRequest, res: IResponse) => {
-  stateInstance.set(req.body.room, req.body.audits)
+  stateInstance._state.set(req.body.room, req.body.audits)
   res.status(200).send({
     ok: true,
     audits: stateInstance.get(req.body.room)

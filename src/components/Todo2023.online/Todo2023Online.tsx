@@ -12,7 +12,7 @@ import {
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ useSnackbar } from 'notistack'
-import { /* AddNewBtn, */ AddNewBtn, AuditList, AuditGrid } from '~/components/audit-helper'
+import { /* AddNewBtn, */ AddNewBtn, AuditList, AuditGrid, NTodo } from '~/components/audit-helper'
 import {
   Box,
   Button,
@@ -52,6 +52,8 @@ import Brightness1Icon from '@mui/icons-material/Brightness1'
 import { useWindowSize } from '~/hooks/useWindowSize'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
+import { Widget } from '~/components/Widget'
+import { TodoConnected } from './components'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -76,6 +78,9 @@ const Logic = ({ room }: TLogicProps) => {
   const socketRef = useRef<Socket | null>(null)
   const localAudits = useSelector((store: IRootState) => store.todo2023.localAudits)
   const { enqueueSnackbar } = useSnackbar()
+  const showStandartSocketErrMsg = useCallback(({ isOk, message }: { isOk: boolean; message?: string }) => {
+    if (!isOk) enqueueSnackbar(message || 'Что-то пошло не так', { variant: 'error', autoHideDuration: 7000 })
+  }, [enqueueSnackbar])
 
   useEffect(() => {
     // -- NOTE: Disable anyway!
@@ -98,7 +103,15 @@ const Logic = ({ room }: TLogicProps) => {
         room: roomRef.current,
       }, ({ data }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
         groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb`, items: [data] })
-        setStore({ audits: data.audits })
+        setStore({
+          // -- NOTE: Init anything (client 2/2)
+          audits: data.audits,
+          common: {
+            roomState: data.roomState || null,
+            // NOTE: Etc.
+          },
+          // --
+        })
         // if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
       })
     }
@@ -110,11 +123,11 @@ const Logic = ({ room }: TLogicProps) => {
     }
     socket.on('connect_error', onConnectErrorListener)
     
-    const onReconnectErrorListener = (arg: any) => {
+    const onReconnectListener = (arg: any) => {
       groupLog({ spaceName: '-- reconnect', items: [arg] })
       if (!!document.hidden) enqueueSnackbar('Reconnect', { variant: 'success', autoHideDuration: 3000 })
     }
-    socket.on('reconnect', onReconnectErrorListener)
+    socket.on('reconnect', onReconnectListener)
 
     const onReconnectAttemptListener = (arg: any) => {
       groupLog({ spaceName: '-- reconnect_attempt', items: [arg] })
@@ -123,12 +136,17 @@ const Logic = ({ room }: TLogicProps) => {
     socket.on('reconnect_attempt', onReconnectAttemptListener)
 
     const onAuditsReplace = (data: NEventData.NServerOutgoing.TAUDITLIST_REPLACE) => {
-      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.AUDITLIST_REPLACE}`, items: [data] })
+      // groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.AUDITLIST_REPLACE}`, items: [data] })
       setStore({ audits: data.audits })
     }
-    socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace);
+    socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
 
-    // TODO?
+    // NOTE: New 2023.11
+    const onTodo2023Replace = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
+      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE}`, items: [data] })
+      if (!!data.roomState) setStore({ common: { roomState: data.roomState } })
+    }
+    socket.on(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
 
     const onDisonnectListener = () => {
       groupLog({ spaceName: '-- disconnect', items: ['no data'] })
@@ -138,8 +156,9 @@ const Logic = ({ room }: TLogicProps) => {
     return () => {
       socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
+      socket.off(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
       socket.off('connect_error', onConnectErrorListener)
-      socket.off('reconnect', onReconnectErrorListener)
+      socket.off('reconnect', onReconnectListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
       socket.off('connect', onConnectListener)
     }
@@ -337,7 +356,7 @@ const Logic = ({ room }: TLogicProps) => {
 
   useEffect(() => {
     if (isDev) {
-      // dispatch(setIsOneTimePasswordCorrect(true))
+      dispatch(setIsOneTimePasswordCorrect(true))
       return
     }
     autoparkHttpClient.checkJWT({
@@ -364,11 +383,11 @@ const Logic = ({ room }: TLogicProps) => {
   // }, [])
 
   // -- Automatic restore if necessary
-  const isEmpryRemoteListUpdatedInThisSessionRef = useRef<boolean>(false)
+  // const isEmpryRemoteListUpdatedInThisSessionRef = useRef<boolean>(false)
   const syncToolTimeoutRef = useRef<NodeJS.Timeout>()
   const lastLocalBackupTime = useSelector((store: IRootState) => store.todo2023.backupInfo?.ts)
   useEffect(() => {
-    if (isConnected && remoteAudits.length === 0 && !isEmpryRemoteListUpdatedInThisSessionRef.current) {
+    if (isConnected && remoteAudits.length === 0) { // && !isEmpryRemoteListUpdatedInThisSessionRef.current
       const doIt = () => {
         if (isOneTimePasswordCorrect) {
           if (localAudits.length > 0) {
@@ -521,9 +540,71 @@ const Logic = ({ room }: TLogicProps) => {
     isMenuOpened,
   ])
 
+  const handleCreateNamespace = useCallback(({ label }) => {
+    if (!label.trim()) throw new Error('Shoud not be empty!')
+    if (!socketRef.current) throw new Error('socket err')
+    socketRef.current.emit(NEvent.EServerIncoming.TODO2023_ADD_NAMESPACE, {
+      room: roomRef.current,
+      name: label,
+    }, showStandartSocketErrMsg)
+  }, [])
+  const handleRemoveNamespace = useCallback(({ name }) => {
+    if (!name.trim()) throw new Error('Shoud not be empty!')
+    if (!socketRef.current) throw new Error('socket err')
+    socketRef.current.emit(NEvent.EServerIncoming.TODO2023_REMOVE_NAMESPACE, {
+      room: roomRef.current,
+      name,
+    }, showStandartSocketErrMsg)
+  }, [])
+  const handleCreateTodo = useCallback(({ label, namespace, priority }: { label: string; namespace: string; priority: number; }) => {
+    if (!label.trim()) throw new Error('Shoud not be empty!')
+    if (!socketRef.current) throw new Error('socket err')
+    socketRef.current.emit(NEvent.EServerIncoming.TODO2023_ADD_TODO_ITEM, {
+      room: roomRef.current,
+      namespace,
+      todoItem: {
+        label,
+        descr: '',
+        status: NTodo.EStatus.NO_STATUS,
+        priority,
+      },
+    }, showStandartSocketErrMsg)
+  }, [])
+  const handleRemoveTodo = useCallback(({ todoId, namespace }: { todoId: number; namespace: string }) => {
+    // console.log(todoId)
+    if (!todoId) throw new Error(`todoId Shoud not be empty! received: ${String(todoId)}`)
+    if (!socketRef.current) throw new Error('socket err')
+    socketRef.current.emit(NEvent.EServerIncoming.TODO2023_REMOVE_TODO_ITEM, {
+      room: roomRef.current,
+      namespace,
+      todoId,
+    }, showStandartSocketErrMsg)
+  }, [])
+  const handleUpdateTodo = useCallback(({ todoId, namespace, newTodoItem }: { todoId: number; namespace: string; newTodoItem: NTodo.TItem }) => {
+    // console.log('- td:update-todo')
+    // console.log(todoId)
+    if (!todoId) throw new Error(`todoId Shoud not be empty! received: ${String(todoId)}`)
+    if (!socketRef.current) throw new Error('socket err')
+    socketRef.current.emit(NEvent.EServerIncoming.TODO2023_UPDATE_TODO_ITEM, {
+      room: roomRef.current,
+      namespace,
+      todoId,
+      newTodoItem,
+    }, showStandartSocketErrMsg)
+  }, [])
+
   switch (true) {
     case isMobile: return (
       <>
+        <Widget>
+          <TodoConnected
+            onCreateNamespace={handleCreateNamespace}
+            onRemoveNamespace={handleRemoveNamespace}
+            onCreateTodo={handleCreateTodo}
+            onRemoveTodo={handleRemoveTodo}
+            onUpdateTodo={handleUpdateTodo}
+          />
+        </Widget>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
           <Container maxWidth="xs">
             <Stack
@@ -562,8 +643,7 @@ const Logic = ({ room }: TLogicProps) => {
                   variant="contained"
                   color='secondary'
                   onClick={handlePush}
-                >Push from LS (Save)</Button>
-              */}
+                >Push from LS (Save)</Button> */}
                 <div>
                   <IconButton
                     aria-label="autosync-toggler"
@@ -580,12 +660,7 @@ const Logic = ({ room }: TLogicProps) => {
               </Box>
             </Stack>
 
-            {/* <Box
-              sx={{
-                pt: 2,
-                pb: 2,
-              }}
-            >
+            {/* <Box sx={{ pt: 2, pb: 2 }}>
               <em>Updated {lastRemoteAuditsTsUpdateTimeAgo}</em>
             </Box> */}
             <AuditList
@@ -665,110 +740,119 @@ const Logic = ({ room }: TLogicProps) => {
       </>
     )
     case isDesktop: return (
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-        <ResponsiveBlock
-          style={{
-            position: 'fixed',
-            top: 0,
-            right: 0,
-            width: '100%',
-            zIndex: 3,
-            height: '50px',
-            lineHeight: '50px',
-          }}
-        >
-          <div
+      <>
+        <Widget>
+          <TodoConnected
+            onCreateNamespace={handleCreateNamespace}
+            onRemoveNamespace={handleRemoveNamespace}
+            onCreateTodo={handleCreateTodo}
+            onRemoveTodo={handleRemoveTodo}
+            onUpdateTodo={handleUpdateTodo}
+          />
+        </Widget>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+          <ResponsiveBlock
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              width: '100%',
+              zIndex: 3,
+              height: '50px',
+              lineHeight: '50px',
             }}
           >
             <div
               style={{
-                lineHeight: 'inherit',
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'center',
-                gap: '16px',
+                justifyContent: 'space-between',
               }}
             >
-              <span>
-                <Button
-                  size='small'
-                  startIcon={<ArrowBackIcon />}
-                  variant='outlined'
-                  color='primary'
-                  component={Link}
-                  noLinkStyle
-                  href={'/subprojects/audit-list'}
-                  target='_self'
-                >
-                  Offline
-                </Button>
-              </span>
-              <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-              <span>{room}</span>
-            </div>
-            <div>
-              {
-                isOneTimePasswordCorrect && (
-                  <IconButton
-                    aria-label="autosync-toggler"
-                    id="autosync-toggler"
-                    // aria-controls={isMenuOpened ? 'long-menu' : undefined}
-                    // aria-expanded={isMenuOpened ? 'true' : undefined}
-                    // aria-haspopup="true"
-                    onClick={autoSyncOptionToggle}
+              <div
+                style={{
+                  lineHeight: 'inherit',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: '16px',
+                }}
+              >
+                <span>
+                  <Button
+                    size='small'
+                    startIcon={<ArrowBackIcon />}
+                    variant='outlined'
+                    color='primary'
+                    component={Link}
+                    noLinkStyle
+                    href={'/subprojects/audit-list'}
+                    target='_self'
                   >
-                    <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
-                  </IconButton>
-                )
-              }
-              {MemoizedMenu}
+                    Offline
+                  </Button>
+                </span>
+                <Brightness1Icon color={isConnected ? 'success' : 'error'} />
+                <span>{room}</span>
+              </div>
+              <div>
+                {
+                  isOneTimePasswordCorrect && (
+                    <IconButton
+                      aria-label="autosync-toggler"
+                      id="autosync-toggler"
+                      // aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                      // aria-expanded={isMenuOpened ? 'true' : undefined}
+                      // aria-haspopup="true"
+                      onClick={autoSyncOptionToggle}
+                    >
+                      <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
+                    </IconButton>
+                  )
+                }
+                {MemoizedMenu}
+              </div>
             </div>
-          </div>
-        </ResponsiveBlock>
-        
-        <AuditGrid
-          onAddNewAudit={handleAddNewAudit}
-          audits={remoteAudits}
-          onRemoveAudit={handleRemoveAudit}
-          onAddJob={handleAddJob}
-          onAddSubjob={handleAddSubjob}
-          onToggleJobDone={handleToggleJobDone}
-          onRemoveJob={handleRemoveJob}
-          onToggleSubjob={handleToggleSubjob}
-          isEditable={isOneTimePasswordCorrect}
-          onUpdateAuditComment={handleUpdateAuditComment}
-        />
-        
-        {
-          isBrowser && !isOneTimePasswordCorrect && (
-            <div
-              style={{
-                marginTop: 'auto',
-                // position: 'sticky',
-                position: 'fixed',
-                bottom: '0px',
-                zIndex: 2,
-                padding: '16px',
-              }}
-              className='backdrop-blur--lite'
-            >
-              {/* <pre>{JSON.stringify({ isOneTimePasswordCorrect, isBrowser }, null, 2)}</pre> */}
-              <OneTimeLoginFormBtn chat_id={String(room)} />
-            </div>
-          )
-        }
-      </div>
-    )
-    default: return (
-      <>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
-          <CircularIndeterminate />
+          </ResponsiveBlock>
+          
+          <AuditGrid
+            onAddNewAudit={handleAddNewAudit}
+            audits={remoteAudits}
+            onRemoveAudit={handleRemoveAudit}
+            onAddJob={handleAddJob}
+            onAddSubjob={handleAddSubjob}
+            onToggleJobDone={handleToggleJobDone}
+            onRemoveJob={handleRemoveJob}
+            onToggleSubjob={handleToggleSubjob}
+            isEditable={isOneTimePasswordCorrect}
+            onUpdateAuditComment={handleUpdateAuditComment}
+          />
+          
+          {
+            isBrowser && !isOneTimePasswordCorrect && (
+              <div
+                style={{
+                  marginTop: 'auto',
+                  // position: 'sticky',
+                  position: 'fixed',
+                  bottom: '0px',
+                  zIndex: 2,
+                  padding: '16px',
+                }}
+                className='backdrop-blur--lite'
+              >
+                {/* <pre>{JSON.stringify({ isOneTimePasswordCorrect, isBrowser }, null, 2)}</pre> */}
+                <OneTimeLoginFormBtn chat_id={String(room)} />
+              </div>
+            )
+          }
         </div>
       </>
+    )
+    default: return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
+        <CircularIndeterminate />
+      </div>
     )
   }
 }

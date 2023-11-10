@@ -23,14 +23,23 @@ export const withAuditListSocketLogic = (io: Socket) => {
 
       const pages = stateInstance.getKeys()
       // console.log(`-- keys -> ${keys.join(', ')}`)
-      cb({ data: { room, audits: stateInstance.get(room) || [], message: `pages= ${pages.join(', ') || 'no yet'}` }})
+      cb({
+        data: {
+          room,
+          message: `pages= ${pages.join(', ') || 'no yet'}`,
+
+          // -- NOTE: Init anything (server 1/2)
+          audits: stateInstance.get(room) || [],
+          roomState: stateInstance._todo.get(room) || undefined,
+          // --
+        }})
     })
     // 2.
     socket.on(NEvent.EServerIncoming.AUDITLIST_REPLACE, ({ room, audits }: NEventData.NServerIncoming.TAUDITLIST_REPLACE, _cb: NEventData.NServerIncoming.TAUDITLIST_REPLACE_CB) => {
-      stateInstance.set(room, audits)
+      stateInstance.initRoomAudits({ room, audits })
       // cb({ data: { room, audits: stateInstance.get(room) || [], message: `stateInstance.size= ${stateInstance.size}` }})
       // NOTE: broadcast to all
-      io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits: stateInstance.get(room) || [] });
+      io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits: stateInstance.get(room) || [] })
     })
     // TODO?: /express-next-api/todo2023/auditlist.replace { room, audits }
     // 3.
@@ -124,6 +133,63 @@ export const withAuditListSocketLogic = (io: Socket) => {
       data: {
         socketId: socket.id,
       }
+    })
+
+    // NOTE: New 2023.11
+    socket.on(NEvent.EServerIncoming.TODO2023_ADD_NAMESPACE, (ev: NEventData.NServerIncoming.TAddNamespace, cb?: (e: NEventData.NServerIncoming.TAddNamespaceCB) => void) => {
+      stateInstance.addNamespace({ room: ev.room, name: ev.name })
+        .then((e) => {
+          io.in(getChannelName(ev.room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, { roomState: e.roomState });
+        })
+        .catch((err) => {
+          console.log(err)
+          if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
+        })
+    })
+    socket.on(NEvent.EServerIncoming.TODO2023_REMOVE_NAMESPACE, (ev: NEventData.NServerIncoming.TRemoveNamespace, cb?: (e: NEventData.NServerIncoming.TRemoveNamespaceCB) => void) => {
+      stateInstance.removeNamespace({ room: ev.room, name: ev.name })
+        .then((e) => {
+          io.in(getChannelName(ev.room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, { roomState: e.roomState });
+        })
+        .catch((err) => {
+          console.log(err)
+          if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
+        })
+    })
+    socket.on(NEvent.EServerIncoming.TODO2023_ADD_TODO_ITEM, (ev: NEventData.NServerIncoming.TAddTodo, cb?: (e: NEventData.NServerIncoming.TAddTodoCB) => void) => {
+      stateInstance.addTodo({ room: ev.room, namespace: ev.namespace, todoItem: ev.todoItem })
+        .then((e) => {
+          io.in(getChannelName(ev.room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, { roomState: e.roomState });
+        })
+        .catch((err) => {
+          console.log(err)
+          if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
+        })
+    })
+    socket.on(NEvent.EServerIncoming.TODO2023_REMOVE_TODO_ITEM, (ev: NEventData.NServerIncoming.TRemoveTodo, cb?: (e: NEventData.NServerIncoming.TRemoveTodoCB) => void) => {
+      stateInstance.removeTodo({ room: ev.room, namespace: ev.namespace, todoId: ev.todoId })
+        .then((e) => {
+          io.in(getChannelName(ev.room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, { roomState: e.roomState });
+        })
+        .catch((err) => {
+          console.log(err)
+          if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
+        })
+    })
+    socket.on(NEvent.EServerIncoming.TODO2023_UPDATE_TODO_ITEM, (ev: NEventData.NServerIncoming.TUpdateTodo, cb?: (e: NEventData.NServerIncoming.TUpdateTodoCB) => void) => {
+      stateInstance.updateTodo({
+        room: ev.room,
+        namespace: ev.namespace,
+        newTodoItem: ev.newTodoItem,
+        todoId: ev.todoId,
+      })
+        .then((e) => {
+          io.in(getChannelName(ev.room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, { roomState: e.roomState });
+        })
+        .catch((err) => {
+          console.log(err)
+          if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
+        })
     })
 
     // socket.on("disconnect", () => {

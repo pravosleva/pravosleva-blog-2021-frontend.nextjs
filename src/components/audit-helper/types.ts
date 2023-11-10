@@ -36,3 +36,30 @@ export type TAudit = {
   tsCreate: number;
   tsUpdate: number;
 }
+
+// -- NOTE: New 2023.11 (client 1/2)
+export namespace NTodo {
+  export enum EStatus {
+    NO_STATUS = 'no-status',
+    INFO = 'info',
+    WARNING = 'warning',
+    DANGER = 'danger',
+    SUCCESS = 'success',
+    IS_DONE = 'is-done',
+  };  
+  export type TItem = {
+    label: string;
+    descr: string;
+    status: EStatus;
+    priority: number;
+  };
+  export type TTodo = TItem & { id: number; };
+  export type TRoomState = {
+    [key: string]: {
+      state: TTodo[];
+      tsCreate: number;
+      tsUpdate: number;
+    };
+  };
+}
+// --

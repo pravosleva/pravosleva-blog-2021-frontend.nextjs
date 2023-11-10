@@ -1,13 +1,12 @@
-import { EJobStatus, ESubjobStatus, NEventData, TAudit } from '~/srv.socket-logic/audit-list/types'
+import { EJobStatus, ESubjobStatus, NEventData, TAudit, NTodo } from '~/srv.socket-logic/audit-list/types'
 import { getRandomString } from '~/srv.utils/getRandomString'
 
-type TOwnerTGChatId = number
+type TOwnerTGChatId = number;
 
 const _getNextSubjobStatus = (prevStatus: ESubjobStatus): ESubjobStatus => {
   const keys = Object.values(ESubjobStatus)
   const currentIndex = keys.indexOf(prevStatus);
   const nextIndex = (currentIndex + 1) % keys.length;
-
   return keys[nextIndex]
 }
 
@@ -15,10 +14,12 @@ class Singleton {
   private static instance: Singleton;
   _state: Map<TOwnerTGChatId, TAudit[]>;
   // _connections: Map<string, TOwnerTGChatId>;
+  _todo: Map<TOwnerTGChatId, { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } }>;
 
   private constructor() {
     this._state = new Map()
     // this._connections = new Map()
+    this._todo = new Map()
   }
 
   public static getInstance(): Singleton {
@@ -36,8 +37,14 @@ class Singleton {
   public get size() {
     return this._state.size
   }
-  public set(key: number, value: TAudit[]) {
-    return this._state.set(key, value)
+  // public set(key: number, value: TAudit[]) {
+  //   return this._state.set(key, value)
+  // }
+  public initRoomAudits({ room, audits }: { room: number; audits: TAudit[] }) {
+    this._state.set(room, audits)
+  }
+  public initRoomTodos({ room }: { room: number; }) {
+    this._todo.set(room, {})
   }
   public get(key: number) {
     return this._state.get(key)
@@ -215,7 +222,6 @@ class Singleton {
     this._state.set(room, targetAudits)
     return Promise.resolve({ isOk: true, audits: targetAudits })
   }
-
   public addSubjob({ room, auditId, name, jobId }: { room: number; auditId: string; name: string; jobId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }>  {
     const targetAudits = this._state.get(room)
     if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })
@@ -299,6 +305,144 @@ class Singleton {
       return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }
+
+  // --- NOTE: New 2023.11
+  public addNamespace ({ room, name }: { room: number; name: string }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+    try {
+      // NOTE: 1.1 Есть ли комната для пользователя?
+      let targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+      
+      if (!targetNamespacesOfRoom) {
+        // throw new Error(`Room ${room} not found!`)
+        const tsCreate = new Date().getTime()
+        targetNamespacesOfRoom = {
+          [name]: {
+            state: [],
+            tsCreate,
+            tsUpdate: tsCreate,
+          },
+        }
+      } else {
+        // NOTE: 1.2 Есть ли такой неймспейс?
+        const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[name]?.state
+        if (!!targetNamespaceTodos) throw new Error(`Namespace с именем ${name} уже существует! Придумайте другое имя`)
+      }
+
+      const tsCreate = new Date().getTime()
+      const newRoomState = {
+        ...targetNamespacesOfRoom,
+        [name]: {
+          state: [],
+          tsUpdate: tsCreate,
+          tsCreate,
+        }
+      }
+      this._todo.set(room, newRoomState)
+      return Promise.resolve({ isOk: true, roomState: newRoomState })
+    } catch (err: any) {
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    }
+  }
+  public removeNamespace ({ room, name }: { room: number; name: string }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+    try {
+      // NOTE: 1.1 Есть ли комната для пользователя?
+      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+      
+      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found!`)
+      else {
+        // NOTE: 1.2 Есть ли такой неймспейс?
+        const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[name]?.state
+        if (!targetNamespaceTodos) throw new Error(`Namespace с именем ${name} не существует!`)
+      }
+
+      delete targetNamespacesOfRoom[name]
+
+      this._todo.set(room, targetNamespacesOfRoom)
+      return Promise.resolve({ isOk: true, roomState: targetNamespacesOfRoom })
+    } catch (err: any) {
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    }
+  }
+  public addTodo ({ room, todoItem, namespace }: { room: number; todoItem: NTodo.TItem; namespace: string; }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+    try {
+      // NOTE: 1.1 Есть ли комната для пользователя?
+      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
+      // NOTE: 1.2 Есть ли такой неймспейс?
+      const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
+      if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Создайте сначала namespace с таким именем`)
+
+      const tsUpdate = new Date().getTime()
+      const newRoomState = {
+        ...targetNamespacesOfRoom,
+        [namespace]: {
+          state: [...targetNamespaceTodos, { id: tsUpdate, ...todoItem }],
+          tsUpdate,
+          tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
+        }
+      }
+      this._todo.set(room, newRoomState)
+      return Promise.resolve({ isOk: true, roomState: newRoomState })
+    } catch (err: any) {
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    }
+  }
+  public removeTodo ({ room, todoId, namespace }: { room: number; todoId: number; namespace: string; }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+    try {
+      // NOTE: 1.1 Есть ли комната для пользователя?
+      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
+      // NOTE: 1.2 Есть ли такой неймспейс?
+      const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
+      if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Не сможем удалить todo by id= ${todoId}`)
+
+      const tsUpdate = new Date().getTime()
+      const newRoomState = {
+        ...targetNamespacesOfRoom,
+        [namespace]: {
+          state: targetNamespaceTodos.filter(({ id }) => id !== todoId),
+          tsUpdate,
+          tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
+        }
+      }
+      this._todo.set(room, newRoomState)
+      return Promise.resolve({ isOk: true, roomState: newRoomState })
+    } catch (err: any) {
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    }
+  }
+  public updateTodo ({ room, namespace, todoId, newTodoItem }: { room: number; todoId: number; namespace: string; newTodoItem: NTodo.TItem; }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+    try {
+      // NOTE: 1.1 Есть ли комната для пользователя?
+      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
+      // NOTE: 1.2 Есть ли такой неймспейс?
+      const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
+      if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Создайте сначала namespace с таким именем`)
+
+      const targetIndex = targetNamespaceTodos.findIndex(({ id }) => id === todoId)
+      if (targetIndex === -1) throw new Error('Странно, но такой todo не нашлось')
+
+      const tsUpdate = new Date().getTime()
+      const oldTodoState = targetNamespaceTodos[targetIndex]
+
+      targetNamespaceTodos[targetIndex] = { ...oldTodoState, ...newTodoItem }
+
+      const newRoomState = {
+        ...targetNamespacesOfRoom,
+        [namespace]: {
+          state: targetNamespaceTodos,
+          tsUpdate,
+          tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
+        }
+      }
+      this._todo.set(room, newRoomState)
+      return Promise.resolve({ isOk: true, roomState: newRoomState })
+    } catch (err: any) {
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    }
+  }
+  // ---
 }
 
 export const stateInstance = Singleton.getInstance()

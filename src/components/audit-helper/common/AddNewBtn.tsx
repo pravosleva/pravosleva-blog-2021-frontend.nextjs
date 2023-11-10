@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react'
 import { Button, TextField } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { useForm, RegisterOptions as TRegisterOptions } from "react-hook-form"
+import { useForm, RegisterOptions as TRegisterOptions } from 'react-hook-form'
 
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 
 type TProps = {
   cb: {
@@ -51,7 +51,7 @@ export const AddNewBtn = ({
       acc[key] = cfg[key].defaultValue
       return acc
     }, {}),
-  });
+  })
 
   const [isOpened, setIsOpened] = useState(false);
   const handleClickOpen = useCallback(() => {

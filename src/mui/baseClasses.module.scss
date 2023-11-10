@@ -1,0 +1,62 @@
+.stack0 {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+.stack1 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stack2 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.stack3 {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.stack4 {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.stack5 {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.stack6 {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+.stack7 {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+.stack8 {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+.stack9 {
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+.stack9 {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.grid1_min80 {
+  display: grid;
+  column-gap: 8px;
+  row-gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+}
