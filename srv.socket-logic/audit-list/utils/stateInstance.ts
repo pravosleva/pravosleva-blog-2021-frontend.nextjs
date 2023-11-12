@@ -442,6 +442,18 @@ class Singleton {
       return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
     }
   }
+  public replaceRoomState({ room, roomState }: { room: number; roomState: NTodo.TRoomState }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+    try {
+      // NOTE: 1.1 Есть ли комната для пользователя?
+      const targetNamespacesOfRoom: NTodo.TRoomState | never | undefined = this._todo.get(room)
+      if (!!targetNamespacesOfRoom) throw new Error(`Room ${room} already exists!`)
+
+      this._todo.set(room, roomState)
+      return Promise.resolve({ isOk: true, roomState, yourData: { room, roomState } })
+    } catch (err: any) {
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room), yourData: { room, roomState } })
+    }
+  }
   // ---
 }
 

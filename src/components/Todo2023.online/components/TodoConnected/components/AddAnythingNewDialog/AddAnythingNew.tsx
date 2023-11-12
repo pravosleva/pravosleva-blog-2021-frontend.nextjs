@@ -126,6 +126,7 @@ export const AddAnythingNewDialog = ({
               case 'rating':
                 return (
                   <Rating
+                    key={`${key}-${i}`}
                     name='rating-controlled'
                     value={auxState[key]}
                     onChange={(_event, newValue) => {
@@ -136,7 +137,7 @@ export const AddAnythingNewDialog = ({
                 )
               case 'list':
                 return (
-                  <Fragment key={key}>
+                  <Fragment key={`${key}-${i}`}>
                     {auxState[key] || cfg[key].placeholder}
                     <FieldAsMenuBtn
                       label={cfg[key].label}
@@ -152,7 +153,7 @@ export const AddAnythingNewDialog = ({
               default:
                 return (
                   <TextField
-                    key={key}
+                    key={`${key}-${i}`}
                     autoFocus={i === 0}
                     margin="dense"
                     id={cfg[key].inputId}

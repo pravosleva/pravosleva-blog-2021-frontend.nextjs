@@ -191,6 +191,19 @@ export const withAuditListSocketLogic = (io: Socket) => {
           if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
         })
     })
+    socket.on(NEvent.EServerIncoming.TODO2023_REPLACE_ROOM_STATE, (ev: NEventData.NServerIncoming.TReplaceRoomState, cb?: (e: NEventData.NServerIncoming.TReplaceRoomStateCB) => void) => {
+      stateInstance.replaceRoomState({
+        room: ev.room,
+        roomState: ev.roomState,
+      })
+        .then((e) => {
+          io.in(getChannelName(ev.room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, { roomState: e.roomState });
+        })
+        .catch((err) => {
+          console.log(err)
+          if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
+        })
+    })
 
     // socket.on("disconnect", () => {
     //   connectionsInstance.delete(socket.id)

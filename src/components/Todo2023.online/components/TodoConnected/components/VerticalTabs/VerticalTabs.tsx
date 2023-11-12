@@ -1,8 +1,9 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useLayoutEffect } from 'react'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import { useCompare } from '~/hooks/useDeepEffect'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -22,7 +23,14 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 1 }}>
+        <Box
+          sx={{
+            pt: 0, // 2,
+            pl: 2,
+            pb: 2,
+            pr: 0,
+          }}
+        >
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -48,7 +56,12 @@ type TProps = {
 }
 
 export const VerticalTabs = ({ cfg }: TProps) => {
-  const [value, setValue] = useState<number>(0);
+  const [value, setValue] = useState<number>(0)
+
+  // NOTE: When tab will be removed...
+  useLayoutEffect(() => {
+    setValue(0)
+  }, [useCompare([Object.keys(cfg).length])])
 
   const handleChange = useCallback((_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
@@ -56,11 +69,11 @@ export const VerticalTabs = ({ cfg }: TProps) => {
   const MemoizedTabs = useMemo(() => {
     return (
       <Tabs
-        orientation="vertical"
-        variant="scrollable"
+        orientation='vertical'
+        variant='scrollable'
         value={value}
         onChange={handleChange}
-        aria-label="Vertical tabs example"
+        aria-label='Vertical tabs'
         sx={{
           borderRight: 1,
           borderColor: 'divider',
@@ -70,14 +83,18 @@ export const VerticalTabs = ({ cfg }: TProps) => {
         {
           Object.keys(cfg).map((key, i) => (
             <Tab
-              key={key}
+              key={`${key}-${i}`}
               label={
                 cfg[key].label.length > 8
                   ? `${cfg[key].label.substring(0, 8)}...`
                   : cfg[key].label
               }
               {...getTabProps(i)}
-              sx={{ px: 2, fontSize: 'small' }}
+              sx={{
+                px: 3,
+                // mr: 1,
+                fontSize: 'small',
+              }}
             />
           ))
         }
@@ -90,12 +107,11 @@ export const VerticalTabs = ({ cfg }: TProps) => {
         {
           Object.keys(cfg).map((key, i) => (
             <TabPanel
+              key={`${key}-${i}`}
               value={value}
               index={i}
             >
-              
               {cfg[key].Content}
-              
             </TabPanel>
           ))
         }
@@ -113,7 +129,7 @@ export const VerticalTabs = ({ cfg }: TProps) => {
         // overflowY: 'hidden',
       }}
     >
-      {MemoizedTabs}
+      {Object.keys(cfg).length > 1 && MemoizedTabs}
       <div
         style={{
           // border: '1px solid red',

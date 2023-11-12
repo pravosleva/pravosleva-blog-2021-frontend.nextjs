@@ -35,7 +35,7 @@ export const FieldAsMenuBtn = ({
   return (
     <div>
       <Button
-        id="basic-button"
+        id='basic-button'
         variant='outlined'
         size='small'
         fullWidth
@@ -48,7 +48,7 @@ export const FieldAsMenuBtn = ({
         {label}
       </Button>
       <Menu
-        id="basic-menu"
+        id='basic-menu'
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -57,9 +57,9 @@ export const FieldAsMenuBtn = ({
         }}
       >
         {
-          items.map(({ label, value }) => {
+          items.map(({ label, value }, i) => {
             return (
-              <MenuItem onClick={() => handleSelect({ label, value })}>{label}</MenuItem>
+              <MenuItem key={`${value}-${i}`} onClick={() => handleSelect({ label, value })}>{label}</MenuItem>
             )
           })
         }

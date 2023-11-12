@@ -9,6 +9,8 @@ import {
 } from '~/components/audit-helper'
 import { SyntheticEvent } from 'react'
 import { useWindowSize } from '~/hooks/useWindowSize'
+import { MenuAsBtn } from '~/mui'
+import { StatusColors, StatusIcons } from '../ConnectedFilters'
 
 type TProps = {
   id: number;
@@ -24,6 +26,7 @@ type TProps = {
     isDisabled?: boolean;
   }[];
   onStarUpdate: (newPriority: number) => void;
+  onChangeStatus: (status: NTodo.EStatus) => void;
 }
 
 export const TodoListItem = ({
@@ -34,13 +37,14 @@ export const TodoListItem = ({
   status,
   controls,
   onStarUpdate,
+  onChangeStatus,
 }: TProps) => {
   const handleStarClick = (_event: SyntheticEvent<Element, Event>, value: number | null) => {
     console.log(value)
     // console.log(e)
     onStarUpdate(value || 0)
   }
-  const { isDesktop, isMobile } = useWindowSize()
+  const { downSm } = useWindowSize()
 
   return (
     <div
@@ -52,27 +56,61 @@ export const TodoListItem = ({
     >
       
       <div className={classes.ratingAndControlsExternalWrapper}>
-        {
-          (isDesktop || isMobile) && (
-            <div className={classes.rating}>
-              <Rating
-                name={`rating-${id}`}
-                size={isMobile ? 'medium' : 'medium'}
-                // size='small'
-                value={priority}
-                // readOnly
-                // disabled
-                onChange={handleStarClick}
-              />
-            </div>
-          )
-        }
+
+        <div className={classes.rating}>
+          <Rating
+            name={`rating-${id}`}
+            size={downSm ? 'small' : 'medium'}
+            value={priority}
+            // readOnly
+            // disabled
+            onChange={handleStarClick}
+          />
+        </div>
         
         <div
           className={
             classes.controlsWrapper
           }
         >
+          <MenuAsBtn
+            onSelect={(item: any) => {
+              if (!!item.value) onChangeStatus(item.value)
+            }}
+            btn={{
+              color: !!status ? StatusColors[status] : 'inherit',
+              variant: 'text', // status ? 'contained' : 'outlined',
+              endIcon: !!status ? StatusIcons[status] : undefined, // <PanoramaFishEyeIcon />,
+              size: 'small',
+            }}
+            label='Статус'
+            items={[
+              {
+                label: 'Info',
+                value: NTodo.EStatus.INFO,
+              },
+              {
+                label: 'Warning',
+                value: NTodo.EStatus.WARNING,
+              },
+              {
+                label: 'Danger',
+                value: NTodo.EStatus.DANGER,
+              },
+              {
+                label: 'Ok',
+                value: NTodo.EStatus.SUCCESS,
+              },
+              {
+                label: 'Завершена',
+                value: NTodo.EStatus.IS_DONE,
+              },
+              {
+                label: 'No status',
+                value: NTodo.EStatus.NO_STATUS,
+              },
+            ]}
+          />
           {
             controls.map(({ id, Icon, onClick, isDisabled }) => (
               <IconButton
@@ -104,6 +142,23 @@ export const TodoListItem = ({
       >
         {label}
       </div>
+
+      {/*
+        downSm && (
+          <div className={classes.rating}>
+            <Rating
+              name={`rating-${id}`}
+              size='medium'
+              // size='small'
+              value={priority}
+              // readOnly
+              // disabled
+              onChange={handleStarClick}
+            />
+          </div>
+        )
+      */}
+
       {!!descr && <div className={classes.descriptionWrapper}>{descr}</div>}
     </div>
   )

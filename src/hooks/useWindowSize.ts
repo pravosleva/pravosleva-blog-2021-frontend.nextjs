@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { breakpoints } from '~/mui/theme'
 
-const { md, xl, lg } = breakpoints
+const { sm, md, xl, lg } = breakpoints
 
 export function useWindowSize() {
   // Initialize state with undefined width/height so server and client renders match
@@ -12,10 +12,13 @@ export function useWindowSize() {
     height: 500, // undefined,
     isMobile: false,
     isDesktop: false,
+
+    upSm: false,
     upMd: false,
     upLg: false,
     upXl: false,
 
+    downSm: false,
     downMd: false,
     downLg: false,
     downXl: false,
@@ -27,10 +30,12 @@ export function useWindowSize() {
       const height = window?.innerHeight
       const isMobile = width <= md
       const isDesktop = width > md
-      const upMd = width >= md
-      const upLg = width >= lg
-      const upXl = width >= xl
+      const upSm = width > sm
+      const upMd = width > md
+      const upLg = width > lg
+      const upXl = width > xl
 
+      const downSm = width <= sm
       const downMd = width <= md
       const downLg = width <= lg
       const downXl = width <= xl
@@ -42,10 +47,12 @@ export function useWindowSize() {
         isMobile,
         isDesktop,
 
+        upSm,
         upMd,
         upLg,
         upXl,
-
+        
+        downSm,
         downMd,
         downLg,
         downXl,

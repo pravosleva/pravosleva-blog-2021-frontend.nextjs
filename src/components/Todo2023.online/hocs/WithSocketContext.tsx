@@ -8,6 +8,8 @@ export type TSocketMicroStore = {
   common: {
     roomState: NTodo.TRoomState | null;
   };
+  todoPriorityFilter: number | null;
+  todoStatusFilter: NTodo.EStatus | null;
 }
 const { Provider, useStore } = createFastContext<TSocketMicroStore>({
   isConnected: false,
@@ -15,9 +17,12 @@ const { Provider, useStore } = createFastContext<TSocketMicroStore>({
   common: {
     roomState: null,
   },
+  todoPriorityFilter: null,
+  todoStatusFilter: null,
 });
 
 export const WithSocketContext = ({ children }: any) => {
+
   return (
     <Provider>
       {children}

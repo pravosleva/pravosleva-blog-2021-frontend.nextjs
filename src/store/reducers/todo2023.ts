@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { HYDRATE } from "next-redux-wrapper"
-import { EJobStatus, ESubjobStatus, IJob, TAudit } from '~/components/audit-helper';
+import { EJobStatus, ESubjobStatus, IJob, NTodo, TAudit } from '~/components/audit-helper';
 import { getRandomString } from '~/utils/getRandomString';
 // import { IRootState } from '~/store/IRootState'
 // import { TAudit } from '~/components/ToDo2023/state'
@@ -19,6 +19,10 @@ export type TState = {
   backupInfo?: {
     ts: number;
   };
+
+  // -- NOTE: For local backup only
+  __lastTodosRoomState: NTodo.TRoomState | null;
+  // --
 }
 export const initialState: TState = {
   localAudits: [],
@@ -26,6 +30,7 @@ export const initialState: TState = {
     lastVisitedPages: [],
     isAutoSyncWithLocalEnabled: false,
   },
+  __lastTodosRoomState: null,
 }
 
 const _getNextSubjobStatus = (prevStatus: ESubjobStatus): ESubjobStatus => {
@@ -460,6 +465,23 @@ export const todo2023Slice: any = createSlice({
       state.localAudits = audits
       state.backupInfo = { ts: new Date().getTime() }
     },
+
+    // NOTE: New 2023.11
+    replaceTodosRoomState: (state: TState, action: {
+      payload: NTodo.TRoomState;
+    }) => {
+      // console.log(action.payload)
+      console.log('-action.payload')
+      if (!!action.payload && Object.keys(action.payload || {}).length > 0) {
+        console.log('-action.payload')
+        console.log(action.payload)
+        console.log('-case:ok')
+        state.__lastTodosRoomState = action.payload || null
+      } else {
+        console.log(action.payload)
+        console.log('-case:!ok')
+      }
+    },
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
   extraReducers: {
@@ -488,6 +510,8 @@ export const {
   fixVisitedPage,
   autoSyncToggle,
   autoSyncDisable,
+
+  replaceTodosRoomState,
 } = todo2023Slice.actions
 
 export const reducer = todo2023Slice.reducer

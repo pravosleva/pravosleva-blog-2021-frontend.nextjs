@@ -9,6 +9,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
   AddAnythingNewDialog,
+  ConnectedFilters,
   // NamespaceListItem,
   TodoListItem,
   VerticalTabs,
@@ -20,10 +21,11 @@ import { NTodo } from '~/components/audit-helper'
 // import DoneIcon from '@mui/icons-material/Done'
 // import CachedIcon from '@mui/icons-material/Cached'
 // import ErrorIcon from '@mui/icons-material/Error'
-import ReportIcon from '@mui/icons-material/Report'
-import WarningIcon from '@mui/icons-material/Warning'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+// import ReportIcon from '@mui/icons-material/Report'
+// import WarningIcon from '@mui/icons-material/Warning'
+// import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
+import { sort } from '~/utils/sort-array-objects@3.0.0'
 
 type TProps = {
   onCreateNamespace: ({ label }: { label: string }) => void;
@@ -41,6 +43,8 @@ export const TodoConnected = ({
   onUpdateTodo,
 }: TProps) => {
   const [roomState, _setStore] = useStore((store) => store.common.roomState)
+  const [todoPriorityFilter] = useStore((store) => store.todoPriorityFilter)
+  const [todoStatusFilter] = useStore((store) => store.todoStatusFilter)
   // const [activeNamespace, setActiveNamespace] = useState<string | null>(null)
 
   //-- NOTE: Menu
@@ -189,20 +193,30 @@ export const TodoConnected = ({
           >
 
             <div
+              // className='backdrop-blur--lite'
               style={{
+                backgroundColor: '#fff',
                 // border: '1px dashed red',
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1,
+                boxShadow: '0px 10px 7px -8px rgba(34, 60, 80, 0.2)',
               }}
             >
-              <Typography variant="body2" gutterBottom>
-                <b>{cur}</b>
+              <Typography
+                variant="body2"
+                gutterBottom
+                sx={{ textDecoration: 'underline' }}
+              >
+                <b style={{ marginTop: '4px' }}>{cur} ({roomState?.[cur].state.length || 0})</b>
               </Typography>
               <div
                 style={{
                   // border: '1px solid red',
                   display: 'flex',
-                  gap: '8px',
+                  gap: '0px',
                   marginLeft: 'auto',
                 }}
               >
@@ -234,62 +248,75 @@ export const TodoConnected = ({
               !!roomState && (
                 <div className={baseClasses.stack2}>
                   {
-                  roomState[cur].state.map((todo) => {
-                    const controls = []
+                    sort(roomState[cur].state, ['priority'], -1).map((todo) => {
+                      if (
+                        typeof todoPriorityFilter === 'number'
+                        && todo.priority !== todoPriorityFilter
+                      ) return null
 
-                    controls.push({
-                      id: '0',
-                      Icon: <ReportIcon color={todo.status === NTodo.EStatus.DANGER ? 'error' : 'disabled'} fontSize='small' />,
-                      onClick: () => {
-                        handleUpdateTodo({ newStatus:todo.status === NTodo.EStatus.DANGER ? NTodo.EStatus.NO_STATUS :  NTodo.EStatus.DANGER })({ todoId: todo.id, namespace: cur, todo })
-                      },
-                      // isDisabled: todo.status === NTodo.EStatus.DANGER,
-                    })
+                      if (
+                        !!todoStatusFilter
+                        && todoStatusFilter !== todo.status
+                      ) return null
 
-                    controls.push({
-                      id: '1',
-                      Icon: <WarningIcon color={todo.status === NTodo.EStatus.WARNING ? 'warning' : 'disabled'} fontSize='small' />,
-                      onClick: () => {
-                        handleUpdateTodo({ newStatus: todo.status === NTodo.EStatus.WARNING ? NTodo.EStatus.NO_STATUS : NTodo.EStatus.WARNING })({ todoId: todo.id, namespace: cur, todo })
-                      },
-                      // isDisabled: todo.status === NTodo.EStatus.WARNING
-                    })
+                      const controls = []
 
-                    controls.push({
-                      id: '2',
-                      Icon: todo.status === NTodo.EStatus.IS_DONE
-                        ? <CheckCircleIcon color={todo.status === NTodo.EStatus.IS_DONE ? 'success' : 'disabled'} fontSize='small' />
-                        : <CheckCircleIcon color={NTodo.EStatus.NO_STATUS ? 'disabled' : 'primary' } fontSize='small' />,
-                      onClick: () => {
-                        handleUpdateTodo({ newStatus: todo.status === NTodo.EStatus.IS_DONE ? NTodo.EStatus.NO_STATUS : NTodo.EStatus.IS_DONE })({ todoId: todo.id, namespace: cur, todo })
-                      },
-                    })
+                      // controls.push({
+                      //   id: '0',
+                      //   Icon: <ReportIcon color={todo.status === NTodo.EStatus.DANGER ? 'error' : 'disabled'} fontSize='small' />,
+                      //   onClick: () => {
+                      //     handleUpdateTodo({ newStatus:todo.status === NTodo.EStatus.DANGER ? NTodo.EStatus.NO_STATUS :  NTodo.EStatus.DANGER })({ todoId: todo.id, namespace: cur, todo })
+                      //   },
+                      //   // isDisabled: todo.status === NTodo.EStatus.DANGER,
+                      // })
 
-                    controls.push({
-                      id: '3',
-                      Icon: <CloseIcon color='error' fontSize='small' />,
-                      // color: 'primary',
-                      onClick: () => {
-                        const isConfirmed = window.confirm(`Todo will be removed from namespace ${cur}.\nSure?`)
-                        if (isConfirmed) onRemoveTodo({ todoId: todo.id, namespace: cur })
-                      },
+                      // controls.push({
+                      //   id: '1',
+                      //   Icon: <WarningIcon color={todo.status === NTodo.EStatus.WARNING ? 'warning' : 'disabled'} fontSize='small' />,
+                      //   onClick: () => {
+                      //     handleUpdateTodo({ newStatus: todo.status === NTodo.EStatus.WARNING ? NTodo.EStatus.NO_STATUS : NTodo.EStatus.WARNING })({ todoId: todo.id, namespace: cur, todo })
+                      //   },
+                      //   // isDisabled: todo.status === NTodo.EStatus.WARNING
+                      // })
+
+                      // controls.push({
+                      //   id: '2',
+                      //   Icon: todo.status === NTodo.EStatus.IS_DONE
+                      //     ? <CheckCircleIcon color={todo.status === NTodo.EStatus.IS_DONE ? 'success' : 'disabled'} fontSize='small' />
+                      //     : <CheckCircleIcon color={NTodo.EStatus.NO_STATUS ? 'disabled' : 'primary' } fontSize='small' />,
+                      //   onClick: () => {
+                      //     handleUpdateTodo({ newStatus: todo.status === NTodo.EStatus.IS_DONE ? NTodo.EStatus.NO_STATUS : NTodo.EStatus.IS_DONE })({ todoId: todo.id, namespace: cur, todo })
+                      //   },
+                      // })
+
+                      controls.push({
+                        id: '3',
+                        Icon: <CloseIcon color='error' fontSize='small' />,
+                        // color: 'primary',
+                        onClick: () => {
+                          const isConfirmed = window.confirm(`Todo will be removed from namespace ${cur}.\nSure?`)
+                          if (isConfirmed) onRemoveTodo({ todoId: todo.id, namespace: cur })
+                        },
+                      })
+                      return (
+                        <TodoListItem
+                          id={todo.id}
+                          key={todo.id}
+                          label={todo.label}
+                          descr={todo.descr}
+                          priority={todo.priority}
+                          status={todo.status}
+                          controls={controls}
+                          onStarUpdate={(newPriority: number) => {
+                            handleUpdateTodo({ newPriority })({ todoId: todo.id, namespace: cur, todo })
+                          }}
+                          onChangeStatus={(status) => {
+                            handleUpdateTodo({ newStatus: status })({ todoId: todo.id, namespace: cur, todo })
+                          }}
+                        />
+                      )
                     })
-                    return (
-                      <TodoListItem
-                        id={todo.id}
-                        key={todo.id}
-                        label={todo.label}
-                        descr={todo.descr}
-                        priority={todo.priority}
-                        status={todo.status}
-                        controls={controls}
-                        onStarUpdate={(newPriority: number) => {
-                          handleUpdateTodo({ newPriority })({ todoId: todo.id, namespace: cur, todo })
-                        }}
-                      />
-                    )
-                  })
-                }
+                  }
                 </div>
               )
             }
@@ -299,7 +326,14 @@ export const TodoConnected = ({
       }
       return acc
     }, {})
-  }, [roomState, onRemoveNamespace, handleOpenAddNewTodoDialog, handleUpdateTodo])
+  }, [
+    roomState,
+    onRemoveNamespace,
+    handleOpenAddNewTodoDialog,
+    handleUpdateTodo,
+    todoPriorityFilter,
+    todoStatusFilter,
+  ])
 
   return (
     <>
@@ -333,7 +367,7 @@ export const TodoConnected = ({
             label: 'Namespaces',
             list: Object.keys(roomState || {}).map((value) => ({ value, label: value })),
             inputId: 'namespaces-list',
-            placeholder: 'Выберите Namespace',
+            placeholder: '',
             defaultValue: getInitNamespaceForCreate(),
             reactHookFormOptions: { required: true, maxLength: 100, minLength: 3 },
             isRequired: true,
@@ -379,23 +413,21 @@ export const TodoConnected = ({
             classes.row2,
             classes.spaceBetween,
           )}
-
         >
-          <div>TODO</div>
-          <div>Filters</div>
+          <ConnectedFilters />
           {MemoizedMenu}
         </div>
 
-        <div
-          style={{
-            overflowY: 'auto',
-          }}
-        >
-          <VerticalTabs
-            defaultActiveIndex={0}
-            cfg={memoizedTabsCfg}
-          />
-        </div>
+        {
+          !!roomState && Object.keys(roomState || {}).length > 0 && (
+            <div style={{ overflowY: 'auto' }}>
+              <VerticalTabs
+                defaultActiveIndex={0}
+                cfg={memoizedTabsCfg}
+              />
+            </div>
+          )
+        }
 
       </div>
     </>

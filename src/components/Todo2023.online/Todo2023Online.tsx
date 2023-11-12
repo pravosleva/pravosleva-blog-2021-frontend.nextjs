@@ -1,5 +1,9 @@
 import { useStore, WithSocketContext, TSocketMicroStore } from '~/components/Todo2023.online/hocs'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useCallback, useEffect,
+  // useLayoutEffect,
+  useMemo, useRef, useState,
+} from 'react'
 import io, { Socket } from 'socket.io-client'
 import { groupLog } from '~/utils/groupLog'
 import { NEvent, NEventData } from './types'
@@ -8,6 +12,7 @@ import {
   replaceAudits,
   fixVisitedPage,
   autoSyncToggle,
+  replaceTodosRoomState,
 } from '~/store/reducers/todo2023'
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
@@ -144,7 +149,11 @@ const Logic = ({ room }: TLogicProps) => {
     // NOTE: New 2023.11
     const onTodo2023Replace = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE}`, items: [data] })
-      if (!!data.roomState) setStore({ common: { roomState: data.roomState } })
+      if (!!data.roomState) setStore({
+        common: {
+          roomState: data.roomState,
+        },
+      })
     }
     socket.on(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
 
@@ -199,6 +208,40 @@ const Logic = ({ room }: TLogicProps) => {
       if (isConfirmed) doIt()
     }
   }, [useCompare([localAudits])])
+
+  const [roomState] = useStore((store) => store.common.roomState)
+  const __lastTodosRoomState = useSelector((store: IRootState) => store.todo2023.__lastTodosRoomState)
+  const handlePushTodos = useCallback(({ noConfirmMessage }: { noConfirmMessage: boolean }) => () => {
+    console.log('--handlePushTodos')
+    console.log(__lastTodosRoomState)
+    console.log('--')
+    const doIt = () => {
+      try {
+        if (!socketRef.current) throw new Error('socket err')
+        socketRef.current.emit(NEvent.EServerIncoming.TODO2023_REPLACE_ROOM_STATE, {
+          room: roomRef.current,
+          roomState: __lastTodosRoomState,
+        }, (ev: { isOk: boolean; message?: string; yourData: any }) => {
+          console.log('-socket-inc:ev')
+          console.log(ev)
+          console.log('-')
+          enqueueSnackbar(ev?.message || 'No ev.message', { variant: ev.isOk ? 'success' : 'error', autoHideDuration: 10000 })
+        })
+      } catch (err) {
+        console.warn(err)
+      }
+    }
+
+    if (noConfirmMessage) doIt()
+    else {
+      const isConfirmed = window.confirm('⚠️ Удаленный кэш будет перезаписан! Вы уверены?')
+      if (isConfirmed) doIt()
+    }
+  }, [
+    // NOTE: Ext
+    // useCompare([roomState]),
+    useCompare([__lastTodosRoomState]),
+  ])
   const handleUpdateAuditComment = useCallback(({
     auditId,
     comment,
@@ -386,6 +429,7 @@ const Logic = ({ room }: TLogicProps) => {
   // const isEmpryRemoteListUpdatedInThisSessionRef = useRef<boolean>(false)
   const syncToolTimeoutRef = useRef<NodeJS.Timeout>()
   const lastLocalBackupTime = useSelector((store: IRootState) => store.todo2023.backupInfo?.ts)
+  
   useEffect(() => {
     if (isConnected && remoteAudits.length === 0) { // && !isEmpryRemoteListUpdatedInThisSessionRef.current
       const doIt = () => {
@@ -393,7 +437,10 @@ const Logic = ({ room }: TLogicProps) => {
           if (localAudits.length > 0) {
             const isConfirmed = window.confirm(`🌐 Похоже, удаленный список пуст.\nХотите восстановить его тем что у вас есть${!!lastLocalBackupTime ? ` c ${getNormalizedDateTime(lastLocalBackupTime)}` : ''}?`)
 
-            if (isConfirmed) handlePush({ noConfirmMessage: true })()
+            if (isConfirmed) {
+              handlePush({ noConfirmMessage: true })()
+              handlePushTodos({ noConfirmMessage: true })()
+            }
           }
         }
       }
@@ -408,8 +455,28 @@ const Logic = ({ room }: TLogicProps) => {
     isOneTimePasswordCorrect,
     remoteAudits.length,
     localAudits.length,
-    isConnected
+    isConnected,
+    handlePush,
+
+    // NOTE: Ext
+    handlePushTodos,
+    handlePush,
   ])
+
+  // ---
+  useEffect(() => {
+    console.log('-1')
+    if (!!roomState && Object.keys(roomState || {}).length > 0) {
+      console.log('-1.1')
+      console.log(roomState) // NOTE: Ok
+      dispatch(replaceTodosRoomState(roomState))
+    }
+  }, [
+    replaceTodosRoomState,
+    useCompare([roomState]),
+    dispatch,
+  ])
+  // ---
   // --
 
   // -- NOTE: Optional autosync with persist
