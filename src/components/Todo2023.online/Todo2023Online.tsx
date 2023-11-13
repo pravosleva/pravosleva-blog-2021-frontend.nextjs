@@ -702,7 +702,7 @@ const Logic = ({ room }: TLogicProps) => {
                   }}
                 >
                   <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                  <span>{room}</span>
+                  <span style={{ fontFamily: 'system-ui' }}>{room}</span>
                 </Typography>
                 {/*
                 <Button
@@ -861,7 +861,7 @@ const Logic = ({ room }: TLogicProps) => {
                   </Button>
                 </span>
                 <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                <span>{room}</span>
+                <span style={{ fontFamily: 'system-ui' }}>{room}</span>
               </div>
               <div>
                 {

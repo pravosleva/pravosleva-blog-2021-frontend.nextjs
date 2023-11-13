@@ -350,7 +350,7 @@ export const TodoConnected = ({
             inputId: 'namespace-name',
             placeholder: 'Название',
             defaultValue: '',
-            reactHookFormOptions: { required: true, maxLength: 50, minLength: 3 },
+            reactHookFormOptions: { required: true, maxLength: 200, minLength: 3 },
             validate: (val: any) => !!val,
           },
         }}
@@ -372,7 +372,7 @@ export const TodoConnected = ({
             inputId: 'namespaces-list',
             placeholder: '',
             defaultValue: getInitNamespaceForCreate(),
-            reactHookFormOptions: { required: true, maxLength: 200, minLength: 3 },
+            // reactHookFormOptions: { required: true, maxLength: 100, minLength: 3 },
             isRequired: true,
             validate: (val: any) => !!val,
           },
