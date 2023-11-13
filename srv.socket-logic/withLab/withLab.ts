@@ -129,12 +129,12 @@ export const withLab = (io: Socket) => {
           } else console.log(`-- !isFirst`)
           // --
           if (!!cb) {
-            const looper = loopers[channelName]
-            const isLooperExists = !!looper
+            // const looper = loopers[channelName]
+            // const isLooperExists = !!looper
             const msgList = [`You\'re connected to ${channelName}`]
             if (isFirst) msgList.push('You\'re first in room')
-            if (isLooperExists) msgList.push(looper.getIsStated() ? 'Looper started' : 'Looper wasnt started')
-            else msgList.push('Looper not exists (wtf?)')
+            // if (isLooperExists) msgList.push(looper.getIsStated() ? 'Looper started' : 'Looper wasnt started')
+            // else msgList.push('Looper not exists (wtf?)')
             msgList.push('Take quote for each 10 seconds...')
 
             cb({

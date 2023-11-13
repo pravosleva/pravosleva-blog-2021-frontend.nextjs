@@ -465,17 +465,21 @@ const Logic = ({ room }: TLogicProps) => {
   ])
 
   // ---
+  const isMyPage = useMemo<boolean>(() => {
+    return isOneTimePasswordCorrect
+  }, [isOneTimePasswordCorrect])
   useEffect(() => {
     console.log('-1')
     if (!!roomState && Object.keys(roomState || {}).length > 0) {
       console.log('-1.1')
       console.log(roomState) // NOTE: Ok
-      dispatch(replaceTodosRoomState(roomState))
+      if (isMyPage) dispatch(replaceTodosRoomState(roomState))
     }
   }, [
     replaceTodosRoomState,
     useCompare([roomState]),
     dispatch,
+    isMyPage,
   ])
   // ---
   // --
