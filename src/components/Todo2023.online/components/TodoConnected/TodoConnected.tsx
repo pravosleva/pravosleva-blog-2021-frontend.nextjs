@@ -208,9 +208,12 @@ export const TodoConnected = ({
               <Typography
                 variant="body2"
                 gutterBottom
-                sx={{ textDecoration: 'underline' }}
+                sx={{
+                  textDecoration: 'underline',
+                  margin: '5px 0px 5px 0px',
+                }}
               >
-                <b style={{ marginTop: '4px' }}>{cur} ({roomState?.[cur].state.length || 0})</b>
+                <b>{cur} ({roomState?.[cur].state.length || 0})</b>
               </Typography>
               <div
                 style={{
@@ -369,7 +372,7 @@ export const TodoConnected = ({
             inputId: 'namespaces-list',
             placeholder: '',
             defaultValue: getInitNamespaceForCreate(),
-            reactHookFormOptions: { required: true, maxLength: 100, minLength: 3 },
+            reactHookFormOptions: { required: true, maxLength: 200, minLength: 3 },
             isRequired: true,
             validate: (val: any) => !!val,
           },
@@ -379,7 +382,7 @@ export const TodoConnected = ({
             inputId: 'todo-name',
             placeholder: 'Название',
             defaultValue: '',
-            reactHookFormOptions: { required: true, maxLength: 100, minLength: 3 },
+            reactHookFormOptions: { required: true, maxLength: 300, minLength: 3 },
             isRequired: true,
             validate: (val: any) => !!val,
           },

@@ -83,8 +83,9 @@ const Logic = ({ room }: TLogicProps) => {
   const socketRef = useRef<Socket | null>(null)
   const localAudits = useSelector((store: IRootState) => store.todo2023.localAudits)
   const { enqueueSnackbar } = useSnackbar()
-  const showStandartSocketErrMsg = useCallback(({ isOk, message }: { isOk: boolean; message?: string }) => {
+  const showStandartSocketErrMsg = useCallback(({ showSuccessMsg }: { showSuccessMsg: boolean }) => ({ isOk, message }: { isOk: boolean; message?: string }) => {
     if (!isOk) enqueueSnackbar(message || 'Что-то пошло не так', { variant: 'error', autoHideDuration: 7000 })
+    else if (showSuccessMsg) enqueueSnackbar(message || 'Ok', { variant: 'success', autoHideDuration: 7000 })
   }, [enqueueSnackbar])
 
   useEffect(() => {
@@ -613,7 +614,7 @@ const Logic = ({ room }: TLogicProps) => {
     socketRef.current.emit(NEvent.EServerIncoming.TODO2023_ADD_NAMESPACE, {
       room: roomRef.current,
       name: label,
-    }, showStandartSocketErrMsg)
+    }, showStandartSocketErrMsg({ showSuccessMsg: true }))
   }, [])
   const handleRemoveNamespace = useCallback(({ name }) => {
     if (!name.trim()) throw new Error('Shoud not be empty!')
@@ -621,7 +622,7 @@ const Logic = ({ room }: TLogicProps) => {
     socketRef.current.emit(NEvent.EServerIncoming.TODO2023_REMOVE_NAMESPACE, {
       room: roomRef.current,
       name,
-    }, showStandartSocketErrMsg)
+    }, showStandartSocketErrMsg({ showSuccessMsg: false }))
   }, [])
   const handleCreateTodo = useCallback(({ label, namespace, priority }: { label: string; namespace: string; priority: number; }) => {
     if (!label.trim()) throw new Error('Shoud not be empty!')
@@ -635,7 +636,7 @@ const Logic = ({ room }: TLogicProps) => {
         status: NTodo.EStatus.NO_STATUS,
         priority,
       },
-    }, showStandartSocketErrMsg)
+    }, showStandartSocketErrMsg({ showSuccessMsg: true }))
   }, [])
   const handleRemoveTodo = useCallback(({ todoId, namespace }: { todoId: number; namespace: string }) => {
     // console.log(todoId)
@@ -645,7 +646,7 @@ const Logic = ({ room }: TLogicProps) => {
       room: roomRef.current,
       namespace,
       todoId,
-    }, showStandartSocketErrMsg)
+    }, showStandartSocketErrMsg({ showSuccessMsg: false }))
   }, [])
   const handleUpdateTodo = useCallback(({ todoId, namespace, newTodoItem }: { todoId: number; namespace: string; newTodoItem: NTodo.TItem }) => {
     // console.log('- td:update-todo')
@@ -657,7 +658,7 @@ const Logic = ({ room }: TLogicProps) => {
       namespace,
       todoId,
       newTodoItem,
-    }, showStandartSocketErrMsg)
+    }, showStandartSocketErrMsg({ showSuccessMsg: false }))
   }, [])
 
   switch (true) {

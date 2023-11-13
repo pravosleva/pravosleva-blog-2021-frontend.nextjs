@@ -159,6 +159,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.TODO2023_ADD_TODO_ITEM, (ev: NEventData.NServerIncoming.TAddTodo, cb?: (e: NEventData.NServerIncoming.TAddTodoCB) => void) => {
       stateInstance.addTodo({ room: ev.room, namespace: ev.namespace, todoItem: ev.todoItem })
         .then((e) => {
+          if (!!cb) cb({ isOk: true, message: 'Created', room: ev.room, roomState: stateInstance._todo.get(ev.room) || {} })
           io.in(getChannelName(ev.room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, { roomState: e.roomState });
         })
         .catch((err) => {
