@@ -4,5 +4,6 @@ export namespace NEvent {
   }
   export enum ServerOutgoing {
     SP_MX_EV = 'sp-mx:offline-tradein:s:event',
+    DONT_RECONNECT = 'custom:dont-reconnect',
   }
 }

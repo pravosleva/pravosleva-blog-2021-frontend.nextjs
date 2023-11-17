@@ -26,6 +26,7 @@ import { NTodo } from '~/components/audit-helper'
 // import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import { sort } from '~/utils/sort-array-objects@3.0.0'
+// import { useWindowSize } from '~/hooks/useWindowSize'
 
 type TProps = {
   onCreateNamespace: ({ label }: { label: string }) => void;
@@ -178,7 +179,7 @@ export const TodoConnected = ({
     handleMenuClose,
     anchorEl,
   ])
-
+  // const { isDesktop, isMobile } = useWindowSize()
   const memoizedTabsCfg = useMemo(() => {
     return Object.keys(roomState || {}).reduce((acc: any, cur) => {
       acc[cur] = {
@@ -188,7 +189,7 @@ export const TodoConnected = ({
             key={cur}
             className={clsx(
               classes.internalTabSpace,
-              baseClasses.stack2,
+              baseClasses.stack0,
             )}
           >
 
@@ -203,6 +204,7 @@ export const TodoConnected = ({
                 top: 0,
                 zIndex: 1,
                 boxShadow: '0px 10px 7px -8px rgba(34, 60, 80, 0.2)',
+                padding: '0 8px',
               }}
             >
               <Typography
@@ -249,7 +251,9 @@ export const TodoConnected = ({
             
             {
               !!roomState && (
-                <div className={baseClasses.stack2}>
+                <div
+                  className={clsx(baseClasses.stack0)}
+                >
                   {
                     sort(roomState[cur].state, ['priority'], -1).map((todo) => {
                       if (
@@ -417,13 +421,24 @@ export const TodoConnected = ({
             classes.spaceBetween,
           )}
         >
-          <ConnectedFilters />
+          {
+            !!roomState && Object.keys(roomState || {}).length > 0 ? (
+              <ConnectedFilters />
+            ) : (
+              <div>¯\_(ツ)_/¯</div>
+            )
+          }
           {MemoizedMenu}
         </div>
 
         {
           !!roomState && Object.keys(roomState || {}).length > 0 && (
-            <div style={{ overflowY: 'auto' }}>
+            <div
+              style={{
+                overflowY: 'auto',
+                // border: '1px solid red',
+              }}
+            >
               <VerticalTabs
                 defaultActiveIndex={0}
                 cfg={memoizedTabsCfg}

@@ -4,6 +4,8 @@ import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { useCompare } from '~/hooks/useDeepEffect'
+// import classes from './VerticalTabs.module.scss'
+// import clsx from 'clsx'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -16,7 +18,7 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div
-      role="tabpanel"
+      role='tabpanel'
       hidden={value !== index}
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
@@ -26,9 +28,9 @@ function TabPanel(props: TabPanelProps) {
         <Box
           sx={{
             pt: 0, // 2,
-            pl: 2,
-            pb: 2,
             pr: 0,
+            pb: 0,
+            pl: 0,
           }}
         >
           <Typography>{children}</Typography>
@@ -70,6 +72,7 @@ export const VerticalTabs = ({ cfg }: TProps) => {
     return (
       <Tabs
         orientation='vertical'
+        // variant='scrollable'
         variant='scrollable'
         value={value}
         onChange={handleChange}
@@ -78,6 +81,8 @@ export const VerticalTabs = ({ cfg }: TProps) => {
           borderRight: 1,
           borderColor: 'divider',
           p: 0,
+          maxHeight: '100%',
+          overflowY: 'hidden',
         }}
       >
         {
@@ -125,15 +130,21 @@ export const VerticalTabs = ({ cfg }: TProps) => {
       style={{
         display: 'flex',
         // border: '1px solid red',
-        // maxHeight: '300px',
-        // overflowY: 'hidden',
+        maxHeight: '540px',
+        // overflowY: 'auto',
+        // maxHeight: '100%',
       }}
+      // className={clsx(
+      //   classes.wrapper
+      // )}
     >
       {Object.keys(cfg).length > 1 && MemoizedTabs}
       <div
         style={{
           // border: '1px solid red',
           width: '100%',
+          boxSizing: 'border-box',
+          overflowY: 'auto',
         }}
       >
         {MemoizedPanels}

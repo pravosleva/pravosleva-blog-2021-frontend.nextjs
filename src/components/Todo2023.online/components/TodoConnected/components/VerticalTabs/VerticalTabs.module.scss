@@ -1,0 +1,14 @@
+@import '~/components/Widget/Widget.module.scss';
+@import '~/mui/scss-vars/monitors.scss';
+@import '~/mui/scss-vars/colors.scss';
+
+@media(max-width: #{$sm}px) {
+  .wrapper {
+    // max-height: calc($widget-height-max-mobile - 56px + 8px + 8px);
+  }
+}
+@media(min-width: calc(#{$sm + 1}px + 1px)) {
+  .wrapper {
+    // max-height: calc($widget-height-max-desktop - 59px + 8px + 8px);
+  }
+}
