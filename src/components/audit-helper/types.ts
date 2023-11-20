@@ -40,20 +40,20 @@ export type TAudit = {
 // -- NOTE: New 2023.11 (client 1/2)
 export namespace NTodo {
   export enum EStatus {
-    NO_STATUS = 'no-status',
+    NO_STATUS = 'no_status',
     INFO = 'info',
     WARNING = 'warning',
     DANGER = 'danger',
     SUCCESS = 'success',
-    IS_DONE = 'is-done',
+    IS_DONE = 'is_done',
   };  
   export type TItem = {
     label: string;
-    descr: string;
+    description: string;
     status: EStatus;
     priority: number;
   };
-  export type TTodo = TItem & { id: number; };
+  export type TTodo = TItem & { id: number; tg_chat_id: number; namespace: string; };
   export type TRoomState = {
     [key: string]: {
       state: TTodo[];

@@ -1,7 +1,10 @@
 import { UniversalError } from '~/srv.utils/errors'
 import { NetworkError } from '~/srv.utils/errors/network'
 import { HttpError } from '~/srv.utils/errors/http'
-import { ApiError, NResponseLocal } from '~/srv.utils/errors/api'
+import {
+  ApiError,
+  // NResponseLocal,
+} from '~/srv.utils/errors/api'
 
 export const axiosUniversalCatch = (err: {
   isAxiosError: boolean
@@ -9,7 +12,11 @@ export const axiosUniversalCatch = (err: {
   request: any
   getErrorMsg: () => any
   message: any
-}): NResponseLocal.IResultSuccess | NResponseLocal.IResultError => {
+}): {
+  isOk: boolean;
+  response?: any;
+  message?: string;
+} => {
   switch (true) {
     case err.isAxiosError:
       try {
@@ -21,7 +28,7 @@ export const axiosUniversalCatch = (err: {
       } catch (err: any) {
         return {
           isOk: false,
-          msg: err.getErrorMsg(),
+          message: err.getErrorMsg(),
         }
       }
     // NOTE 2
@@ -34,18 +41,18 @@ export const axiosUniversalCatch = (err: {
       // case Object.getPrototypeOf(err).name === 'Error':
       return {
         isOk: false,
-        msg: err.getErrorMsg(),
+        message: err.getErrorMsg(),
       }
     case err instanceof TypeError:
       // case Object.getPrototypeOf(err).name === 'Error':
       return {
         isOk: false,
-        msg: err.message,
+        message: err.message,
       }
     default:
       return {
         isOk: false,
-        msg: 'AXIOS ERR: Не удалось обработать ошибку',
+        message: 'AXIOS ERR: Не удалось обработать ошибку',
       }
   }
 }

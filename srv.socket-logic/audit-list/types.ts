@@ -52,6 +52,10 @@ export namespace NEvent {
 
     // NOTE: New 2023.11
     TODO2023_REPLACE_ROOM_STATE = 's:todo-2023:replace-room-state',
+
+    TODO2023_TODO_ITEM_ADDED = 's:todo-2023:todo-item-added',
+    TODO2023_TODO_ITEM_REMOVED = 's:todo-2023:todo-item-removed',
+    TODO2023_TODO_ITEM_UPDATED = 's:todo-2023:todo-item-updated',
   }
   
   export enum EServerIncoming {
@@ -89,7 +93,8 @@ export namespace NEventData {
       data: {
         room: number;
         audits: TAudit[]; message?: string;
-        roomState: NTodo.TRoomState | undefined;
+        // roomState: NTodo.TRoomState | undefined;
+        strapiTodos: NTodo.TTodo[];
       };
     }) => void;
 
@@ -126,7 +131,7 @@ export namespace NEventData {
       isOk: boolean;
       message?: string;
       room: number;
-      roomState: NTodo.TRoomState;
+      // roomState: NTodo.TRoomState;
     };
     export type TRemoveNamespace = {
       room: number;
@@ -136,7 +141,7 @@ export namespace NEventData {
       isOk: boolean;
       message?: string;
       room: number;
-      roomState: NTodo.TRoomState;
+      // roomState: NTodo.TRoomState;
     };
     export type TAddTodo = {
       todoItem: NTodo.TItem;
@@ -147,7 +152,10 @@ export namespace NEventData {
       isOk: boolean;
       message?: string;
       room: number;
-      roomState: NTodo.TRoomState;
+      // roomState: NTodo.TRoomState;
+      data?: {
+        id: number;
+      }
     };
     export type TRemoveTodo = {
       room: number;
@@ -181,7 +189,7 @@ export namespace NEventData {
       isOk: boolean;
       message?: string;
       room: number;
-      roomState: NTodo.TRoomState;
+      // roomState: NTodo.TRoomState;
     };
   }
 }
@@ -229,20 +237,20 @@ export namespace NAudit {
 // -- NOTE: New 2023.11 (server 2/2)
 export namespace NTodo {
   export enum EStatus {
-    NO_STATUS = 'no-status',
+    NO_STATUS = 'no_status',
     INFO = 'info',
     WARNING = 'warning',
     DANGER = 'danger',
     SUCCESS = 'success',
-    IS_DONE = 'is-done',
+    IS_DONE = 'is_done',
   };  
   export type TItem = {
     label: string;
-    descr: string;
+    description: string;
     status: EStatus;
     priority: number;
   };
-  export type TTodo = TItem & { id: number; };
+  export type TTodo = TItem & { id: number; tg_chat_id: number; namespace: string; };
   export type TRoomState = {
     [key: string]: {
       state: TTodo[];

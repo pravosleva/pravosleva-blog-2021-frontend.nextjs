@@ -1,5 +1,5 @@
 import { Article, TArticle, TPageService } from '~/components/Article'
-import { universalHttpClient } from '~/utils/universalHttpClient';
+import { universalHttpClient } from '~/utils/universalHttpClient'
 import Head from 'next/head'
 // import { convertToPlainText } from '~/utils/markdown/convertToPlainText';
 import { ErrorPage } from '~/components/ErrorPage';

@@ -1,4 +1,4 @@
-import { TAudit, NTodo } from "../audit-helper/types";
+import { TAudit, NTodo } from '../audit-helper/types'
 
 export namespace NEvent {
   export enum EServerOutgoing {
@@ -15,6 +15,10 @@ export namespace NEvent {
 
     // NOTE: New 2023.11
     TODO2023_REPLACE_ROOM_STATE = 's:todo-2023:replace-room-state',
+
+    TODO2023_TODO_ITEM_ADDED = 's:todo-2023:todo-item-added',
+    TODO2023_TODO_ITEM_REMOVED = 's:todo-2023:todo-item-removed',
+    TODO2023_TODO_ITEM_UPDATED = 's:todo-2023:todo-item-updated',
   }
   
   export enum EServerIncoming {
@@ -52,7 +56,8 @@ export namespace NEventData {
       data: {
         room: number;
         audits: TAudit[];
-        roomState: NTodo.TRoomState | undefined;
+        // roomState: NTodo.TRoomState | undefined;
+        strapiTodos: NTodo.TTodo[];
       };
     }
     export type TCLIENT_CONNECT_TO_ROOM_CB = ({ data }: TCLIENT_CONNECT_TO_ROOM_CB_ARG) => void;

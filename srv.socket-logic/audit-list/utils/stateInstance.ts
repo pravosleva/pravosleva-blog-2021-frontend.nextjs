@@ -1,5 +1,11 @@
 import { EJobStatus, ESubjobStatus, NEventData, TAudit, NTodo } from '~/srv.socket-logic/audit-list/types'
 import { getRandomString } from '~/srv.utils/getRandomString'
+import { strapiHttpClient } from '~/srv.utils'
+
+// const isProd = process.env.NODE_ENV === 'production'
+// const STRAPI_API_BASE_URL = isProd ? 'http://pravosleva.pro/strapi/api' : 'http://localhost:1337/api'
+
+// if (!STRAPI_API_BASE_URL) throw new Error('⛔ process.env.STRAPI_API_BASE_URL was not provided, check .env file plz')
 
 type TOwnerTGChatId = number;
 
@@ -307,153 +313,320 @@ class Singleton {
   }
 
   // --- NOTE: New 2023.11
-  public addNamespace ({ room, name }: { room: number; name: string }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
-    try {
-      // NOTE: 1.1 Есть ли комната для пользователя?
-      let targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+  // public addNamespace ({ room, name }: { room: number; name: string }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+  //   try {
+  //     // NOTE: 1.1 Есть ли комната для пользователя?
+  //     let targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
       
-      if (!targetNamespacesOfRoom) {
-        // throw new Error(`Room ${room} not found!`)
-        const tsCreate = new Date().getTime()
-        targetNamespacesOfRoom = {
-          [name]: {
-            state: [],
-            tsCreate,
-            tsUpdate: tsCreate,
-          },
-        }
+  //     if (!targetNamespacesOfRoom) {
+  //       // throw new Error(`Room ${room} not found!`)
+  //       const tsCreate = new Date().getTime()
+  //       targetNamespacesOfRoom = {
+  //         [name]: {
+  //           state: [],
+  //           tsCreate,
+  //           tsUpdate: tsCreate,
+  //         },
+  //       }
+  //     } else {
+  //       // NOTE: 1.2 Есть ли такой неймспейс?
+  //       const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[name]?.state
+  //       if (!!targetNamespaceTodos) throw new Error(`Namespace с именем ${name} уже существует! Придумайте другое имя`)
+  //     }
+
+  //     const tsCreate = new Date().getTime()
+  //     const newRoomState = {
+  //       ...targetNamespacesOfRoom,
+  //       [name]: {
+  //         state: [],
+  //         tsUpdate: tsCreate,
+  //         tsCreate,
+  //       }
+  //     }
+  //     this._todo.set(room, newRoomState)
+  //     return Promise.resolve({ isOk: true, roomState: newRoomState })
+  //   } catch (err: any) {
+  //     return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+  //   }
+  // }
+  // public removeNamespace ({ room, name }: { room: number; name: string }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+  //   try {
+  //     // NOTE: 1.1 Есть ли комната для пользователя?
+  //     const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+      
+  //     if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found!`)
+  //     else {
+  //       // NOTE: 1.2 Есть ли такой неймспейс?
+  //       const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[name]?.state
+  //       if (!targetNamespaceTodos) throw new Error(`Namespace с именем ${name} не существует!`)
+  //     }
+
+  //     delete targetNamespacesOfRoom[name]
+
+  //     this._todo.set(room, targetNamespacesOfRoom)
+  //     return Promise.resolve({ isOk: true, roomState: targetNamespacesOfRoom })
+  //   } catch (err: any) {
+  //     return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+  //   }
+  // }
+  public async addTodo ({ room, todoItem, namespace }: {
+    room: number;
+    todoItem: NTodo.TItem;
+    namespace: string;
+  }): Promise<{
+    isOk: boolean;
+    message?: string;
+    data?: {
+      id: 0;
+      attributes: {
+        label: string;
+        priority: number;
+        tg_chat_id: string;
+        namespace: string;
+        status: NTodo.EStatus;
+        description: string;
+        createdAt: string; // "2023-11-19T01:13:03.482Z",
+        updatedAt: string; // "2023-11-19T01:13:03.482Z",
+        createdBy: any;
+      };
+    };
+  }> {
+    // NOTE: v1
+    // try {
+    //   // NOTE: 1.1 Есть ли комната для пользователя?
+    //   const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+    //   if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
+    //   // NOTE: 1.2 Есть ли такой неймспейс?
+    //   const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
+    //   if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Создайте сначала namespace с таким именем`)
+
+    //   const tsUpdate = new Date().getTime()
+    //   const newRoomState = {
+    //     ...targetNamespacesOfRoom,
+    //     [namespace]: {
+    //       state: [...targetNamespaceTodos, { id: tsUpdate, ...todoItem }],
+    //       tsUpdate,
+    //       tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
+    //     }
+    //   }
+    //   this._todo.set(room, newRoomState)
+    //   return Promise.resolve({ isOk: true, roomState: newRoomState })
+    // } catch (err: any) {
+    //   return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    // }
+
+    // NOTE: v2
+    try {
+      const result = await strapiHttpClient.createTodo<{
+        data: {
+          id: 0;
+          attributes: {
+            label: string;
+            priority: number;
+            tg_chat_id: string;
+            namespace: string;
+            status: NTodo.EStatus;
+            description: string;
+            createdAt: string; // "2023-11-19T01:13:03.482Z",
+            updatedAt: string; // "2023-11-19T01:13:03.482Z",
+            createdBy: any;
+          };
+        };
+        meta: any;
+      }>({
+        room,
+        todoItem,
+        namespace,
+      })
+
+      console.log('-- stateInstance:addTodo:result')
+      console.log(result)
+      console.log('--')
+
+      if (result.ok && !!result.res?.data) {
+        return Promise.resolve({ isOk: true, data: result.res?.data })
       } else {
-        // NOTE: 1.2 Есть ли такой неймспейс?
-        const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[name]?.state
-        if (!!targetNamespaceTodos) throw new Error(`Namespace с именем ${name} уже существует! Придумайте другое имя`)
+        // console.log(result) // NOTE: { isOk: false, msg: 'Http Error 404: Not Found' }
+        throw new Error(result.message || 'ERR')
       }
-
-      const tsCreate = new Date().getTime()
-      const newRoomState = {
-        ...targetNamespacesOfRoom,
-        [name]: {
-          state: [],
-          tsUpdate: tsCreate,
-          tsCreate,
-        }
-      }
-      this._todo.set(room, newRoomState)
-      return Promise.resolve({ isOk: true, roomState: newRoomState })
     } catch (err: any) {
-      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }
-  public removeNamespace ({ room, name }: { room: number; name: string }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+  public async removeTodo ({ todoId }: {
+    todoId: number;
+  }): Promise<{
+    isOk: boolean;
+    message?: string;
+    removedTodoId?: number;
+  }> {
+    // NOTE: v1
+    // try {
+    //   // NOTE: 1.1 Есть ли комната для пользователя?
+    //   const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+    //   if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
+    //   // NOTE: 1.2 Есть ли такой неймспейс?
+    //   const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
+    //   if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Не сможем удалить todo by id= ${todoId}`)
+
+    //   const tsUpdate = new Date().getTime()
+    //   const newRoomState = {
+    //     ...targetNamespacesOfRoom,
+    //     [namespace]: {
+    //       state: targetNamespaceTodos.filter(({ id }) => id !== todoId),
+    //       tsUpdate,
+    //       tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
+    //     }
+    //   }
+    //   this._todo.set(room, newRoomState)
+    //   return Promise.resolve({ isOk: true, roomState: newRoomState })
+    // } catch (err: any) {
+    //   return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    // }
+
+    // NOTE: v2
     try {
-      // NOTE: 1.1 Есть ли комната для пользователя?
-      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
-      
-      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found!`)
-      else {
-        // NOTE: 1.2 Есть ли такой неймспейс?
-        const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[name]?.state
-        if (!targetNamespaceTodos) throw new Error(`Namespace с именем ${name} не существует!`)
+      const result = await strapiHttpClient.deleteTodo<{
+        data: {
+          id: number;
+          attributes: {
+            label: string;
+            priority: number;
+            createdAt: string; // "2023-11-19T01:13:03.482Z",
+            updatedAt: string; // "2023-11-19T01:13:03.482Z",
+            tg_chat_id: string;
+            namespace: string;
+            status: NTodo.EStatus;
+            description: string;
+          }
+        },
+        meta: any;
+      }>({ todoId })
+
+      if (result.ok && !!result.res?.data?.id) {
+        return Promise.resolve({
+          isOk: true,
+          removedTodoId: result.res?.data?.id,
+        })
+      } else {
+        // console.log(result) // NOTE: { isOk: false, msg: 'Http Error 404: Not Found' }
+        throw new Error(result.message || 'ERR')
       }
-
-      delete targetNamespacesOfRoom[name]
-
-      this._todo.set(room, targetNamespacesOfRoom)
-      return Promise.resolve({ isOk: true, roomState: targetNamespacesOfRoom })
     } catch (err: any) {
-      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }
-  public addTodo ({ room, todoItem, namespace }: { room: number; todoItem: NTodo.TItem; namespace: string; }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
-    try {
-      // NOTE: 1.1 Есть ли комната для пользователя?
-      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
-      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
-      // NOTE: 1.2 Есть ли такой неймспейс?
-      const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
-      if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Создайте сначала namespace с таким именем`)
-
-      const tsUpdate = new Date().getTime()
-      const newRoomState = {
-        ...targetNamespacesOfRoom,
-        [namespace]: {
-          state: [...targetNamespaceTodos, { id: tsUpdate, ...todoItem }],
-          tsUpdate,
-          tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
-        }
+  public async updateTodo({
+    room,
+    namespace,
+    todoId,
+    newTodoItem,
+  }: {
+    room: number;
+    todoId: number;
+    namespace: string;
+    newTodoItem: NTodo.TItem;
+  }): Promise<{
+    isOk: boolean;
+    message?: string;
+    updatedTodo: {
+      id: number;
+      attributes: {
+        label: string;
+        priority: number;
+        createdAt: string; // "2023-11-19T01:13:03.482Z",
+        updatedAt: string; // "2023-11-19T01:13:03.482Z",
+        tg_chat_id: string;
+        namespace: string;
+        status: NTodo.EStatus;
+        description: string;
       }
-      this._todo.set(room, newRoomState)
-      return Promise.resolve({ isOk: true, roomState: newRoomState })
-    } catch (err: any) {
-      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
-    }
-  }
-  public removeTodo ({ room, todoId, namespace }: { room: number; todoId: number; namespace: string; }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
-    try {
-      // NOTE: 1.1 Есть ли комната для пользователя?
-      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
-      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
-      // NOTE: 1.2 Есть ли такой неймспейс?
-      const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
-      if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Не сможем удалить todo by id= ${todoId}`)
+    };
+  }> {
+    // NOTE: v1
+    // try {
+    //   // NOTE: 1.1 Есть ли комната для пользователя?
+    //   const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
+    //   if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
+    //   // NOTE: 1.2 Есть ли такой неймспейс?
+    //   const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
+    //   if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Создайте сначала namespace с таким именем`)
 
-      const tsUpdate = new Date().getTime()
-      const newRoomState = {
-        ...targetNamespacesOfRoom,
-        [namespace]: {
-          state: targetNamespaceTodos.filter(({ id }) => id !== todoId),
-          tsUpdate,
-          tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
-        }
+    //   const targetIndex = targetNamespaceTodos.findIndex(({ id }) => id === todoId)
+    //   if (targetIndex === -1) throw new Error('Странно, но такой todo не нашлось')
+
+    //   const tsUpdate = new Date().getTime()
+    //   const oldTodoState = targetNamespaceTodos[targetIndex]
+
+    //   targetNamespaceTodos[targetIndex] = { ...oldTodoState, ...newTodoItem }
+
+    //   const newRoomState = {
+    //     ...targetNamespacesOfRoom,
+    //     [namespace]: {
+    //       state: targetNamespaceTodos,
+    //       tsUpdate,
+    //       tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
+    //     }
+    //   }
+    //   this._todo.set(room, newRoomState)
+    //   return Promise.resolve({ isOk: true, roomState: newRoomState })
+    // } catch (err: any) {
+    //   return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+    // }
+
+    // NOTE: v2
+    try {
+      const result = await strapiHttpClient.updateTodo<{
+        data: {
+          id: number;
+          attributes: {
+            label: string;
+            priority: number;
+            createdAt: string;
+            updatedAt: string;
+            tg_chat_id: string;
+            namespace: string;
+            status: NTodo.EStatus;
+            description: string;
+          }
+        };
+        meta: any;
+      }>({
+        todoId,
+        todoItem: newTodoItem,
+        room,
+        namespace,
+      })
+
+      console.log('-- stateInstance:updateTodo:result')
+      console.log(result)
+      console.log('--')
+
+      if (result.ok && !!result.res?.data?.id) {
+        return Promise.resolve({
+          isOk: true,
+          updatedTodo: result.res?.data,
+        })
+      } else {
+        // console.log(result) // NOTE: { isOk: false, msg: 'Http Error 404: Not Found' }
+        throw new Error(result.message || 'ERR')
       }
-      this._todo.set(room, newRoomState)
-      return Promise.resolve({ isOk: true, roomState: newRoomState })
     } catch (err: any) {
-      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
+      return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }
-  public updateTodo ({ room, namespace, todoId, newTodoItem }: { room: number; todoId: number; namespace: string; newTodoItem: NTodo.TItem; }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
-    try {
-      // NOTE: 1.1 Есть ли комната для пользователя?
-      const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
-      if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found`)
-      // NOTE: 1.2 Есть ли такой неймспейс?
-      const targetNamespaceTodos: NTodo.TTodo[] | undefined = targetNamespacesOfRoom[namespace]?.state
-      if (!targetNamespaceTodos) throw new Error(`Namespace ${namespace} не найден! Создайте сначала namespace с таким именем`)
+  // public replaceRoomState({ room, roomState }: { room: number; roomState: NTodo.TRoomState }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
+  //   try {
+  //     // NOTE: 1.1 Есть ли комната для пользователя?
+  //     const targetNamespacesOfRoom: NTodo.TRoomState | never | undefined = this._todo.get(room)
+  //     if (!!targetNamespacesOfRoom) throw new Error(`Room ${room} already exists!`)
 
-      const targetIndex = targetNamespaceTodos.findIndex(({ id }) => id === todoId)
-      if (targetIndex === -1) throw new Error('Странно, но такой todo не нашлось')
-
-      const tsUpdate = new Date().getTime()
-      const oldTodoState = targetNamespaceTodos[targetIndex]
-
-      targetNamespaceTodos[targetIndex] = { ...oldTodoState, ...newTodoItem }
-
-      const newRoomState = {
-        ...targetNamespacesOfRoom,
-        [namespace]: {
-          state: targetNamespaceTodos,
-          tsUpdate,
-          tsCreate: targetNamespacesOfRoom[namespace].tsCreate,
-        }
-      }
-      this._todo.set(room, newRoomState)
-      return Promise.resolve({ isOk: true, roomState: newRoomState })
-    } catch (err: any) {
-      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
-    }
-  }
-  public replaceRoomState({ room, roomState }: { room: number; roomState: NTodo.TRoomState }): Promise<{ isOk: boolean; message?: string; roomState: NTodo.TRoomState | undefined }> {
-    try {
-      // NOTE: 1.1 Есть ли комната для пользователя?
-      const targetNamespacesOfRoom: NTodo.TRoomState | never | undefined = this._todo.get(room)
-      if (!!targetNamespacesOfRoom) throw new Error(`Room ${room} already exists!`)
-
-      this._todo.set(room, roomState)
-      return Promise.resolve({ isOk: true, roomState, yourData: { room, roomState } })
-    } catch (err: any) {
-      return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room), yourData: { room, roomState } })
-    }
-  }
+  //     this._todo.set(room, roomState)
+  //     return Promise.resolve({ isOk: true, roomState, yourData: { room, roomState } })
+  //   } catch (err: any) {
+  //     return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room), yourData: { room, roomState } })
+  //   }
+  // }
   // ---
 }
 

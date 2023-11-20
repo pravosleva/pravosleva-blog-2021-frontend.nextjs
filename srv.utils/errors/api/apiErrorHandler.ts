@@ -6,6 +6,9 @@ export const apiErrorHandler = (res: any): any | ApiError => {
     case res?.ok: // New standart
     case res?.success === true: // Old standart
       return res
-    default: throw new ApiError(res?.message || 'No API res.message')
+    default: {
+      // console.log(res)
+      throw new ApiError(res?.message || 'No API res.message')
+    }
   }
 }

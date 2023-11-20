@@ -68,3 +68,9 @@
     max-width: calc($widget-width-desktop - $widget-toggler-width-desktop - 24px - 24px - 106px - 4px);
   }
 }
+
+.todolist {
+  & > *:not(:last-child) {
+    border-bottom: 1px solid lightgray;
+  }
+}

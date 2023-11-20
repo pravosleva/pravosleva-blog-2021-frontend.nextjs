@@ -60,18 +60,19 @@ class httpClientSingletone {
   }
   universalAxiosResponseHandler(validator: (res: any) => boolean) {
     return (axiosRes: IAxiosResponse) => {
-      if (!validator(axiosRes)) {
-        throw new Error('Data is incorrect')
-      }
       try {
+        // console.log(axiosRes)
+        if (!validator(axiosRes)) {
+          throw new Error(`Data is incorrect / ${axiosRes.status}: ${axiosRes.statusText} / ${axiosRes.data.message || 'No data.message'}`)
+        }
         return { isOk: true, res: axiosRes.data }
       } catch (err: any) {
-        throw new Error(err.message || 'Unknown err')
+        throw new Error(err?.message || 'Unknown error')
       }
     }
   }
   getErrorMsg(data: any) {
-    return data?.message ? data?.message : 'Извините, что-то пошло не так'
+    return data?.message || 'Извините, что-то пошло не так'
   }
 
   async getUserData(data: TGetUserDataParams) {

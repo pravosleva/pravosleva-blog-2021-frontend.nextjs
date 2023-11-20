@@ -37,7 +37,7 @@ const nextConfig = {
   //   ],
   // },
 
-  productionBrowserSourceMaps: isDev,
+  productionBrowserSourceMaps: true, // isDev,
   pwa: {
     dest: 'public', // NOTE: By default to .next
     runtimeCaching,

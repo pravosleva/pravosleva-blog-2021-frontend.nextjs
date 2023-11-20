@@ -21,8 +21,11 @@ export type TState = {
   };
 
   // -- NOTE: For local backup only
-  __lastTodosRoomState: NTodo.TRoomState | null;
+  // __lastTodosRoomState: NTodo.TRoomState | null;
   // --
+
+  strapiTodos: NTodo.TTodo[];
+  temporaryNamespaces: string[];
 }
 export const initialState: TState = {
   localAudits: [],
@@ -30,7 +33,9 @@ export const initialState: TState = {
     lastVisitedPages: [],
     isAutoSyncWithLocalEnabled: false,
   },
-  __lastTodosRoomState: null,
+  // __lastTodosRoomState: null,
+  strapiTodos: [],
+  temporaryNamespaces: [],
 }
 
 const _getNextSubjobStatus = (prevStatus: ESubjobStatus): ESubjobStatus => {
@@ -467,20 +472,65 @@ export const todo2023Slice: any = createSlice({
     },
 
     // NOTE: New 2023.11
-    replaceTodosRoomState: (state: TState, action: {
-      payload: NTodo.TRoomState;
-    }) => {
-      // console.log(action.payload)
-      console.log('-action.payload')
-      if (!!action.payload && Object.keys(action.payload || {}).length > 0) {
-        console.log('-action.payload')
-        console.log(action.payload)
-        console.log('-case:ok')
-        state.__lastTodosRoomState = action.payload || null
-      } else {
-        console.log(action.payload)
-        console.log('-case:!ok')
+    // replaceTodosRoomState: (state: TState, action: {
+    //   payload: NTodo.TRoomState;
+    // }) => {
+    //   // console.log(action.payload)
+    //   console.log('-action.payload')
+    //   if (!!action.payload && Object.keys(action.payload || {}).length > 0) {
+    //     console.log('-action.payload')
+    //     console.log(action.payload)
+    //     console.log('-case:ok')
+    //     state.__lastTodosRoomState = action.payload || null
+    //   } else {
+    //     console.log(action.payload)
+    //     console.log('-case:!ok')
+    //   }
+    // },
+
+    // NOTE: v2 (todo strapi)
+    addStrapiTodo: (state: TState, action: { payload: NTodo.TTodo; }) => {
+      try {
+        state.strapiTodos.push(action.payload)
+      } catch (err) {
+        state.strapiTodos = [action.payload]
       }
+    },
+    removeStrapiTodo: (state: TState, action: { payload: number; }) => {
+      try {
+        state.strapiTodos = state.strapiTodos.filter(({ id }) => id !== action.payload)
+      } catch (err) {
+        state.strapiTodos = []
+      }
+    },
+    updateStrapiTodo: (state: TState, action: { payload: NTodo.TTodo; }) => {
+      try {
+        const targetIndex = state.strapiTodos.findIndex(({ id }) => id === action.payload.id)
+
+        if (targetIndex === -1) {
+          // throw new Error(`Нет такого id: ${action.payload.id}`)
+          state.strapiTodos.push(action.payload)
+        } else {
+          state.strapiTodos[targetIndex] = action.payload
+        }
+      } catch (err) {
+        console.warn(err)
+        state.strapiTodos = [action.payload]
+      }
+    },
+    replaceStrapiTodo: (state: TState, action: { payload: NTodo.TTodo[]; }) => {
+      state.strapiTodos = action.payload
+    },
+
+    addTemporayNamespace: (state: TState, action: { payload: string; }) => {
+      try {
+        state.temporaryNamespaces.push(action.payload)
+      } catch (err) {
+        state.temporaryNamespaces = [action.payload]
+      }
+    },
+    resetTemporayNamespaces: (state: TState) => {
+      state.temporaryNamespaces = []
     },
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
@@ -511,7 +561,14 @@ export const {
   autoSyncToggle,
   autoSyncDisable,
 
-  replaceTodosRoomState,
+  // replaceTodosRoomState,
+  addStrapiTodo,
+  removeStrapiTodo,
+  updateStrapiTodo,
+  replaceStrapiTodo,
+
+  addTemporayNamespace,
+  resetTemporayNamespaces,
 } = todo2023Slice.actions
 
 export const reducer = todo2023Slice.reducer

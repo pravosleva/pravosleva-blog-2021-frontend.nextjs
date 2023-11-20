@@ -1,21 +1,22 @@
-import { useStore } from '~/components/Todo2023.online/hocs'
+import { TSocketMicroStore, useStore } from '~/components/Todo2023.online/hocs'
 import classes from './TodoConnected.module.scss'
 import clsx from 'clsx'
 import { IconButton, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@mui/material'
 // import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import { useCallback, useMemo, useState, useRef } from 'react'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
+// import AddCircleIcon from '@mui/icons-material/AddCircle'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+// import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import {
   AddAnythingNewDialog,
   ConnectedFilters,
   // NamespaceListItem,
   TodoListItem,
-  VerticalTabs,
+  // VerticalTabs,
 } from './components'
-import baseClasses from '~/mui/baseClasses.module.scss'
-import DeleteIcon from '@mui/icons-material/Delete'
+// import baseClasses from '~/mui/baseClasses.module.scss'
+// import DeleteIcon from '@mui/icons-material/Delete'
 // import AddIcon from '@mui/icons-material/Add'
 import { NTodo } from '~/components/audit-helper'
 // import DoneIcon from '@mui/icons-material/Done'
@@ -27,9 +28,14 @@ import { NTodo } from '~/components/audit-helper'
 import CloseIcon from '@mui/icons-material/Close'
 import { sort } from '~/utils/sort-array-objects@3.0.0'
 // import { useWindowSize } from '~/hooks/useWindowSize'
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom'
+import { useCompare } from '~/hooks/useDeepEffect'
 
 type TProps = {
   onCreateNamespace: ({ label }: { label: string }) => void;
+  // onResetTemporayNamespaces: () => void;
   onCreateTodo: ({ label, namespace, priority }: { label: string; namespace: string; priority: number; }) => void;
   onRemoveNamespace: ({ name }: { name: string }) => void;
   onRemoveTodo: ({ todoId, namespace }: { todoId: number; namespace: string; }) => void;
@@ -38,14 +44,19 @@ type TProps = {
 
 export const TodoConnected = ({
   onCreateNamespace,
-  onRemoveNamespace,
+  // onResetTemporayNamespaces,
+  // onRemoveNamespace,
   onCreateTodo,
   onRemoveTodo,
   onUpdateTodo,
 }: TProps) => {
-  const [roomState, _setStore] = useStore((store) => store.common.roomState)
+  const [isConnected] = useStore((store: TSocketMicroStore) => store.isConnected)
+  // const [roomState, _setStore] = useStore((store) => store.common.roomState)
+  const strapiTodos = useSelector((store: IRootState) => store.todo2023.strapiTodos || [])
+  const temporaryNamespaces = useSelector((store: IRootState) => store.todo2023.temporaryNamespaces || [])
   const [todoPriorityFilter] = useStore((store) => store.todoPriorityFilter)
   const [todoStatusFilter] = useStore((store) => store.todoStatusFilter)
+  const [namespacesFilter] = useStore((store) => store.namespacesFilter)
   // const [activeNamespace, setActiveNamespace] = useState<string | null>(null)
 
   //-- NOTE: Menu
@@ -60,9 +71,9 @@ export const TodoConnected = ({
   // --
 
   const [editMode, setEditMode] = useState<null | 'namespace' | 'todo' | 'todo:edit'>(null)
-  const handleOpenAddNewNamespaceDialog = useCallback(() => {
-    setEditMode('namespace')
-  }, [setEditMode])
+  // const handleOpenAddNewNamespaceDialog = useCallback(() => {
+  //   setEditMode('namespace')
+  // }, [setEditMode])
   // const [, setInitNamespaceForCreate] = useState<string>('')
   const initNamespaceForCreateRef = useRef<string>('')
   const getInitNamespaceForCreate = () => initNamespaceForCreateRef.current
@@ -77,9 +88,15 @@ export const TodoConnected = ({
   }, [setEditMode])
 
   const handleCreateNewNamespace = useCallback((ev) => {
+    const isNamespaceExists = strapiTodos.some(({ namespace }) => namespace === ev.namespaceLabel)
+    if (isNamespaceExists) {
+      window.alert('Придумайте другое имя!')
+      return Promise.reject()
+    }
     onCreateNamespace({ label: ev.namespaceLabel })
     handleMenuClose()
-  }, [onCreateNamespace, handleMenuClose])
+    return Promise.resolve()
+  }, [onCreateNamespace, handleMenuClose, strapiTodos])
   // const handleRemoveNamespace = useCallback((ev: { name: string }) => {
   //   onRemoveNamespace({ name: ev.name })
   //   handleMenuClose()
@@ -87,6 +104,7 @@ export const TodoConnected = ({
   const handleCreateNewTodo = useCallback((ev) => {
     onCreateTodo({ label: ev.todoLabel, namespace: ev.namespace, priority: ev.priority })
     handleMenuClose()
+    return Promise.resolve()
   }, [onCreateTodo, handleMenuClose])
   // const handleRemoveTodo = useCallback((ev: { id: number; namespace: string; }) => {
   //   onRemoveTodo({ todoId: ev.id, namespace: ev.namespace })
@@ -125,6 +143,7 @@ export const TodoConnected = ({
     onUpdateTodo(newObj)
   }, [onUpdateTodo])
 
+  const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
   const MemoizedMenu = useMemo(() => {
     return (
       <>
@@ -151,22 +170,30 @@ export const TodoConnected = ({
           // }}
         >
           <MenuList>
-            <MenuItem
+            {/* <MenuItem
               selected={false}
               onClick={handleOpenAddNewNamespaceDialog}
               // disabled={}
             >
               <ListItemIcon><AddCircleIcon fontSize="small" color='primary' /></ListItemIcon>
               <Typography variant="inherit">Add namespace</Typography>
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem
               selected={false}
               onClick={handleOpenAddNewTodoDialog({})}
-              disabled={!roomState || Object.keys(roomState).length === 0}
+              // disabled={!roomState || Object.keys(roomState).length === 0}
             >
               <ListItemIcon><AddCircleOutlineIcon fontSize="small" color='primary' /></ListItemIcon>
               <Typography variant="inherit">Add Todo</Typography>
             </MenuItem>
+            {/* <MenuItem
+              selected={false}
+              onClick={onResetTemporayNamespaces}
+              // disabled={!roomState || Object.keys(roomState).length === 0}
+            >
+              <ListItemIcon><HighlightOffIcon fontSize="small" color='error' /></ListItemIcon>
+              <Typography variant="inherit">Reset tmp namespaces</Typography>
+            </MenuItem> */}
           </MenuList>
         </Menu>
       </>
@@ -175,176 +202,49 @@ export const TodoConnected = ({
     handleOpenAddNewTodoDialog,
     handleCreateNewNamespace,
     isMenuOpened,
-    roomState,
+    // roomState,
     handleMenuClose,
     anchorEl,
   ])
-  // const { isDesktop, isMobile } = useWindowSize()
-  const memoizedTabsCfg = useMemo(() => {
-    return Object.keys(roomState || {}).reduce((acc: any, cur) => {
-      acc[cur] = {
-        label: cur,
-        Content: (
-          <div
-            key={cur}
-            className={clsx(
-              classes.internalTabSpace,
-              baseClasses.stack0,
-            )}
-          >
 
-            <div
-              // className='backdrop-blur--lite'
-              style={{
-                backgroundColor: '#fff',
-                // border: '1px dashed red',
-                display: 'flex',
-                alignItems: 'flex-start',
-                position: 'sticky',
-                top: 0,
-                zIndex: 1,
-                boxShadow: '0px 10px 7px -8px rgba(34, 60, 80, 0.2)',
-                padding: '0 8px',
-              }}
-            >
-              <Typography
-                variant="body2"
-                gutterBottom
-                sx={{
-                  textDecoration: 'underline',
-                  margin: '5px 0px 5px 0px',
-                }}
-              >
-                <b>{cur} ({roomState?.[cur].state.length || 0})</b>
-              </Typography>
-              <div
-                style={{
-                  // border: '1px solid red',
-                  display: 'flex',
-                  gap: '0px',
-                  marginLeft: 'auto',
-                }}
-              >
-                <IconButton
-                  aria-label={`add todo in ${cur}`}
-                  // disabled={isDisabled}
-                  // color=
-                  onClick={handleOpenAddNewTodoDialog({ initNamespace: cur })}
-                  size='small'
-                >
-                  <AddCircleOutlineIcon color='primary' fontSize='small' />
-                </IconButton>
-                <IconButton
-                  aria-label={`remove tab ${cur}`}
-                  // disabled={isDisabled}
-                  // color=
-                  onClick={() => {
-                    const isConfirmed = window.confirm('Уверены?')
-                    if (isConfirmed) onRemoveNamespace({ name: cur })
-                  }}
-                  size='small'
-                >
-                  <DeleteIcon color='error' fontSize='small' />
-                </IconButton>
-              </div>
-            </div>
-            
-            {
-              !!roomState && (
-                <div
-                  className={clsx(baseClasses.stack0)}
-                >
-                  {
-                    sort(roomState[cur].state, ['priority'], -1).map((todo) => {
-                      if (
-                        typeof todoPriorityFilter === 'number'
-                        && todo.priority !== todoPriorityFilter
-                      ) return null
-
-                      if (
-                        !!todoStatusFilter
-                        && todoStatusFilter !== todo.status
-                      ) return null
-
-                      const controls = []
-
-                      // controls.push({
-                      //   id: '0',
-                      //   Icon: <ReportIcon color={todo.status === NTodo.EStatus.DANGER ? 'error' : 'disabled'} fontSize='small' />,
-                      //   onClick: () => {
-                      //     handleUpdateTodo({ newStatus:todo.status === NTodo.EStatus.DANGER ? NTodo.EStatus.NO_STATUS :  NTodo.EStatus.DANGER })({ todoId: todo.id, namespace: cur, todo })
-                      //   },
-                      //   // isDisabled: todo.status === NTodo.EStatus.DANGER,
-                      // })
-
-                      // controls.push({
-                      //   id: '1',
-                      //   Icon: <WarningIcon color={todo.status === NTodo.EStatus.WARNING ? 'warning' : 'disabled'} fontSize='small' />,
-                      //   onClick: () => {
-                      //     handleUpdateTodo({ newStatus: todo.status === NTodo.EStatus.WARNING ? NTodo.EStatus.NO_STATUS : NTodo.EStatus.WARNING })({ todoId: todo.id, namespace: cur, todo })
-                      //   },
-                      //   // isDisabled: todo.status === NTodo.EStatus.WARNING
-                      // })
-
-                      // controls.push({
-                      //   id: '2',
-                      //   Icon: todo.status === NTodo.EStatus.IS_DONE
-                      //     ? <CheckCircleIcon color={todo.status === NTodo.EStatus.IS_DONE ? 'success' : 'disabled'} fontSize='small' />
-                      //     : <CheckCircleIcon color={NTodo.EStatus.NO_STATUS ? 'disabled' : 'primary' } fontSize='small' />,
-                      //   onClick: () => {
-                      //     handleUpdateTodo({ newStatus: todo.status === NTodo.EStatus.IS_DONE ? NTodo.EStatus.NO_STATUS : NTodo.EStatus.IS_DONE })({ todoId: todo.id, namespace: cur, todo })
-                      //   },
-                      // })
-
-                      controls.push({
-                        id: '3',
-                        Icon: <CloseIcon color='error' fontSize='small' />,
-                        // color: 'primary',
-                        onClick: () => {
-                          const isConfirmed = window.confirm(`Todo will be removed from namespace ${cur}.\nSure?`)
-                          if (isConfirmed) onRemoveTodo({ todoId: todo.id, namespace: cur })
-                        },
-                      })
-                      return (
-                        <TodoListItem
-                          id={todo.id}
-                          key={todo.id}
-                          label={todo.label}
-                          descr={todo.descr}
-                          priority={todo.priority}
-                          status={todo.status}
-                          controls={controls}
-                          onStarUpdate={(newPriority: number) => {
-                            handleUpdateTodo({ newPriority })({ todoId: todo.id, namespace: cur, todo })
-                          }}
-                          onChangeStatus={(status) => {
-                            handleUpdateTodo({ newStatus: status })({ todoId: todo.id, namespace: cur, todo })
-                          }}
-                        />
-                      )
-                    })
-                  }
-                </div>
-              )
-            }
-            
-          </div>
-        )
+  const memoizedNamespacesList = useMemo<{
+    label: string;
+    value: string;
+    hasDividerAfter?: boolean;
+  }[]>(() => {
+    const localItems = temporaryNamespaces.reduce((acc: string[], str: string) => {
+      if (!strapiTodos.map(({ namespace }) => namespace).includes(str)) acc.push(str)
+      return acc
+    }, []).map((value) => ({ label: value, value }))
+  
+    const existsItems = strapiTodos.reduce((acc: {
+      label: string;
+      value: string;
+      hasDividerAfter?: boolean;
+    }[], cur) => {
+      const isExistsInAcc = acc.findIndex(({ value }) => value === cur.namespace) !== -1
+      if (!isExistsInAcc) {
+        switch (true) {
+          case localItems.length > 0:
+            acc.push({ label: cur.namespace, value: cur.namespace, hasDividerAfter: true })
+            break
+          default:
+            acc.push({ label: cur.namespace, value: cur.namespace })
+            break
+        }
       }
       return acc
-    }, {})
-  }, [
-    roomState,
-    onRemoveNamespace,
-    handleOpenAddNewTodoDialog,
-    handleUpdateTodo,
-    todoPriorityFilter,
-    todoStatusFilter,
-  ])
+    }, [])
+
+    return [
+      ...existsItems,
+      ...localItems,
+    ]
+  }, [useCompare([strapiTodos, temporaryNamespaces])])
 
   return (
     <>
-      <AddAnythingNewDialog
+      {/* <AddAnythingNewDialog
         isOpened={editMode === 'namespace'}
         label='Namespace'
         cfg={{
@@ -363,16 +263,17 @@ export const TodoConnected = ({
           onError: handleErr,
           onSuccess: handleCreateNewNamespace,
         }}
-      />
+      /> */}
       <AddAnythingNewDialog
         key={getInitNamespaceForCreate()}
         isOpened={editMode === 'todo'}
-        label='Новая заметка'
+        label='Add TODO'
         cfg={{
           namespace: {
-            type: 'list',
-            label: 'Namespaces',
-            list: Object.keys(roomState || {}).map((value) => ({ value, label: value })),
+            type: 'creatable-autocomplete',
+            label: 'Выберите Namespace',
+            // list: Object.keys(roomState || {}).map((value) => ({ value, label: value })),
+            list: memoizedNamespacesList,
             inputId: 'namespaces-list',
             placeholder: '',
             defaultValue: getInitNamespaceForCreate(),
@@ -409,9 +310,6 @@ export const TodoConnected = ({
 
       <div
         className={classes.stack}
-        style={{
-          overflowY: 'hidden',
-        }}
       >
         <div
           className={clsx(
@@ -420,18 +318,31 @@ export const TodoConnected = ({
             classes.row2,
             classes.spaceBetween,
           )}
+          style={{
+            // overflowY: 'hidden',
+            // border: '1px solid red',
+            position: 'sticky',
+            top: 0,
+            backgroundColor: '#fff',
+            zIndex: 1,
+            boxShadow: '0px 10px 7px -8px rgba(34, 60, 80, 0.2)',
+          }}
         >
           {
-            !!roomState && Object.keys(roomState || {}).length > 0 ? (
+            strapiTodos.length > 0 ? (
               <ConnectedFilters />
             ) : (
               <div>¯\_(ツ)_/¯</div>
             )
           }
-          {MemoizedMenu}
+          {
+            isConnected
+            ? isOneTimePasswordCorrect && MemoizedMenu
+            : <HourglassBottomIcon fontSize='small' />
+          }
         </div>
 
-        {
+        {/*
           !!roomState && Object.keys(roomState || {}).length > 0 && (
             <div
               style={{
@@ -443,6 +354,61 @@ export const TodoConnected = ({
                 defaultActiveIndex={0}
                 cfg={memoizedTabsCfg}
               />
+            </div>
+          )
+        */}
+
+        {
+          strapiTodos.length > 0 && (
+            <div
+              style={{
+                // border: '1px solid red',
+                // padding: '0px 0px 0px 16px',
+              }}
+              className={clsx(
+                classes.todolist,
+              )}
+            >
+              {
+                sort(strapiTodos, ['priority'], -1).map((todo, _i) => {
+                  if (
+                    typeof todoPriorityFilter === 'number'
+                    && todo.priority !== todoPriorityFilter
+                  ) return null
+                  if (
+                    !!todoStatusFilter
+                    && todoStatusFilter !== todo.status
+                  ) return null
+                  if (
+                    namespacesFilter.length > 0
+                    && !namespacesFilter.includes(todo.namespace)
+                  ) return null
+
+                  return (
+                    <TodoListItem
+                      todo={todo}
+                      key={todo.id}
+                      controls={[
+                        {
+                          id: '3',
+                          Icon: <CloseIcon color='error' fontSize='small' />,
+                          // color: 'primary',
+                          onClick: () => {
+                            const isConfirmed = window.confirm(`Todo will be removed.\nSure?`)
+                            if (isConfirmed) onRemoveTodo({ todoId: todo.id, namespace: todo.namespace })
+                          },
+                        },
+                      ]}
+                      onStarUpdate={(newPriority: number) => {
+                        handleUpdateTodo({ newPriority })({ todoId: todo.id, namespace: todo.namespace, todo })
+                      }}
+                      onChangeStatus={(status) => {
+                        handleUpdateTodo({ newStatus: status })({ todoId: todo.id, namespace: todo.namespace, todo })
+                      }}
+                    />
+                  )
+                })
+              }
             </div>
           )
         }

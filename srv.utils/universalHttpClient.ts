@@ -62,7 +62,7 @@ class httpClientSingletone {
       }))
       .catch(axiosUniversalCatch)
   }
-  public async post(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult> {
+  public async post(url: string, data?: any): Promise<NResponseLocal.IResult> {
     return await this.api
       .post(url, data)
       .then(httpErrorHandler) // res -> res.data

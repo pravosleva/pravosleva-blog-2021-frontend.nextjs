@@ -1,10 +1,11 @@
-// const moduleAlias = require('module-alias')
-// moduleAlias()
 import axios from 'axios'
 import betterModuleAlias from 'better-module-alias'
 import packageJson from './package.json'
 betterModuleAlias(__dirname, packageJson._moduleAliases)
 
+const { join } = require('path')
+const isProd = process.env.NODE_ENV === 'production'
+require('dotenv').config({ path: join(__dirname, isProd? './.env.production' : './.env.dev') })
 import { rootSocketLogic } from '~/srv.socket-logic'
 
 const next = require('next')
@@ -42,9 +43,6 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3000
 // const geoipLiteMW = require('./express-tools/middlewares/geoip-lite')
 // const addRequestId = require('express-request-id')()
 const { parse } = require('url')
-const { join } = require('path')
-const isProd = process.env.NODE_ENV === 'production'
-require('dotenv').config({ path: join(__dirname, isProd? './.env.production' : './.env.dev') })
 
 const enhancedIO = rootSocketLogic(io)
 

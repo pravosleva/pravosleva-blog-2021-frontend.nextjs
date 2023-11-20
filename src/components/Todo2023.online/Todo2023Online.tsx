@@ -12,7 +12,9 @@ import {
   replaceAudits,
   fixVisitedPage,
   autoSyncToggle,
-  replaceTodosRoomState,
+  addTemporayNamespace,
+  // resetTemporayNamespaces,
+  // replaceTodosRoomState,
 } from '~/store/reducers/todo2023'
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
@@ -42,7 +44,7 @@ import SaveIcon from '@mui/icons-material/Save'
 import { useLastUpdatedAuditTs } from './hooks/useLastUpdatedAuditTs'
 // import { useTimeAgo } from '~/hooks/useTimeAgo'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import Link from '~/components/Link';
+import Link from '~/components/Link'
 import { OneTimeLoginFormBtn } from '../Autopark2022/components/OneTimeLoginFormBtn'
 import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
@@ -59,6 +61,12 @@ import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { Widget } from '~/components/Widget'
 import { TodoConnected } from './components'
+import {
+  addStrapiTodo,
+  removeStrapiTodo,
+  updateStrapiTodo,
+  replaceStrapiTodo,
+} from '~/store/reducers/todo2023'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -112,12 +120,16 @@ const Logic = ({ room }: TLogicProps) => {
         setStore({
           // -- NOTE: Init anything (client 2/2)
           audits: data.audits,
-          common: {
-            roomState: data.roomState || null,
-            // NOTE: Etc.
-          },
+          // common: {
+          //   roomState: data.roomState || null,
+          //   // NOTE: Etc.
+          // },
           // --
         })
+        // if (Array.isArray(data.strapiTodos) && data.strapiTodos.length > 0) {
+        //   dispatch(replaceStrapiTodo(data.strapiTodos || []))
+        // }
+        dispatch(replaceStrapiTodo(data?.strapiTodos || []))
         // if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
       })
     }
@@ -148,15 +160,43 @@ const Logic = ({ room }: TLogicProps) => {
     socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
 
     // NOTE: New 2023.11
-    const onTodo2023Replace = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
-      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE}`, items: [data] })
-      if (!!data.roomState) setStore({
-        common: {
-          roomState: data.roomState,
-        },
-      })
+    // const onTodo2023Replace = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
+    //   groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE}`, items: [data] })
+    //   if (!!data.roomState) setStore({
+    //     common: {
+    //       roomState: data.roomState,
+    //     },
+    //   })
+    // }
+    // socket.on(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
+    const onTodo2023ItemAdded = (data: { newTodo: NTodo.TTodo }) => {
+      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_TODO_ITEM_ADDED}`, items: [data] })
+      if (!!data) {
+        console.log(data)
+        // vi.strapiTodoItems.push(data.newTodo)
+        dispatch(addStrapiTodo(data.newTodo))
+      }
     }
-    socket.on(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
+    socket.on(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_ADDED, onTodo2023ItemAdded)
+
+    const onTodo2023ItemRemoved = (data: { removedTodoId: number }) => {
+      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_TODO_ITEM_REMOVED}`, items: [data] })
+      if (!!data) {
+        console.log(data)
+        // vi.strapiTodoItems = vi.strapiTodoItems.filter(({ id }) => id !== data.removedTodoId)
+        dispatch(removeStrapiTodo(data.removedTodoId))
+      }
+    }
+    socket.on(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_REMOVED, onTodo2023ItemRemoved)
+
+    const onTodo2023ItemUpdated = (data: { updatedTodo: NTodo.TTodo }) => {
+      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_TODO_ITEM_UPDATED}`, items: [data] })
+      if (!!data) {
+        console.log(data)
+        dispatch(updateStrapiTodo(data.updatedTodo))
+      }
+    }
+    socket.on(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_UPDATED, onTodo2023ItemUpdated)
 
     const onDisonnectListener = () => {
       groupLog({ spaceName: '-- disconnect', items: ['no data'] })
@@ -166,7 +206,10 @@ const Logic = ({ room }: TLogicProps) => {
     return () => {
       socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
-      socket.off(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
+      // socket.off(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
+      socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_ADDED, onTodo2023ItemAdded)
+      socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_REMOVED, onTodo2023ItemRemoved)
+      socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_UPDATED, onTodo2023ItemUpdated)
       socket.off('connect_error', onConnectErrorListener)
       socket.off('reconnect', onReconnectListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
@@ -210,39 +253,39 @@ const Logic = ({ room }: TLogicProps) => {
     }
   }, [useCompare([localAudits])])
 
-  const [roomState] = useStore((store) => store.common.roomState)
-  const __lastTodosRoomState = useSelector((store: IRootState) => store.todo2023.__lastTodosRoomState)
-  const handlePushTodos = useCallback(({ noConfirmMessage }: { noConfirmMessage: boolean }) => () => {
-    console.log('--handlePushTodos')
-    console.log(__lastTodosRoomState)
-    console.log('--')
-    const doIt = () => {
-      try {
-        if (!socketRef.current) throw new Error('socket err')
-        socketRef.current.emit(NEvent.EServerIncoming.TODO2023_REPLACE_ROOM_STATE, {
-          room: roomRef.current,
-          roomState: __lastTodosRoomState,
-        }, (ev: { isOk: boolean; message?: string; yourData: any }) => {
-          console.log('-socket-inc:ev')
-          console.log(ev)
-          console.log('-')
-          enqueueSnackbar(ev?.message || 'No ev.message', { variant: ev.isOk ? 'success' : 'error', autoHideDuration: 10000 })
-        })
-      } catch (err) {
-        console.warn(err)
-      }
-    }
+  // const [roomState] = useStore((store) => store.common.roomState)
+  // const __lastTodosRoomState = useSelector((store: IRootState) => store.todo2023.__lastTodosRoomState)
+  // const handlePushTodos = useCallback(({ noConfirmMessage }: { noConfirmMessage: boolean }) => () => {
+  //   console.log('--handlePushTodos')
+  //   console.log(__lastTodosRoomState)
+  //   console.log('--')
+  //   const doIt = () => {
+  //     try {
+  //       if (!socketRef.current) throw new Error('socket err')
+  //       socketRef.current.emit(NEvent.EServerIncoming.TODO2023_REPLACE_ROOM_STATE, {
+  //         room: roomRef.current,
+  //         roomState: __lastTodosRoomState,
+  //       }, (ev: { isOk: boolean; message?: string; yourData: any }) => {
+  //         console.log('-socket-inc:ev')
+  //         console.log(ev)
+  //         console.log('-')
+  //         enqueueSnackbar(ev?.message || 'No ev.message', { variant: ev.isOk ? 'success' : 'error', autoHideDuration: 10000 })
+  //       })
+  //     } catch (err) {
+  //       console.warn(err)
+  //     }
+  //   }
 
-    if (noConfirmMessage) doIt()
-    else {
-      const isConfirmed = window.confirm('⚠️ Удаленный кэш будет перезаписан! Вы уверены?')
-      if (isConfirmed) doIt()
-    }
-  }, [
-    // NOTE: Ext
-    // useCompare([roomState]),
-    useCompare([__lastTodosRoomState]),
-  ])
+  //   if (noConfirmMessage) doIt()
+  //   else {
+  //     const isConfirmed = window.confirm('⚠️ Удаленный кэш будет перезаписан! Вы уверены?')
+  //     if (isConfirmed) doIt()
+  //   }
+  // }, [
+  //   // NOTE: Ext
+  //   // useCompare([roomState]),
+  //   useCompare([__lastTodosRoomState]),
+  // ])
   const handleUpdateAuditComment = useCallback(({
     auditId,
     comment,
@@ -440,7 +483,7 @@ const Logic = ({ room }: TLogicProps) => {
 
             if (isConfirmed) {
               handlePush({ noConfirmMessage: true })()
-              handlePushTodos({ noConfirmMessage: true })()
+              // handlePushTodos({ noConfirmMessage: true })()
             }
           }
         }
@@ -460,27 +503,27 @@ const Logic = ({ room }: TLogicProps) => {
     handlePush,
 
     // NOTE: Ext
-    handlePushTodos,
+    // handlePushTodos,
     handlePush,
   ])
 
   // ---
-  const isMyPage = useMemo<boolean>(() => {
-    return isOneTimePasswordCorrect
-  }, [isOneTimePasswordCorrect])
-  useEffect(() => {
-    console.log('-1')
-    if (!!roomState && Object.keys(roomState || {}).length > 0) {
-      console.log('-1.1')
-      console.log(roomState) // NOTE: Ok
-      if (isMyPage) dispatch(replaceTodosRoomState(roomState))
-    }
-  }, [
-    replaceTodosRoomState,
-    useCompare([roomState]),
-    dispatch,
-    isMyPage,
-  ])
+  // const isMyPage = useMemo<boolean>(() => {
+  //   return isOneTimePasswordCorrect
+  // }, [isOneTimePasswordCorrect])
+  // useEffect(() => {
+  //   console.log('-1')
+  //   if (!!roomState && Object.keys(roomState || {}).length > 0) {
+  //     console.log('-1.1')
+  //     console.log(roomState) // NOTE: Ok
+  //     if (isMyPage) dispatch(replaceTodosRoomState(roomState))
+  //   }
+  // }, [
+  //   replaceTodosRoomState,
+  //   useCompare([roomState]),
+  //   dispatch,
+  //   isMyPage,
+  // ])
   // ---
   // --
 
@@ -614,12 +657,20 @@ const Logic = ({ room }: TLogicProps) => {
 
   const handleCreateNamespace = useCallback(({ label }) => {
     if (!label.trim()) throw new Error('Shoud not be empty!')
-    if (!socketRef.current) throw new Error('socket err')
-    socketRef.current.emit(NEvent.EServerIncoming.TODO2023_ADD_NAMESPACE, {
-      room: roomRef.current,
-      name: label,
-    }, showStandartSocketErrMsg({ showSuccessMsg: true }))
+    // if (!socketRef.current) throw new Error('socket err')
+    // socketRef.current.emit(NEvent.EServerIncoming.TODO2023_ADD_NAMESPACE, {
+    //   room: roomRef.current,
+    //   name: label,
+    // }, showStandartSocketErrMsg({ showSuccessMsg: true }))
+
+    dispatch(addTemporayNamespace(label))
   }, [])
+
+  // const handleResetTemporayNamespaces = useCallback(() => {
+  //   dispatch(resetTemporayNamespaces())
+  // }, [])
+
+  // resetTemporayNamespaces
   const handleRemoveNamespace = useCallback(({ name }) => {
     if (!name.trim()) throw new Error('Shoud not be empty!')
     if (!socketRef.current) throw new Error('socket err')
@@ -671,6 +722,7 @@ const Logic = ({ room }: TLogicProps) => {
         <Widget>
           <TodoConnected
             onCreateNamespace={handleCreateNamespace}
+            // onResetTemporayNamespaces={handleResetTemporayNamespaces}
             onRemoveNamespace={handleRemoveNamespace}
             onCreateTodo={handleCreateTodo}
             onRemoveTodo={handleRemoveTodo}
@@ -816,6 +868,7 @@ const Logic = ({ room }: TLogicProps) => {
         <Widget>
           <TodoConnected
             onCreateNamespace={handleCreateNamespace}
+            // onResetTemporayNamespaces={handleResetTemporayNamespaces}
             onRemoveNamespace={handleRemoveNamespace}
             onCreateTodo={handleCreateTodo}
             onRemoveTodo={handleRemoveTodo}

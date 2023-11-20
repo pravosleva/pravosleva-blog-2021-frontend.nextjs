@@ -8,16 +8,20 @@ import {
   NTodo,
 } from '~/components/audit-helper'
 import { SyntheticEvent } from 'react'
-import { useWindowSize } from '~/hooks/useWindowSize'
+// import { useWindowSize } from '~/hooks/useWindowSize'
 import { MenuAsBtn } from '~/mui'
 import { StatusColors, StatusIcons } from '../ConnectedFilters'
+import { Avatar, Chip } from '@mui/material'
+import { useStore, TSocketMicroStore } from '~/components/Todo2023.online/hocs'
+
+import ReportIcon from '@mui/icons-material/Report'
+import WarningIcon from '@mui/icons-material/Warning'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye'
+import InfoIcon from '@mui/icons-material/Info'
 
 type TProps = {
-  id: number;
-  label: string;
-  descr?: string;
-  priority: number;
-  status: NTodo.EStatus;
+  todo: NTodo.TTodo;
   controls: {
     id: string;
     // color: 'primary' | 'secondary' | 'error' | 'success';
@@ -30,21 +34,27 @@ type TProps = {
 }
 
 export const TodoListItem = ({
-  id,
-  label,
-  descr,
-  priority,
-  status,
+  todo,
   controls,
   onStarUpdate,
   onChangeStatus,
 }: TProps) => {
+  const [isConnected] = useStore((store: TSocketMicroStore) => store.isConnected)
+
   const handleStarClick = (_event: SyntheticEvent<Element, Event>, value: number | null) => {
     console.log(value)
     // console.log(e)
     onStarUpdate(value || 0)
   }
-  const { downSm } = useWindowSize()
+  // const { downSm } = useWindowSize()
+  const {
+    id,
+    label,
+    priority,
+    description,
+    status,
+    namespace,
+  } = todo
 
   return (
     <div
@@ -60,10 +70,11 @@ export const TodoListItem = ({
         <div className={classes.rating}>
           <Rating
             name={`rating-${id}`}
-            size={downSm ? 'small' : 'medium'}
+            // size={downSm ? 'small' : 'medium'}
+            size='small'
             value={priority}
             // readOnly
-            // disabled
+            disabled={!isConnected}
             onChange={handleStarClick}
           />
         </div>
@@ -74,6 +85,7 @@ export const TodoListItem = ({
           }
         >
           <MenuAsBtn
+            isDisabled={!isConnected}
             onSelect={(item: any) => {
               if (!!item.value) onChangeStatus(item.value)
             }}
@@ -88,26 +100,32 @@ export const TodoListItem = ({
               {
                 label: 'Info',
                 value: NTodo.EStatus.INFO,
+                ItemIcon: <InfoIcon color='info' />,
               },
               {
                 label: 'Warning',
                 value: NTodo.EStatus.WARNING,
+                ItemIcon: <WarningIcon color='warning' />,
               },
               {
                 label: 'Danger',
                 value: NTodo.EStatus.DANGER,
+                ItemIcon: <ReportIcon color='error' />,
               },
               {
                 label: 'Ok',
                 value: NTodo.EStatus.SUCCESS,
+                ItemIcon: <CheckCircleIcon color='success' />,
               },
               {
                 label: 'Завершена',
                 value: NTodo.EStatus.IS_DONE,
+                ItemIcon: <CheckCircleIcon />,
               },
               {
                 label: 'No status',
                 value: NTodo.EStatus.NO_STATUS,
+                ItemIcon: <PanoramaFishEyeIcon />,
               },
             ]}
           />
@@ -116,7 +134,7 @@ export const TodoListItem = ({
               <IconButton
                 key={id}
                 aria-label={`action ${id}`}
-                disabled={isDisabled}
+                disabled={isDisabled || !isConnected}
                 // color=
                 onClick={onClick}
                 size='small'
@@ -131,35 +149,30 @@ export const TodoListItem = ({
       <div
         className={clsx(
           classes.bodyWrapper,
-          {
-            [classes.bodyWrapper_info]: status === NTodo.EStatus.INFO,
-            [classes.bodyWrapper_warning]: status === NTodo.EStatus.WARNING,
-            [classes.bodyWrapper_danger]: status === NTodo.EStatus.DANGER,
-            [classes.bodyWrapper_success]: status === NTodo.EStatus.SUCCESS,
-            [classes.bodyWrapper_isDone]: status === NTodo.EStatus.IS_DONE,
-          }
         )}
       >
-        {label}
+        <div
+          className={clsx(
+            classes.bodyContent,
+            {
+              [classes.bodyWrapper_info]: status === NTodo.EStatus.INFO,
+              [classes.bodyWrapper_warning]: status === NTodo.EStatus.WARNING,
+              [classes.bodyWrapper_danger]: status === NTodo.EStatus.DANGER,
+              [classes.bodyWrapper_success]: status === NTodo.EStatus.SUCCESS,
+              [classes.bodyWrapper_isDone]: status === NTodo.EStatus.IS_DONE,
+            }
+          )}
+        >
+          {label}
+        </div>
+
+        {!!description && <div className={classes.descriptionWrapper}>{description}</div>}
+        <div>
+          <Chip className='truncate' size="small" avatar={<Avatar>{namespace[0].toUpperCase()}</Avatar>} label={namespace} />
+        </div>
+
+        {/* <pre>{JSON.stringify(todo, null, 2)}</pre> */}
       </div>
-
-      {/*
-        downSm && (
-          <div className={classes.rating}>
-            <Rating
-              name={`rating-${id}`}
-              size='medium'
-              // size='small'
-              value={priority}
-              // readOnly
-              // disabled
-              onChange={handleStarClick}
-            />
-          </div>
-        )
-      */}
-
-      {!!descr && <div className={classes.descriptionWrapper}>{descr}</div>}
     </div>
   )
 }

@@ -12,6 +12,7 @@ import { NTodo } from '~/components/audit-helper'
 // import DoDisturbIcon from '@mui/icons-material/DoDisturb'
 import { MenuAsBtn } from '~/mui'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
+import StarIcon from '@mui/icons-material/Star'
 import { OverridableStringUnion } from '@mui/types'
 import {
   // ButtonPropsVariantOverrides,
@@ -22,6 +23,9 @@ import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
 import InfoIcon from '@mui/icons-material/Info'
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
+import ClearIcon from '@mui/icons-material/Clear'
 
 export const StatusIcons: {
   [key in NTodo.EStatus]: React.ReactNode;
@@ -47,6 +51,8 @@ export const StatusColors: {
 export const ConnectedFilters = () => {
   const [todoPriorityFilter, setStore] = useStore((store) => store.todoPriorityFilter)
   const [todoStatusFilter] = useStore((store) => store.todoStatusFilter)
+  const [namespacesFilter] = useStore((store) => store.namespacesFilter)
+  const strapiTodos = useSelector((store: IRootState) => store.todo2023.strapiTodos)
   // const handleStarClick = useCallback((_event: SyntheticEvent<Element, Event>, value: number | null) => {
   //   setStore({ todoPriorityFilter: value })
   // }, [])
@@ -60,10 +66,14 @@ export const ConnectedFilters = () => {
   //   setStore({ todoStatusFilter: null })
   // }, [])
   const handleClearAllFilters = useCallback(() => {
-    setStore({ todoStatusFilter: null, todoPriorityFilter: null })
+    setStore({ todoStatusFilter: null, todoPriorityFilter: null, namespacesFilter: [] })
   }, [])
 
-  const hasAnyFilter = useMemo(() => (typeof todoPriorityFilter === 'number' || !!todoStatusFilter), [todoPriorityFilter, todoStatusFilter])
+  const hasAnyFilter = useMemo(() => (
+    typeof todoPriorityFilter === 'number'
+    || !!todoStatusFilter
+    || namespacesFilter.length > 0
+  ), [todoPriorityFilter, todoStatusFilter, namespacesFilter])
 
   return (
     <div
@@ -76,7 +86,7 @@ export const ConnectedFilters = () => {
     >
       <IconButton
         aria-label='reset all filtes'
-        // disabled={isDisabled}
+        disabled={!hasAnyFilter}
         // color=
         onClick={handleClearAllFilters}
         size='small'
@@ -123,31 +133,38 @@ export const ConnectedFilters = () => {
             startIcon: <StarOutlineIcon />,
             size: 'small',
           }}
-          label={`${todoPriorityFilter || 'Stars'}`}
+          label={`${todoPriorityFilter || '?'}`}
           items={[
-            // {
-            //   label: 'No',
-            //   value: null,
-            // },
+            {
+              label: 'Off',
+              value: null,
+              ItemIcon: <ClearIcon />,
+              hasDividerAfter: true,
+            },
             {
               label: '1',
               value: 1,
+              ItemIcon: <StarIcon />,
             },
             {
               label: '2',
               value: 2,
+              ItemIcon: <StarIcon />,
             },
             {
               label: '3',
               value: 3,
+              ItemIcon: <StarIcon />,
             },
             {
               label: '4',
               value: 4,
+              ItemIcon: <StarIcon />,
             },
             {
               label: '5',
               value: 5,
+              ItemIcon: <StarIcon />,
             }
           ]}
         />
@@ -167,6 +184,7 @@ export const ConnectedFilters = () => {
         style={{
           display: 'flex',
           flexDirection: 'row',
+          // flexWrap: 'nowrap',
         }}
       >
         {/*
@@ -231,31 +249,38 @@ export const ConnectedFilters = () => {
             endIcon: !!todoStatusFilter ? StatusIcons[todoStatusFilter] : undefined, // <PanoramaFishEyeIcon />,
             size: 'small',
           }}
-          label='Статус'
+          label='Status'
           items={[
             {
               label: 'All',
               value: null,
+              ItemIcon: <ClearIcon />,
+              hasDividerAfter: true,
             },
             {
               label: 'Info',
               value: NTodo.EStatus.INFO,
+              ItemIcon: <InfoIcon color='info' />,
             },
             {
               label: 'Warning',
               value: NTodo.EStatus.WARNING,
+              ItemIcon: <WarningIcon color='warning' />,
             },
             {
               label: 'Danger',
               value: NTodo.EStatus.DANGER,
+              ItemIcon: <ReportIcon color='error' />,
             },
             {
               label: 'Ok',
               value: NTodo.EStatus.SUCCESS,
+              ItemIcon: <CheckCircleIcon color='success' />,
             },
             {
               label: 'Is done',
               value: NTodo.EStatus.IS_DONE,
+              ItemIcon: StatusIcons[NTodo.EStatus.IS_DONE],
             },
           ]}
         />
@@ -273,6 +298,25 @@ export const ConnectedFilters = () => {
         </IconButton> */}
         
       </div>
+
+      <MenuAsBtn
+        onSelect={(item) => {
+          // @ts-ignore
+          setStore({ namespacesFilter: [item.value] })
+        }}
+        btn={{
+          color: 'primary',
+          variant: namespacesFilter.length > 0 ? 'contained' : 'outlined',
+          // endIcon: !!todoStatusFilter ? StatusIcons[todoStatusFilter] : undefined, // <PanoramaFishEyeIcon />,
+          size: 'small',
+        }}
+        label={namespacesFilter.length > 0 ? namespacesFilter.join(', ') : 'Namespaces'}
+        items={
+          [...new Set(strapiTodos.map(({ namespace }) => namespace))]
+            // .filter((val => !namespacesFilter.includes(val)))
+            .map((value) => ({ label: value, value }))
+        }
+      />
     </div>
   )
 }

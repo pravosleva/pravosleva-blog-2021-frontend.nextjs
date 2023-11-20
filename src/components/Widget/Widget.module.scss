@@ -3,7 +3,7 @@
 
 
 // NOTE: Desktop
-$widget-width-desktop: 550px;
+$widget-width-desktop: 465px;
 $widget-height-min-desktop: 600px;
 $widget-height-max-desktop: 600px;
 
@@ -38,6 +38,7 @@ $widget-toggler-width-mobile: 35px;
   box-sizing: border-box;
   // padding: 16px;
   width: 100%;
+  // border: 1px solid red;
 }
 .toggler {
   box-sizing: border-box;
