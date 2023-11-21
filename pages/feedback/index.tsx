@@ -45,7 +45,7 @@ const Feedback = ({ t }: any) => {
       )
       
       try {
-        if (verifyResult.isOk) {
+        if (verifyResult.ok) {
           if (verifyResult?.response.original?.score >= recaptchaScoreLimit) {
             if (typeof window !== 'undefined' && isProd) {
               // @ts-ignore
@@ -69,10 +69,10 @@ const Feedback = ({ t }: any) => {
               })
             )
 
-            if (newEntryResult.isOk)
+            if (newEntryResult.ok)
               return Promise.resolve('New Entry created')
             else
-              throw newEntryResult?.response || newEntryResult?.msg || 'No message'
+              throw newEntryResult?.response || newEntryResult?.message || 'No message'
           } else
             throw new Error(`Bot detected! Your score by Google ${verifyResult?.response.original?.score}. Humans limit was set to ${recaptchaScoreLimit}`)
         }
@@ -80,7 +80,7 @@ const Feedback = ({ t }: any) => {
         return Promise.reject(typeof err === 'string' ? err : (err?.message || 'ERR2: Что-то пошло не так...'))
       }
 
-      return Promise.reject(verifyResult?.msg)
+      return Promise.reject(verifyResult?.message)
     },
     [comment, companyName, contactName]
   )

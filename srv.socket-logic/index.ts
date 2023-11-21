@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io'
-import { withAuditListSocketLogic } from './audit-list/withAuditListSocketLogic'
+import { withAuditListSocketLogic } from './withAuditListSocketLogic'
 import { withLab } from './withLab'
 import { withLSP } from './withSP'
 

@@ -1,17 +1,17 @@
 export namespace NResponseLocal {
   export interface IResult {
-    isOk: boolean
+    ok: boolean
     response?: any
-    msg?: string
+    message?: string
   }
 
   export interface IResultSuccess {
-    isOk: boolean
+    ok: boolean
     response: any
   }
 
   export interface IResultError {
-    isOk: boolean
-    msg: string
+    ok: boolean
+    message?: string
   }
 }

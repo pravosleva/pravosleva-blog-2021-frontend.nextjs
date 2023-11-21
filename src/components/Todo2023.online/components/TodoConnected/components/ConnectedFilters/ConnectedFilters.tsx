@@ -26,6 +26,7 @@ import InfoIcon from '@mui/icons-material/Info'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import ClearIcon from '@mui/icons-material/Clear'
+import { red } from '@mui/material/colors'
 
 export const StatusIcons: {
   [key in NTodo.EStatus]: React.ReactNode;
@@ -47,12 +48,22 @@ export const StatusColors: {
   [NTodo.EStatus.INFO]: 'primary',
   [NTodo.EStatus.NO_STATUS]: 'inherit',
 }
+export const InvertedStatusColors: {
+  [key in NTodo.EStatus]: string;
+} = {
+  [NTodo.EStatus.DANGER]: '#fff',
+  [NTodo.EStatus.WARNING]: '#fff',
+  [NTodo.EStatus.IS_DONE]: '#fff',
+  [NTodo.EStatus.SUCCESS]: '#fff',
+  [NTodo.EStatus.INFO]: '#fff',
+  [NTodo.EStatus.NO_STATUS]: red[500],
+}
 
 export const ConnectedFilters = () => {
   const [todoPriorityFilter, setStore] = useStore((store) => store.todoPriorityFilter)
   const [todoStatusFilter] = useStore((store) => store.todoStatusFilter)
   const [namespacesFilter] = useStore((store) => store.namespacesFilter)
-  const strapiTodos = useSelector((store: IRootState) => store.todo2023.strapiTodos)
+  const strapiTodos = useSelector((store: IRootState) => store.todo2023NotPersisted.strapiTodos)
   // const handleStarClick = useCallback((_event: SyntheticEvent<Element, Event>, value: number | null) => {
   //   setStore({ todoPriorityFilter: value })
   // }, [])

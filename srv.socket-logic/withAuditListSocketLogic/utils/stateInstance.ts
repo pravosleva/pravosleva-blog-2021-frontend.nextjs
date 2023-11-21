@@ -1,4 +1,4 @@
-import { EJobStatus, ESubjobStatus, NEventData, TAudit, NTodo } from '~/srv.socket-logic/audit-list/types'
+import { EJobStatus, ESubjobStatus, NEventData, TAudit, NTodo } from '~/srv.socket-logic/withAuditListSocketLogic/types'
 import { getRandomString } from '~/srv.utils/getRandomString'
 import { strapiHttpClient } from '~/srv.utils'
 

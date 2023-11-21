@@ -5,7 +5,7 @@ import { NEvent, NEventData, NTodo } from './types'
 import {
   stateInstance,
   // connectionsInstance,
-} from '~/srv.socket-logic/audit-list/utils'
+} from '~/srv.socket-logic/withAuditListSocketLogic/utils'
 import { strapiHttpClient } from '~/srv.utils'
 
 const getChannelName = (tg_chat_id: number): string => `audit-list:${tg_chat_id}`
@@ -44,12 +44,31 @@ export const withAuditListSocketLogic = (io: Socket) => {
       const strapiTodos = await strapiHttpClient.gqlGetTodos({
         tg_chat_id: room,
       })
+        .then((res) => {
+          // console.log('--strapiHttpClient.gqlGetTodos:then')
+          // console.log(res)
+          // console.log('--')
+          return res
+        })
+        .catch((err) => {
+          // console.log('--strapiHttpClient.gqlGetTodos:catch')
+          // console.log(err)
+          // console.log('--')
 
-      console.log('--server-logic:strapiTodos')
-      console.log(strapiTodos)
-      console.log('--')
+          /* NOTE: Example {
+            ok: false,
+            message: 'Network Error (http://localhost:1337/graphql -> Client never received a response, or request never left)'
+          } */
+          return err
+        })
+
+      // console.log('--server-logic:strapiTodos')
+      // console.log(strapiTodos)
+      // console.log('--')
 
       cb({
+        ok: strapiTodos.ok,
+        message: `BACK Socket report <- ${strapiTodos.message || 'No message'}`,
         data: {
           room,
           // message: `pages= ${pages.join(', ') || 'no yet'}`,
@@ -59,7 +78,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           // roomState: stateInstance._todo.get(room) || undefined,
           strapiTodos:
             !!strapiTodos.res?.data && Array.isArray(strapiTodos.res.data)
-              ? strapiTodos.res.data.reduce((acc: any, item) => {
+              ? strapiTodos.res.data.reduce((acc: any, item: any) => {
                 const normalizedTodo: NTodo.TTodo = {
                   id: Number(item.id),
                   label: item.attributes?.label,

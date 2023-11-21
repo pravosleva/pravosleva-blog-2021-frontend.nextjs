@@ -95,7 +95,7 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
           normalized,
         }))
         const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${withoutSpaces}`)
-        if (noteResult.isOk && !!noteResult?.response?.data && Array.isArray(noteResult.response.data)) {
+        if (noteResult.ok && !!noteResult?.response?.data && Array.isArray(noteResult.response.data)) {
           _pageService.isOk = true
           _pageService.response = noteResult.response
           list = [...noteResult.response.data.map(({ _id, ...rest }: NCodeSamplesSpace.TNote) => ({

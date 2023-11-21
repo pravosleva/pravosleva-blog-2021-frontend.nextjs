@@ -66,7 +66,7 @@ import {
   removeStrapiTodo,
   updateStrapiTodo,
   replaceStrapiTodo,
-} from '~/store/reducers/todo2023'
+} from '~/store/reducers/todo2023NotPersisted'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -115,8 +115,8 @@ const Logic = ({ room }: TLogicProps) => {
 
       socket.emit(NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM, {
         room: roomRef.current,
-      }, ({ data }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
-        groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb`, items: [data] })
+      }, ({ data, ok, message }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB_ARG) => {
+        groupLog({ spaceName: `-- ${NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM}:cb (ok: ${String(ok)}${!!message ? `, ${message}` : ''})`, items: [data] })
         setStore({
           // -- NOTE: Init anything (client 2/2)
           audits: data.audits,
@@ -129,6 +129,8 @@ const Logic = ({ room }: TLogicProps) => {
         // if (Array.isArray(data.strapiTodos) && data.strapiTodos.length > 0) {
         //   dispatch(replaceStrapiTodo(data.strapiTodos || []))
         // }
+        if (!ok) enqueueSnackbar(`FRONT App init Error <- ${message || 'Что-то пошло не так'}`, { variant: 'error', autoHideDuration: 30000 })
+
         dispatch(replaceStrapiTodo(data?.strapiTodos || []))
         // if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
       })

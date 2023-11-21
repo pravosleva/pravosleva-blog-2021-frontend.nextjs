@@ -63,7 +63,7 @@ class httpClientSingletone {
       .then(httpErrorHandler) // res -> res.data
       .then(apiErrorHandler) // data -> data
       .then((data: any) => ({
-        isOk: true,
+        ok: true,
         response: data,
       }))
       .catch(axiosUniversalCatch)
@@ -74,7 +74,7 @@ class httpClientSingletone {
       .then(httpErrorHandler) // res -> res.data
       .then(apiErrorHandler) // data -> data
       .then((data: any) => ({
-        isOk: true,
+        ok: true,
         response: data,
       }))
       .catch(axiosUniversalCatch)
@@ -85,7 +85,7 @@ class httpClientSingletone {
       .then(httpErrorHandler) // res -> res.data
       .then(apiErrorHandler) // data -> data
       .then((data: any) => ({
-        isOk: true,
+        ok: true,
         response: data,
       }))
       .catch(axiosUniversalCatch)

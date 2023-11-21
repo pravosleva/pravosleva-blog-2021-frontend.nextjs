@@ -4,24 +4,36 @@ import { HttpError } from '~/utils/errors/http'
 import { ApiError, NResponseLocal } from '~/utils/errors/api'
 
 export const axiosUniversalCatch = (err: {
-  isAxiosError: boolean
-  response: { request: { status: any; statusText: any } }
-  request: any
-  getErrorMsg: () => any
-  message: any
+  errno: number; // -111,
+  code: string; // 'ECONNREFUSED',
+  syscall: string; // 'connect',
+  address: string; // '127.0.0.1',
+  port: number;
+  config: {
+    url: string;
+    method: string; // post
+    baseURL: string; // 'http://localhost:1337/graphql',
+    // 'axios-retry': { retryCount: 10, lastRequestTime: 1700484271813 }
+  };
+  isAxiosError: boolean;
+  response: { request: { status: any; statusText: any } };
+  request: any;
+  getErrorMsg: () => any;
+  message: any;
 }): NResponseLocal.IResultSuccess | NResponseLocal.IResultError => {
+  const commonMsg = `${err.config.baseURL}${err.config.url}`
   switch (true) {
     case err.isAxiosError:
       try {
         if (!!err.response) {
           throw new HttpError(err.response.request.status, err.response.request.statusText)
         } else if (!!err.request)
-          throw new NetworkError('ERR: Client never received a response, or request never left')
-        else throw new UniversalError('Request failed')
+          throw new NetworkError(`${commonMsg} -> Client never received a response, or request never left`)
+        else throw new UniversalError(`${commonMsg} -> Request failed`)
       } catch (err: any) {
         return {
-          isOk: false,
-          msg: err.getErrorMsg(),
+          ok: false,
+          message: err.getErrorMsg(),
         }
       }
     // NOTE 2
@@ -33,19 +45,19 @@ export const axiosUniversalCatch = (err: {
     case err instanceof ApiError:
       // case Object.getPrototypeOf(err).name === 'Error':
       return {
-        isOk: false,
-        msg: err.getErrorMsg(),
+        ok: false,
+        message: err.getErrorMsg(),
       }
     case err instanceof TypeError:
       // case Object.getPrototypeOf(err).name === 'Error':
       return {
-        isOk: false,
-        msg: err.message,
+        ok: false,
+        message: err.message,
       }
     default:
       return {
-        isOk: false,
-        msg: 'AXIOS ERR: Не удалось обработать ошибку',
+        ok: false,
+        message: `${commonMsg} -> Не удалось обработать ошибку`,
       }
   }
 }

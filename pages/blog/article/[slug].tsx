@@ -122,7 +122,7 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
         // console.log(`-- ${slug}`)
         // console.log(noteResult)
         // console.log('--')
-        if (noteResult.isOk && !!noteResult.response) {
+        if (noteResult.ok && !!noteResult.response) {
           store.dispatch(setTitle(noteResult.response.data.title))
 
           _pageService.isOk = true

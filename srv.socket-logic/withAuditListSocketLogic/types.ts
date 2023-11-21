@@ -89,7 +89,9 @@ export namespace NEventData {
     export type TCLIENT_CONNECT_TO_ROOM = {
       room: number;
     }
-    export type TCLIENT_CONNECT_TO_ROOM_CB = ({ data }: {
+    export type TCLIENT_CONNECT_TO_ROOM_CB = ({ ok, message, data }: {
+      ok: boolean;
+      message?: string;
       data: {
         room: number;
         audits: TAudit[]; message?: string;

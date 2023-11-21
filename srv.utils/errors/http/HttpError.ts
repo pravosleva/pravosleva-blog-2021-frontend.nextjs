@@ -11,6 +11,6 @@ export class HttpError extends UniversalError {
   getErrorMsg(): string {
     const normalizedName = this.getReadableCamelCase(this.name)
 
-    return `${normalizedName} ${this.status}: ${this.message}`
+    return `${normalizedName} [${this.status}] ${this.message}`
   }
 }

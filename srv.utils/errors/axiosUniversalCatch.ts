@@ -7,6 +7,17 @@ import {
 } from '~/srv.utils/errors/api'
 
 export const axiosUniversalCatch = (err: {
+  errno: number; // -111,
+  code: string; // 'ECONNREFUSED',
+  syscall: string; // 'connect',
+  address: string; // '127.0.0.1',
+  port: number;
+  config: {
+    url: string;
+    method: string; // post
+    baseURL: string; // 'http://localhost:1337/graphql',
+    // 'axios-retry': { retryCount: 10, lastRequestTime: 1700484271813 }
+  };
   isAxiosError: boolean
   response: { request: { status: any; statusText: any } }
   request: any
@@ -17,14 +28,15 @@ export const axiosUniversalCatch = (err: {
   response?: any;
   message?: string;
 } => {
+  const commonMsg = `${err.config.baseURL}${err.config.url}`
   switch (true) {
     case err.isAxiosError:
       try {
         if (!!err.response) {
           throw new HttpError(err.response.request.status, err.response.request.statusText)
         } else if (!!err.request)
-          throw new NetworkError('ERR: Client never received a response, or request never left')
-        else throw new UniversalError('Request failed')
+          throw new NetworkError(`${commonMsg} -> Client never received a response, or request never left`)
+        else throw new UniversalError(`${commonMsg} -> Request failed`)
       } catch (err: any) {
         return {
           isOk: false,
@@ -52,7 +64,7 @@ export const axiosUniversalCatch = (err: {
     default:
       return {
         isOk: false,
-        message: 'AXIOS ERR: Не удалось обработать ошибку',
+        message: `${commonMsg} -> Не удалось обработать ошибку`,
       }
   }
 }

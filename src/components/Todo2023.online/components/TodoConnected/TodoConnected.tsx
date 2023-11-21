@@ -11,11 +11,12 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import {
   AddAnythingNewDialog,
   ConnectedFilters,
+  InvertedStatusColors,
   // NamespaceListItem,
   TodoListItem,
   // VerticalTabs,
 } from './components'
-// import baseClasses from '~/mui/baseClasses.module.scss'
+import baseClasses from '~/mui/baseClasses.module.scss'
 // import DeleteIcon from '@mui/icons-material/Delete'
 // import AddIcon from '@mui/icons-material/Add'
 import { NTodo } from '~/components/audit-helper'
@@ -52,7 +53,7 @@ export const TodoConnected = ({
 }: TProps) => {
   const [isConnected] = useStore((store: TSocketMicroStore) => store.isConnected)
   // const [roomState, _setStore] = useStore((store) => store.common.roomState)
-  const strapiTodos = useSelector((store: IRootState) => store.todo2023.strapiTodos || [])
+  const strapiTodos = useSelector((store: IRootState) => store.todo2023NotPersisted.strapiTodos || [])
   const temporaryNamespaces = useSelector((store: IRootState) => store.todo2023.temporaryNamespaces || [])
   const [todoPriorityFilter] = useStore((store) => store.todoPriorityFilter)
   const [todoStatusFilter] = useStore((store) => store.todoStatusFilter)
@@ -362,11 +363,12 @@ export const TodoConnected = ({
           strapiTodos.length > 0 && (
             <div
               style={{
-                // border: '1px solid red',
+                // border: '1px dashed red',
                 // padding: '0px 0px 0px 16px',
               }}
               className={clsx(
                 classes.todolist,
+                baseClasses.stack0,
               )}
             >
               {
@@ -391,10 +393,13 @@ export const TodoConnected = ({
                       controls={[
                         {
                           id: '3',
-                          Icon: <CloseIcon color='error' fontSize='small' />,
+                          Icon: <CloseIcon
+                            fontSize='small'
+                            style={{ color: InvertedStatusColors[todo.status] }}
+                          />,
                           // color: 'primary',
                           onClick: () => {
-                            const isConfirmed = window.confirm(`Todo will be removed.\nSure?`)
+                            const isConfirmed = window.confirm(`🔥 Todo will be removed! It's Ok?`)
                             if (isConfirmed) onRemoveTodo({ todoId: todo.id, namespace: todo.namespace })
                           },
                         },

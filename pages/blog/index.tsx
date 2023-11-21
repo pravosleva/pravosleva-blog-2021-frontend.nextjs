@@ -108,7 +108,7 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
     let list: TArticle[] = []
 
     switch (true) {
-      case notesResult.isOk && !!notesResult.response:
+      case notesResult.ok && !!notesResult.response:
         _pageService.isOk = true
         _pageService.response = notesResult.response
         list = [...notesResult.response.data.map(({ _id, ...rest }: NCodeSamplesSpace.TNote) => ({
@@ -123,7 +123,7 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
         break
       default:
         _pageService.isOk = false
-        _pageService.message = `Ошибка при получении списка заметок: ${notesResult.msg || 'No notesResult.msg'}`
+        _pageService.message = `Ошибка при получении списка заметок: ${notesResult.message || 'No notesResult.msg'}`
         break
     }
 

@@ -15,7 +15,7 @@ import { httpErrorHandler } from '~/srv.utils/errors/http/axios'
 import { axiosUniversalCatch } from '~/srv.utils/errors/axiosUniversalCatch'
 
 // import { ApiError } from '~/srv.utils/errors/api/ApiError'
-import { NTodo } from '~/srv.socket-logic/audit-list/types'
+import { NTodo } from '~/srv.socket-logic/withAuditListSocketLogic/types'
 
 const isDev = process.env.NODE_ENV === 'development'
 // const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
@@ -179,9 +179,9 @@ class httpClientSingletone {
       }
     })
 
-    console.log('-- strapiHttpClient:createTodo:result')
-    console.log(result)
-    console.log('--')
+    // console.log('-- strapiHttpClient:createTodo:result')
+    // console.log(result)
+    // console.log('--')
 
     if (result.isOk && typeof result.response?.data?.id === 'number') return Promise.resolve({
       ok: true,
@@ -212,9 +212,9 @@ class httpClientSingletone {
       },
     })
 
-    console.log('-- strapiHttpClient:updateTodo:result')
-    console.log(result)
-    console.log('--')
+    // console.log('-- strapiHttpClient:updateTodo:result')
+    // console.log(result)
+    // console.log('--')
 
     if (result.isOk && typeof result.response?.data?.id === 'number') return Promise.resolve({
       ok: true,
@@ -248,9 +248,9 @@ class httpClientSingletone {
   public async getTodos<T>(): Promise<{ ok: boolean; res?: T; message?: string; }> {
     const result = await this.get('/todos')
 
-    console.log('-- strapiHttpClient:getTodos:result')
-    console.log(result)
-    console.log('--')
+    // console.log('-- strapiHttpClient:getTodos:result')
+    // console.log(result)
+    // console.log('--')
 
     if (result.isOk && Array.isArray(result.response?.data)) return Promise.resolve({
       ok: true,
@@ -323,9 +323,9 @@ class httpClientSingletone {
         }))
         .catch(axiosUniversalCatch)
 
-      console.log('--gqlGetTodos:result')  
-      console.log(result)
-      console.log('--')
+      // console.log('--gqlGetTodos:result')  
+      // console.log(result)
+      // console.log('--')
       
       if (result.isOk) return Promise.resolve({
         ok: true,
