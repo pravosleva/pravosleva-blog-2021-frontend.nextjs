@@ -2,6 +2,11 @@
   "name": "frontend.nextjs",
   "version": "5.0.0",
   "private": true,
+  "engines": {
+    "node": ">=16.18.0 <=20.x.x",
+    "npm": ">=6.0.0",
+    "yarn": ">=1.22.5"
+  },
   "scripts": {
     "deploy2": "yarn build && bash deploy2.sh",
     "start:pm2": "pm2 start yarn --name next-9000-prod -- start",
