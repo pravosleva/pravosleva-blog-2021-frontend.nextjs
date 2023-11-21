@@ -11,7 +11,10 @@ import { SyntheticEvent } from 'react'
 // import { useWindowSize } from '~/hooks/useWindowSize'
 import { MenuAsBtn } from '~/mui'
 import { StatusColors, StatusIcons } from '../ConnectedFilters'
-import { AlertTitle, Avatar, Chip, Theme } from '@mui/material'
+import {
+  // Avatar,
+  AlertTitle, Chip, Theme,
+} from '@mui/material'
 import { useStore, TSocketMicroStore } from '~/components/Todo2023.online/hocs'
 
 import ReportIcon from '@mui/icons-material/Report'
@@ -126,6 +129,16 @@ export const TodoListItem = ({
             // readOnly
             disabled={!isConnected}
             onChange={handleStarClick}
+          />
+        </div>
+
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center' }} className='truncate' title={namespace}>
+          <Chip
+            className='truncate'
+            size='small'
+            // avatar={<Avatar>{namespace[0].toUpperCase()}</Avatar>}
+            label={namespace}
+            color='default'
           />
         </div>
         
@@ -259,9 +272,10 @@ export const TodoListItem = ({
         }
 
         {!!description && <div className={classes.descriptionWrapper}>{description}</div>}
-        <div style={{ marginLeft: 'auto' }}>
+        
+        {/* <div style={{ marginLeft: 'auto' }} className='truncate'>
           <Chip className='truncate' size="small" avatar={<Avatar>{namespace[0].toUpperCase()}</Avatar>} label={namespace} />
-        </div>
+        </div> */}
 
         {/* <pre>{JSON.stringify(todo, null, 2)}</pre> */}
       </div>

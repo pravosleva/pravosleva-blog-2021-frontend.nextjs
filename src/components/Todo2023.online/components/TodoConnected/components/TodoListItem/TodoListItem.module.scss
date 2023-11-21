@@ -10,12 +10,13 @@
 .ratingAndControlsExternalWrapper {
   display: flex;
   // flex-wrap: wrap;
+  gap: 8px;
   // border: 1px solid red;
-  padding: 8px 8px 0 8px;
+  padding: 8px 8px 0 0px;
   align-items: center;
   justify-content: flex-start;
 
-  background-color: #F8F8F8;
+  // background-color: #F8F8F8;
 }
 @media(max-width: #{$sm}px) {
   .ratingAndControlsExternalWrapper {
@@ -52,11 +53,12 @@
 }
 @media(max-width: #{$sm}px) {
   .rating {
-    padding-top: 4px;
-    padding-bottom: 8px;
+    // padding-top: 4px;
+    padding-left: 8px;
+    // padding-bottom: 8px;
     // justify-content: center;
     align-items: center;
-    width: 100%;
+    // width: 100%;
   }
 }
 @media(min-width: calc(#{$sm + 1}px + 1px)) {
@@ -66,7 +68,7 @@
 }
 .bodyWrapper {
   padding: 8px 8px 8px 16px;
-  background-color: #F8F8F8;
+  // background-color: #F8F8F8;
 
   .bodyContent {
     font-size: 14px;
