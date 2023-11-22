@@ -20,7 +20,13 @@ class Singleton {
   private static instance: Singleton;
   _state: Map<TOwnerTGChatId, TAudit[]>;
   // _connections: Map<string, TOwnerTGChatId>;
-  _todo: Map<TOwnerTGChatId, { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } }>;
+  _todo: Map<TOwnerTGChatId, {
+    [key: string]: {
+      state: NTodo.TTodo[];
+      tsCreate: number;
+      tsUpdate: number;
+    }
+  }>;
 
   private constructor() {
     this._state = new Map()
@@ -69,7 +75,7 @@ class Singleton {
     return Object.fromEntries(this._state)
   }
 
-  public addAudit ({ room, name, description, jobs }: { room: number; name: string; description: string; jobs: { name: string; subjobs: { name: string }[] }[] }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
+  public addAudit ({ room, name, description, jobs }: { room: number; name: string; description: string; jobs: { name: string; subjobs: { name: string }[] }[] }): Promise<{ isOk: boolean; message?: string; audits: TAudit[]; newAudit: TAudit; }> {
     try {
       const targetAudits = this._state.get(room) || []
       if (!targetAudits) throw new Error(`Room ${room} not found`)
@@ -78,8 +84,7 @@ class Singleton {
 
       const id = getRandomString(7)
       const tsCreate = new Date().getTime()
-      
-      targetAudits.push({
+      const newAudit = {
         id,
         name,
         description: description || '',
@@ -107,16 +112,18 @@ class Singleton {
   
         tsCreate,
         tsUpdate: tsCreate,
-      })
+      }
+
+      targetAudits.push(newAudit)
 
       this._state.set(room, targetAudits)
-      return Promise.resolve({ isOk: true, audits: targetAudits })
+      return Promise.resolve({ isOk: true, audits: targetAudits, newAudit })
     } catch (err) {
       // @ts-ignore
       return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }
-  public updateAuditComment({ room, auditId, comment }: { room: number; auditId: string; comment: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
+  public updateAuditComment({ room, auditId, comment }: { room: number; auditId: string; comment: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[]; updatedAudit: TAudit; }> {
     const targetAudits = this._state.get(room)
     if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })
 
@@ -129,7 +136,7 @@ class Singleton {
     targetAudits[targetAuditIndex].tsUpdate = tsUpdate
 
     this._state.set(room, targetAudits)
-    return Promise.resolve({ isOk: true, message: 'Audit comment updated', audits: targetAudits })
+    return Promise.resolve({ isOk: true, message: 'Audit comment updated', audits: targetAudits, updatedAudit: targetAudits[targetAuditIndex] })
   }
   public removeAudit({ room, auditId }: { room: number; auditId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     const targetAudits = this._state.get(room)

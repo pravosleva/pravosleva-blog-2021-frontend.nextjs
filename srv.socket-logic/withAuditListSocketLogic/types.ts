@@ -94,9 +94,13 @@ export namespace NEventData {
       message?: string;
       data: {
         room: number;
-        audits: TAudit[]; message?: string;
+        audits: TAudit[];
+        message?: string;
         // roomState: NTodo.TRoomState | undefined;
         strapiTodos: NTodo.TTodo[];
+        _specialReport: {
+          [key: string]: any;
+        };
       };
     }) => void;
 

@@ -60,6 +60,7 @@ export namespace NEventData {
         audits: TAudit[];
         // roomState: NTodo.TRoomState | undefined;
         strapiTodos: NTodo.TTodo[];
+        _specialReport?: any;
       };
     }
     export type TCLIENT_CONNECT_TO_ROOM_CB = ({ data }: TCLIENT_CONNECT_TO_ROOM_CB_ARG) => void;
@@ -116,7 +117,26 @@ export namespace NEventData {
     };
   }
   export namespace NServerOutgoing {
-    export type TAUDITLIST_REPLACE = { audits: TAudit[]; }
+    export type TAUDITLIST_REPLACE = {
+      audits: TAudit[];
+      _specialReport?: {
+        fixResponse?: {
+          isOk: boolean;
+          response: {
+            ok: boolean;
+            message?: string;
+          }
+        };
+        fixResponses?: {
+          isOk: boolean;
+          message?: string;
+          response?: {
+            ok: boolean;
+            message?: string;
+          };
+        }[];
+      };
+    }
 
     // NOTE: New 2023.11
     export type TTodo2023ReplaceRoomState = { roomState: NTodo.TRoomState; }

@@ -18,7 +18,7 @@ import {
 } from '~/store/reducers/todo2023'
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
-import { /* VariantType, */ useSnackbar } from 'notistack'
+import { /* VariantType, */ closeSnackbar, useSnackbar } from 'notistack'
 import { /* AddNewBtn, */ AddNewBtn, AuditList, AuditGrid, NTodo } from '~/components/audit-helper'
 import {
   Box,
@@ -33,7 +33,8 @@ import {
   MenuList,
   Stack,
   Typography,
- } from '@mui/material'
+} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
 import { todo2023HttpClient } from '~/utils/todo2023HttpClient'
 // import UploadIcon from '@mui/icons-material/Upload'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
@@ -156,8 +157,69 @@ const Logic = ({ room }: TLogicProps) => {
     socket.on('reconnect_attempt', onReconnectAttemptListener)
 
     const onAuditsReplace = (data: NEventData.NServerOutgoing.TAUDITLIST_REPLACE) => {
-      // groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.AUDITLIST_REPLACE}`, items: [data] })
+      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.AUDITLIST_REPLACE}`, items: [data] })
       setStore({ audits: data.audits })
+
+      if (!!data?._specialReport) {
+        switch (true) {
+          case !!data?._specialReport?.fixResponses && Array.isArray(data._specialReport.fixResponses) && data._specialReport.fixResponses.length > 0: {
+            const msgs = []
+            const hasAnyErr = (data?._specialReport?.fixResponses || []).some(({ isOk }) => !isOk)
+            if (hasAnyErr) {
+              const _msgs = (data?._specialReport?.fixResponses || []).reduce((acc: string[], cur) => {
+                const msg = cur?.response?.message || cur?.message || 'ERR_165 Remote AUDITLIST_REPLACE (no message)'
+                if (!acc.includes(msg)) acc.push(msg)
+                return acc
+              }, [])
+              // @ts-ignore
+              msgs.push(_msgs.join(', '))
+              // @ts-ignore
+              // msgs.push(data?._specialReport?.fixResponses[0]?.response?.message || 'ERR_165 Remote AUDITLIST_REPLACE')
+
+              enqueueSnackbar(msgs.join(' / '), {
+                variant: 'error',
+                autoHideDuration: 30000,
+                action: (snackbarId) => (
+                  <IconButton
+                    onClick={() => { closeSnackbar(snackbarId) }}
+                    size='small'
+                  >
+                    <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+                  </IconButton>
+                ),
+              })
+            } else {
+              const _msgs = (data?._specialReport?.fixResponses || []).reduce((acc: string[], cur) => {
+                const msg = cur?.response?.message || cur?.message || 'Ok'
+                if (!acc.includes(msg)) acc.push(msg)
+                return acc
+              }, [])
+
+              msgs.push(_msgs.length > 0 ? `${_msgs.join(', ')} (${(data?._specialReport?.fixResponses || []).length})` : 'Ok')
+              enqueueSnackbar(msgs.join(' / '), {
+                variant: 'success',
+                autoHideDuration: 15000,
+                action: (snackbarId) => (
+                  <IconButton
+                    onClick={() => { closeSnackbar(snackbarId) }}
+                    size='small'
+                  >
+                    <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+                  </IconButton>
+                ),
+              })
+            }
+            
+            break
+          }
+          case !!data?._specialReport?.fixResponse && !data._specialReport.fixResponse?.isOk: {
+            enqueueSnackbar(`${data._specialReport.fixResponse?.response.message || 'ERR_169 Remote AUDITLIST_REPLACE'}`, { variant: 'error', autoHideDuration: 30000 })
+            break
+          }
+          default:
+            break
+        }
+      }
     }
     socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
 
@@ -397,7 +459,18 @@ const Logic = ({ room }: TLogicProps) => {
         // @ts-ignore
         if (!res?.jobs) throw new Error('jobs was not received')
         // @ts-ignore
-        enqueueSnackbar(`${res?.jobs.length} jobs received...`, { variant: 'success', autoHideDuration: 3000 })
+        enqueueSnackbar(`${res?.jobs.length} jobs received...`, {
+          variant: 'success',
+          autoHideDuration: 3000,
+          action: (snackbarId) => (
+            <IconButton
+              onClick={() => { closeSnackbar(snackbarId) }}
+              size='small'
+            >
+              <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+            </IconButton>
+          ),
+        })
         // @ts-ignore
         return res.jobs
       })
@@ -502,7 +575,6 @@ const Logic = ({ room }: TLogicProps) => {
     remoteAudits.length,
     localAudits.length,
     isConnected,
-    handlePush,
 
     // NOTE: Ext
     // handlePushTodos,

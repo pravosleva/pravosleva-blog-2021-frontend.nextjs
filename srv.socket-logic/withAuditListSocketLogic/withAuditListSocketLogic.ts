@@ -4,14 +4,18 @@ import { NEvent, NEventData, NTodo } from './types'
 // NOTE: Fake DB as cache
 import {
   stateInstance,
-  // connectionsInstance,
+  connectionsInstance,
 } from '~/srv.socket-logic/withAuditListSocketLogic/utils'
-import { strapiHttpClient } from '~/srv.utils'
+import { strapiHttpClient, universalHttpClient } from '~/srv.utils'
 
 const getChannelName = (tg_chat_id: number): string => `audit-list:${tg_chat_id}`
 
+const delay = (ms = 200) => new Promise((res) => {
+  setTimeout(res, ms)
+})
+
 export const withAuditListSocketLogic = (io: Socket) => {
-  io.on('connection', function (socket: any) {
+  io.on('connection', function (socket: Socket) {
     // 1.
     socket.on(NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM, async ({ room }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM, cb: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB) => {
       // console.log(`-- CLIENT_CONNECT_TO_ROOM -> ${room} (${typeof room})`)
@@ -20,7 +24,17 @@ export const withAuditListSocketLogic = (io: Socket) => {
       // }
 
       socket.join(getChannelName(room))
-      // connectionsInstance.set(socket.id, room)
+      connectionsInstance.addConnection({ tg_chat_id: room, socketId: socket.id })
+        .then(({ instance }) => {
+          const counter = instance.counters.get(room) || 0
+          if (counter === 1) {
+            universalHttpClient.post('/express-helper/subprojects/aux-state/looper.start', {
+              namespace: 'audit-list',
+              // tg_chat_id: room,
+            })
+            // if (eHelperStopLooperResult.isOk) {}
+          } // else {}
+        })
 
       // const pages = stateInstance.getKeys()
       // console.log(`-- keys -> ${keys.join(', ')}`)
@@ -41,32 +55,27 @@ export const withAuditListSocketLogic = (io: Socket) => {
       //   meta: any;
       // }>()
 
+      const t0 = performance.now()
+      const eHelperAudits = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/get-item`, {
+        namespace: 'audit-list',
+        tg_chat_id: room,
+      }).then((res) => res).catch((err) => err)
+
+      if (eHelperAudits.isOk && Array.isArray(eHelperAudits.response?.audits)) stateInstance.initRoomAudits({ room, audits: eHelperAudits.response?.audits })
+
+      const t1 = performance.now()
+
+      const t2 = performance.now()
       const strapiTodos = await strapiHttpClient.gqlGetTodos({
         tg_chat_id: room,
-      })
-        .then((res) => {
-          // console.log('--strapiHttpClient.gqlGetTodos:then')
-          // console.log(res)
-          // console.log('--')
-          return res
-        })
-        .catch((err) => {
-          // console.log('--strapiHttpClient.gqlGetTodos:catch')
-          // console.log(err)
-          // console.log('--')
-
-          /* NOTE: Example {
-            ok: false,
-            message: 'Network Error (http://localhost:1337/graphql -> Client never received a response, or request never left)'
-          } */
-          return err
-        })
+      }).then((res) => res).catch((err) => err)
+      const t3 = performance.now()
 
       // console.log('--server-logic:strapiTodos')
       // console.log(strapiTodos)
       // console.log('--')
 
-      cb({
+      if (!!cb) cb({
         ok: strapiTodos.ok,
         message: `BACK Socket report <- ${strapiTodos.message || 'No message'}`,
         data: {
@@ -74,7 +83,23 @@ export const withAuditListSocketLogic = (io: Socket) => {
           // message: `pages= ${pages.join(', ') || 'no yet'}`,
 
           // -- NOTE: Init anything (server 1/2)
-          audits: stateInstance.get(room) || [],
+          audits: stateInstance.get(room) || [], // eHelperAudits.response?.audits || stateInstance.get(room) || [],
+          _specialReport: {
+            perf: {
+              eHelperAudits: `${((t1 - t0) / 1000).toFixed(2)} sec`,
+              strapiTodos: `${((t3 - t2) / 1000).toFixed(2)} sec`,
+            },
+            strapiTodos,
+            eHelperAudits,
+            connectionsInstance: {
+              counters: {
+                size: connectionsInstance.counters.size,
+              },
+              socketIds: {
+                size: connectionsInstance.socketIds.size,
+              },
+            }
+          },
           // roomState: stateInstance._todo.get(room) || undefined,
           strapiTodos:
             !!strapiTodos.res?.data && Array.isArray(strapiTodos.res.data)
@@ -96,81 +121,251 @@ export const withAuditListSocketLogic = (io: Socket) => {
         }})
     })
     // 2.
-    socket.on(NEvent.EServerIncoming.AUDITLIST_REPLACE, ({ room, audits }: NEventData.NServerIncoming.TAUDITLIST_REPLACE, _cb: NEventData.NServerIncoming.TAUDITLIST_REPLACE_CB) => {
+    socket.on(NEvent.EServerIncoming.AUDITLIST_REPLACE, async ({ room, audits }: NEventData.NServerIncoming.TAUDITLIST_REPLACE, _cb: NEventData.NServerIncoming.TAUDITLIST_REPLACE_CB) => {
       stateInstance.initRoomAudits({ room, audits })
       // cb({ data: { room, audits: stateInstance.get(room) || [], message: `stateInstance.size= ${stateInstance.size}` }})
+
+      const fixResponses = []
+      for (const audit of audits) {
+        const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+          namespace: 'audit-list',
+          tg_chat_id: room,
+          audit,
+        }).then((res) => res).catch((err) => err)
+        fixResponses.push(fixResponse)
+
+        await delay(200)
+      }
+      // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+      //     namespace: 'audit-list',
+      //     tg_chat_id: room,
+      //     audits,
+      //   }).then((res) => res).catch((err) => err)
+      
       // NOTE: broadcast to all
-      io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits: stateInstance.get(room) || [] })
+      io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+        room,
+        audits: stateInstance.get(room) || [],
+        _specialReport: {
+          fixResponses,
+        },
+      })
     })
     // TODO?: /express-next-api/todo2023/auditlist.replace { room, audits }
     // 3.
     socket.on(NEvent.EServerIncoming.AUDIT_REMOVE, ({ room, auditId }: NEventData.NServerIncoming.TAUDIT_REMOVE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.removeAudit({ room, auditId })
-        .then(({ audits }) => {
+        .then(async ({ audits }) => {
+
+          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/remove-audit-item`, {
+          //   namespace: 'audit-list',
+          //   tg_chat_id: room,
+          //   // audits,
+          //   auditId,
+          // }).then((res) => res).catch((err) => err)
+
+          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/remove-audit-item`, {
+            namespace: 'audit-list',
+            tg_chat_id: room,
+            auditId,
+          }).then((res) => res).catch((err) => err)
+
           // NOTE: broadcast to all
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          });
           // cb({ data: { room, isOk, audits, message: `stateInstance.size= ${stateInstance.size}` }})
         })
         .catch((err) => {
-          cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
     // 4.
     socket.on(NEvent.EServerIncoming.JOB_ADD, ({ room, auditId, name, subjobs }: NEventData.NServerIncoming.TJOB_ADD, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addJob({ room, auditId, name, subjobs })
-        .then(({ audits }) => {
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+        .then(async ({ audits }) => {
+          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          //   namespace: 'audit-list',
+          //   tg_chat_id: room,
+          //   audits,
+          // }).then((res) => res).catch((err) => err)
+
+          const targetIndex = audits.findIndex(({ id }) => id === auditId)
+          let fixResponse
+          if (targetIndex !== -1) {
+            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+              namespace: 'audit-list',
+              tg_chat_id: room,
+              audit: audits[targetIndex],
+            }).then((res) => res).catch((err) => err)
+          }
+
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          });
         })
         .catch((err) => {
-          cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
     // 5.
     socket.on(NEvent.EServerIncoming.SUBJOB_ADD, ({ room, auditId, name, jobId }: NEventData.NServerIncoming.TSUBJOB_ADD, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addSubjob({ room, auditId, name, jobId })
-        .then(({ audits }) => {
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+        .then(async ({ audits }) => {
+          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          //   namespace: 'audit-list',
+          //   tg_chat_id: room,
+          //   audits,
+          // }).then((res) => res).catch((err) => err)
+          const targetIndex = audits.findIndex(({ id }) => id === auditId)
+          let fixResponse
+          if (targetIndex !== -1) {
+            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+              namespace: 'audit-list',
+              tg_chat_id: room,
+              audit: audits[targetIndex],
+            }).then((res) => res).catch((err) => err)
+          }
+
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          });
         })
         .catch((err) => {
-          cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
     // 5.
     socket.on(NEvent.EServerIncoming.JOB_TOGGLE_DONE, ({ room, auditId, jobId, }: NEventData.NServerIncoming.TJOB_TOGGLE_DONE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.toggleJobDone({ room, auditId, jobId })
-        .then(({ audits }) => {
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+        .then(async ({ audits }) => {
+          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          //   namespace: 'audit-list',
+          //   tg_chat_id: room,
+          //   audits,
+          // }).then((res) => res).catch((err) => err)
+          const targetIndex = audits.findIndex(({ id }) => id === auditId)
+          let fixResponse
+          if (targetIndex !== -1) {
+            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+              namespace: 'audit-list',
+              tg_chat_id: room,
+              audit: audits[targetIndex],
+            }).then((res) => res).catch((err) => err)
+          }
+
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          })
         })
         .catch((err) => {
-          cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
     // 6.
     socket.on(NEvent.EServerIncoming.JOB_REMOVE, ({ room, auditId, jobId, }: NEventData.NServerIncoming.TJOB_REMOVE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.removeJob({ room, auditId, jobId })
-        .then(({ audits }) => {
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+        .then(async ({ audits }) => {
+          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          //   namespace: 'audit-list',
+          //   tg_chat_id: room,
+          //   audits,
+          // }).then((res) => res).catch((err) => err)
+          const targetIndex = audits.findIndex(({ id }) => id === auditId)
+          let fixResponse
+          if (targetIndex !== -1) {
+            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+              namespace: 'audit-list',
+              tg_chat_id: room,
+              audit: audits[targetIndex],
+            }).then((res) => res).catch((err) => err)
+          }
+
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          });
         })
         .catch((err) => {
-          cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          console.log(err)
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
     // 7.
     socket.on(NEvent.EServerIncoming.SUBJOB_TOGGLE_DONE, ({ room, auditId, jobId, subjobId, }: NEventData.NServerIncoming.TSUBJOB_TOGGLE_DONE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.toggleSubjobDone({ room, auditId, jobId, subjobId })
-        .then(({ audits }) => {
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+        .then(async ({ audits }) => {
+          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          //   namespace: 'audit-list',
+          //   tg_chat_id: room,
+          //   audits,
+          // }).then((res) => res).catch((err) => err)
+          const targetIndex = audits.findIndex(({ id }) => id === auditId)
+          let fixResponse
+          if (targetIndex !== -1) {
+            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+              namespace: 'audit-list',
+              tg_chat_id: room,
+              audit: audits[targetIndex],
+            }).then((res) => res).catch((err) => err)
+          }
+
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          });
         })
         .catch((err) => {
-          cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          console.log(err)
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
     // 8.
     socket.on(NEvent.EServerIncoming.AUDIT_ADD, ({ room, name, description, jobs }: NEventData.NServerIncoming.TAUDIT_ADD, cb?: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addAudit({ room, name, description, jobs })
-        .then(({ audits }) => {
+        .then(async ({ audits, newAudit }) => {
+          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          //   namespace: 'audit-list',
+          //   tg_chat_id: room,
+          //   audits,
+          // }).then((res) => res).catch((err) => err)
           // console.log(`-- audit added: audits.len ${audits.length}`)
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+
+          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            namespace: 'audit-list',
+            tg_chat_id: room,
+            audit: newAudit,
+          }).then((res) => res).catch((err) => err)
+
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          });
         })
         .catch((err) => {
           console.log(err)
@@ -180,9 +375,20 @@ export const withAuditListSocketLogic = (io: Socket) => {
     // 9.
     socket.on(NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT, ({ room, auditId, comment }: NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT, cb?: NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB) => {
       stateInstance.updateAuditComment({ room, auditId, comment })
-        .then(({ audits }) => {
+        .then(async ({ audits, updatedAudit }) => {
+          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            namespace: 'audit-list',
+            tg_chat_id: room,
+            audit: updatedAudit,
+          }).then((res) => res).catch((err) => err)
           // console.log(`-- audit added: audits.len ${audits.length}`)
-          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
+          io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+            room,
+            audits,
+            _specialReport : {
+              fixResponse,
+            },
+          });
         })
         .catch((err) => {
           console.log(err)
@@ -322,8 +528,22 @@ export const withAuditListSocketLogic = (io: Socket) => {
       if (!!cb) cb({ room: ev.room, isOk: false, message: 'Not supported' })
     })
 
-    // socket.on("disconnect", () => {
-    //   connectionsInstance.delete(socket.id)
-    // });
+    socket.on('disconnect', () => {
+      // connectionsInstance.delete(socket.id)
+      connectionsInstance.removeConnection({ socketId: socket.id })
+        .then(async ({ instance, tg_chat_id }) => {
+          if (!!tg_chat_id) {
+            const counter = instance.counters.get(tg_chat_id) || 0
+
+            if (counter <= 0) {
+              universalHttpClient.post('/express-helper/subprojects/aux-state/looper.stop', {
+                namespace: 'audit-list',
+                // tg_chat_id,
+              }).then((res) => res).catch((err) => err)
+              // if (eHelperStopLooperResult.isOk) {}
+            } // else {}
+          }
+        })
+    })
   })
 }

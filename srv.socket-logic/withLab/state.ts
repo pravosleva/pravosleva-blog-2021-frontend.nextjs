@@ -16,7 +16,10 @@ class Singleton {
   public state: TState
 
   private constructor() {
-    this.state = proxy({ socketReestr: new Map(), counters: {} })
+    this.state = proxy({
+      socketReestr: new Map(),
+      counters: {},
+    })
   }
 
   public static getInstance(): Singleton {
@@ -26,7 +29,7 @@ class Singleton {
   }
 
   public incSocketInReestr ({ channelName, socketId }: { channelName: string, socketId: string }): TOperationResult {
-    console.log('- incSocketInReestr called...')
+    // console.log('- incSocketInReestr called...')
 
     // Step 1: Socket reestr
     const userChannels = this.state.socketReestr.get(socketId)

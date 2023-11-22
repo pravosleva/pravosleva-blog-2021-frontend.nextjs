@@ -21,9 +21,10 @@ export const axiosUniversalCatch = (err: {
   getErrorMsg: () => any;
   message: any;
 }): NResponseLocal.IResultSuccess | NResponseLocal.IResultError => {
-  const commonMsg = `${err.config.baseURL}${err.config.url}`
+  let commonMsg = err?.message || 'Unknown ERR'
   switch (true) {
     case err.isAxiosError:
+      commonMsg = `${err?.config?.baseURL}${err?.config?.url}`
       try {
         if (!!err.response) {
           throw new HttpError(err.response.request.status, err.response.request.statusText)

@@ -174,6 +174,7 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
           )
         }
         <CommentBtn
+          key={`comment-${audit.comment}`}
           initialState={{
             comment: audit.comment || '',
           }}
@@ -205,5 +206,9 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
     </div>
   )
 }, function arePropsEqual(prevPs, nextPs) {
-  return (prevPs.audit.tsUpdate === nextPs.audit.tsUpdate && prevPs.isEditable === nextPs.isEditable && prevPs.audit.comment === nextPs.audit.comment)
+  return (
+    prevPs.audit.tsUpdate === nextPs.audit.tsUpdate
+    && prevPs.isEditable === nextPs.isEditable
+    && prevPs.audit.comment === nextPs.audit.comment
+  )
 })
