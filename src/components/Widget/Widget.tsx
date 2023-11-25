@@ -16,7 +16,7 @@ export const Widget = ({
   return (
     <div
       className={clsx(
-        // 'backdrop-blur--lite',
+        'backdrop-blur--lite',
         classes.wrapper,
         classes.row,
         {

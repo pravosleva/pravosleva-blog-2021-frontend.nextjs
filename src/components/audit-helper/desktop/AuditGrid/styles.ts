@@ -14,7 +14,7 @@ export const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('md')]: {
       // gridTemplateColumns: '1fr',
       gridTemplateColumns: 'minmax(250px, 1fr)',
-      // border: '1px solid red',
+      // border: '1px dashed red',
     },
     // @ts-ignore
     [theme.breakpoints.up('md')]: {

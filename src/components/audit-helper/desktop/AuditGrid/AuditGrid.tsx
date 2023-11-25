@@ -104,7 +104,7 @@ export const AuditGrid = ({
                   // height: '50px',
                   // display: 'flex',
                   // alignItems: 'center',
-                  padding: '64px 0 16px 0',
+                  padding: '52px 0 8px 0',
                   // border: '1px solid red',
                 }}
               >
@@ -148,12 +148,10 @@ export const AuditGrid = ({
                   // height: '50px',
                   // display: 'flex',
                   // alignItems: 'center',
-                  padding: '64px 0 16px 0',
+                  padding: '45px 0 8px 0',
                   // border: '1px solid red',
                 }}
-              >
-                Not editable audit
-              </div>
+              />
             )
           }
           <div className={clsx(styles.auditListWrapper)}>

@@ -125,6 +125,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/jpg',
     },
   },
+  'strapi-v5-graphql-notes': {
+    id: '655c8fcc6917cd0d733cddc4',
+    brief: 'Notes',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-graphql.png',
+      size: {
+        w: 300,
+        h: 118,
+      },
+      type: 'image/png',
+    },
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

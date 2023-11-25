@@ -111,7 +111,7 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
           <div
             // className={externalStyles.stickyTopPanel}
             style={{
-              padding: '64px 0 0 0',
+              padding: '52px 0 0 0',
               // border: '1px solid red',
             }}
           >

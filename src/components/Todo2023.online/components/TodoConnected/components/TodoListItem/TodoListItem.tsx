@@ -129,6 +129,7 @@ export const TodoListItem = ({
             // readOnly
             disabled={!isConnected}
             onChange={handleStarClick}
+            sx={{ color: 'gray' }}
           />
         </div>
 
@@ -266,7 +267,8 @@ export const TodoListItem = ({
                   borderLeft: '5px solid lightgray',
                   borderRight: '5px solid lightgray',
                   borderRadius: '8px',
-                } }}
+                }
+              }}
             />
           )
         }

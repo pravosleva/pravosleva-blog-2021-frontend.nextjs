@@ -15,11 +15,33 @@ import CloseIcon from '@mui/icons-material/Close'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useStyles } from './styles'
+import { styled } from '@mui/material/styles'
 
 type TProps<T> = {
   initialState: T;
   onSuccess: ({ state }: { state: T }) => void;
 }
+
+const CustomizedTextField = styled(TextField)({
+  // '& label.Mui-focused': {
+  //   color: 'green',
+  // },
+  // '& .MuiInput-underline:after': {
+  //   borderBottomColor: 'green',
+  // },
+  '& .MuiOutlinedInput-root': {
+    // '& fieldset': {
+    //   borderColor: 'red',
+    // },
+    // '&:hover fieldset': {
+    //   borderColor: 'yellow',
+    // },
+    // '&.Mui-focused fieldset': {
+    //   borderColor: 'green',
+    // },
+    borderRadius: '8px',
+  },
+});
 
 export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
   initialState,
@@ -59,12 +81,20 @@ export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
         isEditMode ? (
           <Grid container spacing={2} sx={{ pb: 2 }}>
             <Grid item xs={12}>
-              <TextField
+              <CustomizedTextField
                 size='small'
                 // disabled={isLoading}
-                value={comment} fullWidth variant="outlined" label="Comment" type="text" onChange={handleChange}
+                value={comment}
+                fullWidth
+                variant='outlined'
+                label="Comment"
+                type="text"
+                onChange={handleChange}
                 multiline
                 maxRows={4}
+                // sx={{
+                //   borderRadius: '8px',
+                // }}
               />
             </Grid>
 

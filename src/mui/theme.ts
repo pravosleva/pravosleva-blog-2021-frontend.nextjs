@@ -46,6 +46,22 @@ const theme = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        // Name of the slot
+        root: {
+          // Some CSS
+          borderRadius: '8px',
+        },
+      },
+    },
+    // MuiTextField: {
+    //   styleOverrides: {
+    //     root: {
+    //       borderRadius: '8px',
+    //     },
+    //   },
+    // },
   },
 });
 

@@ -413,24 +413,8 @@ export const ToDo2023 = memo(() => {
                   </span>
                 )
               }
-              {lastVisitedOnlinePages?.length > 0 && (
-                <span>
-                  <Button
-                    size='small'
-                    endIcon={<ArrowForwardIcon />}
-                    variant='outlined'
-                    color='primary'
-                    component={Link}
-                    noLinkStyle
-                    href={`/subprojects/audit-list/${lastVisitedOnlinePages[0].tg_chat_id}`}
-                    target='_self'
-                  >
-                    Online {lastVisitedOnlinePages[0].tg_chat_id}
-                  </Button>
-                </span>
-              )}
               {
-                isDev && (
+                isDev ? (
                   <span>
                     <Button
                       size='small'
@@ -446,6 +430,23 @@ export const ToDo2023 = memo(() => {
                       Online 123
                     </Button>
                   </span>
+                ) : (
+                  lastVisitedOnlinePages?.length > 0 && (
+                    <span>
+                      <Button
+                        size='small'
+                        endIcon={<ArrowForwardIcon />}
+                        variant='outlined'
+                        color='primary'
+                        component={Link}
+                        noLinkStyle
+                        href={`/subprojects/audit-list/${lastVisitedOnlinePages[0].tg_chat_id}`}
+                        target='_self'
+                      >
+                        Online {lastVisitedOnlinePages[0].tg_chat_id}
+                      </Button>
+                    </span>
+                  )
                 )
               }
             </Typography>

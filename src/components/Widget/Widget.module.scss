@@ -11,13 +11,15 @@ $widget-toggler-width-desktop: 40px;
 
 // NOTE: Mobile
 $widget-width-mobile: calc(100vw - 16px);
-$widget-height-min-mobile: 600px;
-$widget-height-max-mobile: 600px;
+// $widget-height-min-mobile: 600px;
+// $widget-height-max-mobile: 600px;
+$widget-height-min-mobile: 100dvh;
+$widget-height-max-mobile: 100dvh;
 
-$widget-toggler-width-mobile: 35px;
+$widget-toggler-width-mobile: 32px;
 
 .wrapper {
-  background-color: #fff;
+  // background-color: #fff;
 
   // overflow-x: hidden;
   box-sizing: border-box;
