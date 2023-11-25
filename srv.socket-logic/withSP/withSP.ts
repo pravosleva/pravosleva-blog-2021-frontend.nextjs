@@ -35,7 +35,7 @@ const mws = {
   }
 }
 
-export const withLSP = (io: Socket) => {
+export const withSP = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
 
     socket.on(NEvent.ServerIncoming.SP_MX_EV, (data: any) => {

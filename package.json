@@ -37,6 +37,7 @@
     "@mui/material": "latest",
     "@mui/styles": "^5.0.1",
     "@reduxjs/toolkit": "^1.8.3",
+    "@socket.io/admin-ui": "^0.5.1",
     "axios": "^0.21.4",
     "axios-retry": "^3.3.1",
     "babel-plugin-prismjs": "^2.1.0",

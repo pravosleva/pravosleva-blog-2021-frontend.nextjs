@@ -1,7 +1,8 @@
 import { Socket } from 'socket.io'
-import { withAuditListSocketLogic } from './withAuditListSocketLogic'
+import { withAdminPanel } from './withAdminPanel'
 import { withLab } from './withLab'
-import { withLSP } from './withSP'
+import { withAuditListSocketLogic } from './withAuditListSocketLogic'
+import { withSP } from './withSP'
 
 const compose = (fns: ((io: Socket) => void)[], io: Socket) => {
   return fns.reduce(
@@ -15,8 +16,9 @@ const compose = (fns: ((io: Socket) => void)[], io: Socket) => {
 }
 
 export const rootSocketLogic = (io: Socket) => compose([
+  withAdminPanel,
   withLab,
-  withLSP,
+  withSP,
   withAuditListSocketLogic,
   // TODO: etc.
 ], io)
