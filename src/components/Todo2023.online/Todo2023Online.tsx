@@ -19,7 +19,7 @@ import {
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ closeSnackbar, useSnackbar } from 'notistack'
-import { /* AddNewBtn, */ AddNewBtn, AuditList, AuditGrid, NTodo } from '~/components/audit-helper'
+import { AddNewBtn, AuditList, AuditGrid, NTodo } from '~/components/audit-helper'
 import {
   Box,
   Button,
@@ -130,7 +130,17 @@ const Logic = ({ room }: TLogicProps) => {
         // if (Array.isArray(data.strapiTodos) && data.strapiTodos.length > 0) {
         //   dispatch(replaceStrapiTodo(data.strapiTodos || []))
         // }
-        if (!ok) enqueueSnackbar(`FRONT App init Error <- ${message || 'Что-то пошло не так'}`, { variant: 'error', autoHideDuration: 30000 })
+        if (!ok) enqueueSnackbar(`FRONT App init Error <- ${message || 'Что-то пошло не так'}`, {
+          variant: 'error', autoHideDuration: 30000,
+          action: (snackbarId) => (
+            <IconButton
+              onClick={() => closeSnackbar(snackbarId)}
+              size='small'
+            >
+              <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+            </IconButton>
+          ),
+        })
 
         dispatch(replaceStrapiTodo(data?.strapiTodos || []))
         // if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
@@ -213,7 +223,18 @@ const Logic = ({ room }: TLogicProps) => {
             break
           }
           case !!data?._specialReport?.fixResponse && !data._specialReport.fixResponse?.isOk: {
-            enqueueSnackbar(`${data._specialReport.fixResponse?.response.message || 'ERR_169 Remote AUDITLIST_REPLACE'}`, { variant: 'error', autoHideDuration: 30000 })
+            enqueueSnackbar(`${data._specialReport.fixResponse?.response.message || 'ERR_169 Remote AUDITLIST_REPLACE'}`, {
+              variant: 'error',
+              autoHideDuration: 30000,
+              action: (snackbarId) => (
+                <IconButton
+                  onClick={() => closeSnackbar(snackbarId)}
+                  size='small'
+                >
+                  <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+                </IconButton>
+              ),
+            })
             break
           }
           default:
@@ -655,7 +676,7 @@ const Logic = ({ room }: TLogicProps) => {
         >
           <MenuList>
             {
-              isOneTimePasswordCorrect && (
+              isConnected && isOneTimePasswordCorrect && (
                 <>
                   <MenuItem selected={false} onClick={autoSyncOptionToggle}>
                     <ListItemIcon><SyncIcon fontSize="small" color={isAutoSyncEnabled ? 'success' : 'error'} /></ListItemIcon>
@@ -684,7 +705,7 @@ const Logic = ({ room }: TLogicProps) => {
             <MenuItem
               selected={false}
               onClick={handleLocalBackup}
-              disabled={isAutoSyncEnabled || (remoteAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value)}
+              disabled={(!isConnected) || isAutoSyncEnabled || (remoteAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value)}
             >
               <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
               <Typography variant="inherit">Local backup ({remoteAudits.length})</Typography>
@@ -844,6 +865,7 @@ const Logic = ({ room }: TLogicProps) => {
                 >Push from LS (Save)</Button> */}
                 <div>
                   <IconButton
+                    disabled={!isConnected}
                     aria-label="autosync-toggler"
                     id="autosync-toggler"
                     // aria-controls={isMenuOpened ? 'long-menu' : undefined}
@@ -869,8 +891,9 @@ const Logic = ({ room }: TLogicProps) => {
               onToggleJobDone={handleToggleJobDone}
               onRemoveJob={handleRemoveJob}
               onToggleSubjob={handleToggleSubjob}
-              isEditable={isOneTimePasswordCorrect}
+              isEditable={isConnected && isOneTimePasswordCorrect}
               onUpdateAuditComment={handleUpdateAuditComment}
+              isInitAppInProgress={!isConnected}
             />
           </Container>
           {
@@ -914,11 +937,14 @@ const Logic = ({ room }: TLogicProps) => {
                           reactHookFormOptions: { required: false, maxLength: 50 }
                         }
                       }}
+                      isDisabled={!isConnected}
                     />
                   ) : (
-                    <OneTimeLoginFormBtn
-                      chat_id={String(room)}
-                    />
+                    isConnected && (
+                      <OneTimeLoginFormBtn
+                        chat_id={String(room)}
+                      />
+                    )
                   )
                 }
                 <Box
@@ -928,7 +954,7 @@ const Logic = ({ room }: TLogicProps) => {
                   }}
                 >
                   <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/audit-list' target='_self'>
-                    Onffline
+                    Offline
                   </Button>
                 </Box>
               </div>
@@ -940,14 +966,22 @@ const Logic = ({ room }: TLogicProps) => {
     case isDesktop: return (
       <>
         <Widget>
-          <TodoConnected
-            onCreateNamespace={handleCreateNamespace}
-            // onResetTemporayNamespaces={handleResetTemporayNamespaces}
-            onRemoveNamespace={handleRemoveNamespace}
-            onCreateTodo={handleCreateTodo}
-            onRemoveTodo={handleRemoveTodo}
-            onUpdateTodo={handleUpdateTodo}
-          />
+          {
+            isConnected ? (
+              <TodoConnected
+                onCreateNamespace={handleCreateNamespace}
+                // onResetTemporayNamespaces={handleResetTemporayNamespaces}
+                onRemoveNamespace={handleRemoveNamespace}
+                onCreateTodo={handleCreateTodo}
+                onRemoveTodo={handleRemoveTodo}
+                onUpdateTodo={handleUpdateTodo}
+              />
+            ) : (
+              <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center' }}>
+                <CircularIndeterminate />
+              </div>
+            )
+          }
         </Widget>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
           <ResponsiveBlock
@@ -1025,10 +1059,11 @@ const Logic = ({ room }: TLogicProps) => {
             onToggleSubjob={handleToggleSubjob}
             isEditable={isOneTimePasswordCorrect}
             onUpdateAuditComment={handleUpdateAuditComment}
+            isInitAppInProgress={!isConnected}
           />
           
           {
-            isBrowser && !isOneTimePasswordCorrect && (
+            isConnected && isBrowser && !isOneTimePasswordCorrect && (
               <div
                 style={{
                   marginTop: 'auto',

@@ -67,6 +67,7 @@ export type TAuditListProps = {
     name: string;
     description: string;
   }) => void;
+  isInitAppInProgress?: boolean;
 }
 
 export const AuditGrid = ({
@@ -81,6 +82,7 @@ export const AuditGrid = ({
   onAddNewAudit,
 
   isEditable,
+  isInitAppInProgress,
 }: TAuditListProps) => {
   const styles = useStyles()
   const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
@@ -133,6 +135,7 @@ export const AuditGrid = ({
                       reactHookFormOptions: { required: false, maxLength: 50 }
                     }
                   }}
+                  isDisabled={isInitAppInProgress}
                 />
               </div>
             ) : (
@@ -155,31 +158,33 @@ export const AuditGrid = ({
           }
           <div className={clsx(styles.auditListWrapper)}>
             {
-              audits.length > 0 ? (
-                <>
-                  {
-                    audits.map((audit) => (
-                      <div className={styles.auditItem} key={audit.id}>
-                        <AuditGridItem
-                          audit={audit}
-                          isEditable={isEditable}
-                          onRemoveAudit={onRemoveAudit}
-                        />
-                      </div>
-                    ))
-                  }
-                </>
-              ) : (
-                <Alert
-                  // sx={{ mb: 2 }}
-                  variant="standard"
-                  severity="info"
-                >
-                  <Typography variant="body2" component="h2" gutterBottom>
-                    Еще ничего не создано
-                  </Typography>
-                </Alert>
-              )
+              !isInitAppInProgress
+              ? audits.length > 0 ? (
+                  <>
+                    {
+                      audits.map((audit) => (
+                        <div className={styles.auditItem} key={audit.id}>
+                          <AuditGridItem
+                            audit={audit}
+                            isEditable={isEditable}
+                            onRemoveAudit={onRemoveAudit}
+                          />
+                        </div>
+                      ))
+                    }
+                  </>
+                ) : (
+                  <Alert
+                    // sx={{ mb: 2 }}
+                    variant="standard"
+                    severity="info"
+                  >
+                    <Typography variant="body2" component="h2" gutterBottom>
+                      Еще ничего не создано
+                    </Typography>
+                  </Alert>
+                )
+              : <CircularIndeterminate />
             }
           </div>
         </div>

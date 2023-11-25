@@ -61,7 +61,13 @@ export const withAuditListSocketLogic = (io: Socket) => {
         tg_chat_id: room,
       }).then((res) => res).catch((err) => err)
 
-      if (eHelperAudits.isOk && Array.isArray(eHelperAudits.response?.audits)) stateInstance.initRoomAudits({ room, audits: eHelperAudits.response?.audits })
+      if (eHelperAudits.isOk && Array.isArray(eHelperAudits.response?.audits))
+        stateInstance.initRoomAudits({ room, audits: eHelperAudits.response?.audits })
+      else {
+        console.log('-ERR: eHelperAudits')
+        console.log(eHelperAudits)
+        console.log('-ERR')
+      }
 
       const t1 = performance.now()
 

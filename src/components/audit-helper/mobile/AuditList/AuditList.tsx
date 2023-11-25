@@ -55,9 +55,21 @@ type TAuditListProps = {
     subjobId: string;
   }) => void;
   isEditable: boolean;
+  isInitAppInProgress?: boolean;
 }
 
-export const AuditList = memo(({ audits, onUpdateAuditComment, onRemoveAudit, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TAuditListProps) => {
+export const AuditList = memo(({
+  audits,
+  onUpdateAuditComment,
+  onRemoveAudit,
+  onAddJob,
+  onAddSubjob,
+  onToggleJobDone,
+  onRemoveJob,
+  onToggleSubjob,
+  isEditable,
+  isInitAppInProgress,
+}: TAuditListProps) => {
   const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
 
   if (isServer) return <CircularIndeterminate />
@@ -74,31 +86,36 @@ export const AuditList = memo(({ audits, onUpdateAuditComment, onRemoveAudit, on
         // paddingBottom: '16px',
       }}
     >
-      {audits.length > 0 ? (
-        audits.map((audit) => (
-          <AuditItem
-            // @ts-ignore
-            audit={audit}
-            key={audit.id}
-            onRemoveAudit={onRemoveAudit}
-            onAddJob={onAddJob}
-            onAddSubjob={onAddSubjob}
-            onToggleJobDone={onToggleJobDone}
-            onRemoveJob={onRemoveJob}
-            onToggleSubjob={onToggleSubjob}
-            isEditable={isEditable}
-            onUpdateAuditComment={onUpdateAuditComment}
-          />
-        ))) : (
-          <Alert
-            // sx={{ mb: 2 }}
-            variant="standard"
-            severity="info"
-          >
-            <Typography variant="body2" component="h2" gutterBottom>
-              Еще ничего не создано
-            </Typography>
-          </Alert>
+      {
+        !isInitAppInProgress
+        ? audits.length > 0 ? (
+          audits.map((audit) => (
+            <AuditItem
+              // @ts-ignore
+              audit={audit}
+              key={audit.id}
+              onRemoveAudit={onRemoveAudit}
+              onAddJob={onAddJob}
+              onAddSubjob={onAddSubjob}
+              onToggleJobDone={onToggleJobDone}
+              onRemoveJob={onRemoveJob}
+              onToggleSubjob={onToggleSubjob}
+              isEditable={isEditable}
+              onUpdateAuditComment={onUpdateAuditComment}
+            />
+          ))) : (
+            <Alert
+              // sx={{ mb: 2 }}
+              variant="standard"
+              severity="info"
+            >
+              <Typography variant="body2" component="h2" gutterBottom>
+                Еще ничего не создано
+              </Typography>
+            </Alert>
+          )
+        : (
+          <CircularIndeterminate />
         )
       }
     </div>

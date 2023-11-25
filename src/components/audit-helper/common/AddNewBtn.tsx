@@ -27,6 +27,7 @@ type TProps = {
       reactHookFormOptions?: TRegisterOptions,
     }
   };
+  isDisabled?: boolean;
 }
 
 export const AddNewBtn = ({
@@ -35,6 +36,7 @@ export const AddNewBtn = ({
   dialogDescription,
   muiColor,
   cfg,
+  isDisabled,
 }: TProps) => {
   const {
     register,
@@ -112,7 +114,14 @@ export const AddNewBtn = ({
         </DialogActions>
       </Dialog>
 
-      <Button startIcon={<AddIcon />} fullWidth variant="contained" color={muiColor} onClick={handleClickOpen}>{label}</Button>
+      <Button
+        startIcon={<AddIcon />}
+        fullWidth
+        variant='contained'
+        color={muiColor}
+        onClick={handleClickOpen}
+        disabled={isDisabled}
+      >{label}</Button>
     </>
   )
 }

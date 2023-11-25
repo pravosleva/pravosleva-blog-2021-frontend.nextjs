@@ -7,15 +7,17 @@ import {
   SnackbarMessage as TSnackbarMessage,
   OptionsObject as IOptionsObject,
   // SharedProps as ISharedProps,
+  closeSnackbar,
 } from 'notistack'
 import { groupLog } from '~/utils/groupLog'
-import { Button, Stack } from '@mui/material'
+import { Button, Stack, IconButton } from '@mui/material'
 import classes from './SocketLab.module.scss'
 import clsx from 'clsx'
 
 // import SyncAltIcon from '@mui/icons-material/SyncAlt'
 import ImportExportIcon from '@mui/icons-material/ImportExport'
 import CloseIcon from '@mui/icons-material/Close'
+import { getRandomString } from '~/utils/getRandomString'
 
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -37,7 +39,17 @@ export const Logic = () => {
   const socketRef = useRef<Socket | null>(null)
   const { enqueueSnackbar } = useSnackbar()
   const showNotif = useCallback((msg: TSnackbarMessage, opts?: IOptionsObject) => {
-    if (!document.hidden) enqueueSnackbar(msg, opts)
+    if (!document.hidden) enqueueSnackbar(msg, {
+      ...opts,
+      action: (snackbarId) => (
+        <IconButton
+          onClick={() => closeSnackbar(snackbarId)}
+          size='small'
+        >
+          <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+        </IconButton>
+      ),
+    })
   }, [])
 
   const connectBtnRef = useRef<HTMLButtonElement>(null)
@@ -91,10 +103,29 @@ export const Logic = () => {
   }, [])
 
   useEffect(() => {
+    let clientKey
+    try {
+      clientKey = window.localStorage.getItem('socket-lab:uck')
+      if (!clientKey) throw new Error('uniqueClientKey not found')
+    } catch (err) {
+      clientKey = getRandomString(10)
+      try {
+        window.localStorage.setItem('socket-lab:uck', clientKey)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    const uniqueClientKey = `${clientKey}.${new Date().getTime()}`
     const socket: Socket = io(NEXT_APP_SOCKET_API_ENDPOINT, {
       reconnection: true,
       transports: ['websocket', 'polling'],
       secure: isProd,
+      extraHeaders: {
+        uniqueClientKey,
+      },
+      query: {
+        uniqueClientKey,
+      },
     })
     socketRef.current = socket
 
@@ -108,6 +139,11 @@ export const Logic = () => {
     const onConnectErrorListener = (arg: any) => {
       groupLog({ spaceName: '-- connect_error', items: [arg] })
       showNotif('Connect error', { variant: 'error', autoHideDuration: 3000 })
+
+      if (!!socketRef.current) {
+        // NOTE: Revert to classic upgrade
+        socketRef.current.io.opts.transports = ['polling', 'websocket']
+      }
     }
     socket.on('connect_error', onConnectErrorListener)
 

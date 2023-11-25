@@ -11,7 +11,7 @@ type TState = { socketReestr: Map<TSocketId, TRoomList>; counters: {[key: string
 
 type TOperationResult = Promise<{ isOk: boolean; message?: string; instance: Singleton }>
 
-class Singleton {
+export class Singleton {
   private static instance: Singleton
   public state: TState
 
@@ -28,13 +28,13 @@ class Singleton {
     return Singleton.instance;
   }
 
-  public incSocketInReestr ({ channelName, socketId }: { channelName: string, socketId: string }): TOperationResult {
+  public incSocketInReestr ({ channelName, clientId }: { channelName: string, clientId: string }): TOperationResult {
     // console.log('- incSocketInReestr called...')
 
     // Step 1: Socket reestr
-    const userChannels = this.state.socketReestr.get(socketId)
-    if (!!userChannels) this.state.socketReestr.set(socketId, [...new Set([channelName, ...userChannels])])
-    else this.state.socketReestr.set(socketId, [channelName])
+    const userChannels = this.state.socketReestr.get(clientId)
+    if (!!userChannels) this.state.socketReestr.set(clientId, [...new Set([channelName, ...userChannels])])
+    else this.state.socketReestr.set(clientId, [channelName])
 
     // Step 2: Counters
     const counter = this.state.counters[channelName]
@@ -43,17 +43,21 @@ class Singleton {
 
     return Promise.resolve({ isOk: true, instance: this, message: 'Added to reestr' })
   }
-  public decSocketInReestr ({ socketId }: { socketId: string }): TOperationResult {
-    const roomList = this.state.socketReestr.get(socketId)
+  public decSocketInReestr ({ clientId }: { clientId: string }): TOperationResult {
+    const roomList = this.state.socketReestr.get(clientId)
+
+    console.log('---roomList')
+    console.log(roomList)
+    console.log('---')
 
     // Step 1: Socket reestr
-    this.state.socketReestr.delete(socketId)
+    this.state.socketReestr.delete(clientId)
 
     // Step 2: Counters
     if (!!roomList) {
       for (const channelName of roomList) {
         const counter = this.state.counters[channelName]
-        if (!counter || counter <= 0) {
+        if (typeof counter !== 'number' || counter < 0) {
           // NOTE: Wtf?
           delete this.state.counters[channelName]
           break

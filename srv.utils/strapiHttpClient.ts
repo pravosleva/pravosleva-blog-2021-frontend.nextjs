@@ -291,7 +291,10 @@ class httpClientSingletone {
         eq: ${tg_chat_id}
       }
     }
-    
+    sort: ["priority:desc", "createdAt:asc"]
+    pagination: {
+      pageSize: 100
+    }
   ) {
     data {
       id

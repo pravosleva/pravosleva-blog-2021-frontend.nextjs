@@ -1,6 +1,6 @@
 import { Socket, DisconnectReason as TDisconnectReason } from 'socket.io'
 import { Looper, NLooper } from '~/srv.utils/Looper'
-import { state } from './state'
+import { state, Singleton as StateSingleton } from './state'
 import { quotesData } from './quotesData'
 import { getRandomElement } from '~/srv.utils/tools-array/getRandomElement'
 
@@ -25,8 +25,17 @@ const loopers: {
 
 export const withLab = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
+    // console.log(socket.handshake.query.uniqueClientKey) // Socket-Lab-Unique-Client-Key
     // - NOTE: Discnnect cb
-    const onDisconnect = ({ promiseResult, reason }: any) => {
+    const onDisconnect = ({ promiseResult, reason }: {
+      promiseResult: {
+        isOk: boolean;
+        message?: string;
+        instance: StateSingleton;
+      };
+      reason?: string;
+      clientId?: string;
+    }) => {
       const { isOk, message, instance } = promiseResult
       if (isOk) {
         const stateInfo = instance.getStateInfo()
@@ -35,7 +44,7 @@ export const withLab = (io: Socket) => {
         for (const channelName of channelsList) {
           const connsCounter = instance.getConnectionsCounterByChannelName({ channelName })
           io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
-            socketId: socket.id,
+            clientId: socket.handshake.query.uniqueClientKey,
             // message: `BACK: Somebody disconnected (${reason}) / ${connectionsMap.get(channelName)} connected`,
             message: `Somebody disconnected (${reason}) / conns: ${connsCounter}`,
             notistackProps: {
@@ -66,6 +75,7 @@ export const withLab = (io: Socket) => {
       // io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
       io.to(socket.id).emit(NEvent.ServerOutgoing.TEST, {
         socketId: socket.id,
+        clientId: socket.handshake.query.uniqueClientKey,
         message: 'BACK: Test event',
         yourData: data,
       })
@@ -74,15 +84,21 @@ export const withLab = (io: Socket) => {
     socket.on(NEvent.ServerIncoming.WANNA_BE_CONNECTED_TO_ROOM, ({ roomId }: { roomId: string }, cb) => {
       const channelName = getChannelName(roomId)
       socket.join(channelName)
+      const hasClientId = typeof socket.handshake.query.uniqueClientKey === 'string'
 
-      state.incSocketInReestr({ channelName, socketId: socket.id })
+      if (hasClientId) state.incSocketInReestr({
+        channelName,
+        // @ts-ignore
+        clientId: socket.handshake.query.uniqueClientKey,
+      })
         .then(({ isOk, message, instance }) => {
           if (isOk) {
-            const stateInfo = instance.getStateInfo()
-            const connectionsMap = stateInfo.connectionsMap
+            // const stateInfo = instance.getStateInfo()
+            // const connectionsMap = stateInfo.connectionsMap
+            const connsCounter = instance.getConnectionsCounterByChannelName({ channelName })
             socket.broadcast.to(channelName).emit(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, {
-              socketId: socket.id,
-              message: `Somebody connected to private channel / conns: ${connectionsMap.get(channelName)}`,
+              clientId: socket.handshake.query.uniqueClientKey,
+              message: `Somebody connected to private channel / conns: ${connsCounter}`,
               notistackProps: {
                 anchorOrigin: {
                   vertical: 'bottom',
@@ -116,13 +132,15 @@ export const withLab = (io: Socket) => {
               loopers[channelName] = looper
               looper.start(notifRandomQuote)
               io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
-                socketId: socket.id,
+                // socketId: socket.id,
+                clientId: socket.handshake.query.uniqueClientKey,
                 message: 'Looper created and started',
               })
             } else {
               looper.start(notifRandomQuote)
               io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
-                socketId: socket.id,
+                // socketId: socket.id,
+                clientId: socket.handshake.query.uniqueClientKey,
                 message: 'Looper started',
               })
             }
@@ -170,12 +188,19 @@ export const withLab = (io: Socket) => {
       const channelName = getChannelName(roomId)
       socket.leave(channelName)
 
-      state.decSocketInReestr({ socketId: socket.id })
+      const hasClientId = typeof socket.handshake.query.uniqueClientKey === 'string'
+      if (hasClientId) state.decSocketInReestr({
+        // socketId: socket.id,
+        // @ts-ignore
+        clientId: socket.handshake.query.uniqueClientKey
+      })
         .then(({ isOk, message, instance }) => {
           onDisconnect({
             promiseResult: { isOk, message, instance },
             reason: `Leave from channel: ${channelName}`,
-            socketId: socket.id,
+            clientId: typeof socket.handshake.query.uniqueClientKey === 'string'
+              ? socket.handshake.query.uniqueClientKey
+              : undefined,
           })
 
           if (!!cb) cb({
@@ -196,13 +221,18 @@ export const withLab = (io: Socket) => {
     })
 
     socket.on('disconnect', (reason: TDisconnectReason) => {
-      const socketId = socket.id
-      state.decSocketInReestr({ socketId })
+      const hasClientId = typeof socket.handshake.query.uniqueClientKey === 'string'
+      if (hasClientId) state.decSocketInReestr({
+        // @ts-ignore
+        clientId: socket.handshake.query.uniqueClientKey,
+      })
         .then((promiseResult) => {
           onDisconnect({
             promiseResult,
             reason,
-            socketId,
+            clientId: typeof socket.handshake.query.uniqueClientKey === 'string'
+              ? socket.handshake.query.uniqueClientKey
+              : undefined,
           })
         })
     })

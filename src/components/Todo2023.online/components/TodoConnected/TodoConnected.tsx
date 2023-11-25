@@ -330,11 +330,13 @@ export const TodoConnected = ({
           }}
         >
           {
-            strapiTodos.length > 0 ? (
-              <ConnectedFilters />
-            ) : (
-              <div>¯\_(ツ)_/¯</div>
-            )
+            isConnected
+            ? strapiTodos.length > 0 ? (
+                <ConnectedFilters />
+              ) : (
+                <div>¯\_(ツ)_/¯</div>
+              )
+            : <div>Connecting...</div>
           }
           {
             isConnected
