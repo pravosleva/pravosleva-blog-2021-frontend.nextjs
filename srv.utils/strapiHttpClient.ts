@@ -67,6 +67,22 @@ class httpClientSingletone {
     return httpClientSingletone._instance;
   }
 
+  public getStrapiGqlErrMsg(firstMsg: string, json: any): string {
+    const msgs = [firstMsg]
+    try {
+      if (!!json?.errors && Array.isArray(json.errors) && json.errors.length > 0) {
+        const firstErr = json.errors[0]
+        if (!!firstErr.message && typeof firstErr.message === 'string')
+          msgs.push(firstErr.message)
+        if (!!firstErr?.extensions?.code && typeof firstErr.extensions.code === 'string')
+          msgs.push(firstErr.extensions.code)
+      }
+    } catch (err) {
+      // console.log(err)
+    }
+    return msgs.join(' <- ')
+  }
+
   public async get(url: string): Promise<NResponseLocal.IResult> {
     return await this.api
       .get(url)
@@ -317,7 +333,8 @@ class httpClientSingletone {
           if (Array.isArray(json?.data?.todos?.data))
             return json?.data?.todos
 
-          throw new ApiError('gqlApi:ERR')
+          const msg = this.getStrapiGqlErrMsg('gqlApi:ERR', json)
+          throw new ApiError(msg)
           // return data
         }) // data -> data
         .then((data: any) => ({

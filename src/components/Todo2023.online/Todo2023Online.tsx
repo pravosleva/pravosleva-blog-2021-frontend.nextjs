@@ -177,15 +177,12 @@ const Logic = ({ room }: TLogicProps) => {
             const hasAnyErr = (data?._specialReport?.fixResponses || []).some(({ isOk }) => !isOk)
             if (hasAnyErr) {
               const _msgs = (data?._specialReport?.fixResponses || []).reduce((acc: string[], cur) => {
-                const msg = cur?.response?.message || cur?.message || 'ERR_165 Remote AUDITLIST_REPLACE (no message)'
+                const msg = cur?.response?.message || cur?.message || 'ERR_165 Remote AUDITLIST_REPLACE (проблемы с удаленным хранилищем: no message)'
                 if (!acc.includes(msg)) acc.push(msg)
                 return acc
               }, [])
               // @ts-ignore
               msgs.push(_msgs.join(', '))
-              // @ts-ignore
-              // msgs.push(data?._specialReport?.fixResponses[0]?.response?.message || 'ERR_165 Remote AUDITLIST_REPLACE')
-
               enqueueSnackbar(msgs.join(' / '), {
                 variant: 'error',
                 autoHideDuration: 30000,
@@ -223,7 +220,7 @@ const Logic = ({ room }: TLogicProps) => {
             break
           }
           case !!data?._specialReport?.fixResponse && !data._specialReport.fixResponse?.isOk: {
-            enqueueSnackbar(`${data._specialReport.fixResponse?.response.message || 'ERR_169 Remote AUDITLIST_REPLACE'}`, {
+            enqueueSnackbar(`${data._specialReport.fixResponse?.response?.message || 'ERR_169 Remote AUDITLIST_REPLACE (проблемы с удаленным хранилищем: no message)'}`, {
               variant: 'error',
               autoHideDuration: 30000,
               action: (snackbarId) => (
@@ -245,41 +242,26 @@ const Logic = ({ room }: TLogicProps) => {
     socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
 
     // NOTE: New 2023.11
-    // const onTodo2023Replace = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
-    //   groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE}`, items: [data] })
-    //   if (!!data.roomState) setStore({
-    //     common: {
-    //       roomState: data.roomState,
-    //     },
-    //   })
-    // }
-    // socket.on(NEvent.EServerOutgoing.TODO2023_REPLACE_ROOM_STATE, onTodo2023Replace)
+    const onTodo2023Replace2 = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
+      groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_REPLACE_ALL}`, items: [data] })
+      if (!!data.strapiTodos) dispatch(replaceStrapiTodo(data?.strapiTodos || []))
+    }
+    socket.on(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, onTodo2023Replace2)
     const onTodo2023ItemAdded = (data: { newTodo: NTodo.TTodo }) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_TODO_ITEM_ADDED}`, items: [data] })
-      if (!!data) {
-        console.log(data)
-        // vi.strapiTodoItems.push(data.newTodo)
-        dispatch(addStrapiTodo(data.newTodo))
-      }
+      if (!!data) dispatch(addStrapiTodo(data.newTodo))
     }
     socket.on(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_ADDED, onTodo2023ItemAdded)
 
     const onTodo2023ItemRemoved = (data: { removedTodoId: number }) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_TODO_ITEM_REMOVED}`, items: [data] })
-      if (!!data) {
-        console.log(data)
-        // vi.strapiTodoItems = vi.strapiTodoItems.filter(({ id }) => id !== data.removedTodoId)
-        dispatch(removeStrapiTodo(data.removedTodoId))
-      }
+      if (!!data) dispatch(removeStrapiTodo(data.removedTodoId))
     }
     socket.on(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_REMOVED, onTodo2023ItemRemoved)
 
     const onTodo2023ItemUpdated = (data: { updatedTodo: NTodo.TTodo }) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_TODO_ITEM_UPDATED}`, items: [data] })
-      if (!!data) {
-        console.log(data)
-        dispatch(updateStrapiTodo(data.updatedTodo))
-      }
+      if (!!data) dispatch(updateStrapiTodo(data.updatedTodo))
     }
     socket.on(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_UPDATED, onTodo2023ItemUpdated)
 
@@ -295,6 +277,7 @@ const Logic = ({ room }: TLogicProps) => {
       socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_ADDED, onTodo2023ItemAdded)
       socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_REMOVED, onTodo2023ItemRemoved)
       socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_UPDATED, onTodo2023ItemUpdated)
+      socket.off(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, onTodo2023Replace2)
       socket.off('connect_error', onConnectErrorListener)
       socket.off('reconnect', onReconnectListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)

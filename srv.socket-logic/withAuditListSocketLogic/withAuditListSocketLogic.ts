@@ -17,7 +17,7 @@ const delay = (ms = 200) => new Promise((res) => {
 export const withAuditListSocketLogic = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
     // 1.
-    socket.on(NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM, async ({ room }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM, cb: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB) => {
+    socket.on(NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM, ({ room }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM, cb: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB) => {
       // console.log(`-- CLIENT_CONNECT_TO_ROOM -> ${room} (${typeof room})`)
       // if (connectionsInstance.has(socket.id)) {
       //   socket.leave(connectionsInstance.get(socket.id))
@@ -55,35 +55,75 @@ export const withAuditListSocketLogic = (io: Socket) => {
       //   meta: any;
       // }>()
 
-      const t0 = performance.now()
-      const eHelperAudits = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/get-item`, {
+      // const t0 = performance.now()
+      universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/get-item`, {
         namespace: 'audit-list',
         tg_chat_id: room,
-      }).then((res) => res).catch((err) => err)
+      })
+        .then((res) => {
+          if (res.isOk && Array.isArray(res.response?.audits)) {
+            stateInstance.initRoomAudits({ room, audits: res.response?.audits })
+            io.to(socket.id).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+              room,
+              audits: stateInstance.get(room) || [],
+              // _specialReport: { eHelperAudits: res },
+            })
+          }
+        })
+        .catch((err) => err)
 
-      if (eHelperAudits.isOk && Array.isArray(eHelperAudits.response?.audits))
-        stateInstance.initRoomAudits({ room, audits: eHelperAudits.response?.audits })
-      else {
-        console.log('-ERR: eHelperAudits')
-        console.log(eHelperAudits)
-        console.log('-ERR')
-      }
+      // if (eHelperAudits.isOk && Array.isArray(eHelperAudits.response?.audits))
+      //   stateInstance.initRoomAudits({ room, audits: eHelperAudits.response?.audits })
+      // else {
+      //   console.log('-ERR: eHelperAudits')
+      //   console.log(eHelperAudits)
+      //   console.log('-ERR')
+      // }
 
-      const t1 = performance.now()
+      // const t1 = performance.now()
 
-      const t2 = performance.now()
-      const strapiTodos = await strapiHttpClient.gqlGetTodos({
+      // const t2 = performance.now()
+      strapiHttpClient.gqlGetTodos({
         tg_chat_id: room,
-      }).then((res) => res).catch((err) => err)
-      const t3 = performance.now()
+      })
+        .then((result) => {
+
+          if (!!result.res?.data && Array.isArray(result.res.data)) {
+            const strapiTodos = result.res.data.reduce((acc: any, item: any) => {
+              const normalizedTodo: NTodo.TTodo = {
+                id: Number(item.id),
+                label: item.attributes?.label,
+                description: item.attributes?.description,
+                status: item.attributes?.status,
+                priority: item.attributes?.priority,
+                tg_chat_id: Number(item.attributes?.tg_chat_id),
+                namespace: item.attributes?.namespace,
+              }
+              acc.push(normalizedTodo)
+              return acc
+            }, [])
+            io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, {
+              room,
+              strapiTodos,
+              // _specialReport: {
+              //   fixResponses,
+              // },
+            })
+          }
+        })
+        .catch((err) => err)
+
+      // NEvent.EServerOutgoing.TODO2023_REPLACE_ALL
+
+      // const t3 = performance.now()
 
       // console.log('--server-logic:strapiTodos')
       // console.log(strapiTodos)
       // console.log('--')
 
       if (!!cb) cb({
-        ok: strapiTodos.ok,
-        message: `BACK Socket report <- ${strapiTodos.message || 'No message'}`,
+        ok: true, // strapiTodos.ok,
+        message: 'BACK Socket report (no async)', // `BACK Socket report <- ${strapiTodos.message || 'No message'}`,
         data: {
           room,
           // message: `pages= ${pages.join(', ') || 'no yet'}`,
@@ -91,12 +131,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
           // -- NOTE: Init anything (server 1/2)
           audits: stateInstance.get(room) || [], // eHelperAudits.response?.audits || stateInstance.get(room) || [],
           _specialReport: {
-            perf: {
-              eHelperAudits: `${((t1 - t0) / 1000).toFixed(2)} sec`,
-              strapiTodos: `${((t3 - t2) / 1000).toFixed(2)} sec`,
-            },
-            strapiTodos,
-            eHelperAudits,
+            // perf: {
+            //   eHelperAudits: `${((t1 - t0) / 1000).toFixed(2)} sec`,
+            //   strapiTodos: `${((t3 - t2) / 1000).toFixed(2)} sec`,
+            // },
+            // strapiTodos,
+            // eHelperAudits,
             connectionsInstance: {
               counters: {
                 size: connectionsInstance.counters.size,
@@ -107,22 +147,23 @@ export const withAuditListSocketLogic = (io: Socket) => {
             }
           },
           // roomState: stateInstance._todo.get(room) || undefined,
-          strapiTodos:
-            !!strapiTodos.res?.data && Array.isArray(strapiTodos.res.data)
-              ? strapiTodos.res.data.reduce((acc: any, item: any) => {
-                const normalizedTodo: NTodo.TTodo = {
-                  id: Number(item.id),
-                  label: item.attributes?.label,
-                  description: item.attributes?.description,
-                  status: item.attributes?.status,
-                  priority: item.attributes?.priority,
-                  tg_chat_id: Number(item.attributes?.tg_chat_id),
-                  namespace: item.attributes?.namespace,
-                }
-                acc.push(normalizedTodo)
-                return acc
-              }, [])
-            : []
+          // strapiTodos:
+          //   !!strapiTodos.res?.data && Array.isArray(strapiTodos.res.data)
+          //     ? strapiTodos.res.data.reduce((acc: any, item: any) => {
+          //       const normalizedTodo: NTodo.TTodo = {
+          //         id: Number(item.id),
+          //         label: item.attributes?.label,
+          //         description: item.attributes?.description,
+          //         status: item.attributes?.status,
+          //         priority: item.attributes?.priority,
+          //         tg_chat_id: Number(item.attributes?.tg_chat_id),
+          //         namespace: item.attributes?.namespace,
+          //       }
+          //       acc.push(normalizedTodo)
+          //       return acc
+          //     }, [])
+          //   : []
+          strapiTodos: [],
           // --
         }})
     })
@@ -137,7 +178,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
           namespace: 'audit-list',
           tg_chat_id: room,
           audit,
-        }).then((res) => res).catch((err) => err)
+        })
+          .then((res) => res)
+          .catch((err) => ({
+            isOk: false,
+            message: err?.message || 'e-helper ERR /replace-audit-item'
+          }))
         fixResponses.push(fixResponse)
 
         await delay(200)
@@ -174,7 +220,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
             namespace: 'audit-list',
             tg_chat_id: room,
             auditId,
-          }).then((res) => res).catch((err) => err)
+          })
+            .then((res) => res)
+            .catch((err) => ({
+              isOk: false,
+              message: err?.message || 'e-helper ERR /replace-audit-item'
+            }))
 
           // NOTE: broadcast to all
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
@@ -207,7 +258,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
-            }).then((res) => res).catch((err) => err)
+            })
+              .then((res) => res)
+              .catch((err) => ({
+                isOk: false,
+                message: err?.message || 'e-helper ERR /replace-audit-item'
+              }))
           }
 
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
@@ -238,7 +294,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
-            }).then((res) => res).catch((err) => err)
+            })
+              .then((res) => res)
+              .catch((err) => ({
+                isOk: false,
+                message: err?.message || 'e-helper ERR /replace-audit-item'
+              }))
           }
 
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
@@ -269,7 +330,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
-            }).then((res) => res).catch((err) => err)
+            })
+              .then((res) => res)
+              .catch((err) => ({
+                isOk: false,
+                message: err?.message || 'e-helper ERR /replace-audit-item'
+              }))
           }
 
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
@@ -300,7 +366,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
-            }).then((res) => res).catch((err) => err)
+            })
+              .then((res) => res)
+              .catch((err) => ({
+                isOk: false,
+                message: err?.message || 'e-helper ERR /replace-audit-item'
+              }))
           }
 
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
@@ -332,7 +403,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
-            }).then((res) => res).catch((err) => err)
+            })
+              .then((res) => res)
+              .catch((err) => ({
+                isOk: false,
+                message: err?.message || 'e-helper ERR /replace-audit-item'
+              }))
           }
 
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
@@ -363,7 +439,12 @@ export const withAuditListSocketLogic = (io: Socket) => {
             namespace: 'audit-list',
             tg_chat_id: room,
             audit: newAudit,
-          }).then((res) => res).catch((err) => err)
+          })
+            .then((res) => res)
+            .catch((err) => ({
+              isOk: false,
+              message: err?.message || 'e-helper ERR /replace-audit-item'
+            }))
 
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,

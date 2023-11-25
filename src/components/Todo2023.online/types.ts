@@ -19,6 +19,7 @@ export namespace NEvent {
     TODO2023_TODO_ITEM_ADDED = 's:todo-2023:todo-item-added',
     TODO2023_TODO_ITEM_REMOVED = 's:todo-2023:todo-item-removed',
     TODO2023_TODO_ITEM_UPDATED = 's:todo-2023:todo-item-updated',
+    TODO2023_REPLACE_ALL = 's:todo-2023:replace-all',
   }
   
   export enum EServerIncoming {
@@ -139,6 +140,9 @@ export namespace NEventData {
     }
 
     // NOTE: New 2023.11
-    export type TTodo2023ReplaceRoomState = { roomState: NTodo.TRoomState; }
+    export type TTodo2023ReplaceRoomState = {
+      // roomState: NTodo.TRoomState;
+      strapiTodos: NTodo.TTodo[];
+    }
   }
 }
