@@ -1,5 +1,5 @@
 @font-face {
-  font-family: 'Montserrat';
+  font-family: Montserrat;
   font-style: normal;
   font-weight: 400;
   src: url('/static/fonts/Montserrat/Montserrat-Regular/Montserrat-Regular.eot');
@@ -9,7 +9,7 @@
     url('/static/fonts/Montserrat/Montserrat-Regular/Montserrat-Regular.ttf') format('truetype');
 }
 @font-face {
-  font-family: 'Montserrat';
+  font-family: Montserrat;
   font-style: normal;
   font-weight: 500;
   src: url('/static/fonts/Montserrat/Montserrat-Medium/Montserrat-Medium.eot');
@@ -29,7 +29,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: all 0.5s ease;
-  font-family: 'system-ui';
+}
+* {
+  font-family: Montserrat, system-ui;
 }
 article,
 aside,
@@ -71,13 +73,11 @@ a {
   background-color: transparent;
   -webkit-text-decoration-skip: objects;
   outline: none !important;
-  font-family: 'Montserrat';
 }
 /* a:hover {
   color: red;
 } */
 a.special-link {
-  font-family: 'Montserrat';
   text-transform: uppercase;
   font-size: 0.9em;
   letter-spacing: 0.1em;
@@ -109,7 +109,6 @@ mark {
 }
 small {
   font-size: 80%;
-  font-family: 'Montserrat';
 }
 sub,
 sup {
@@ -134,7 +133,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family: monospace, monospace;
+  font-family: system-ui, monospace;
   font-size: 0.9em;
 }
 figure {
@@ -153,7 +152,7 @@ textarea {
   font: inherit;
   margin: 0;
   border-radius: 6px;
-  font-family: 'Montserrat';
+  font-family: system-ui, Montserrat;
 }
 input,
 select,
@@ -287,7 +286,6 @@ h1 {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   */
-  font-family: Montserrat;
   font-weight: bold;
   text-rendering: optimizeLegibility;
   font-size: 2.25rem;
@@ -307,7 +305,6 @@ h2 {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   */
-  font-family: Montserrat;
   font-weight: bold;
   text-rendering: optimizeLegibility;
   font-size: 1.62671rem;
@@ -436,6 +433,7 @@ dd {
   margin-bottom: 1.45rem;
 }
 p {
+  font-family: Montserrat, system-ui;
   margin-left: 0;
   margin-right: 0;
   margin-top: 0;
@@ -727,7 +725,7 @@ pre tt:after {
   }
 }
 label {
-  font-family: 'Montserrat';
+  font-family: Montserrat;
 }
 .bold {
   font-weight: 500;
@@ -848,7 +846,6 @@ div.article-body > blockquote {
 
 /* TAGS */
 .the-tag {
-  font-family: Montserrat;
   opacity: 0.3;
 }
 .the-tag:hover {
@@ -1064,3 +1061,10 @@ div.article-body > blockquote {
   border-radius: 10px;
 }
 /* @media (max-width: 600px) { .badge {} } */
+
+.big-text {
+  text-shadow: 2px 2px lightgray, 4px 4px white, 6px 6px lightgray;
+}
+.big-text:hover {
+  text-shadow: 2px 2px #ff7373, 4px 4px white, 6px 6px #ff7373;
+}

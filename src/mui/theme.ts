@@ -46,11 +46,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px',
+        },
+      },
+    },
     MuiPaper: {
       styleOverrides: {
-        // Name of the slot
         root: {
-          // Some CSS
           borderRadius: '8px',
         },
       },

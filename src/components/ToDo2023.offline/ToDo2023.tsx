@@ -392,7 +392,8 @@ export const ToDo2023 = memo(() => {
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                gap: '16px',
+                gap: '24px',
+                // border: '1px solid red',
               }}
             >
               <span className='truncate'>AuditList</span>

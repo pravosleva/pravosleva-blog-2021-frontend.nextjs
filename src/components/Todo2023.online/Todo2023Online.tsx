@@ -856,7 +856,7 @@ const Logic = ({ room }: TLogicProps) => {
                     // aria-haspopup="true"
                     onClick={autoSyncOptionToggle}
                   >
-                    <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
+                    <SaveIcon color={isAutoSyncEnabled ? 'success' : 'disabled'} />
                   </IconButton>
                   {MemoizedMenu}
                 </div>
@@ -1021,8 +1021,9 @@ const Logic = ({ room }: TLogicProps) => {
                       // aria-expanded={isMenuOpened ? 'true' : undefined}
                       // aria-haspopup="true"
                       onClick={autoSyncOptionToggle}
+                      title='Autobackup to localStorage'
                     >
-                      <SyncIcon color={isAutoSyncEnabled ? 'success' : 'error'} />
+                      <SaveIcon color={isAutoSyncEnabled ? 'success' : 'disabled'} />
                     </IconButton>
                   )
                 }

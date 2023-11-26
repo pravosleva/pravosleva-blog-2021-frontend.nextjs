@@ -3,7 +3,7 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 // import classes from './ProjectsPage.module.scss'
 import { Stack, Typography } from '@mui/material'
-import { ProjectItem } from './components/ProjectItem3'
+import { ProjectItem } from './components/ProjectItem4'
 import { BreadCrumbs } from '../BreadCrumbs'
 import { withTranslator } from '~/hocs/withTranslator'
 
@@ -71,7 +71,11 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
   
   const [headerText, setHeaderText] = useState<string>('')
   useEffect(() => {
-    setHeaderText(`${getRandomValue({ items: ['🐱', '😸', '😼', '🐾'] })} ${getRandomValue({ items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'] })}`)
+    setHeaderText(`${getRandomValue({
+      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳'],
+    })} ${getRandomValue({
+      items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'],
+    })}`)
   }, [])
 
   return (

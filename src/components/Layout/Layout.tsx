@@ -1,4 +1,4 @@
-// import { useMemo } from 'react'
+import { useMemo } from 'react'
 import NextNProgress from 'nextjs-progressbar'
 import clsx from 'clsx'
 import DesktopHeader from './components/Header/Desktop'
@@ -13,7 +13,7 @@ type TProps = {
 }
 
 export const Layout = ({ children, noFooter }: TProps) => {
-  // const fullYear = useMemo(() => new Date().getFullYear(), [])
+  const fullYear = useMemo(() => new Date().getFullYear(), [])
   const styles = useStyles()
 
   return (
@@ -39,7 +39,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
             >
               <ResponsiveBlock isLimited isPaddedMobile>
                 <div style={{ lineHeight: '70px' }}>
-                  <span>© 2018</span>
+                  <span>© 2018 – {fullYear}</span>
                 </div>
               </ResponsiveBlock>
             </footer>
