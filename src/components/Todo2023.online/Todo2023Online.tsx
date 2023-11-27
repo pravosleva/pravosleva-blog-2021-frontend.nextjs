@@ -101,7 +101,7 @@ const Logic = ({ room }: TLogicProps) => {
     // -- NOTE: Disable anyway!
     dispatch(autoSyncDisable())
     // --
-
+  
     const socket: Socket = io(NEXT_APP_SOCKET_API_ENDPOINT, {
       reconnection: true,
       transports: ['websocket', 'polling'],
@@ -282,6 +282,7 @@ const Logic = ({ room }: TLogicProps) => {
       socket.off('reconnect', onReconnectListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
       socket.off('connect', onConnectListener)
+      if (!!socketRef.current) socketRef.current.close()
     }
   }, [router.query.tg_chat_id])
 

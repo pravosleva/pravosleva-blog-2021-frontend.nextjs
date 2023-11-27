@@ -72,7 +72,7 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
   const [headerText, setHeaderText] = useState<string>('')
   useEffect(() => {
     setHeaderText(`${getRandomValue({
-      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳'],
+      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳', '⛄', '☃️'],
     })} ${getRandomValue({
       items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'],
     })}`)

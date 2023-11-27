@@ -16,14 +16,15 @@ $widget-width-mobile: calc(100vw - 16px);
 $widget-height-min-mobile: 100dvh;
 $widget-height-max-mobile: 100dvh;
 
-$widget-toggler-width-mobile: 32px;
+// $widget-toggler-width-mobile: 32px;
+$widget-toggler-width-mobile: 0px;
 
 .wrapper {
+  // border: 1px dashed red;
   // background-color: #fff;
 
   // overflow-x: hidden;
   box-sizing: border-box;
-  // border: 1px solid red;
   border-radius: 0 16px 16px 0;
 
   position: fixed;
@@ -37,10 +38,11 @@ $widget-toggler-width-mobile: 32px;
   box-shadow: 0 5px 10px 0px rgba(7, 7, 7, 0.3);
 }
 .internalSpace {
+  // border: 1px dashed red;
+
   box-sizing: border-box;
   // padding: 16px;
   width: 100%;
-  // border: 1px solid red;
 }
 .toggler {
   box-sizing: border-box;

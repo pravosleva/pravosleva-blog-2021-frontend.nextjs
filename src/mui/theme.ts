@@ -60,6 +60,13 @@ const theme = createTheme({
         },
       },
     },
+    // MuiInput: {
+    //   styleOverrides: {
+    //     root: {
+    //       borderRadius: '8px',
+    //     },
+    //   },
+    // },
     // MuiTextField: {
     //   styleOverrides: {
     //     root: {

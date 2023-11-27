@@ -189,6 +189,7 @@ export const Logic = () => {
       socket.off('reconnect_attempt', onReconnectAttemptListener)
       socket.off('connect', onConnectListener)
       // -
+      if (!!socketRef.current) socketRef.current.close()
     }
   }, [])
   return (
