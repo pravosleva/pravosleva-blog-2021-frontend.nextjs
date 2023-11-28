@@ -18,23 +18,29 @@ export const axiosUniversalCatch = (err: {
     baseURL: string; // 'http://localhost:1337/graphql',
     // 'axios-retry': { retryCount: 10, lastRequestTime: 1700484271813 }
   };
-  isAxiosError: boolean
-  response: { request: { status: any; statusText: any } }
-  request: any
-  getErrorMsg: () => any
-  message: any
+  isAxiosError: boolean;
+  response: {
+    status: number;
+    request: { status: any; statusText: any };
+  };
+  request: any;
+  getErrorMsg: () => any;
+  message: any;
 }): {
   isOk: boolean;
   response?: any;
   message?: string;
 } => {
   let commonMsg = err?.message || 'Unknown ERR'
+
+  // if (!err.response?.status) console.log(err)
+
   switch (true) {
     case err.isAxiosError:
-      commonMsg = `${err?.config?.baseURL || 'No config?.baseURL'}${err.config?.url || 'No config?.url'}`
+      commonMsg = `${err?.config?.baseURL || 'No config?.baseURL'}${err.config.url}`
       try {
         if (!!err.response) {
-          throw new HttpError(err.response?.request?.status, err.response?.request?.statusText)
+          throw new HttpError(err.response?.status, commonMsg) // err.response?.request?.statusText)
         } else if (!!err.request)
           throw new NetworkError(`${commonMsg} -> Client never received a response, or request never left`)
         else throw new UniversalError(`${commonMsg} -> Request failed`)

@@ -27,11 +27,13 @@ import { NTodo } from '~/components/audit-helper'
 // import WarningIcon from '@mui/icons-material/Warning'
 // import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
+// import BorderColorIcon from '@mui/icons-material/BorderColor'
+// import EditIcon from '@mui/icons-material/Edit'
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 import { sort } from '~/utils/sort-array-objects@3.0.0'
 // import { useWindowSize } from '~/hooks/useWindowSize'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
-import HourglassBottomIcon from '@mui/icons-material/HourglassBottom'
 import { useCompare } from '~/hooks/useDeepEffect'
 
 type TProps = {
@@ -52,6 +54,7 @@ export const TodoConnected = ({
   onUpdateTodo,
 }: TProps) => {
   const [isConnected] = useStore((store: TSocketMicroStore) => store.isConnected)
+
   // const [roomState, _setStore] = useStore((store) => store.common.roomState)
   const strapiTodos = useSelector((store: IRootState) => store.todo2023NotPersisted.strapiTodos || [])
   const temporaryNamespaces = useSelector((store: IRootState) => store.todo2023.temporaryNamespaces || [])
@@ -83,7 +86,9 @@ export const TodoConnected = ({
     else initNamespaceForCreateRef.current = ''
     setEditMode('todo')
   }, [setEditMode])
-  // const handleOpenEditTodoDialog = useCallback(() => {})
+  const handleOpenEditTodoDialog = useCallback(() => {
+    setEditMode('todo:edit')
+  }, [setEditMode])
   const handleCloseModal = useCallback(() => {
     setEditMode(null)
   }, [setEditMode])
@@ -116,7 +121,14 @@ export const TodoConnected = ({
     console.log(err)
   }, [])
 
-  const handleUpdateTodo = useCallback(({ newPriority, newStatus }: { newPriority?: number; newStatus?: NTodo.EStatus }) => ({ todoId, namespace, todo }: { todoId: number; namespace: string; todo: NTodo.TItem; }) => {
+  const handleUpdateTodo = useCallback(({ newPriority, newStatus }: {
+    newPriority?: number;
+    newStatus?: NTodo.EStatus;
+  }) => ({ todoId, namespace, todo }: {
+    todoId: number;
+    namespace: string;
+    todo: NTodo.TItem;
+  }) => {
     if (newPriority === todo.priority || newStatus === todo.status) {
       return
     }
@@ -156,6 +168,7 @@ export const TodoConnected = ({
             aria-expanded={isMenuOpened ? 'true' : undefined}
             aria-haspopup="true"
             onClick={handleMenuOpen}
+            disabled={!isConnected || !isOneTimePasswordCorrect}
           >
             <MoreVertIcon />
           </IconButton>
@@ -206,6 +219,9 @@ export const TodoConnected = ({
     // roomState,
     handleMenuClose,
     anchorEl,
+
+    isOneTimePasswordCorrect,
+    isConnected,
   ])
 
   const memoizedNamespacesList = useMemo<{
@@ -227,7 +243,7 @@ export const TodoConnected = ({
       if (!isExistsInAcc) {
         switch (true) {
           case localItems.length > 0:
-            acc.push({ label: cur.namespace, value: cur.namespace, hasDividerAfter: true })
+            acc.push({ label: cur.namespace, value: cur.namespace, /* hasDividerAfter: true */ })
             break
           default:
             acc.push({ label: cur.namespace, value: cur.namespace })
@@ -242,6 +258,14 @@ export const TodoConnected = ({
       ...localItems,
     ]
   }, [useCompare([strapiTodos, temporaryNamespaces])])
+
+  // - NOTE: Edit todo item
+  const [editedTodo, setEditedTodo] = useState<NTodo.TTodo | null>(null)
+  const openEditTodo = useCallback((todo: NTodo.TTodo) => {
+    setEditedTodo(todo)
+    handleOpenEditTodoDialog()
+  }, [setEditedTodo, handleOpenEditTodoDialog])
+  // -
 
   return (
     <>
@@ -268,7 +292,7 @@ export const TodoConnected = ({
       <AddAnythingNewDialog
         key={getInitNamespaceForCreate()}
         isOpened={editMode === 'todo'}
-        label='Add TODO'
+        label='Add'
         cfg={{
           namespace: {
             type: 'creatable-autocomplete',
@@ -309,6 +333,68 @@ export const TodoConnected = ({
         }}
       />
 
+      {
+        !!editedTodo && (
+          <AddAnythingNewDialog
+            key={`${editedTodo.id}-${editedTodo.updatedAt}`}
+            isOpened={editMode === 'todo:edit' && !!editedTodo}
+            label={`Edit #${editedTodo.id}`}
+            cfg={{
+              namespace: {
+                type: 'creatable-autocomplete',
+                label: 'Выберите Namespace',
+                // list: Object.keys(roomState || {}).map((value) => ({ value, label: value })),
+                list: memoizedNamespacesList,
+                inputId: 'namespaces-list',
+                placeholder: '',
+                defaultValue: editedTodo?.namespace,
+                // reactHookFormOptions: { required: true, maxLength: 100, minLength: 3 },
+                isRequired: true,
+                validate: (val: any) => !!val,
+              },
+              todoLabel: {
+                type: 'text',
+                label: 'Название',
+                inputId: 'todo-name',
+                placeholder: 'Название',
+                defaultValue: editedTodo?.label,
+                reactHookFormOptions: { required: true, maxLength: 300, minLength: 3 },
+                isRequired: true,
+                validate: (val: any) => !!val,
+              },
+              description: {
+                type: 'text',
+                label: 'Description',
+                inputId: 'todo-description',
+                placeholder: '',
+                defaultValue: editedTodo?.description,
+                reactHookFormOptions: { required: false, maxLength: 300, minLength: 3 },
+                isRequired: false,
+                validate: (val: any) => !!val,
+              },
+            }}
+            cb={{
+              onClose: handleCloseModal,
+              onError: handleErr,
+              onSuccess: (val) => {
+                // console.log(val)
+                handleUpdateTodo({})({
+                  todoId: editedTodo.id,
+                  namespace: val.namespace,
+                  todo: {
+                    label: val.todoLabel,
+                    description: val.description,
+                    status: editedTodo.status,
+                    priority: editedTodo.priority,
+                  }
+                })
+                return Promise.resolve(val)
+              },
+            }}
+          />
+        )
+      }
+
       <div
         className={classes.stack}
       >
@@ -338,11 +424,7 @@ export const TodoConnected = ({
               )
             : <div>Connecting...</div>
           }
-          {
-            isConnected
-            ? isOneTimePasswordCorrect && MemoizedMenu
-            : <HourglassBottomIcon fontSize='small' />
-          }
+          {MemoizedMenu}
         </div>
 
         {/*
@@ -392,9 +474,9 @@ export const TodoConnected = ({
                     <TodoListItem
                       todo={todo}
                       key={todo.id}
-                      controls={[
+                      controls={(isConnected && isOneTimePasswordCorrect) ? [
                         {
-                          id: '3',
+                          id: `remove-todo-${todo.id}`,
                           Icon: <CloseIcon
                             fontSize='small'
                             style={{ color: InvertedStatusColors[todo.status] }}
@@ -405,7 +487,18 @@ export const TodoConnected = ({
                             if (isConfirmed) onRemoveTodo({ todoId: todo.id, namespace: todo.namespace })
                           },
                         },
-                      ]}
+                        {
+                          id: `edit-todo-${todo.id}`,
+                          Icon: <DriveFileRenameOutlineIcon
+                            fontSize='small'
+                            style={{
+                              color: InvertedStatusColors[todo.status],
+                              // fontSize: '16px',
+                            }}
+                          />,
+                          onClick: () => openEditTodo(todo),
+                        }
+                      ] : []}
                       onStarUpdate={(newPriority: number) => {
                         handleUpdateTodo({ newPriority })({ todoId: todo.id, namespace: todo.namespace, todo })
                       }}

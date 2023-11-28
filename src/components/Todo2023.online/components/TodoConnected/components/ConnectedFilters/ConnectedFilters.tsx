@@ -18,6 +18,7 @@ import {
   // ButtonPropsVariantOverrides,
   ButtonPropsColorOverrides,
   // ButtonPropsSizeOverrides,
+  Badge,
 } from '@mui/material'
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
@@ -27,6 +28,7 @@ import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import ClearIcon from '@mui/icons-material/Clear'
 import { red } from '@mui/material/colors'
+import { useCompare } from '~/hooks/useDeepEffect'
 
 export const StatusIcons: {
   [key in NTodo.EStatus]: React.ReactNode;
@@ -86,6 +88,27 @@ export const ConnectedFilters = () => {
     || namespacesFilter.length > 0
   ), [todoPriorityFilter, todoStatusFilter, namespacesFilter])
 
+  const filteredCounter = useMemo<number>(() => {
+    if (!todoPriorityFilter && !todoStatusFilter && namespacesFilter.length === 0) {
+      return strapiTodos.length
+    } else return strapiTodos.reduce((acc, cur) => {
+
+      let isValid = true
+      switch (true) {
+        case typeof todoPriorityFilter === 'number' && cur.priority !== todoPriorityFilter:
+        case !!todoStatusFilter && todoStatusFilter !== cur.status:
+        case namespacesFilter.length > 0 && !namespacesFilter.includes(cur.namespace):
+          isValid = false
+          break
+        default:
+          break
+      }
+      if (isValid) acc += 1
+
+      return acc
+    }, 0)
+  }, [todoPriorityFilter, todoStatusFilter, useCompare([namespacesFilter, strapiTodos])])
+
   return (
     <div
       style={{
@@ -95,27 +118,40 @@ export const ConnectedFilters = () => {
         gap: '8px',
       }}
     >
-      <IconButton
-        aria-label='reset all filtes'
-        disabled={!hasAnyFilter}
-        // color=
-        onClick={handleClearAllFilters}
-        size='small'
+      <Badge
+        badgeContent={filteredCounter}
+        color={!!hasAnyFilter ? 'primary' : 'primary'}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        sx={{
+          mr: 1,
+        }}
+        showZero
       >
-        {
-          hasAnyFilter ? (
-            <FilterAltOffIcon
-              color='primary'
-              fontSize='small'
-            />
-          ) : (
-            <FilterAltIcon
-              color='disabled'
-              fontSize='small'
-            />
-          )
-        }
-      </IconButton>
+        <IconButton
+          aria-label='reset all filtes'
+          disabled={!hasAnyFilter}
+          // color=
+          onClick={handleClearAllFilters}
+          size='small'
+        >
+          {
+            hasAnyFilter ? (
+              <FilterAltOffIcon
+                color='primary'
+                fontSize='small'
+              />
+            ) : (
+              <FilterAltIcon
+                color='disabled'
+                fontSize='small'
+              />
+            )
+          }
+        </IconButton>
+      </Badge>
       
       <div
         style={{
@@ -150,7 +186,7 @@ export const ConnectedFilters = () => {
               label: 'Off',
               value: null,
               ItemIcon: <ClearIcon />,
-              hasDividerAfter: true,
+              // hasDividerAfter: true,
             },
             {
               label: '1',
@@ -266,7 +302,7 @@ export const ConnectedFilters = () => {
               label: 'All',
               value: null,
               ItemIcon: <ClearIcon />,
-              hasDividerAfter: true,
+              // hasDividerAfter: true,
             },
             {
               label: 'Info',
@@ -327,6 +363,7 @@ export const ConnectedFilters = () => {
             // .filter((val => !namespacesFilter.includes(val)))
             .map((value) => ({ label: value, value }))
         }
+        // badgeCounter={namespacesFilter.length}
       />
     </div>
   )

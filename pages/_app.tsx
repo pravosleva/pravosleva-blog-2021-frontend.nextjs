@@ -95,23 +95,15 @@ function AppWithRedux(props: MyAppProps) {
       </Head>
       {
         isServer ? (
-          <SnackbarProvider
-            maxSnack={3}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
-            }}
-          >
-            <CacheProvider value={emotionCache}>
-              <SCThemeProvider theme={Theme}>
-                <ThemeProvider theme={theme}>
-                  {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-                  <CssBaseline />
-                  <Component {...pageProps} />
-                </ThemeProvider>
-              </SCThemeProvider>
-            </CacheProvider>
-          </SnackbarProvider>
+          <CacheProvider value={emotionCache}>
+            <SCThemeProvider theme={Theme}>
+              <ThemeProvider theme={theme}>
+                {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                <CssBaseline />
+                <Component {...pageProps} />
+              </ThemeProvider>
+            </SCThemeProvider>
+          </CacheProvider>
         ) : (
           <PersistGate
             // @ts-ignore
@@ -125,7 +117,7 @@ function AppWithRedux(props: MyAppProps) {
               }}
               style={{
                 borderRadius: '8px',
-                maxWidth: '350px',
+                maxWidth: '400px',
               }}
             >
               <CacheProvider value={emotionCache}>

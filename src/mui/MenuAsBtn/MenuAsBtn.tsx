@@ -1,7 +1,10 @@
-import { useState, useCallback, Fragment } from 'react'
-import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
+import { useState, useCallback } from 'react'
+import {
+  Badge,
+  Button,
+  Menu,
+  MenuItem,
+} from '@mui/material'
 import { OverridableStringUnion } from '@mui/types'
 import {
   ButtonPropsVariantOverrides,
@@ -11,7 +14,7 @@ import {
   Typography,
 } from '@mui/material'
 import Fade from '@mui/material/Fade'
-import Divider from '@mui/material/Divider'
+// import Divider from '@mui/material/Divider'
 
 type TItem = {
   label: string;
@@ -37,6 +40,7 @@ type TProps = {
   items: TItem[];
   onSelect: (item: TItem) => void;
   isDisabled?: boolean;
+  badgeCounter?: number;
 }
 
 export const MenuAsBtn = ({
@@ -45,6 +49,7 @@ export const MenuAsBtn = ({
   items,
   onSelect,
   isDisabled,
+  badgeCounter,
 }: TProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -61,21 +66,43 @@ export const MenuAsBtn = ({
 
   return (
     <>
-      <Button
-        id="demo-positioned-button"
-        aria-controls={open ? 'demo-positioned-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-        color={btn.color}
-        variant={btn.variant}
-        startIcon={btn.startIcon}
-        endIcon={btn.endIcon}
-        size={btn.size}
-        disabled={isDisabled}
-      >
-        {btnLabel.length > 7 ? `${btnLabel.substring(0, 7)}...` : btnLabel}
-      </Button>
+      {
+        !!badgeCounter ? (
+          <Badge badgeContent={badgeCounter} color="primary">
+            <Button
+              id="demo-positioned-button"
+              aria-controls={open ? 'demo-positioned-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              onClick={handleClick}
+              color={btn.color}
+              variant={btn.variant}
+              startIcon={btn.startIcon}
+              endIcon={btn.endIcon}
+              size={btn.size}
+              disabled={isDisabled}
+            >
+              {btnLabel.length > 7 ? `${btnLabel.substring(0, 7)}...` : btnLabel}
+            </Button>
+          </Badge>
+        ) : (
+          <Button
+            id="demo-positioned-button"
+            aria-controls={open ? 'demo-positioned-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+            color={btn.color}
+            variant={btn.variant}
+            startIcon={btn.startIcon}
+            endIcon={btn.endIcon}
+            size={btn.size}
+            disabled={isDisabled}
+          >
+            {btnLabel.length > 7 ? `${btnLabel.substring(0, 7)}...` : btnLabel}
+          </Button>
+        )
+      }
       <Menu
         id="demo-positioned-menu"
         aria-labelledby="demo-positioned-button"
@@ -96,27 +123,48 @@ export const MenuAsBtn = ({
         TransitionComponent={Fade}
       >
         {
-          items.map(({ value, label, ItemIcon, hasDividerAfter }, i) => {
+          items.map(({
+            value, label, ItemIcon,
+            // hasDividerAfter,
+          }, i) => {
             // const isSelected = label === btnLabel
+            // if (hasDividerAfter) return (
+            //   <Fragment key={`${label}-${i}`}>
+            //     <MenuItem
+            //       onClick={handleSelect({ value, label })}
+            //     >
+            //       {
+            //         !!ItemIcon
+            //         ? (
+            //           <>
+            //             <ListItemIcon>{ItemIcon}</ListItemIcon>
+            //             <Typography variant="inherit">{label}</Typography>
+            //           </>
+            //         ) : (
+            //           <span className='truncate'>{label}</span>
+            //         )
+            //       }
+            //     </MenuItem>
+            //     {hasDividerAfter && <Divider />}
+            //   </Fragment>
+            // )
             return (
-              <Fragment key={`${label}-${i}`}>
-                <MenuItem
-                  onClick={handleSelect({ value, label })}
-                >
-                  {
-                    !!ItemIcon
-                    ? (
-                      <>
-                        <ListItemIcon>{ItemIcon}</ListItemIcon>
-                        <Typography variant="inherit">{label}</Typography>
-                      </>
-                    ) : (
-                      <span className='truncate'>{label}</span>
-                    )
-                  }
-                </MenuItem>
-                {hasDividerAfter && <Divider />}
-              </Fragment>
+              <MenuItem
+                onClick={handleSelect({ value, label })}
+                key={`${label}-${i}`}
+              >
+                {
+                  !!ItemIcon
+                  ? (
+                    <>
+                      <ListItemIcon>{ItemIcon}</ListItemIcon>
+                      <Typography variant="inherit">{label}</Typography>
+                    </>
+                  ) : (
+                    <span className='truncate'>{label}</span>
+                  )
+                }
+              </MenuItem>
             )
           })
         }

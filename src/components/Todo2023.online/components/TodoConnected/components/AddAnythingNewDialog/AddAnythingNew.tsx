@@ -191,6 +191,7 @@ export const AddAnythingNewDialog = ({
                           setAuxState({ [key]: item?.value })
                         }
                       }}
+                      defaultValue={!!cfg[key].defaultValue ? { value: String(cfg[key].defaultValue), label: String(cfg[key].defaultValue) } : undefined}
                     />
                   )
                 default:

@@ -68,7 +68,9 @@ export const withAuditListSocketLogic = (io: Socket) => {
               audits: stateInstance.get(room) || [],
               // _specialReport: { eHelperAudits: res },
             })
-          }
+          } else io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
+            message: `BACK Socket report <- ${res.message || res.response?.message || 'Не удалось получить список audits (текст ошибки не получен)'}`,
+          })
         })
         .catch((err) => err)
 
@@ -87,7 +89,6 @@ export const withAuditListSocketLogic = (io: Socket) => {
         tg_chat_id: room,
       })
         .then((result) => {
-
           if (!!result.res?.data && Array.isArray(result.res.data)) {
             const strapiTodos = result.res.data.reduce((acc: any, item: any) => {
               const normalizedTodo: NTodo.TTodo = {
@@ -98,6 +99,9 @@ export const withAuditListSocketLogic = (io: Socket) => {
                 priority: item.attributes?.priority,
                 tg_chat_id: Number(item.attributes?.tg_chat_id),
                 namespace: item.attributes?.namespace,
+
+                createdAt: item.attributes.createdAt,
+                updatedAt: item.attributes.updatedAt,
               }
               acc.push(normalizedTodo)
               return acc
@@ -105,13 +109,21 @@ export const withAuditListSocketLogic = (io: Socket) => {
             io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, {
               room,
               strapiTodos,
-              // _specialReport: {
-              //   fixResponses,
-              // },
+              _specialReport: {
+                // fixResponses,
+                originalData: result.res?.data,
+              },
             })
           }
+          else io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
+            message: `BACK Socket report <- ${result?.message || 'Не удалось получить список todo (текст ошибки не получен)'}`,
+          })
         })
-        .catch((err) => err)
+        .catch((err) => {
+          io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
+            message: `BACK Socket report2 <- ${err?.message || 'Не удалось получить список todo (текст ошибки не получен)'}`,
+          })
+        })
 
       // NEvent.EServerOutgoing.TODO2023_REPLACE_ALL
 
@@ -542,6 +554,8 @@ export const withAuditListSocketLogic = (io: Socket) => {
                   status: e.data?.attributes.status,
                   tg_chat_id: e.data?.attributes.tg_chat_id,
                   priority: e.data?.attributes.priority,
+                  createdAt: e.data?.attributes.createdAt,
+                  updatedAt: e.data?.attributes.updatedAt,
                 }
               }
             )
@@ -591,6 +605,8 @@ export const withAuditListSocketLogic = (io: Socket) => {
               status: e.updatedTodo.attributes.status,
               namespace: e.updatedTodo.attributes.namespace,
               tg_chat_id: Number(e.updatedTodo.attributes.tg_chat_id),
+              createdAt: e.updatedTodo.attributes.createdAt,
+              updatedAt: e.updatedTodo.attributes.updatedAt,
             },
           })
           else throw new Error(e.message || 'ERR.242')

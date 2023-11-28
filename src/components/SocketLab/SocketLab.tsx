@@ -46,7 +46,7 @@ export const Logic = () => {
           onClick={() => closeSnackbar(snackbarId)}
           size='small'
         >
-          <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+          <CloseIcon fontSize='small' style={{ color: '#fff' }} />
         </IconButton>
       ),
     })

@@ -51,18 +51,22 @@ const CustomAlert = ({ header, description, alert, controls }: {
       severity={alert.severity}
       sx={alert.sx}
       action={!!controls && (
-        controls.map(({ id, Icon, onClick, isDisabled }) => (
-          <IconButton
-            key={id}
-            aria-label={`action ${id}`}
-            disabled={isDisabled}
-            // color=''
-            onClick={onClick}
-            size='small'
-          >
-            {Icon}
-          </IconButton>
-        ))
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {
+            controls.map(({ id, Icon, onClick, isDisabled }) => (
+              <IconButton
+                key={id}
+                aria-label={`action ${id}`}
+                disabled={isDisabled}
+                // color=''
+                onClick={onClick}
+                size='small'
+              >
+                {Icon}
+              </IconButton>
+            ))
+          }
+        </div>
       )}
     >
       {
@@ -267,6 +271,8 @@ export const TodoListItem = ({
                   borderLeft: '5px solid lightgray',
                   borderRight: '5px solid lightgray',
                   borderRadius: '8px',
+                  backgroundColor: '#fff',
+                  fontWeight: 'bold',
                 }
               }}
             />

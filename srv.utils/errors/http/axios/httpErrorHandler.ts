@@ -6,11 +6,13 @@ export const httpErrorHandler = (obj: AxiosResponse): any | HttpError => {
     return obj.data
   } else {
     // console.log(obj.request.res)
-    switch (true) {
-      case !!obj?.data:
-        throw new HttpError(obj.request?.res?.statusCode, obj?.data?.msg || obj.request?.res?.statusMessage)
-      default:
-        throw new HttpError(obj.request?.res?.statusCode, obj.request?.res?.statusMessage)
-    }
+    // console.log(obj?.config.url)
+    const msgs = []
+    if (!!obj?.config?.url) msgs.push(obj.config.url)
+    if (!!obj?.data?.msg) msgs.push(obj.data.msg)
+    else if (!!obj?.request?.res?.statusMessage) msgs.push(obj.request.res.statusMessage)
+
+    const commonMsg = msgs.join(' • ')
+    throw new HttpError(obj.request?.res?.statusCode || obj.status, commonMsg)
   }
 }

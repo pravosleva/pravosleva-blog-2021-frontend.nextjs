@@ -20,6 +20,8 @@ export namespace NEvent {
     TODO2023_TODO_ITEM_REMOVED = 's:todo-2023:todo-item-removed',
     TODO2023_TODO_ITEM_UPDATED = 's:todo-2023:todo-item-updated',
     TODO2023_REPLACE_ALL = 's:todo-2023:replace-all',
+
+    ERR_MESSAGE = 's:err-message:common',
   }
   
   export enum EServerIncoming {

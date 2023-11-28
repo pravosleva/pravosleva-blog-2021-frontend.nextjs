@@ -134,7 +134,7 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
             <CircularWithValueLabel progressValue={completeJobsPercentage} />
           </div>
 
-          <div>{audit.name}</div>
+          <div style={{ fontWeight: 'bold' }}>{audit.name}</div>
           
           <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row' }}>
             <>

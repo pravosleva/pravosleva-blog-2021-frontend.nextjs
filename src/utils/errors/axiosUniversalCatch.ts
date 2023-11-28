@@ -16,18 +16,24 @@ export const axiosUniversalCatch = (err: {
     // 'axios-retry': { retryCount: 10, lastRequestTime: 1700484271813 }
   };
   isAxiosError: boolean;
-  response: { request: { status: any; statusText: any } };
+  response: {
+    status: number;
+    request: { status: any; statusText: any };
+  };
   request: any;
   getErrorMsg: () => any;
   message: any;
 }): NResponseLocal.IResultSuccess | NResponseLocal.IResultError => {
   let commonMsg = err?.message || 'Unknown ERR'
+
   switch (true) {
-    case err.isAxiosError:
-      commonMsg = `${err?.config?.baseURL}${err?.config?.url}`
+    case err.isAxiosError: {
+      const msgs = [`${err?.config?.baseURL}${err?.config?.url}`]
+      if (err.response?.request?.statusText) msgs.push(err.response?.request?.statusText)
+
       try {
         if (!!err.response) {
-          throw new HttpError(err.response.request.status, err.response.request.statusText)
+          throw new HttpError(err.response.request.status, msgs.join(' • '))
         } else if (!!err.request)
           throw new NetworkError(`${commonMsg} -> Client never received a response, or request never left`)
         else throw new UniversalError(`${commonMsg} -> Request failed`)
@@ -41,6 +47,7 @@ export const axiosUniversalCatch = (err: {
     // Доп. обрабочики (помимо apiResponseErrorHandler) будут нужны,
     // если настройки options будут позволять провалиться дальше: axios по умолчанию все перехватит сам
     // (см. обработку выше)
+    }
     case err instanceof NetworkError:
     case err instanceof HttpError:
     case err instanceof ApiError:

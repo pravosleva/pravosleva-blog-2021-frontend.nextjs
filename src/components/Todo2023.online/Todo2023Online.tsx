@@ -137,7 +137,7 @@ const Logic = ({ room }: TLogicProps) => {
               onClick={() => closeSnackbar(snackbarId)}
               size='small'
             >
-              <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+              <CloseIcon fontSize='small' style={{ color: '#fff' }} />
             </IconButton>
           ),
         })
@@ -191,7 +191,7 @@ const Logic = ({ room }: TLogicProps) => {
                     onClick={() => { closeSnackbar(snackbarId) }}
                     size='small'
                   >
-                    <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+                    <CloseIcon fontSize='small' style={{ color: '#fff' }} />
                   </IconButton>
                 ),
               })
@@ -211,7 +211,7 @@ const Logic = ({ room }: TLogicProps) => {
                     onClick={() => { closeSnackbar(snackbarId) }}
                     size='small'
                   >
-                    <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+                    <CloseIcon fontSize='small' style={{ color: '#fff' }} />
                   </IconButton>
                 ),
               })
@@ -228,7 +228,7 @@ const Logic = ({ room }: TLogicProps) => {
                   onClick={() => closeSnackbar(snackbarId)}
                   size='small'
                 >
-                  <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+                  <CloseIcon fontSize='small' style={{ color: '#fff' }} />
                 </IconButton>
               ),
             })
@@ -270,6 +270,25 @@ const Logic = ({ room }: TLogicProps) => {
       setStore({ isConnected: false })
     }
     socket.on('disconnect', onDisonnectListener)
+
+    const onExternalApiErr = (data: { message: string }) => {
+      // groupLog({ spaceName: '-- disconnect', items: ['no data'] })
+      // setStore({ isConnected: false })
+      enqueueSnackbar(data.message, {
+        variant: 'error',
+        autoHideDuration: 30000,
+        action: (snackbarId) => (
+          <IconButton
+            onClick={() => { closeSnackbar(snackbarId) }}
+            size='small'
+          >
+            <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+          </IconButton>
+        ),
+      })
+    }
+    socket.on(NEvent.EServerOutgoing.ERR_MESSAGE, onExternalApiErr)
+
     return () => {
       socket.off('disconnect', onDisonnectListener)
       socket.off(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
@@ -278,6 +297,7 @@ const Logic = ({ room }: TLogicProps) => {
       socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_REMOVED, onTodo2023ItemRemoved)
       socket.off(NEvent.EServerOutgoing.TODO2023_TODO_ITEM_UPDATED, onTodo2023ItemUpdated)
       socket.off(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, onTodo2023Replace2)
+      socket.off(NEvent.EServerOutgoing.ERR_MESSAGE, onExternalApiErr)
       socket.off('connect_error', onConnectErrorListener)
       socket.off('reconnect', onReconnectListener)
       socket.off('reconnect_attempt', onReconnectAttemptListener)
@@ -472,7 +492,7 @@ const Logic = ({ room }: TLogicProps) => {
               onClick={() => { closeSnackbar(snackbarId) }}
               size='small'
             >
-              <CloseIcon fontSize='small' style={{ color: '#fff' }} />,
+              <CloseIcon fontSize='small' style={{ color: '#fff' }} />
             </IconButton>
           ),
         })
@@ -609,17 +629,8 @@ const Logic = ({ room }: TLogicProps) => {
   // -- NOTE: Optional autosync with persist
   const isAutoSyncEnabled = useSelector((state: IRootState) => state.todo2023.online.isAutoSyncWithLocalEnabled)
   useEffect(() => {
-    console.groupCollapsed('- EFF')
-    console.log('isOneTimePasswordCorrect', isOneTimePasswordCorrect)
-    console.log('isAutoSyncEnabled', isAutoSyncEnabled)
-    console.log('remoteAudits.length', remoteAudits.length)
-    if (isOneTimePasswordCorrect && isAutoSyncEnabled && remoteAudits.length > 0) {
-      console.log('sunc: will be set to', remoteAudits)
+    if (isOneTimePasswordCorrect && isAutoSyncEnabled && remoteAudits.length > 0)
       dispatch(replaceAudits({ audits: remoteAudits }))
-    } else {
-      console.log('sync: will be skiped', remoteAudits)
-    }
-    console.groupEnd()
   }, [isOneTimePasswordCorrect, isAutoSyncEnabled, useCompare([remoteAudits])])
   const autoSyncOptionToggle = useCallback(() => {
     dispatch(autoSyncToggle())
@@ -837,7 +848,7 @@ const Logic = ({ room }: TLogicProps) => {
                   }}
                 >
                   <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                  <span style={{ fontFamily: 'system-ui' }}>{room}</span>
+                  <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room}</span>
                 </Typography>
                 {/*
                 <Button
@@ -1010,7 +1021,7 @@ const Logic = ({ room }: TLogicProps) => {
                   </Button>
                 </span>
                 <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                <span style={{ fontFamily: 'system-ui' }}>{room}</span>
+                <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room}</span>
               </div>
               <div>
                 {

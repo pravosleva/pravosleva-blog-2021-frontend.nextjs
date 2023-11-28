@@ -11,6 +11,7 @@ type TProps = {
   label: string;
   list: TOption[];
   onSelect: (item: { value: string; label: string; } | null) => void;
+  defaultValue?: TOption;
 }
 
 const filter = createFilterOptions<TOption>()
@@ -19,8 +20,9 @@ export const CreatableAutocomplete = ({
   label,
   list,
   onSelect,
+  defaultValue,
 }: TProps) => {
-  const [selectedOption, setSelectedOption] = React.useState<TOption | null>(null)
+  const [selectedOption, setSelectedOption] = React.useState<TOption | null>(defaultValue || null)
 
   React.useLayoutEffect(() => {
     onSelect(selectedOption)

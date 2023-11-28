@@ -57,6 +57,8 @@ export namespace NEvent {
     TODO2023_TODO_ITEM_REMOVED = 's:todo-2023:todo-item-removed',
     TODO2023_TODO_ITEM_UPDATED = 's:todo-2023:todo-item-updated',
     TODO2023_REPLACE_ALL = 's:todo-2023:replace-all',
+
+    ERR_MESSAGE = 's:err-message:common',
   }
   
   export enum EServerIncoming {
@@ -257,7 +259,15 @@ export namespace NTodo {
     status: EStatus;
     priority: number;
   };
-  export type TTodo = TItem & { id: number; tg_chat_id: number; namespace: string; };
+  export type TTodo = TItem & {
+    id: number;
+    tg_chat_id: number;
+    namespace: string;
+
+    // NOTE: by Strapi
+    createdAt: string; // 2023-11-21T08:40:01.854Z
+    updatedAt: string; // 2023-11-21T08:40:01.854Z
+  };
   export type TRoomState = {
     [key: string]: {
       state: TTodo[];

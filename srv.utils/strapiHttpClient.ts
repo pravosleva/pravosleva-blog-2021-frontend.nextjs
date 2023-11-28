@@ -58,6 +58,7 @@ class httpClientSingletone {
 
     const axiosGqlOpts = {
       baseURL: baseGqlURL,
+      validateStatus: (_s: number) => true,
     }
     this.gqlApi = axios.create(axiosGqlOpts)
     axiosRetry(this.gqlApi, { retries: 10 })
@@ -69,13 +70,18 @@ class httpClientSingletone {
 
   public getStrapiGqlErrMsg(firstMsg: string, json: any): string {
     const msgs = [firstMsg]
+
     try {
-      if (!!json?.errors && Array.isArray(json.errors) && json.errors.length > 0) {
-        const firstErr = json.errors[0]
-        if (!!firstErr.message && typeof firstErr.message === 'string')
-          msgs.push(firstErr.message)
-        if (!!firstErr?.extensions?.code && typeof firstErr.extensions.code === 'string')
-          msgs.push(firstErr.extensions.code)
+      switch (true) {
+        case !!json?.errors && Array.isArray(json.errors) && json.errors.length > 0:
+          const firstErr = json.errors[0]
+          if (!!firstErr.message && typeof firstErr.message === 'string')
+            msgs.push(firstErr.message)
+          if (!!firstErr?.extensions?.code && typeof firstErr.extensions.code === 'string')
+            msgs.push(firstErr.extensions.code)
+          break
+        default:
+          break
       }
     } catch (err) {
       // console.log(err)
@@ -321,19 +327,43 @@ class httpClientSingletone {
         status
         tg_chat_id
         namespace
+
+        createdAt
+        updatedAt
       }
     }
   }
 }`,
-        validateStatus: (status: number) => status >= 200 && status < 500, // default
       })
-        .then(httpErrorHandler) // res -> res.data
+        // .then(httpErrorHandler) // res -> res.data
         .then((json) => {
-          console.log(json) // NOTE: { data: { todos: { data: [] } } }
-          if (Array.isArray(json?.data?.todos?.data))
-            return json?.data?.todos
+          /* NOTE: Errors example
+          {
+            errors: [
+              {
+                message: 'Cannot query field "createdAt" on type "TodoEntity".',
+                locations: [Array],
+                extensions: [Object]
+              },
+              {
+                message: 'Cannot query field "updatedAt" on type "TodoEntity".',
+                locations: [Array],
+                extensions: [Object]
+              }
+            ]
+          }
+          */
+          console.log(json?.data) // NOTE: { data: { todos: { data: [Array] } } }
+          if (Array.isArray(json?.data?.data?.todos?.data)) {
+            return json?.data?.data?.todos
+          } else {
+            console.log('- not ok: json?.data?.data')
+            console.log(json?.data?.data)
+            console.log('-')
+          }
 
-          const msg = this.getStrapiGqlErrMsg('gqlApi:ERR', json)
+          const msg = this.getStrapiGqlErrMsg('GraphQL API Error', json?.data?.errors)
+          // console.log(msg)
           throw new ApiError(msg)
           // return data
         }) // data -> data

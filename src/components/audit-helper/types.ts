@@ -53,7 +53,15 @@ export namespace NTodo {
     status: EStatus;
     priority: number;
   };
-  export type TTodo = TItem & { id: number; tg_chat_id: number; namespace: string; };
+  export type TTodo = TItem & {
+    id: number;
+    tg_chat_id: number;
+    namespace: string;
+
+    // NOTE: by Strapi
+    createdAt: string; // 2023-11-21T08:40:01.854Z
+    updatedAt: string; // 2023-11-21T08:40:01.854Z
+  };
   export type TRoomState = {
     [key: string]: {
       state: TTodo[];
