@@ -107,7 +107,6 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
               key={`${auditId}-${jobId}-${id}-${tsUpdate}-${status}`}
               style={{
                 maxWidth: '100%',
-                
               }}
             >
               <Chip
@@ -120,6 +119,9 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
                 onClick={(e) => {
                   if (!isEditable) e.preventDefault()
                   handleToggleSubjob({ subjobId: id })
+                }}
+                sx={{
+                  fontFamily: 'system-ui',
                 }}
               />
             </li>

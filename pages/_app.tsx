@@ -117,7 +117,7 @@ function AppWithRedux(props: MyAppProps) {
               }}
               style={{
                 borderRadius: '8px',
-                maxWidth: '400px',
+                maxWidth: '430px',
               }}
             >
               <CacheProvider value={emotionCache}>

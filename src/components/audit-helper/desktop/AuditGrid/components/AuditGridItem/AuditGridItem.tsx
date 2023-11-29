@@ -5,22 +5,18 @@ import { useMemo } from 'react'
 import { TAudit, stateHelper } from '~/components/audit-helper'
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow'
 import DeleteIcon from '@mui/icons-material/Delete'
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 import { IconButton } from '@mui/material'
 import { useStore, TDesktopAuditState } from '~/components/audit-helper/desktop/AuditGrid/WithStateContext'
 import clsx from 'clsx'
 
 type TProps = {
   audit: TAudit;
-  // onUpdateAuditComment: ({
-  //   auditId,
-  //   comment,
-  // }: {
+  // onUpdateAuditComment: (ps: {
   //   auditId: string;
   //   comment: string;
   // }) => void;
-  onRemoveAudit: ({
-    auditId
-  }: {
+  onRemoveAudit: (ps: {
     auditId: string;
   }) => void;
   // onAddJob: (ps: {
@@ -33,32 +29,23 @@ type TProps = {
   //   auditId: string;
   //   jobId: string;
   // }) => void;
-  // onToggleJobDone: ({
-  //   auditId,
-  //   jobId,
-  // }: {
+  // onToggleJobDone: (ps: {
   //   auditId: string;
   //   jobId: string;
   // }) => void;
-  // onRemoveJob: ({
-  //   auditId,
-  //   jobId,
-  // }: {
+  // onRemoveJob: (ps: {
   //   auditId: string;
   //   jobId: string;
   // }) => void;
-  // onToggleSubjob: ({
-  //   auditId,
-  //   jobId,
-  //   subjobId,
-  // }: {
+  // onToggleSubjob: (ps: {
   //   auditId: string;
   //   jobId: string;
   //   subjobId: string;
   // }) => void;
+  onEditAudit?: (audit: TAudit) => void;
   isEditable: boolean;
 }
-export const AuditGridItem = ({ audit, isEditable, onRemoveAudit }: TProps) => {
+export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }: TProps) => {
   const styles = useStyles()
   const completeJobsPercentage = useMemo(() => stateHelper.getCompleteJobsPercentage({
     audit,
@@ -82,6 +69,17 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit }: TProps) => {
         </div>
       </div>
       <div className={styles.actions}>
+        {
+          isEditable && !!onEditAudit && (
+            <IconButton
+              color='success'
+              aria-label='edit-audit'
+              onClick={() => onEditAudit(audit)}
+            >
+              <DriveFileRenameOutlineIcon />
+            </IconButton>
+          )
+        }
         <IconButton
           color={isAuditActive ? 'info' : 'default'}
           aria-label="select-audit"
@@ -103,7 +101,6 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit }: TProps) => {
             </IconButton>
           )
         }
-        {/* <div>del</div> */}
       </div>
     </div>
   )

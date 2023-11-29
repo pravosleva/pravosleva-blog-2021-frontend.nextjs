@@ -146,6 +146,28 @@ class Singleton {
     this._state.set(room, newAudits)
     return Promise.resolve({ isOk: true, message: `New audits len= ${newAudits.length}`, audits: newAudits })
   }
+  public updateAudit({ room, auditId, newAuditData }: { room: number; auditId: string; newAuditData: { name: string; description?: string; } }): Promise<{
+    isOk: boolean;
+    message?: string;
+    audits: TAudit[];
+    updatedAudit?: TAudit;
+  }> {
+    const targetAudits = this._state.get(room)
+    if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })
+
+    const targetAuditIndex = targetAudits.findIndex(({ id }) => id === auditId)
+    if (targetAuditIndex === -1) return Promise.reject({ isOk: false, message: `Audit not found` })
+
+    const tsUpdate = new Date().getTime()
+
+    targetAudits[targetAuditIndex].name = newAuditData.name
+    if (!!newAuditData.description) targetAudits[targetAuditIndex].description = newAuditData.description
+    if (!newAuditData.description && !!targetAudits[targetAuditIndex].description) targetAudits[targetAuditIndex].description = ''
+    targetAudits[targetAuditIndex].tsUpdate = tsUpdate
+
+    this._state.set(room, targetAudits)
+    return Promise.resolve({ isOk: true, message: 'Audit params updated', audits: targetAudits, updatedAudit: targetAuditIndex !== -1 ? targetAudits[targetAuditIndex] : undefined })
+  }
   public addJob({ room, auditId, name, subjobs }: NEventData.NServerIncoming.TJOB_ADD): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     const targetAudits = this._state.get(room)
     if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })

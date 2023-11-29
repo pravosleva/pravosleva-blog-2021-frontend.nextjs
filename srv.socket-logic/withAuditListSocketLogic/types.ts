@@ -69,6 +69,7 @@ export namespace NEvent {
     AUDIT_ADD = 'c:audit.add',
     AUDIT_REMOVE = 'c:audit.remove',
     AUDIT_UPDATE_COMMENT = 'c:audit.update-comment',
+    AUDIT_UPDATE = 'c:audit.update',
     JOB_ADD = 'c:job.add',
     JOB_UPDATE = 'c:job.update',
     JOB_REMOVE = 'c:job.remove',
@@ -117,12 +118,16 @@ export namespace NEventData {
       room: number;
       auditId: string;
     }
-    export type TAUDIT_REMOVE_CB_ARG = { data: { room: number; isOk: boolean; audits?: TAudit[]; message?: string } }
+    export type TAUDIT_REMOVE_CB_ARG = { data: { room: number; isOk: boolean; audits?: TAudit[]; message?: string; } }
     export type TAUDIT_REMOVE_CB = ({ data }: TAUDIT_REMOVE_CB_ARG) => void;
 
     export type TAUDIT_UPDATE_COMMENT = { room: number; auditId: string; comment: string }
     export type TAUDIT_UPDATE_COMMENT_CB_ARG = { data: { room: number; isOk: boolean; audits?: TAudit[]; message?: string } }
     export type TAUDIT_UPDATE_COMMENT_CB = ({ data }: TAUDIT_UPDATE_COMMENT_CB_ARG) => void;
+
+    export type TAUDIT_UPDATE = { room: number; auditId: string; newAuditData: { name: string; description?: string; } }
+    export type TAUDIT_UPDATE_CB_ARG = { data: { room: number; isOk: boolean; audits?: TAudit[]; message?: string; updatedAudit?: TAudit; } }
+    export type TAUDIT_UPDATE_CB = ({ data }: TAUDIT_UPDATE_CB_ARG) => void;
 
     export type TJOB_ADD = { room: number; auditId: string; name: string; subjobs: TSubJob[]; }
     export type TSUBJOB_ADD = { room: number; auditId: string; name: string; jobId: string; }

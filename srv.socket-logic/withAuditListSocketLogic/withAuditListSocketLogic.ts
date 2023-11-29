@@ -253,16 +253,46 @@ export const withAuditListSocketLogic = (io: Socket) => {
           if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
+    socket.on(NEvent.EServerIncoming.AUDIT_UPDATE, ({ room, auditId, newAuditData }: NEventData.NServerIncoming.TAUDIT_UPDATE, cb: NEventData.NServerIncoming.TAUDIT_UPDATE_CB) => {
+      stateInstance.updateAudit({
+        room,
+        auditId,
+        newAuditData,
+      })
+        .then(async ({ isOk, message, audits, updatedAudit }) => {
+          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            namespace: 'audit-list',
+            tg_chat_id: room,
+            audit: updatedAudit,
+          })
+            .then((res) => res)
+            .catch((err) => ({
+              isOk: false,
+              message: err?.message || 'e-helper ERR /replace-audit-item'
+            }))
+
+          if (isOk) io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
+              room,
+              audits,
+              _specialReport : {
+                fixResponse,
+              },
+            })
+          else io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
+            message: `BACK Socket report <- ${message || 'Не удалось обновить список audits (текст ошибки не получен)'}`,
+          })
+
+          cb({ data: { room, isOk, audits, updatedAudit, message: `stateInstance.size= ${stateInstance.size}` }})
+        })
+        .catch((err: any) => {
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+        })
+    })
+
     // 4.
     socket.on(NEvent.EServerIncoming.JOB_ADD, ({ room, auditId, name, subjobs }: NEventData.NServerIncoming.TJOB_ADD, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addJob({ room, auditId, name, subjobs })
         .then(async ({ audits }) => {
-          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
-          //   namespace: 'audit-list',
-          //   tg_chat_id: room,
-          //   audits,
-          // }).then((res) => res).catch((err) => err)
-
           const targetIndex = audits.findIndex(({ id }) => id === auditId)
           let fixResponse
           if (targetIndex !== -1) {

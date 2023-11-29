@@ -1,28 +1,24 @@
 import { AuditGridItem } from './components'
 import { TAudit, TSubJob, AddNewBtn } from '~/components/audit-helper'
 import { useStyles } from './styles'
-import {
-  Alert,
-  Typography,
-} from '@mui/material'
+import { Alert } from '@mui/material'
 import { WithStateContext } from './WithStateContext'
 import { ActiveAuditJobList } from './components/ActiveAuditJobList'
-import { useMemo } from 'react'
+import {
+  useMemo,
+  // useState, useCallback,
+} from 'react'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import clsx from 'clsx'
+// import { AddAnythingNewDialog } from '~/components/Todo2023.online/components/TodoConnected/components'
 
 export type TAuditListProps = {
   audits: TAudit[];
-  onUpdateAuditComment: ({
-    auditId,
-    comment,
-  }: {
+  onUpdateAuditComment: (ps: {
     auditId: string;
     comment: string;
   }) => void;
-  onRemoveAudit: ({
-    auditId
-  }: {
+  onRemoveAudit: (ps: {
     auditId: string;
   }) => void;
   onAddJob: (ps: {
@@ -35,38 +31,34 @@ export type TAuditListProps = {
     auditId: string;
     jobId: string;
   }) => void;
-  onToggleJobDone: ({
-    auditId,
-    jobId,
-  }: {
+  onToggleJobDone: (ps: {
     auditId: string;
     jobId: string;
   }) => void;
-  onRemoveJob: ({
-    auditId,
-    jobId,
-  }: {
+  onRemoveJob: (ps: {
     auditId: string;
     jobId: string;
   }) => void;
-  onToggleSubjob: ({
-    auditId,
-    jobId,
-    subjobId,
-  }: {
+  onToggleSubjob: (ps: {
     auditId: string;
     jobId: string;
     subjobId: string;
   }) => void;
   isEditable: boolean;
-
-  onAddNewAudit: ({
-    name,
-    description,
-  }: {
+  onAddNewAudit: (ps: {
     name: string;
     description: string;
   }) => void;
+  onOpenEditAuditDialog?: (audit: TAudit) => void;
+  // auditValidator?: (ps: {
+  //   auditId: string;
+  //   name: string;
+  //   description?: string;
+  // }) => {
+  //   ok: boolean;
+  //   reason?: string;
+  // }
+
   isInitAppInProgress?: boolean;
 }
 
@@ -80,6 +72,8 @@ export const AuditGrid = ({
   onToggleSubjob,
   onUpdateAuditComment,
   onAddNewAudit,
+  onOpenEditAuditDialog,
+  // auditValidator,
 
   isEditable,
   isInitAppInProgress,
@@ -166,6 +160,7 @@ export const AuditGrid = ({
                             audit={audit}
                             isEditable={isEditable}
                             onRemoveAudit={onRemoveAudit}
+                            onEditAudit={onOpenEditAuditDialog}
                           />
                         </div>
                       ))
@@ -177,9 +172,7 @@ export const AuditGrid = ({
                     variant="standard"
                     severity="info"
                   >
-                    <Typography variant="body2" component="h2" gutterBottom>
-                      Еще ничего не создано
-                    </Typography>
+                    Список пуст
                   </Alert>
                 )
               : <CircularIndeterminate />

@@ -19,7 +19,7 @@ import {
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ closeSnackbar, useSnackbar } from 'notistack'
-import { AddNewBtn, AuditList, AuditGrid, NTodo } from '~/components/audit-helper'
+import { AddNewBtn, AuditList, AuditGrid, NTodo, TAudit } from '~/components/audit-helper'
 import {
   Box,
   Button,
@@ -68,6 +68,7 @@ import {
   updateStrapiTodo,
   replaceStrapiTodo,
 } from '~/store/reducers/todo2023NotPersisted'
+import { AddAnythingNewDialog } from './components/TodoConnected/components'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -380,15 +381,40 @@ const Logic = ({ room }: TLogicProps) => {
     comment,
   }) => {
     if (!socketRef.current) throw new Error('socket err')
-      socketRef.current.emit(NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT, {
-        room: roomRef.current,
-        auditId,
-        comment
-      }, (ps : NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB_ARG) => {
-        const { data } = ps
-        // setStore({ audits: data.audits })
-        groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT} | tst`, items: [data] })
-      })
+    socketRef.current.emit(NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT, {
+      room: roomRef.current,
+      auditId,
+      comment
+    }, (ps : NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB_ARG) => {
+      const { data } = ps
+      // setStore({ audits: data.audits })
+      groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT}`, items: [data] })
+    })
+  }, [])
+  const handleUpdateAudit = useCallback(({ auditId, name, description }: {
+    auditId: string;
+    name: string;
+    description?: string;
+  }) => {
+    if (!socketRef.current) throw new Error('socket err')
+
+    groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_UPDATE} | TODO`, items: [auditId, name, description] })
+
+    const newAuditData: {
+      name: string;
+      description?: string;
+    } = { name }
+    if (!!description) newAuditData.description = description
+
+    socketRef.current.emit(NEvent.EServerIncoming.AUDIT_UPDATE, {
+      room: roomRef.current,
+      auditId,
+      newAuditData,
+    }, (ps : NEventData.NServerIncoming.TAUDIT_UPDATE_CB_ARG) => {
+      const { data } = ps
+      // setStore({ audits: data.audits })
+      groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_UPDATE}`, items: [data] })
+    })
   }, [])
   const handleRemoveAudit = useCallback(({
     auditId,
@@ -806,6 +832,33 @@ const Logic = ({ room }: TLogicProps) => {
     }, showStandartSocketErrMsg({ showSuccessMsg: false }))
   }, [])
 
+  // -- NOTE: Edit
+  const [editedAudit, setEditedAudit] = useState<TAudit | null>(null)
+  const [editMode, setEditMode] = useState<'audit-item:edit' | null>(null)
+  const handleOpenEditAuditDialog = useCallback((audit: TAudit) => {
+    setEditedAudit(audit)
+    setEditMode('audit-item:edit')
+  }, [setEditMode])
+  const handleCloseEditAuditModal = useCallback(() => {
+    setEditedAudit(null)
+    setEditMode(null)
+  }, [setEditMode])
+  const handleEditAuditErr = useCallback((err) => {
+    enqueueSnackbar(err?.message || 'Что-то пошло не так', {
+      variant: 'error',
+      autoHideDuration: 30000,
+      action: (snackbarId) => (
+        <IconButton
+          onClick={() => { closeSnackbar(snackbarId) }}
+          size='small'
+        >
+          <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+        </IconButton>
+      ),
+    })
+  }, [])
+  // --
+
   switch (true) {
     case isMobile: return (
       <>
@@ -1056,6 +1109,45 @@ const Logic = ({ room }: TLogicProps) => {
             isEditable={isOneTimePasswordCorrect}
             onUpdateAuditComment={handleUpdateAuditComment}
             isInitAppInProgress={!isConnected}
+            onOpenEditAuditDialog={handleOpenEditAuditDialog}
+          />
+          <AddAnythingNewDialog
+            key={`${editedAudit?.id}-${editedAudit?.tsUpdate}`}
+            isOpened={editMode === 'audit-item:edit'}
+            label={`Edit Audit #${editedAudit?.id}`}
+            cfg={{
+              name: {
+                type: 'text',
+                label: 'Название',
+                inputId: 'audit-name',
+                placeholder: 'Название',
+                defaultValue: editedAudit?.name || '',
+                reactHookFormOptions: { required: true, maxLength: 200, minLength: 3 },
+                validate: (val: any) => !!val,
+              },
+              description: {
+                type: 'text',
+                label: 'Описание',
+                inputId: 'audit-description',
+                placeholder: 'Описание',
+                defaultValue: editedAudit?.description || '',
+                reactHookFormOptions: { required: false, maxLength: 300, minLength: 3 },
+                validate: (val: any) => !!val,
+              },
+            }}
+            cb={{
+              onClose: handleCloseEditAuditModal,
+              onError: handleEditAuditErr,
+              onSuccess: (e) => {
+                if (!editedAudit?.id) return Promise.reject(e)
+                handleUpdateAudit({
+                  auditId: editedAudit?.id,
+                  name: e.name,
+                  description: e.description,
+                })
+                return Promise.resolve(e)
+              },
+            }}
           />
           
           {
