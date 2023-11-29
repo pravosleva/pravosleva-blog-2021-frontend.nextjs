@@ -72,7 +72,7 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }:
         {
           isEditable && !!onEditAudit && (
             <IconButton
-              color='success'
+              color='default'
               aria-label='edit-audit'
               onClick={() => onEditAudit(audit)}
             >
