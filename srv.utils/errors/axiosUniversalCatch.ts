@@ -33,17 +33,16 @@ export const axiosUniversalCatch = (err: {
 } => {
   let commonMsg = err?.message || 'Unknown ERR'
 
-  // if (!err.response?.status) console.log(err)
-
   switch (true) {
     case err.isAxiosError:
       commonMsg = `${err?.config?.baseURL || 'No config?.baseURL'}${err.config.url}`
       try {
-        if (!!err.response) {
+        if (!!err.response)
           throw new HttpError(err.response?.status, commonMsg) // err.response?.request?.statusText)
-        } else if (!!err.request)
+        else if (!!err.request)
           throw new NetworkError(`${commonMsg} -> Client never received a response, or request never left`)
-        else throw new UniversalError(`${commonMsg} -> Request failed`)
+        else
+          throw new UniversalError(`${commonMsg} -> Request failed`)
       } catch (err: any) {
         return {
           isOk: false,

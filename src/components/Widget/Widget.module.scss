@@ -4,8 +4,10 @@
 
 // NOTE: Desktop
 $widget-width-desktop: 465px;
-$widget-height-min-desktop: 600px;
-$widget-height-max-desktop: 600px;
+// $widget-height-min-desktop: 600px;
+// $widget-height-max-desktop: 600px;
+$widget-height-min-desktop: 100dvh;
+$widget-height-max-desktop: 100dvh;
 
 $widget-toggler-width-desktop: 40px;
 
@@ -28,7 +30,7 @@ $widget-toggler-width-mobile: 0px;
   border-radius: 0 16px 16px 0;
 
   position: fixed;
-  z-index: 3;
+  z-index: 4;
   overflow-y: auto;
 
   // transform: rotateY(30deg) rotateX(15deg);
@@ -101,6 +103,7 @@ $widget-toggler-width-mobile: 0px;
   .toggler {
     min-width: $widget-toggler-width-desktop;
     max-width: $widget-toggler-width-desktop;
+    border-left: 1px solid lightgray;
   }
   .internalSpace {
     max-width: calc($widget-width-desktop - $widget-toggler-width-desktop);

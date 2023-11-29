@@ -15,7 +15,7 @@ const isDev = process.env.NODE_ENV === 'development'
 // : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
 
 const baseConfig: IAxiosRequestConfig = {
-  baseURL: isDev ? 'http://localhost:3000/' : 'https://pravosleva.pro', // 'http://pravosleva.ru/',
+  baseURL: isDev ? 'http://localhost:3000' : 'https://pravosleva.pro', // 'http://pravosleva.ru/',
   // headers: {
   //   'Origin': 'http://localhost:1337',
   //   'Access-Control-Allow-Origin': '*',

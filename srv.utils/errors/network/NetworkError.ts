@@ -10,6 +10,10 @@ export class NetworkError extends UniversalError {
   }
 
   getErrorMsg(): string {
-    return `${this.getReadableCamelCase(this.name)}${!!this.message ? ` (${this.message})` : ''}`
+    const msgs = [this.getReadableCamelCase(this.name)]
+
+    if (!!this.message) msgs.push(this.message)
+
+    return msgs.join(' • ')
   }
 }

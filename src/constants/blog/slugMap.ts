@@ -125,7 +125,7 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/jpg',
     },
   },
-  'strapi-v5-graphql-notes': {
+  'strapi-v4-graphql-notes': {
     id: '655c8fcc6917cd0d733cddc4',
     brief: 'Notes',
     bg: {

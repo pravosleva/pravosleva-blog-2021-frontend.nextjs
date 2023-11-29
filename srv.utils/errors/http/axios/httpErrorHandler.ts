@@ -2,11 +2,8 @@ import { HttpError } from '~/srv.utils/errors/http/HttpError'
 import { AxiosResponse } from 'axios'
 
 export const httpErrorHandler = (obj: AxiosResponse): any | HttpError => {
-  if (obj.status === 200) {
-    return obj.data
-  } else {
-    // console.log(obj.request.res)
-    // console.log(obj?.config.url)
+  if (obj.status === 200) return obj.data
+  else {
     const msgs = []
     if (!!obj?.config?.url) msgs.push(obj.config.url)
     if (!!obj?.data?.msg) msgs.push(obj.data.msg)
