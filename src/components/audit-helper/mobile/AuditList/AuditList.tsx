@@ -80,7 +80,7 @@ export const AuditList = memo(({
         display: 'flex',
         flexDirection: 'column',
         // alignItems: 'center',
-        gap: '16px',
+        gap: '0px',
 
         // border: '1px solid red',
         // paddingBottom: '16px',
@@ -110,7 +110,7 @@ export const AuditList = memo(({
               severity="info"
             >
               <Typography variant="body2" component="h2" gutterBottom>
-                Еще ничего не создано
+                Список пуст
               </Typography>
             </Alert>
           )

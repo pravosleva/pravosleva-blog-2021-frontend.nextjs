@@ -20,8 +20,9 @@ const theme = createTheme({
     },
     secondary: {
       // main: '#19857b',
-      main: '#97f48a',
+      // main: '#97f48a',
       // main: '#27c196',
+      main: '#cbd5e1', // tw slate-300
     },
     error: {
       // main: red.A400,
@@ -74,6 +75,27 @@ const theme = createTheme({
     //     },
     //   },
     // },
+    // MuiButtonBase: {
+    //   styleOverrides: {
+    //     root: {
+    //       color: '#cbd5e1',
+    //     },
+    //   },
+    // },
+    // MuiIconButton: {
+    //   styleOverrides: {
+    //     root: {
+    //       color: '#cbd5e1',
+    //     },
+    //   },
+    // },
+    MuiChip: {
+      styleOverrides: {
+        label: {
+          fontFamily: 'system-ui',
+        },
+      },
+    },
   },
 });
 

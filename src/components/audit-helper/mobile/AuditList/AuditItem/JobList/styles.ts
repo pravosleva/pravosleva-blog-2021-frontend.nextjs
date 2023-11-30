@@ -12,13 +12,14 @@ export const useStyles = makeStyles((theme) => ({
     // paddingLeft: '16px',
     
     // paddingRight: '10px',
-    borderLeft: '4px solid lightgray',
+    // borderLeft: '4px solid lightgray',
+    borderLeft: '4px solid rgba(203,213,225,1)',
 
-    // '& > div:first-child': {
-    //   // border: '1px solid red',
-    //   // @ts-ignore
-    //   paddingTop: theme.spacing(1),
-    // },
+    '& > div:first-child': {
+      // border: '1px solid red',
+      // @ts-ignore
+      paddingTop: theme.spacing(1),
+    },
   },
 
   buttonWrapper: {

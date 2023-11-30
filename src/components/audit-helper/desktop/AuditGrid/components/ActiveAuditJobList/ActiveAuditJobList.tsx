@@ -103,7 +103,7 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0px',
+            gap: '16px',
             minWidth: '100%',
             // border: '1px solid red',
           }}
@@ -111,8 +111,11 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
           <div
             // className={externalStyles.stickyTopPanel}
             style={{
-              padding: '52px 0 0 0',
+              // padding: '52px 0 0 0',
               // border: '1px solid red',
+
+              // padding: 'calc(52px + 2px) 2px 0 2px', // NOTE: Special for outline css prop
+              padding: '54px 0 0 0',
             }}
           >
             <CommentBtn
@@ -127,6 +130,7 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
                   comment: state.comment,
                 })
               }}
+              isEditable={isEditable}
             />
           </div>
 

@@ -103,6 +103,7 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
           borderBottom: '1px solid lightgray',
 
           paddingTop: '16px',
+          paddingBottom: '16px',
         }}
       >
         <div
@@ -167,7 +168,7 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
               variant="caption"
               display="block"
               gutterBottom
-              sx={{ mb: 1 }}
+              sx={{ mb: 0 }}
             >
               {audit.description}
             </Typography>
@@ -185,6 +186,7 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
               comment: state.comment,
             })
           }}
+          isEditable={isEditable}
         />
       </div>
       {

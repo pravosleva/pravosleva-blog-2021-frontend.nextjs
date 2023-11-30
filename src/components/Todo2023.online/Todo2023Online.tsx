@@ -178,7 +178,7 @@ const Logic = ({ room }: TLogicProps) => {
             const hasAnyErr = (data?._specialReport?.fixResponses || []).some(({ isOk }) => !isOk)
             if (hasAnyErr) {
               const _msgs = (data?._specialReport?.fixResponses || []).reduce((acc: string[], cur) => {
-                const msg = cur?.response?.message || cur?.message || 'ERR_165 Remote AUDITLIST_REPLACE (проблемы с удаленным хранилищем: no message)'
+                const msg = cur?.response?.message || cur?.message || 'ERR_181 Remote AUDITLIST_REPLACE (проблемы с удаленным хранилищем)'
                 if (!acc.includes(msg)) acc.push(msg)
                 return acc
               }, [])
@@ -221,7 +221,7 @@ const Logic = ({ room }: TLogicProps) => {
             break
           }
           case !!data?._specialReport?.fixResponse && !data._specialReport.fixResponse?.isOk: {
-            enqueueSnackbar(`${data._specialReport.fixResponse?.response?.message || 'ERR_169 Remote AUDITLIST_REPLACE (проблемы с удаленным хранилищем: no message)'}`, {
+            enqueueSnackbar(`${data._specialReport.fixResponse?.response?.message || 'ERR_224 Remote AUDITLIST_REPLACE (проблемы с удаленным хранилищем)'}`, {
               variant: 'error',
               autoHideDuration: 30000,
               action: (snackbarId) => (
@@ -1059,20 +1059,18 @@ const Logic = ({ room }: TLogicProps) => {
                   gap: '16px',
                 }}
               >
-                <span>
-                  <Button
-                    size='small'
-                    startIcon={<ArrowBackIcon />}
-                    variant='outlined'
-                    color='primary'
-                    component={Link}
-                    noLinkStyle
-                    href={'/subprojects/audit-list'}
-                    target='_self'
-                  >
-                    Offline
-                  </Button>
-                </span>
+                <Button
+                  size='small'
+                  startIcon={<ArrowBackIcon />}
+                  variant='outlined'
+                  color='primary'
+                  component={Link}
+                  noLinkStyle
+                  href={'/subprojects/audit-list'}
+                  target='_self'
+                >
+                  Offline
+                </Button>
                 <Brightness1Icon color={isConnected ? 'success' : 'error'} />
                 <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room}</span>
               </div>

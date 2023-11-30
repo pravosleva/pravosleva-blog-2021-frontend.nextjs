@@ -54,7 +54,7 @@ export const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     // @ts-ignore
-    gap: theme.spacing(2),
+    gap: theme.spacing(1),
     boxSizing: 'border-box',
   },
   // isLimitedHeight: {

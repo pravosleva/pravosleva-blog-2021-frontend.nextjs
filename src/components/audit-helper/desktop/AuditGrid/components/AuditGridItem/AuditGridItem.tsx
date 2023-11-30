@@ -52,7 +52,7 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }:
   }).value, [audit.tsUpdate])
 
   const [activeAuditId, setStore] = useStore((store: TDesktopAuditState) => store.activeAuditId)
-  const handleSelectAuditAsActive = useCallback(({ auditId }: { auditId: string }) => (_ev: any) => {
+  const handleSelectAuditAsActive = useCallback(({ auditId }: { auditId: string | null }) => (_ev: any) => {
       setStore({ activeAuditId: auditId })
   }, [])
   const isAuditActive = useMemo<boolean>(() => activeAuditId === audit.id, [activeAuditId])
@@ -70,37 +70,43 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }:
       </div>
       <div className={styles.actions}>
         {
-          isEditable && !!onEditAudit && (
-            <IconButton
-              color='default'
-              aria-label='edit-audit'
-              onClick={() => onEditAudit(audit)}
-            >
-              <DriveFileRenameOutlineIcon />
-            </IconButton>
+          isAuditActive && (
+            <>
+              {
+                isEditable && !!onEditAudit && (
+                  <IconButton
+                    color={isAuditActive ? 'success' : 'default'}
+                    aria-label='edit-audit'
+                    onClick={() => onEditAudit(audit)}
+                  >
+                    <DriveFileRenameOutlineIcon />
+                  </IconButton>
+                )
+              }
+              {
+                isEditable && (
+                  <IconButton
+                    color={isAuditActive ? 'error' : 'default'}
+                    aria-label="delete-audit"
+                    onClick={() => {
+                      onRemoveAudit({ auditId: audit.id })
+                      if (activeAuditId === audit.id) setStore({ activeAuditId: null })
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                )
+              }
+            </>
           )
         }
         <IconButton
           color={isAuditActive ? 'info' : 'default'}
           aria-label="select-audit"
-          onClick={handleSelectAuditAsActive({ auditId: audit.id })}
+          onClick={handleSelectAuditAsActive({ auditId: isAuditActive ? null : audit.id })}
         >
           <DoubleArrowIcon />
         </IconButton>
-        {
-          isEditable && (
-            <IconButton
-              color='error'
-              aria-label="delete-audit"
-              onClick={() => {
-                onRemoveAudit({ auditId: audit.id })
-                if (activeAuditId === audit.id) setStore({ activeAuditId: null })
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          )
-        }
       </div>
     </div>
   )

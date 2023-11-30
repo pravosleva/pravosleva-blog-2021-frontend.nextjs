@@ -11,12 +11,13 @@ export const useStyles = makeStyles((theme) => ({
     // @ts-ignore
     gap: theme.spacing(2),
     // @ts-ignore
-    borderRadius: theme.spacing(2),
+    borderRadius: theme.spacing(1), // NOTE: BORDER_EXP
 
     border: '2px solid #fff',
     boxShadow: 'unset',
     transition: 'all .2s linear',
     // cursor: 'pointer',
+    minHeight: '52px',
   },
   activeWrapper: {
     border: '2px solid #fff',
