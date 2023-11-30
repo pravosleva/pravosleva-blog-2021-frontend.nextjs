@@ -138,7 +138,7 @@ export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
                       }
                     )}>
                     <div className={classes.absoluteBadgeRight}>
-                      Коментарий
+                      Комментарий
                     </div>
                     <div className={classes.commentDescription}>
                       {/* <pre
