@@ -1,7 +1,6 @@
 import baseClasses from '~/mui/baseClasses.module.scss'
 import classes from './TodoListItem.module.scss'
 import clsx from 'clsx'
-import IconButton from '@mui/material/IconButton'
 import Rating from '@mui/material/Rating'
 import {
   // AddNewBtn, AddNewBtn, AuditList, AuditGrid,
@@ -11,83 +10,20 @@ import { SyntheticEvent } from 'react'
 // import { useWindowSize } from '~/hooks/useWindowSize'
 import { MenuAsBtn } from '~/mui'
 import { StatusColors, StatusIcons } from '../ConnectedFilters'
-import {
-  // Avatar,
-  AlertTitle, Chip, Theme,
-} from '@mui/material'
-import { useStore, TSocketMicroStore } from '~/components/Todo2023.online/hocs'
-
+import { Chip } from '@mui/material'
 import ReportIcon from '@mui/icons-material/Report'
 import WarningIcon from '@mui/icons-material/Warning'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye'
 import InfoIcon from '@mui/icons-material/Info'
-import Alert, { AlertColor } from '@mui/material/Alert'
-import { SxProps } from '@mui/system'
-
-type TControl = {
-  id: string;
-  // color: 'primary' | 'secondary' | 'error' | 'success';
-  Icon: React.ReactNode;
-  onClick: () => void;
-  isDisabled?: boolean;
-}
-const CustomAlert = ({ header, description, alert, controls }: {
-  header: string;
-  description?: string;
-  alert: {
-    variant: 'standard' | 'filled' | 'outlined';
-    severity?: AlertColor;
-    icon?: boolean;
-    sx?: SxProps<Theme>;
-    // action?: React.ReactNode;
-  };
-  controls?: TControl[];
-}) => {
-  return (
-    <Alert
-      icon={alert.icon}
-      variant={alert.variant}
-      severity={alert.severity}
-      sx={alert.sx}
-      action={!!controls && (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {
-            controls.map(({ id, Icon, onClick, isDisabled }) => (
-              <IconButton
-                key={id}
-                aria-label={`action ${id}`}
-                disabled={isDisabled}
-                // color=''
-                onClick={onClick}
-                size='small'
-              >
-                {Icon}
-              </IconButton>
-            ))
-          }
-        </div>
-      )}
-    >
-      {
-        !!description ? (
-          <>
-            <AlertTitle>{header}</AlertTitle>
-            {description}
-          </>
-        ) : (
-          header
-        )
-      }
-    </Alert>
-  )
-}
+import { CustomAlert, TCustomAlertControl } from '~/mui'
 
 type TProps = {
   todo: NTodo.TTodo;
-  controls: TControl[];
+  controls: TCustomAlertControl[];
   onStarUpdate: (newPriority: number) => void;
   onChangeStatus: (status: NTodo.EStatus) => void;
+  isEditable: boolean;
 }
 
 export const TodoListItem = ({
@@ -95,12 +31,9 @@ export const TodoListItem = ({
   controls,
   onStarUpdate,
   onChangeStatus,
+  isEditable,
 }: TProps) => {
-  const [isConnected] = useStore((store: TSocketMicroStore) => store.isConnected)
-
   const handleStarClick = (_event: SyntheticEvent<Element, Event>, value: number | null) => {
-    console.log(value)
-    // console.log(e)
     onStarUpdate(value || 0)
   }
   // const { downSm } = useWindowSize()
@@ -131,7 +64,7 @@ export const TodoListItem = ({
             size='small'
             value={priority}
             // readOnly
-            disabled={!isConnected}
+            disabled={!isEditable}
             onChange={handleStarClick}
             sx={{ color: 'gray' }}
           />
@@ -153,7 +86,7 @@ export const TodoListItem = ({
           }
         >
           <MenuAsBtn
-            isDisabled={!isConnected}
+            isDisabled={!isEditable}
             onSelect={(item: any) => {
               if (!!item.value) onChangeStatus(item.value)
             }}
@@ -225,31 +158,31 @@ export const TodoListItem = ({
           status === NTodo.EStatus.DANGER ? (
             <CustomAlert
               header={label}
-              controls={isConnected ? controls : undefined}
+              controls={isEditable ? controls : undefined}
               alert={{ variant: 'filled', severity: 'error', sx: { borderRadius: '8px' } }}
             />
           ) : status === NTodo.EStatus.SUCCESS ? (
             <CustomAlert
               header={label}
-              controls={isConnected ? controls : undefined}
+              controls={isEditable ? controls : undefined}
               alert={{ variant: 'filled', severity: 'success', sx: { borderRadius: '8px' } }}
             />
           ) : status === NTodo.EStatus.INFO ? (
             <CustomAlert
               header={label}
-              controls={isConnected ? controls : undefined}
+              controls={isEditable ? controls : undefined}
               alert={{ variant: 'filled', severity: 'info', sx: { borderRadius: '8px' } }}
             />
           ) : status === NTodo.EStatus.WARNING ? (
             <CustomAlert
               header={label}
-              controls={isConnected ? controls : undefined}
+              controls={isEditable ? controls : undefined}
               alert={{ variant: 'filled', severity: 'warning', sx: { borderRadius: '8px' } }}
             />
           ) : status === NTodo.EStatus.IS_DONE ? (
             <CustomAlert
               header={label}
-              controls={isConnected ? controls : undefined}
+              controls={isEditable ? controls : undefined}
               alert={{
                 variant: 'filled',
                 sx: {
@@ -261,7 +194,7 @@ export const TodoListItem = ({
           ) : (
             <CustomAlert
               header={label}
-              controls={isConnected ? controls : undefined}
+              controls={isEditable ? controls : undefined}
               alert={{
                 icon: false,
                 variant: 'outlined',

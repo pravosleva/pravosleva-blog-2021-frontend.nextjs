@@ -472,6 +472,7 @@ export const TodoConnected = ({
 
                   return (
                     <TodoListItem
+                      isEditable={isConnected && isOneTimePasswordCorrect}
                       todo={todo}
                       key={todo.id}
                       controls={(isConnected && isOneTimePasswordCorrect) ? [
