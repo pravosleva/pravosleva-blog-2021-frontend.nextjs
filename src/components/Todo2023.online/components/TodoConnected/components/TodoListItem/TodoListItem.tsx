@@ -206,7 +206,7 @@ export const TodoListItem = ({
                   borderLeft: '5px solid lightgray',
                   borderRight: '5px solid lightgray',
                   borderRadius: '8px',
-                  backgroundColor: 'rgba(255,255,255,0.9)',
+                  backgroundColor: 'rgba(255,255,255,0.5)',
                   fontWeight: 'bold',
                 }
               }}
