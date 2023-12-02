@@ -6,7 +6,7 @@ import {
   // AddNewBtn, AddNewBtn, AuditList, AuditGrid,
   NTodo,
 } from '~/components/audit-helper'
-import { SyntheticEvent } from 'react'
+import { SyntheticEvent, useCallback } from 'react'
 // import { useWindowSize } from '~/hooks/useWindowSize'
 import { MenuAsBtn } from '~/mui'
 import { StatusColors, StatusIcons } from '../ConnectedFilters'
@@ -33,9 +33,11 @@ export const TodoListItem = ({
   onChangeStatus,
   isEditable,
 }: TProps) => {
-  const handleStarClick = (_event: SyntheticEvent<Element, Event>, value: number | null) => {
-    onStarUpdate(value || 0)
-  }
+  const handleStarClick = useCallback((_event: SyntheticEvent<Element, Event>, value: number | null) => {
+    if (value === todo.priority) return
+    const isConfirmed = window.confirm(`#${todo.id} Изменить приоритет ${todo.priority} -> ${value || 0}?`)
+    if (isConfirmed) onStarUpdate(value || 0)
+  }, [todo.id, onStarUpdate, todo.priority])
   // const { downSm } = useWindowSize()
   const {
     id,
@@ -204,7 +206,7 @@ export const TodoListItem = ({
                   borderLeft: '5px solid lightgray',
                   borderRight: '5px solid lightgray',
                   borderRadius: '8px',
-                  backgroundColor: '#fff',
+                  backgroundColor: 'rgba(255,255,255,0.9)',
                   fontWeight: 'bold',
                 }
               }}
