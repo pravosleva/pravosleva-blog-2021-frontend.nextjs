@@ -81,6 +81,7 @@ const attached = {
 }
 
 const getDefaultStyles = () => css`
+  font-family: Montserrat, system-ui;
   background-color: ${themeColor('Accent Blue light')};
   color: ${themeColor('White color')};
   border: none;

@@ -18,6 +18,7 @@ import clsx from 'clsx'
 import ImportExportIcon from '@mui/icons-material/ImportExport'
 import CloseIcon from '@mui/icons-material/Close'
 import { getRandomString } from '~/utils/getRandomString'
+import { withTranslator } from '~/hocs/withTranslator'
 
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -33,9 +34,74 @@ type TStandartCommonEvent = {
   notistackProps?: Partial<IOptionsObject>;
 }
 
-export const Logic = () => {
-  const [isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
+// SOCKET_LAB/HEADER
+const UI = withTranslator<{
+  onConnClick: (ref: React.RefObject<HTMLButtonElement>) => void;
+  onDisconnClick: (ref: React.RefObject<HTMLButtonElement>) => void;
+}>(({
+  t,
+  onConnClick, onDisconnClick,
+}) => {
+  const [isConnected] = useStore((store: TSocketMicroStore) => store.isConnected)
   const [isConnectedToPrivateRoom] = useStore((store: TSocketMicroStore) => store.isConnectedToPrivateRoom)
+
+  const connectBtnRef = useRef<HTMLButtonElement>(null)
+  const disconnectBtnRef = useRef<HTMLButtonElement>(null)
+
+  return (
+    <ResponsiveBlock
+      isLimited
+      isPaddedMobile
+      style={{
+        borderTop: '1px solid lightgray',
+        borderBottom: '1px solid lightgray',
+        padding: '32px 0 32px 0',
+      }}
+    >
+      <h1>{t('SOCKET_LAB/HEADER')} 🧪</h1>
+      <Stack spacing={1}>
+        <div className='price-grid-2c'>
+          <div>{t('SOCKET_LAB/CONTENT/isConnected')}</div>
+          <div>{isConnected ? '✅' : '⛔'} <b className={clsx(isConnected ? classes.success : classes.danger)}>{String(isConnected)}</b></div>
+          <div>{t('SOCKET_LAB/CONTENT/isConnectedToPrivateRoom')}</div>
+          <div>{isConnectedToPrivateRoom ? '✅' : '⛔'} <b className={clsx(isConnectedToPrivateRoom ? classes.success : classes.danger)}>{String(isConnectedToPrivateRoom)}</b></div>
+        </div>
+        {
+          !isConnectedToPrivateRoom ? (
+            <Button
+              ref={connectBtnRef}
+              size='small'
+              startIcon={<ImportExportIcon />}
+              // fullWidth
+              variant="outlined"
+              color='primary'
+              onClick={() => onConnClick(disconnectBtnRef)}
+              endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
+            >
+              <span className='truncate'>{t('SOCKET_LAB/BTN_CONN')}</span>
+            </Button>
+          ) : (
+            <Button
+              ref={disconnectBtnRef}
+              size='small'
+              startIcon={<CloseIcon />}
+              // fullWidth
+              variant="outlined"
+              color='primary'
+              onClick={() => onDisconnClick(connectBtnRef)}
+              endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
+            >
+              <span className='truncate'>{t('SOCKET_LAB/BTN_DISCONN')}</span>
+            </Button>
+          )
+        }
+      </Stack>
+    </ResponsiveBlock>
+  )
+})
+
+export const Logic = () => {
+  const [_isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
   const socketRef = useRef<Socket | null>(null)
   const { enqueueSnackbar } = useSnackbar()
   const showNotif = useCallback((msg: TSnackbarMessage, opts?: IOptionsObject) => {
@@ -52,8 +118,7 @@ export const Logic = () => {
     })
   }, [])
 
-  const connectBtnRef = useRef<HTMLButtonElement>(null)
-  const disconnectBtnRef = useRef<HTMLButtonElement>(null)
+  
   const disableDelayToggler = useCallback(({ elm, ms }: { elm: HTMLButtonElement | null; ms: number }) => {
     if (!!elm) {
       elm.disabled = true
@@ -67,7 +132,7 @@ export const Logic = () => {
     }
   }, [])
 
-  const handleWannaBeConnected = useCallback(() => {
+  const handleWannaBeConnected = useCallback((disconnectBtnRef: React.RefObject<HTMLButtonElement>) => {
     if (!!socketRef.current) {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_CONNECTED_TO_ROOM, { roomId: 'sample' }, (data: TStandartTargetCallback) => {
         if (data.ok) {
@@ -84,7 +149,7 @@ export const Logic = () => {
       groupLog({ spaceName: '⛔ FRONT: Socket was not connected yet?', items: ['socketRef.current', socketRef.current] })
     }
   }, [])
-  const handleWannaBeDisonnected = useCallback(() => {
+  const handleWannaBeDisonnected = useCallback((connectBtnRef: React.RefObject<HTMLButtonElement>) => {
     if (!!socketRef.current) {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_DISCONNECTED_FROM_ROOM, { roomId: 'sample' }, (data: TStandartTargetCallback) => {
         if (data.ok) {
@@ -193,54 +258,10 @@ export const Logic = () => {
     }
   }, [])
   return (
-    <ResponsiveBlock
-      isLimited
-      isPaddedMobile
-      style={{
-        borderTop: '1px solid lightgray',
-        borderBottom: '1px solid lightgray',
-        padding: '32px 0 32px 0',
-      }}
-    >
-      <h1>SocketLab exp 🧪</h1>
-      <Stack spacing={1}>
-        <div className='price-grid-2c'>
-          <div><code>isConnected</code></div>
-          <div>{isConnected ? '✅' : '⛔'} <b className={clsx(isConnected ? classes.success : classes.danger)}>{String(isConnected)}</b></div>
-          <div><code>isConnectedToPrivateRoom</code></div>
-          <div>{isConnectedToPrivateRoom ? '✅' : '⛔'} <b className={clsx(isConnectedToPrivateRoom ? classes.success : classes.danger)}>{String(isConnectedToPrivateRoom)}</b></div>
-        </div>
-        {
-          !isConnectedToPrivateRoom ? (
-            <Button
-              ref={connectBtnRef}
-              size='small'
-              startIcon={<ImportExportIcon />}
-              // fullWidth
-              variant="outlined"
-              color='primary'
-              onClick={handleWannaBeConnected}
-              endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
-            >
-              <span className='truncate'>Wanna be connected to room id</span>
-            </Button>
-          ) : (
-            <Button
-              ref={disconnectBtnRef}
-              size='small'
-              startIcon={<CloseIcon />}
-              // fullWidth
-              variant="outlined"
-              color='primary'
-              onClick={handleWannaBeDisonnected}
-              endIcon={<b style={{ fontSize: 'smaller' }}><code>sample</code></b>}
-            >
-              <span className='truncate'>Wanna be disconnected from room id</span>
-            </Button>
-          )
-        }
-      </Stack>
-    </ResponsiveBlock>
+    <UI
+      onConnClick={(disconnectBtnRef) => handleWannaBeConnected(disconnectBtnRef)}
+      onDisconnClick={(connectBtnRef) => handleWannaBeDisonnected(connectBtnRef)}
+    />
   )
 }
 

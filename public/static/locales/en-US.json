@@ -1,5 +1,5 @@
 {
-  "BRANDS": "Brads",
+  "BRANDS": "Brands",
   "CLEAR": "Clear",
   "CLOSE": "Close",
   "CHANGE_SEARCH_MODE": "Change search mode",
@@ -7,6 +7,16 @@
   "COMPANY_NAME": "Company name",
   "COMMENT": "Comment",
   "HOME": "Home",
+
+  "AUDIT_LIST_PROJECT_DESCR": "We can do it better!",
+  "AUTO_PARK_PROJECT_DESCR": "Car service book",
+  "TEAM_SCORING_PROJECT_DESCR": "How much is your forecast, lier?",
+
+  "SOCKET_LAB/HEADER": "SocketLab exp",
+  "SOCKET_LAB/CONTENT/isConnected": "Connect",
+  "SOCKET_LAB/CONTENT/isConnectedToPrivateRoom": "Connect to private room",
+  "SOCKET_LAB/BTN_CONN": "Wanna be connected to private room",
+  "SOCKET_LAB/BTN_DISCONN": "Wanna be disconnected from private room",
 
   "HVAC_1": "Additional equipment",
   "HVAC_1.1": "Compressor station",
@@ -74,7 +84,7 @@
   "SOMETHING_WRONG": "Something wrong",
   "UPDATED": "Updated",
   "CREATED": "Created",
-  "REMOVE_ALL_COOKIE_AND_CLOSE": "Remove all cookie and close",
+  "REMOVE_ALL_COOKIE_AND_CLOSE": "Remove all cookies and close",
   "SIMPLE": "Simple Sentence",
   "HELLO": "Hello, {name}. Welcome to {where}!",
   "YOURE_WELCOME": "You're welcome to {where}!",

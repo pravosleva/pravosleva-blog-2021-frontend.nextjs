@@ -11,7 +11,7 @@ const projects = [
   {
     id: 1,
     title: 'AuditList 2023',
-    description: 'We can do it better!',
+    description: 'AUDIT_LIST_PROJECT_DESCR',
     img: {
       src: '/static/img/projects/audit-v2.jpg',
       alt: 'loading...',
@@ -36,7 +36,7 @@ const projects = [
   {
     id: 3,
     title: 'AutoPark 2022',
-    description: 'Car service book',
+    description: 'AUTO_PARK_PROJECT_DESCR',
     img: {
       src: '/static/img/projects/autopark.jpg',
       alt: 'loading...',
@@ -49,7 +49,7 @@ const projects = [
   {
     id: 4,
     title: 'TeamScoring 2019',
-    description: 'How much is your forecast, lier?',
+    description: 'TEAM_SCORING_PROJECT_DESCR',
     img: {
       src: '/static/img/projects/autopark.jpg',
       alt: 'loading...',
@@ -142,7 +142,7 @@ export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }
                     title={title}
                     img={img}
                     link={link}
-                    description={description}
+                    description={!!description ? t(description) : undefined}
                   />
                 )
               })

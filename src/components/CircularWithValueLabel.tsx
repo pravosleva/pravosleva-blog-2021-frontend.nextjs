@@ -43,6 +43,7 @@ function FacebookCircularProgress(
         sx={{
           // color: (theme) => (theme.palette.mode === 'light' ? theme.palette.primary : theme.palette.secondary),
           color: (theme) => theme.palette.primary.dark,
+          // color: 'rgb(203,213,225)',
           animationDuration: '550ms',
           position: 'absolute',
           left: 0,

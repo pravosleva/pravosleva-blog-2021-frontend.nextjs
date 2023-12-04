@@ -1,4 +1,4 @@
-import React, { useCallback, memo, useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import intl from 'react-intl-universal'
 import { SUPPOER_LOCALES, set, reset } from '~/store/reducers/lang'
@@ -10,8 +10,18 @@ const langCookieExpiresDays = process.env.REACT_APP_LANG_COOKIE_EXPIRES_IN_DAYS
   ? Number(process.env.REACT_APP_LANG_COOKIE_EXPIRES_IN_DAYS)
   : 1
 
-export const withTranslator = (WrappedComponent: any) => {
-  const Wrapper = memo((props: any) => {
+interface ITranslatorProps {
+  setLang: (l: any) => void;
+  resetLang: () => void;
+  currentLang: string;
+  t: (str: string, opts?: any) => string;
+  suppoerLocales: any;
+}
+
+export const withTranslator = <T,>(
+  WrappedComponent: React.FC<T & ITranslatorProps & { children?: React.ReactNode; }>
+): React.FC<T> => {
+  const Wrapper = (props: T): React.ReactElement<T, any> => {
     const current = useSelector((state: IRootState) => state.lang?.current)
     const suppoerLocales = useSelector((state: IRootState) => state.lang?.suppoerLocales || SUPPOER_LOCALES)
     const dispatch = useDispatch()
@@ -52,7 +62,7 @@ export const withTranslator = (WrappedComponent: any) => {
 
     return (
       <WrappedComponent
-        {...props}
+        {...(props as T)}
         setLang={handleSetLang}
         resetLang={handleResetLang}
         currentLang={current}
@@ -60,7 +70,7 @@ export const withTranslator = (WrappedComponent: any) => {
         suppoerLocales={suppoerLocales}
       />
     )
-  })
+  }
 
   return Wrapper
 }

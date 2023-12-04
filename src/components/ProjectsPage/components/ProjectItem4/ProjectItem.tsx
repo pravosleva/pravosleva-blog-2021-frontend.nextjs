@@ -35,7 +35,7 @@ export const ProjectItem = ({ title, link, description }: TProps) => {
         }}
       >
         <h3 className='big-text'>{title}</h3>
-        {!!description && <div>{description}</div>}
+        {!!description && <div className={classes.descr}>{description}</div>}
       </div>
     </Link>
   )

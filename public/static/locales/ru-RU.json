@@ -8,6 +8,16 @@
   "COMMENT": "Комментарий",
   "HOME": "Главная",
 
+  "AUDIT_LIST_PROJECT_DESCR": "Мы сделаем это лучше!",
+  "AUTO_PARK_PROJECT_DESCR": "Сервис авто (по пробегу)",
+  "TEAM_SCORING_PROJECT_DESCR": "Оценка правдивости прогноза",
+
+  "SOCKET_LAB/HEADER": "Сокеты",
+  "SOCKET_LAB/CONTENT/isConnected": "Соединение",
+  "SOCKET_LAB/CONTENT/isConnectedToPrivateRoom": "Приватная комната",
+  "SOCKET_LAB/BTN_CONN": "Подключиться к приватной комнате",
+  "SOCKET_LAB/BTN_DISCONN": "Отключиться от приватной комнаты",
+
   "HVAC_1": "Частичный подбор",
   "HVAC_1.1": "Компрессорная станция",
   "HVAC_1.1_DESCRIPTION": "Часть фреонового контура для сжатия хладагента без конденсатора и испарителя",

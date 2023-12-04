@@ -1,6 +1,7 @@
 @import '~/mui/scss-vars/colors.scss';
 
 .wrapper {
+  background-color: #F5F5F5;
   font-family: Montserrat, system-ui;
   border: 2px solid $grey-3;
   border-left: 5px solid $grey-3;
@@ -9,4 +10,8 @@
     border: 2px solid $color-mui-primary;
     border-left: 10px solid $color-mui-primary;
   }
+}
+
+.descr {
+  font-size: 0.9em;
 }
