@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { HYDRATE } from "next-redux-wrapper"
+import { HYDRATE } from 'next-redux-wrapper'
 
 export type TState = {
   isEnabled: boolean;
