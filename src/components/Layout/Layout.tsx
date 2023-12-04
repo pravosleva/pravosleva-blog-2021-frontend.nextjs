@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
 import NextNProgress from 'nextjs-progressbar'
 import clsx from 'clsx'
-import DesktopHeader from './components/Header/Desktop'
+import { DesktopHeader } from './components/Header/Desktop'
 import MobileHeader from './components/Header/Mobile'
 import { useStyles } from './useStyles'
 import classes from './Layout.module.scss'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
+import { CookiePolicyOffer } from '~/components'
 
 type TProps = {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
       >
         {children}
       </main>
+      <CookiePolicyOffer />
 
       {
         !noFooter && (
@@ -35,6 +37,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
               style={{
                 minHeight: '70px',
                 // border: '2px dashed red',
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
               }}
             >
               <ResponsiveBlock isLimited isPaddedMobile>

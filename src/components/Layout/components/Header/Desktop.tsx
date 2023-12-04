@@ -9,18 +9,20 @@ import { useRouter } from 'next/router'
 // import { showAsyncToast } from '@/actions'
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback'
 import { isCurrentPath } from '@/utils/routing/isCurrentPath'
-import { getGeoDataStr } from '@/utils/geo/getGeoDataStr'
+// import { getGeoDataStr } from '@/utils/geo/getGeoDataStr'
 import { Button } from '@/ui-kit/atoms'
 import { MenuModal } from './components/MenuModal'
 import { useUnscrolledBody } from '~/hooks/useUnscrolledBody'
-import { ThemeToggler } from '../ThemeToggler'
+// import { ThemeToggler } from '../ThemeToggler'
 import { withTranslator } from '@/hocs/withTranslator'
 import { LangLink } from './components/LangLink'
 import { breakpoints } from '~/mui/theme'
 // import { userInfoActions } from '@/store/reducers/user-info'
 import loadable from '@loadable/component'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
+import { IRootState } from '~/store/IRootState'
 
+// @ts-ignore
 const Identicon = loadable(() => import(/* webpackChunkName: "identicon" */ 'react-hooks-identicons'), {
   ssr: false,
 })
@@ -73,20 +75,20 @@ const MenuFlexWrapper = styled('div')`
   align-items: center;
   height: 100%;
 `
-const getIPs = (items) =>
-  items.map(({ ip, geo }) => `${ip}${getGeoDataStr(geo)}`).join(`
-`)
+// const getIPs = (items: any[]) =>
+//   items.map(({ ip, geo }) => `${ip}${getGeoDataStr(geo)}`).join(`
+// `)
 
-const DesktopHeader = ({
+const _DesktopHeader = ({
   // Translator:
   t,
   setLang,
   suppoerLocales, // Array like this: [{ label, name, value }]
   currentLang,
-}) => {
+}: any) => {
   // const usersConnected = useSelector((state) => state.users?.items)
-  const isAuthenticated = !!useSelector((state) => state.userInfo?.fromServer?.id)
-  const userInfo = !!useSelector((state) => state.userInfo?.fromServer)
+  const isAuthenticated = !!useSelector((state: IRootState) => state.userInfo?.fromServer?.id)
+  // const userInfo = !!useSelector((state: IRootState) => state.userInfo?.fromServer)
   const router = useRouter()
   const dispatch = useDispatch()
   const handleLogoutCb = useCallback(async () => {
@@ -118,15 +120,15 @@ const DesktopHeader = ({
     setIsMenuOpened(false)
   }, [])
   const handleSetLang = useCallback(
-    (value) => (e) => {
+    (value) => (e: any) => {
       e.preventDefault()
       setLang(value)
     },
     []
   )
-  const redirectToProfile = useCallback(() => {
-    router.push('/profile')
-  }, [])
+  // const redirectToProfile = useCallback(() => {
+  //   router.push('/profile')
+  // }, [])
 
   return (
     <>
@@ -170,7 +172,7 @@ const DesktopHeader = ({
                       </span>
                     )
                   </li>*/}
-                  {suppoerLocales.map((lang) => (
+                  {suppoerLocales.map((lang: any) => (
                     <li
                       key={lang.label}
                       style={{ marginBottom: '0px', cursor: 'pointer' }}
@@ -203,7 +205,7 @@ const DesktopHeader = ({
                       <a href="#">{t('LOGOUT')}</a>
                     </li>
                   )}
-                  {isAuthenticated && process.browser && (
+                  {/* isAuthenticated && process.browser && (
                     <li style={{ marginBottom: '0px' }} className="avatar-wrapper">
                       <div
                         style={{ cursor: 'pointer' }}
@@ -221,10 +223,15 @@ const DesktopHeader = ({
                         />
                       </div>
                     </li>
-                  )}
+                  ) */}
                   <li style={{ marginBottom: '0px' }}>
                     <MenuFlexWrapper>
-                      <Button onClick={handleMenuOpen} typeName="secondaryWhite" width="auto" size="xsmall">
+                      <Button
+                        onClick={handleMenuOpen}
+                        typeName='secondaryWhite'
+                        width='narrow'
+                        size='xsmall'
+                      >
                         {t('MENU')}
                       </Button>
                     </MenuFlexWrapper>
@@ -235,7 +242,11 @@ const DesktopHeader = ({
           
         </header>
       </Headroom>
-      <MenuModal isOpened={isMenuOpened} onHideModal={handleMenuClose} isAuthenticated={isAuthenticated} />
+      <MenuModal
+        isOpened={isMenuOpened}
+        onHideModal={handleMenuClose}
+        isAuthenticated={isAuthenticated}
+      />
       <style jsx>{`
         .avatar-wrapper {
           display: flex;
@@ -247,4 +258,6 @@ const DesktopHeader = ({
   )
 }
 
-export default withTranslator(DesktopHeader)
+export const DesktopHeader = withTranslator<{
+  [key: string]: any;
+}>(_DesktopHeader)

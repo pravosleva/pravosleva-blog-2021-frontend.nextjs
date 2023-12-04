@@ -61,7 +61,7 @@ const projects = [
   },
 ]
 
-export const ProjectsPage = withTranslator(({ t }: { t: (_s: string) => string }) => {
+export const ProjectsPage = withTranslator(({ t }) => {
   const getRandomValue = ({ items }: { items: any[] }) => {
     if (!Array.isArray(items)) return 'getRandomValue ERR: Incorrect arg'
     const randomIndex = Math.floor(Math.random() * items.length)

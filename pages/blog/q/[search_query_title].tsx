@@ -37,7 +37,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
       <Head>
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
-        <title>🔎 | {searchQueryTitle.normalized}</title>
+        <title>Search 🔎 | {searchQueryTitle.normalized}</title>
         <meta name="description" content={`What about ${searchQueryTitle.normalized}`} />
 
         {/* <!-- Facebook Meta Tags --> */}
@@ -67,7 +67,11 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
         <link href="/static/css/blog_sqt_[search_query_title].css" rel="stylesheet" />
       </Head>
       <Layout>
-        <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={searchQueryTitle} />
+        <ArticlesList
+          // _pageService={_pageService}
+          list={list}
+          searchQueryTitle={searchQueryTitle}
+        />
       </Layout>
     </>
   )

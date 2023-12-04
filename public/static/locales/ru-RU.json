@@ -105,9 +105,9 @@
   "TIP_VAR": "Это <span style='color:red'>{message}</span>",
   "PHOTO": "Вы имеете {photoNum, plural, =0 {ни одного фото.} =1 {одно фото.} other {# фотки.}}",
   "MESSAGE_NOT_IN_COMPONENT": "react-intl-universal способен интернационализировать сообщение вне React.Component",
-  "COOKIE_POLICY_TEXT": "Мы юзаем куки",
+  "COOKIE_POLICY_TEXT": "Мы используем куки",
   "READ_MORE_HERE": "Здесь про куки",
-  "I_AGREE": "Ясно понятно",
+  "I_AGREE": "Я в курсе",
   "GO_BACK_TO_THE_HOMEPAGE": "Вернуться на главную",
   "YOUR_NAME": "Ваше имя",
 

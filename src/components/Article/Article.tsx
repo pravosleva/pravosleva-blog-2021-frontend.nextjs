@@ -16,7 +16,7 @@ import { useBaseStyles } from '~/mui/useBaseStyles'
 // import styles from './Article.module.scss'
 // import { breakpoints } from '~/mui/theme'
 
-export const Article = withTranslator(({ t, article }: TArticleComponentProps) => {
+export const Article = withTranslator<TArticleComponentProps>(({ t, article }) => {
   // React.useEffect(() => {
   //   // You can call the Prism.js API here
   //   // Use setTimeout to push onto callback queue so it runs after the DOM is updated

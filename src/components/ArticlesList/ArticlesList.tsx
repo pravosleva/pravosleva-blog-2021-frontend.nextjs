@@ -10,7 +10,7 @@ import { useCompare } from '~/hooks/useDeepEffect'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 type TArticlesListComponentProps = {
-  t: (translatableString: string) => string;
+  // t: (translatableString: string) => string;
   list: TArticle[];
   searchQueryTitle: {
     original: string;
@@ -20,7 +20,7 @@ type TArticlesListComponentProps = {
   isBlogPage?: boolean;
 }
 
-export const ArticlesList = withTranslator(({ t, list, searchQueryTitle, isBlogPage }: TArticlesListComponentProps) => {
+export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, list, searchQueryTitle, isBlogPage }) => {
   // const { state: _state, set, reset } = useSearch('blog.search')
   // useEffect(() => {
   //   if (isBlogPage) reset()

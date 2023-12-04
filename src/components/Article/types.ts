@@ -24,5 +24,5 @@ export type TPageService = {
 export type TArticleComponentProps = {
   article: TArticle;
   _pageService: TPageService;
-  t: (translatableString: string) => string;
+  // t: (translatableString: string) => string;
 }

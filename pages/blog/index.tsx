@@ -80,7 +80,16 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         <link href="/static/css/blog_sqt_[search_query_title].css" rel="stylesheet" />
       </Head>
       <Layout>
-        <ArticlesList _pageService={_pageService} list={list} searchQueryTitle={{ modified: 'ALL', original: 'ALL' }} isBlogPage />
+        <ArticlesList
+          // _pageService={_pageService}
+          list={list}
+          searchQueryTitle={{
+            original: 'ALL',
+            withoutSpaces: 'ALL',
+            normalized: 'ALL',
+          }}
+          isBlogPage
+        />
       </Layout>
     </>
   )

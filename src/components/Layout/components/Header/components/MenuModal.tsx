@@ -21,8 +21,8 @@ interface IProps {
   isOpened: boolean
   onHideModal: () => void
   isAuthenticated: boolean
-  t: (text: string) => string
-  resetLang: () => void
+  // t: (text: string) => string
+  // resetLang: () => void
 }
 
 const Wrapper = styled('div')`
@@ -128,7 +128,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
   </Wrapper>
 )
 
-export const MenuModal = withTranslator(({ isOpened, onHideModal, isAuthenticated, t, resetLang }: IProps) => {
+export const MenuModal = withTranslator<IProps>(({
+  isOpened, onHideModal, isAuthenticated,
+  t,
+  resetLang,
+}) => {
   const router = useRouter()
   // console.log(router)
   const isCurrentPathCb = useCallback((path) => isCurrentPath(router.pathname, path) || isCurrentPath(router.asPath, path), [router.pathname, router.asPath])

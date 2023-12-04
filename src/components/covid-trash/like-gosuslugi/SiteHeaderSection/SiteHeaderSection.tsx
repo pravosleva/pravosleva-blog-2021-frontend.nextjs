@@ -3,12 +3,12 @@ import React, { useCallback, useMemo } from 'react'
 import { useStyles } from './styles'
 import { withTranslator } from '~/hocs/withTranslator'
 
-interface IProps {
-  t: (a: string) => string,
-  setLang: (v: string) => void,
-  suppoerLocales: { label: string, name: string, value: string, svgSrc: string, guLabel: string }[],
-  currentLang: string,
-}
+// interface IProps {
+//   t: (a: string) => string,
+//   setLang: (v: string) => void,
+//   suppoerLocales: { label: string, name: string, value: string, svgSrc: string, guLabel: string }[],
+//   currentLang: string,
+// }
 const getLangData = (currentLang: string, suppoerLocales: any) => {
   let targetItem = suppoerLocales.find(({ value }: any) => currentLang === value)
 
@@ -30,12 +30,12 @@ const getNextLang = (currentLang: string, suppoerLocales: any) => {
   return targetIndex
 }
 
-export const SiteHeaderSectionConnected = ({
+export const SiteHeaderSection = withTranslator(({
   // t,
   setLang,
   suppoerLocales,
   currentLang, // SAMPLE: 'en-US'
-}: IProps) => {
+}) => {
   // @ts-ignore
   const classes = useStyles()
   const handleChangeLang = useCallback(() => {
@@ -52,6 +52,4 @@ export const SiteHeaderSectionConnected = ({
       </div>
     </div>
   )
-}
-
-export const SiteHeaderSection = withTranslator(SiteHeaderSectionConnected)
+})

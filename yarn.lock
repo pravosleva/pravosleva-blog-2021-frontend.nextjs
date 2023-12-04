@@ -2542,6 +2542,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/loadable__component@^5.13.7":
+  version "5.13.7"
+  resolved "https://registry.yarnpkg.com/@types/loadable__component/-/loadable__component-5.13.7.tgz#2ffee9d9f7fdd231662b0aa5e48a69b01e5efdff"
+  integrity sha512-/FTIqPHwA5FbtjdsxJl8NGByOKtH1dkH2A1BGNViGUPxCEsuckqC+XC7yPVuJWa3AV5webfopDWZ6df6cN0ZHA==
+  dependencies:
+    "@types/react" "*"
+
 "@types/local-storage@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/local-storage/-/local-storage-2.0.0.tgz#7dc6962bd02e74e2de1e41fa33fc9381bcf2d164"
@@ -2659,6 +2666,13 @@
   version "17.0.9"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.9.tgz#441a981da9d7be117042e1a6fd3dac4b30f55add"
   integrity sha512-wIvGxLfgpVDSAMH5utdL9Ngm5Owu0VsGmldro3ORLXV8CShrL8awVj06NuEXFQ5xyaYfdca7Sgbk/50Ri1GdPg==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-headroom@^3.2.3":
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/@types/react-headroom/-/react-headroom-3.2.3.tgz#5756fe089146d52e45bbb527cbe9443352107535"
+  integrity sha512-rdgcMfoxN6wnGm8mSlwA7vuuK8ojXUI/tWHX1qJSAS7DNuvt7zv3zUtYs15UETEtE0Wc2YJCq0PZlHhZ+lRP4Q==
   dependencies:
     "@types/react" "*"
 
