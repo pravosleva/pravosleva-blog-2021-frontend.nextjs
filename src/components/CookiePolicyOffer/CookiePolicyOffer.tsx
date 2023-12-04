@@ -60,7 +60,7 @@ export const CookiePolicyOffer = withTranslator(({
   const handleConfirm = useCallback(() => {
     Cookie.set('cookie-confirmed', '1', {
       expires: confirmCookieExpiresDays,
-      sameSite: 'none',
+      sameSite: 'strict',
     })
     dispatch(disable())
   }, [])
