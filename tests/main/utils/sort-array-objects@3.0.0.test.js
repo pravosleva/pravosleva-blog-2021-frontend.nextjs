@@ -1,5 +1,73 @@
 import { sort } from '@src/utils/sort-array-objects@3.0.0'
 
+test('sort-array-objects@3.0.0 | todos case 1 ASC', () => {
+  const arr = [
+    {
+      priority: 1,
+      updatedAt: '2023-11-19T01:13:03.482Z',
+    },
+    {
+      priority: 2,
+      updatedAt: '2023-12-19T01:13:03.482Z',
+    },
+  ]
+  const tested = sort(
+    arr,
+    ['priority', 'updatedAt'],
+    1,
+  );
+  const expected = [
+    {
+      priority: 1,
+      updatedAt: '2023-11-19T01:13:03.482Z',
+    },
+    {
+      priority: 2,
+      updatedAt: '2023-12-19T01:13:03.482Z',
+    },
+  ]
+
+  expect(tested).toEqual(expected);
+});
+
+test('sort-array-objects@3.0.0 | todos case 2 DESC', () => {
+  const arr = [
+    {
+      priority: 1,
+      updatedAt: '2023-11-19T01:13:03.483Z',
+    },
+    {
+      priority: 2,
+      updatedAt: '2023-11-19T01:13:03.482Z',
+    },
+    {
+      priority: 2,
+      updatedAt: '2023-12-19T01:13:03.482Z',
+    },
+  ]
+  const tested = sort(
+    arr,
+    ['priority', 'updatedAt'],
+    -1,
+  );
+  const expected = [
+    {
+      priority: 2,
+      updatedAt: '2023-12-19T01:13:03.482Z',
+    },
+    {
+      priority: 2,
+      updatedAt: '2023-11-19T01:13:03.482Z',
+    },
+    {
+      priority: 1,
+      updatedAt: '2023-11-19T01:13:03.483Z',
+    },
+  ]
+
+  expect(tested).toEqual(expected);
+});
+
 test('sort-array-objects@3.0.0 | sort case 1 ASC', () => {
   const arr = [
     {

@@ -456,7 +456,7 @@ export const TodoConnected = ({
               )}
             >
               {
-                sort(strapiTodos, ['priority'], -1).map((todo, _i) => {
+                sort(strapiTodos, ['priority', 'updatedAt'], -1).map((todo, _i) => {
                   if (
                     typeof todoPriorityFilter === 'number'
                     && todo.priority !== todoPriorityFilter
