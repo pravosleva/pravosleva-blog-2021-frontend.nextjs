@@ -89,7 +89,7 @@ nextApp
           chat_id: 432590698, // NOTE: Den Pol
           ts,
           eventCode: 'aux_service',
-          about: `\`/frontend.nextjs\`\n🚀 Started on TCP ${PORT} https://pravosleva.pro`,
+          about: `\`/frontend.nextjs@${packageJson.version}\`\n🚀 Started on TCP ${PORT} https://pravosleva.pro`,
           targetMD: `\`\`\`json\n${JSON.stringify(
             {
               NODE_ENV: process.env.NODE_ENV,
@@ -112,7 +112,7 @@ nextApp
         chat_id: 432590698, // NOTE: Den Pol
         ts,
         eventCode: 'aux_service',
-        about: `\`/frontend.nextjs\`\n⛔ Errored`,
+        about: `\`/frontend.nextjs@${packageJson.version}\`\n⛔ Errored`,
         targetMD: `\`\`\`json\n${ex.stack}\n\`\`\``,
       })
       .then((res) => res.data)

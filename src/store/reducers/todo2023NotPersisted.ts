@@ -4,9 +4,11 @@ import { NTodo } from '~/components/audit-helper'
 
 export type TState = {
   strapiTodos: NTodo.TTodo[];
+  strapiTodosMeta: NTodo.TMeta;
 }
 export const initialState: TState = {
   strapiTodos: [],
+  strapiTodosMeta: null,
 }
 
 export const todo2023NotPersistedSlice: any = createSlice({
@@ -43,8 +45,28 @@ export const todo2023NotPersistedSlice: any = createSlice({
         state.strapiTodos = [action.payload]
       }
     },
-    replaceStrapiTodo: (state: TState, action: { payload: NTodo.TTodo[]; }) => {
+    replaceStrapiTodos: (state: TState, action: { payload: NTodo.TTodo[]; }) => {
       state.strapiTodos = action.payload
+    },
+    updateStrapiTodosAndMeta: (
+      state: TState,
+      action: {
+        payload: {
+          meta: NTodo.TMeta;
+          list: NTodo.TTodo[];
+        };
+      }
+    ) => {
+      state.strapiTodos = action.payload.list
+      state.strapiTodosMeta = action.payload.meta
+    },
+    updateStrapiTodosMeta: (
+      state: TState,
+      action: {
+        payload: NTodo.TMeta;
+      }
+    ) => {
+      state.strapiTodosMeta = action.payload
     },
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
@@ -62,7 +84,9 @@ export const {
   addStrapiTodo,
   removeStrapiTodo,
   updateStrapiTodo,
-  replaceStrapiTodo,
+  replaceStrapiTodos,
+  updateStrapiTodosAndMeta,
+  updateStrapiTodosMeta,
 } = todo2023NotPersistedSlice.actions
 
 export const reducer = todo2023NotPersistedSlice.reducer

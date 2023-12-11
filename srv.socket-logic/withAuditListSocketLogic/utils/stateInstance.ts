@@ -569,7 +569,7 @@ class Singleton {
         namespace: string;
         status: NTodo.EStatus;
         description: string;
-      }
+      };
     };
   }> {
     // NOTE: v1
@@ -626,6 +626,12 @@ class Singleton {
         room,
         namespace,
       })
+      // const result = await strapiHttpClient.gqlUpdateTodo({
+      //   todoId,
+      //   todoItem: newTodoItem,
+      //   namespace,
+      //   tg_chat_id: room,
+      // })
 
       console.log('-- stateInstance:updateTodo:result')
       console.log(result)
@@ -640,6 +646,18 @@ class Singleton {
         // console.log(result) // NOTE: { isOk: false, msg: 'Http Error 404: Not Found' }
         throw new Error(result.message || 'ERR')
       }
+      // if (result.ok && !!result.res?.data?.id) {
+      //   return Promise.resolve({
+      //     isOk: true,
+      //     updatedTodo: {
+      //       id: Number(result.res?.data.id),
+      //       attributes: result.res?.data.attributes,
+      //     },
+      //   })
+      // } else {
+      //   // console.log(result) // NOTE: { isOk: false, msg: 'Http Error 404: Not Found' }
+      //   throw new Error(result.message || 'ERR')
+      // }
     } catch (err: any) {
       return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }

@@ -47,6 +47,7 @@ export namespace NEvent {
     TODO2023_REMOVE_TODO_ITEM = 'c:todo-2023:remove-todo-item',
     TODO2023_UPDATE_TODO_ITEM = 'c:todo-2023:update-todo-item',
     TODO2023_REPLACE_ROOM_STATE = 'c:todo-2023:replace-room-state',
+    TODO2023_REQUEST_PAGE = 'c:todo-2023:request-page',
   }
 }
 
@@ -64,6 +65,14 @@ export namespace NEventData {
         audits: TAudit[];
         // roomState: NTodo.TRoomState | undefined;
         strapiTodos: NTodo.TTodo[];
+        strapiTodosMeta?: {
+          pagination: {
+            page: number;
+            pageSize: number;
+            pageCount: number;
+            total: number;
+          };
+        };
         _specialReport?: any;
       };
     }
@@ -149,6 +158,14 @@ export namespace NEventData {
     export type TTodo2023ReplaceRoomState = {
       // roomState: NTodo.TRoomState;
       strapiTodos: NTodo.TTodo[];
+      strapiTodosMeta?: {
+        pagination: {
+          page: number;
+          pageSize: number;
+          pageCount: number;
+          total: number;
+        };
+      };
     }
   }
 }

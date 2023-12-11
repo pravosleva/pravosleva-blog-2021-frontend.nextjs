@@ -267,7 +267,11 @@ class httpClientSingletone {
     })
   }
 
-  public async getTodos<T>(): Promise<{ ok: boolean; res?: T; message?: string; }> {
+  public async getTodos<T>(): Promise<{
+    ok: boolean;
+    res?: T;
+    message?: string;
+  }> {
     const result = await this.get('/todos')
 
     // console.log('-- strapiHttpClient:getTodos:result')
@@ -286,8 +290,9 @@ class httpClientSingletone {
     })
   }
 
-  public async gqlGetTodos({ tg_chat_id }: {
+  public async gqlGetTodos({ tg_chat_id, page }: {
     tg_chat_id: number;
+    page: number;
   }): Promise<{
     ok: boolean;
     res?: {
@@ -301,7 +306,15 @@ class httpClientSingletone {
           tg_chat_id: number;
           namespace: string;
         }
-      }[]
+      }[];
+      meta: {
+        pagination: {
+          page: number;
+          pageSize: number;
+          pageCount: number;
+          total: number;
+        };
+      };
     };
     message?: string;
   }> {
@@ -315,6 +328,7 @@ class httpClientSingletone {
     }
     sort: ["priority:desc", "createdAt:asc"]
     pagination: {
+      page: ${page}
       pageSize: 100
     }
   ) {
@@ -332,30 +346,25 @@ class httpClientSingletone {
         updatedAt
       }
     }
+    meta {
+      pagination {
+        page
+        pageSize
+        pageCount
+        total
+      }
+    }
   }
 }`,
       })
         // .then(httpErrorHandler) // res -> res.data
-        .then((json) => {
-          /* NOTE: Errors example
-          {
-            errors: [
-              {
-                message: 'Cannot query field "createdAt" on type "TodoEntity".',
-                locations: [Array],
-                extensions: [Object]
-              },
-              {
-                message: 'Cannot query field "updatedAt" on type "TodoEntity".',
-                locations: [Array],
-                extensions: [Object]
-              }
-            ]
-          }
-          */
-          // console.log(json?.data) // NOTE: { data: { todos: { data: [Array] } } }
-          if (Array.isArray(json?.data?.data?.todos?.data)) {
-            return json?.data?.data?.todos
+        .then((json: any) => {
+          // console.log(json?.data?.data?.todos)
+          if (
+            Array.isArray(json?.data?.data?.todos?.data)
+            && !!json?.data?.data?.todos?.meta
+          ) {
+            return json.data.data.todos
           } else {
             console.log('- not ok: json?.data?.data')
             console.log(json?.data?.data)
@@ -363,23 +372,130 @@ class httpClientSingletone {
           }
 
           const msg = this.getStrapiGqlErrMsg('GraphQL API Error', json?.data?.errors)
-          // console.log(msg)
           throw new ApiError(msg)
-          // return data
         }) // data -> data
-        .then((data: any) => ({
+        .then((todos: any) => ({
           isOk: true,
-          response: data,
+          response: todos,
         }))
         .catch(axiosUniversalCatch)
 
-      // console.log('--gqlGetTodos:result')  
-      // console.log(result)
-      // console.log('--')
+      if (result.isOk) return Promise.resolve({
+        ok: true,
+        res: result.response,
+      })
+      return Promise.reject({
+        ok: false,
+        // @ts-ignore
+        message: result.message || 'No message'
+      })
+  }
+
+  public async gqlUpdateTodo({
+    todoId,
+    todoItem,
+    namespace,
+    tg_chat_id,
+  }: {
+    tg_chat_id: number;
+    todoId: number;
+    todoItem: NTodo.TItem;
+    namespace: string;
+  }): Promise<{
+    ok: boolean;
+    res?: {
+      data: {
+        id: string;
+        attributes: {
+          label: string;
+          description: string;
+          priority: number;
+          status: NTodo.EStatus;
+          tg_chat_id: number;
+          namespace: string;
+          createdAt: string; // "2023-11-19T01:13:03.482Z",
+          updatedAt: string; // "2023-11-19T01:13:03.482Z",
+        }
+      };
+      meta: {
+        pagination: {
+          page: number;
+          pageSize: number;
+          pageCount: number;
+          total: number;
+        };
+      };
+    };
+    message?: string;
+  }> {
+    const result = await this.gqlApi.post('', {
+      mutation: `{
+  updateTodo(
+    id: ${todoId}
+    data: {
+      label: "${todoItem.label}"
+      namespace: "${namespace}"
+      priority: "${todoItem.priority}"
+      tg_chat_id: ${tg_chat_id}
+      status: ${todoItem.status}
+      description: "${todoItem.description}"
+    }
+  ) {
+    data {
+      id
+      attributes {
+        label
+        description
+        priority
+        status
+        tg_chat_id
+        namespace
+
+        createdAt
+        updatedAt
+      }
+    }
+    meta {
+      pagination {
+        page
+        pageSize
+        pageCount
+        total
+      }
+    }
+  }
+}`,
+      })
+        // .then(httpErrorHandler) // res -> res.data
+        .then((json: any) => {
+          console.log(json)
+          // if (
+          //   Array.isArray(json?.data?.data?.todos?.data
+          //   && !!json?.data?.data?.todos?.meta
+          // )) {
+          //   return {
+          //     todos: json.data.data.todos,
+          //   }
+          // } else {
+          //   console.log('- not ok: json?.data?.data')
+          //   console.log(json?.data?.data)
+          //   console.log('-')
+          // }
+
+          console.log(json?.data?.errors)
+
+          const msg = this.getStrapiGqlErrMsg('GraphQL API Error', json?.data?.errors)
+          throw new ApiError(msg)
+        }) // data -> data
+        .then((todos: any) => ({
+          isOk: true,
+          response: todos,
+        }))
+        .catch(axiosUniversalCatch)
       
       if (result.isOk) return Promise.resolve({
         ok: true,
-        res: result.response
+        res: result.response,
       })
       return Promise.reject({
         ok: false,

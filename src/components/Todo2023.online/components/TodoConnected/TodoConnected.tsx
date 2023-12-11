@@ -1,9 +1,9 @@
 import { TSocketMicroStore, useStore } from '~/components/Todo2023.online/hocs'
 import classes from './TodoConnected.module.scss'
 import clsx from 'clsx'
-import { IconButton, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@mui/material'
+import { Button, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Typography } from '@mui/material'
 // import AccountTreeIcon from '@mui/icons-material/AccountTree'
-import { useCallback, useMemo, useState, useRef } from 'react'
+import { useCallback, useMemo, useState, useRef, useEffect } from 'react'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 // import AddCircleIcon from '@mui/icons-material/AddCircle'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
@@ -35,6 +35,8 @@ import { sort } from '~/utils/sort-array-objects@3.0.0'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 
 type TProps = {
   onCreateNamespace: ({ label }: { label: string }) => void;
@@ -42,7 +44,8 @@ type TProps = {
   onCreateTodo: ({ label, namespace, priority }: { label: string; namespace: string; priority: number; }) => void;
   onRemoveNamespace: ({ name }: { name: string }) => void;
   onRemoveTodo: ({ todoId, namespace }: { todoId: number; namespace: string; }) => void;
-  onUpdateTodo: ({ todoId, namespace, newTodoItem }: { todoId: number; namespace: string; newTodoItem: NTodo.TItem }) => void;
+  onUpdateTodo: ({ todoId, namespace, newTodoItem }: { todoId: number; namespace: string; newTodoItem: NTodo.TItem; }) => void;
+  onRequestPage: (page: number) => void;
 }
 
 export const TodoConnected = ({
@@ -52,7 +55,9 @@ export const TodoConnected = ({
   onCreateTodo,
   onRemoveTodo,
   onUpdateTodo,
+  onRequestPage,
 }: TProps) => {
+  const [pageCounter, setPageCounter] = useState<number>(1)
   const [isConnected] = useStore((store: TSocketMicroStore) => store.isConnected)
 
   // const [roomState, _setStore] = useStore((store) => store.common.roomState)
@@ -108,7 +113,11 @@ export const TodoConnected = ({
   //   handleMenuClose()
   // }, [onRemoveNamespace, handleMenuClose])
   const handleCreateNewTodo = useCallback((ev) => {
-    onCreateTodo({ label: ev.todoLabel, namespace: ev.namespace, priority: ev.priority })
+    onCreateTodo({
+      label: ev.todoLabel,
+      namespace: ev.namespace,
+      priority: ev.priority,
+    })
     handleMenuClose()
     return Promise.resolve()
   }, [onCreateTodo, handleMenuClose])
@@ -155,6 +164,22 @@ export const TodoConnected = ({
     
     onUpdateTodo(newObj)
   }, [onUpdateTodo])
+
+  const handleRemoveTodo = useCallback(({ id, namespace }: { id: number; namespace: string; }) => {
+    const isConfirmed = window.confirm(`🔥 Todo will be removed! It's Ok?`)
+    if (isConfirmed) onRemoveTodo(
+      { todoId: id, namespace },
+      // () => {
+      //   onRequestPage(
+      //     pageCounter !== 1
+      //     ? strapiTodos.length > 0
+      //       ? pageCounter
+      //       : pageCounter - 1
+      //     : 1
+      //   )
+      // }
+    )
+  }, [pageCounter, strapiTodos.length, onRemoveTodo, onRequestPage])
 
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
   const MemoizedMenu = useMemo(() => {
@@ -266,6 +291,72 @@ export const TodoConnected = ({
     handleOpenEditTodoDialog()
   }, [setEditedTodo, handleOpenEditTodoDialog])
   // -
+
+  const strapiTodosMeta = useSelector((store: IRootState) => store.todo2023NotPersisted.strapiTodosMeta)
+  const incPageCounter = useCallback(() => {
+    setPageCounter((s) => s + 1)
+  }, [setPageCounter])
+  const decPageCounter = useCallback(() => {
+    setPageCounter((s) => s - 1)
+  }, [setPageCounter])
+  useEffect(() => {
+    // TODO: Debounce
+    onRequestPage(pageCounter)
+  }, [pageCounter, onRequestPage, strapiTodos.length])
+  const MemoizedMeta = useMemo(() => {
+    const isFirst = strapiTodosMeta?.pagination.page === 1
+    const isLast = strapiTodosMeta?.pagination.page === strapiTodosMeta?.pagination.pageCount
+
+    if (!strapiTodosMeta) return (
+      <div>
+        No pagination data
+      </div>
+    )
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+      >
+        <Button
+          onClick={decPageCounter}
+          variant='outlined'
+          color='primary'
+          disabled={isFirst}
+          size='small'
+          startIcon={<KeyboardArrowLeftIcon />}
+        >
+          Prev
+        </Button>
+        <div>
+          {
+            isFirst
+            ? 1
+            : ((strapiTodosMeta.pagination.pageSize * (strapiTodosMeta.pagination.page - 1)) + 1)
+          } - {
+            !isLast
+            ? strapiTodosMeta.pagination.pageSize * strapiTodosMeta.pagination.page
+            : strapiTodosMeta.pagination.total
+          } of {strapiTodosMeta.pagination.total}
+        </div>
+        <Button
+          onClick={incPageCounter}
+          variant='outlined'
+          color='primary'
+          disabled={isLast}
+          size='small'
+          endIcon={<KeyboardArrowRightIcon />}
+        >
+          Next
+        </Button>
+      </div>
+    )
+  }, [strapiTodos, strapiTodosMeta])
 
   return (
     <>
@@ -397,6 +488,10 @@ export const TodoConnected = ({
 
       <div
         className={classes.stack}
+        style={{
+          position: 'relative',
+          minHeight: '100%',
+        }}
       >
         <div
           className={clsx(
@@ -483,10 +578,7 @@ export const TodoConnected = ({
                             style={{ color: InvertedStatusColors[todo.status] }}
                           />,
                           // color: 'primary',
-                          onClick: () => {
-                            const isConfirmed = window.confirm(`🔥 Todo will be removed! It's Ok?`)
-                            if (isConfirmed) onRemoveTodo({ todoId: todo.id, namespace: todo.namespace })
-                          },
+                          onClick: () => handleRemoveTodo({ id: todo.id, namespace: todo.namespace }),
                         },
                         {
                           id: `edit-todo-${todo.id}`,
@@ -514,6 +606,22 @@ export const TodoConnected = ({
           )
         }
 
+        {
+          strapiTodos.length > 0 && strapiTodosMeta?.pagination.page !== strapiTodosMeta?.pagination.pageCount && (
+            <div
+              className={clsx(classes.footer)}
+              style={{
+                backgroundColor: '#fff',
+                
+                // https://developer.mozilla.org/ru/docs/Web/CSS/box-shadow
+                // NOTE: offset-x | offset-y | blur-radius | spread-radius | color
+                boxShadow: '0px -10px 7px -8px rgba(34, 60, 80, 0.2)',
+              }}
+            >
+              {MemoizedMeta}
+            </div>
+          )
+        }
       </div>
     </>
   )

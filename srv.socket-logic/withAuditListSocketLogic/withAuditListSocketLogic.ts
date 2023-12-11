@@ -87,8 +87,10 @@ export const withAuditListSocketLogic = (io: Socket) => {
       // const t2 = performance.now()
       strapiHttpClient.gqlGetTodos({
         tg_chat_id: room,
+        page: 1,
       })
         .then((result) => {
+          // console.log(result?.res) // NOTE: Output { data, meta }
           if (!!result.res?.data && Array.isArray(result.res.data)) {
             const strapiTodos = result.res.data.reduce((acc: any, item: any) => {
               const normalizedTodo: NTodo.TTodo = {
@@ -109,6 +111,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
             io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, {
               room,
               strapiTodos,
+              strapiTodosMeta: result.res?.meta,
               _specialReport: {
                 // fixResponses,
                 originalData: result.res?.data,
@@ -178,6 +181,50 @@ export const withAuditListSocketLogic = (io: Socket) => {
           strapiTodos: [],
           // --
         }})
+    })
+    socket.on(NEvent.EServerIncoming.TODO2023_REQUEST_PAGE, ({ room, page }: NEventData.NServerIncoming.TRequestPage) => {
+      strapiHttpClient.gqlGetTodos({
+        tg_chat_id: room,
+        page,
+      })
+        .then((result) => {
+          // console.log(result?.res) // NOTE: Output { data, meta }
+          if (!!result.res?.data && Array.isArray(result.res.data)) {
+            const strapiTodos = result.res.data.reduce((acc: any, item: any) => {
+              const normalizedTodo: NTodo.TTodo = {
+                id: Number(item.id),
+                label: item.attributes?.label,
+                description: item.attributes?.description,
+                status: item.attributes?.status,
+                priority: item.attributes?.priority,
+                tg_chat_id: Number(item.attributes?.tg_chat_id),
+                namespace: item.attributes?.namespace,
+
+                createdAt: item.attributes.createdAt,
+                updatedAt: item.attributes.updatedAt,
+              }
+              acc.push(normalizedTodo)
+              return acc
+            }, [])
+            io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, {
+              room,
+              strapiTodos,
+              strapiTodosMeta: result.res?.meta,
+              _specialReport: {
+                // fixResponses,
+                originalData: result.res?.data,
+              },
+            })
+          }
+          else io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
+            message: `BACK Socket report3 <- ${result?.message || 'Не удалось получить список todo (текст ошибки не получен)'}`,
+          })
+        })
+        .catch((err) => {
+          io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
+            message: `BACK Socket report4 <- ${err?.message || 'Не удалось получить список todo (текст ошибки не получен)'}`,
+          })
+        })
     })
     // 2.
     socket.on(NEvent.EServerIncoming.AUDITLIST_REPLACE, async ({ room, audits }: NEventData.NServerIncoming.TAUDITLIST_REPLACE, _cb: NEventData.NServerIncoming.TAUDITLIST_REPLACE_CB) => {
@@ -579,7 +626,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
                 newTodo: {
                   id: e.data?.id,
                   label: e.data?.attributes.label,
-                  description: e.data?.attributes.description,
+                  // description: e.data?.attributes.description,
                   namespace: e.data?.attributes.namespace,
                   status: e.data?.attributes.status,
                   tg_chat_id: e.data?.attributes.tg_chat_id,

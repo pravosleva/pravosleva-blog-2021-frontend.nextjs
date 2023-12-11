@@ -66,7 +66,8 @@ import {
   addStrapiTodo,
   removeStrapiTodo,
   updateStrapiTodo,
-  replaceStrapiTodo,
+  replaceStrapiTodos,
+  updateStrapiTodosAndMeta,
 } from '~/store/reducers/todo2023NotPersisted'
 import { AddAnythingNewDialog } from './components/TodoConnected/components'
 
@@ -93,9 +94,11 @@ const Logic = ({ room }: TLogicProps) => {
   const socketRef = useRef<Socket | null>(null)
   const localAudits = useSelector((store: IRootState) => store.todo2023.localAudits)
   const { enqueueSnackbar } = useSnackbar()
-  const showStandartSocketErrMsg = useCallback(({ showSuccessMsg }: { showSuccessMsg: boolean }) => ({ isOk, message }: { isOk: boolean; message?: string }) => {
+  const showStandartSocketErrMsg = useCallback(({ showSuccessMsg, cb }: { showSuccessMsg: boolean; cb?: () => void; }) => ({ isOk, message }: { isOk: boolean; message?: string }) => {
     if (!isOk) enqueueSnackbar(message || 'Что-то пошло не так', { variant: 'error', autoHideDuration: 7000 })
     else if (showSuccessMsg) enqueueSnackbar(message || 'Ok', { variant: 'success', autoHideDuration: 7000 })
+    
+    if (!!cb) cb()
   }, [enqueueSnackbar])
 
   useEffect(() => {
@@ -143,7 +146,11 @@ const Logic = ({ room }: TLogicProps) => {
           ),
         })
 
-        dispatch(replaceStrapiTodo(data?.strapiTodos || []))
+        // dispatch(replaceStrapiTodos(data?.strapiTodos || []))
+        dispatch(updateStrapiTodosAndMeta({
+          meta: data?.strapiTodosMeta || null,
+          list: data?.strapiTodos || [],
+        }))
         // if (data.audits.length > 0 && !document.hidden) enqueueSnackbar(`Получены аудиты (${data.audits.length})`, { variant: 'info', autoHideDuration: 2000 })
       })
     }
@@ -245,9 +252,15 @@ const Logic = ({ room }: TLogicProps) => {
     // NOTE: New 2023.11
     const onTodo2023Replace2 = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_REPLACE_ALL}`, items: [data] })
-      if (!!data.strapiTodos) dispatch(replaceStrapiTodo(data?.strapiTodos || []))
+      if (!!data.strapiTodos && !!data.strapiTodosMeta) dispatch(updateStrapiTodosAndMeta({
+        meta: data?.strapiTodosMeta || null,
+        list: data?.strapiTodos || [],
+      }))
+      else if (!!data.strapiTodos) dispatch(replaceStrapiTodos(data?.strapiTodos || []))
+      // if (!!data.strapiTodosMeta)
     }
     socket.on(NEvent.EServerOutgoing.TODO2023_REPLACE_ALL, onTodo2023Replace2)
+
     const onTodo2023ItemAdded = (data: { newTodo: NTodo.TTodo }) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.TODO2023_TODO_ITEM_ADDED}`, items: [data] })
       if (!!data) dispatch(addStrapiTodo(data.newTodo))
@@ -663,6 +676,14 @@ const Logic = ({ room }: TLogicProps) => {
   }, [])
   // --
 
+  const handleRequestPage = useCallback((page: number) => {
+    if (!socketRef.current) throw new Error('socket err')
+    socketRef.current.emit(NEvent.EServerIncoming.TODO2023_REQUEST_PAGE, {
+      room: roomRef.current,
+      page,
+    })
+  }, [])
+
   const { isMobile, isDesktop } = useWindowSize()
 
   const MemoizedMenu = useMemo(() => {
@@ -870,6 +891,7 @@ const Logic = ({ room }: TLogicProps) => {
             onCreateTodo={handleCreateTodo}
             onRemoveTodo={handleRemoveTodo}
             onUpdateTodo={handleUpdateTodo}
+            onRequestPage={handleRequestPage}
           />
         </Widget>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
@@ -1023,6 +1045,7 @@ const Logic = ({ room }: TLogicProps) => {
                 onCreateTodo={handleCreateTodo}
                 onRemoveTodo={handleRemoveTodo}
                 onUpdateTodo={handleUpdateTodo}
+                onRequestPage={handleRequestPage}
               />
             ) : (
               <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center' }}>
