@@ -1,7 +1,7 @@
 // import { useMemo } from 'react'
 // import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import { getFormatedDate2 } from '~/utils/timeConverter'
+import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
 // import Prism from 'prismjs'
 import { withTranslator } from '~/hocs/withTranslator'
 import { baseRenderers } from '~/react-markdown-renderers'

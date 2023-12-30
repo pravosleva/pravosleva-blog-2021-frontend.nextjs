@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { getTimeAgo } from '~/utils/getTimeAgo'
+import { getTimeAgo } from '~/utils/time-tools/getTimeAgo'
 
 type TProps = {
   date: number | undefined;

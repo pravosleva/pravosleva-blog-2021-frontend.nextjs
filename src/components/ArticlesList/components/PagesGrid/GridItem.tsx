@@ -7,7 +7,7 @@
 // } from '~/actions'
 // import { useDispatch } from 'react-redux'
 // import { useCallback } from 'react'
-import { getNormalizedDate } from '~/utils/timeConverter'
+import { getNormalizedDate } from '~/utils/time-tools/timeConverter'
 import { TArticle } from '~/components/Article/types'
 // import { ThemedButton, EPartnerCode } from '~/common/material/ThemedButton'
 // import { useSpring, animated } from 'react-spring'

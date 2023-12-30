@@ -23,6 +23,8 @@ const loopers: {
   [key: string]: NLooper.TResut;
 } = {}
 
+const quoteNotifsLimitInSeconds = 60
+
 export const withLab = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
     // console.log(socket.handshake.query.uniqueClientKey) // Socket-Lab-Unique-Client-Key
@@ -119,6 +121,7 @@ export const withLab = (io: Socket) => {
               message: `${data.quote} (${data.author}) / conns: ${connsCounter}`,
               notistackProps: {
                 variant: 'default',
+                autoHideDuration: 25000,
                 anchorOrigin: {
                   vertical: 'bottom',
                   horizontal: 'left',
@@ -128,7 +131,7 @@ export const withLab = (io: Socket) => {
           }
           if (isFirst) {
             if (!looper) {
-              const looper = Looper(10 * 1000)()
+              const looper = Looper(quoteNotifsLimitInSeconds * 1000)()
               loopers[channelName] = looper
               looper.start(notifRandomQuote)
               io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
@@ -153,14 +156,14 @@ export const withLab = (io: Socket) => {
             if (isFirst) msgList.push('You\'re first in room')
             // if (isLooperExists) msgList.push(looper.getIsStated() ? 'Looper started' : 'Looper wasnt started')
             // else msgList.push('Looper not exists (wtf?)')
-            msgList.push('Take quote for each 10 seconds...')
+            msgList.push(`Take quote for each ${quoteNotifsLimitInSeconds} seconds...`)
 
             cb({
               ok: true,
               message: `Added to reestr / ${msgList.join(' / ')}`,
               notistackProps: {
                 variant: 'success',
-                autoHideDuration: 15000,
+                autoHideDuration: 20000,
                 anchorOrigin: {
                   vertical: 'bottom',
                   horizontal: 'left',

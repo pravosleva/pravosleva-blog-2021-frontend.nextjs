@@ -29,13 +29,20 @@ export const CollapsibleBox = ({
           gap: '16px',
           cursor: 'pointer',
           color: 'rgb(0, 191, 255)',
+          userSelect: 'none',
         }}
         onClick={handleToggle}
+        title={label}
       >
         <i
           className={isOpened ? "fa fa-chevron-up" : "fa fa-chevron-down"}
         />
-        <h4 style={{ marginBottom: isOpened ? '1rem' : '1.45rem' }}>{label}</h4>
+        <h4
+          style={{ marginBottom: isOpened ? '1rem' : '1.45rem' }}
+          className='truncate'
+        >
+          {label}
+        </h4>
       </div>
       {
         isOpened && (

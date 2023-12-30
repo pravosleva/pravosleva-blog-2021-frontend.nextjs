@@ -1068,3 +1068,10 @@ div.article-body > blockquote {
 .big-text:hover {
   text-shadow: 2px 2px #ff7373, 4px 4px white, 6px 6px #ff7373;
 }
+
+.truncate {
+  /* width: 250px; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

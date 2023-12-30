@@ -1,4 +1,4 @@
-import * as timeConverter from '@src/utils/timeConverter'
+import * as timeConverter from '@src/utils/time-tools/timeConverter'
 
 test('timeConverter.getNormalizedDateTime', () => {
   const ts = 1701677752573

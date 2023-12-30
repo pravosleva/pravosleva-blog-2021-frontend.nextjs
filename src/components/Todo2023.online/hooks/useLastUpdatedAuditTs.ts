@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { TAudit } from '~/components/audit-helper'
 import { useCompare } from '~/hooks/useDeepEffect'
-import { getTimeAgo } from '~/utils/getTimeAgo'
+import { getTimeAgo } from '~/utils/time-tools/getTimeAgo'
 
 type TProps = {
   audits: TAudit[];

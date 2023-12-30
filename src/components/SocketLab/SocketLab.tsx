@@ -117,7 +117,6 @@ export const Logic = () => {
       ),
     })
   }, [])
-
   
   const disableDelayToggler = useCallback(({ elm, ms }: { elm: HTMLButtonElement | null; ms: number }) => {
     if (!!elm) {
@@ -127,9 +126,7 @@ export const Logic = () => {
         elm.disabled = false
         elm.style.opacity = '1'
       }, ms)
-    } else {
-      console.log(elm)
-    }
+    } else console.log(`elm is ${typeof elm}`)
   }, [])
 
   const handleWannaBeConnected = useCallback((disconnectBtnRef: React.RefObject<HTMLButtonElement>) => {

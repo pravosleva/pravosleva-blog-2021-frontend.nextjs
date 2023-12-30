@@ -1,23 +1,17 @@
-import {
-  Socket,
-  // DisconnectReason as TDisconnectReason,
-} from 'socket.io'
-// import { Looper, NLooper } from '~/srv.utils/Looper'
-// import { state } from './state'
-// import { getRandomElement } from '~/srv.utils/tools-array/getRandomElement'
+import { Socket } from 'socket.io'
 import { NEvent } from './types'
+import { state } from './state'
 
-// const getChannelName = (s: string): string => `lab-channel:${s}`
+const getChannelName = (s: string): string => `lab-channel:${s}`
 
 const mws = {
   checkAppVersion({ data }: {
-    data: {
-      appVersion: string;
-      metrixEventType: string;
-      stateValue: string;
-      [key: string]: any;
-    } | undefined;
-  }): Promise<{ ok: boolean; reason?: string; _info?: any }> {
+    data: NEvent.TReport | undefined;
+  }): Promise<{
+    ok: boolean;
+    reason?: string;
+    _info?: any;
+  }> {
     const appVersionSupports = [
       '3.0.4-beta',
       '3.0.5-beta',
@@ -37,30 +31,67 @@ const mws = {
 
 export const withSP = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
+    if (!!socket.handshake.query.roomId && typeof socket.handshake.query.roomId === 'string') {
+      state.getStateInfo(socket.handshake.query.roomId)
+        .then(({ isOk, message, items }) => {
+          if (isOk) io
+            .to(socket.id)
+            .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPLACE_REPORTS, { items })
 
-    socket.on(NEvent.ServerIncoming.SP_MX_EV, (data: any) => {
-    
-      mws.checkAppVersion({ data })
+          if (!!message) io
+            .to(socket.id)
+            .emit(NEvent.ServerOutgoing.SP_TRADEIN_COMMON_MESSAGE, {
+              message,
+              notistackProps: {
+                variant: isOk ? 'success' : 'error',
+                autoHideDuration: 15000,
+                anchorOrigin: {
+                  vertical: 'top',
+                  horizontal: 'center',
+                },
+              },
+            })
+        })
+        .catch((err: any) => {
+          if (!!err?.message) io.to(socket.id).emit(NEvent.ServerOutgoing.SP_TRADEIN_COMMON_MESSAGE, {
+            message: err.message,
+            notistackProps: {
+              variant: 'error',
+              autoHideDuration: 25000,
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+              },
+            },
+          })
+        })
+    }
+
+    socket.on(NEvent.ServerIncoming.SP_MX_EV, (incData: NEvent.TReport) => {
+      mws.checkAppVersion({ data: incData })
+        .then((e) => {
+          if (e.ok) {
+            state.addReportToReestr({ roomId: incData.room, report: incData })
+            io
+              .in(getChannelName(incData.room))
+              .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPORT_EV, {
+                message: 'New report',
+                report: incData,
+              })
+          }
+          else throw new Error(e.reason || 'ERR (no reason)')
+        })
         .catch((err) => {
           io.to(socket.id).emit(NEvent.ServerOutgoing.DONT_RECONNECT, {
             socketId: socket.id,
             message: err?.reason || 'ERR',
-            yourData: data,
+            yourData: incData,
             _info: err._info,
           })
           setTimeout(() => {
             socket.conn.close()
           }, 1000)
         })
-
-      // io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, { room, audits });
-      // -- NOTE: For each incoming event (for testing)
-      io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_EV, {
-        socketId: socket.id,
-        message: `Hello from backend / Test sp-mx event: ${NEvent.ServerOutgoing.SP_MX_EV}`,
-        yourData: data,
-      })
-      // --
     })
 
     // socket.on('disconnect', (reason: TDisconnectReason) => {})
