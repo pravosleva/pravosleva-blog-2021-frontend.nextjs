@@ -13,8 +13,8 @@ const mws = {
     _info?: any;
   }> {
     const appVersionSupports = [
-      '3.0.4-beta',
       '3.0.5-beta',
+      '3.0.6-beta',
     ]
     if (!data?.appVersion || !appVersionSupports.includes(data.appVersion))
       return Promise.reject({
@@ -86,7 +86,7 @@ export const withSP = (io: Socket) => {
             socketId: socket.id,
             message: err?.reason || 'ERR',
             yourData: incData,
-            _info: err._info,
+            _info: err?._info,
           })
           setTimeout(() => {
             socket.conn.close()
