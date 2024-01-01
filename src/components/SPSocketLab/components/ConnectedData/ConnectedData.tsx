@@ -106,7 +106,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           isPaddedMobile
         >
           <h1>SP exp</h1>
-          <div>Cache size {datasizeInfo} | Total reports {viState.items.length}{!!hasAnyFilter ? ` | Displayed reports ${filteredReports.length}` : ''}</div>
+          <div>Cache size <b>{datasizeInfo}</b> | Total reports <b>{viState.items.length}</b>{!!hasAnyFilter ? <><br /><span>Displayed reports <b>{filteredReports.length}</b></span></> : ''}</div>
         </ResponsiveBlock>
       </div>
       <ResponsiveBlock

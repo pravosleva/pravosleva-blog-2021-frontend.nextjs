@@ -3,8 +3,6 @@ import { ConnectedData } from './components'
 
 export const SPSocketLab = () => {
   return (
-    <>
-      <ConnectedData />
-    </>
+    <ConnectedData />
   ) 
 }

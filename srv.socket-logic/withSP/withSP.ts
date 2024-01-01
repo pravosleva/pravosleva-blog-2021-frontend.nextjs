@@ -13,8 +13,8 @@ const mws = {
     _info?: any;
   }> {
     const appVersionSupports = [
-      '3.0.5-beta',
       '3.0.6-beta',
+      '3.0.7-beta',
     ]
     if (!data?.appVersion || !appVersionSupports.includes(data.appVersion))
       return Promise.reject({
