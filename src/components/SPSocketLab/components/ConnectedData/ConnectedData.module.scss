@@ -1,3 +1,5 @@
+@import '~/mui/scss-vars/monitors.scss';
+
 .wrapper {
   // border: 1px dashed red;
 }
@@ -5,10 +7,12 @@
 .fixedTop {
   position: fixed;
   top: 16px;
+}
+.fixedTopActiveReport {
   right: 16px;
-  max-width: calc(100vw - 16px - 16px);
   min-width: 300px;
   max-height: calc(100vh - 16px - 16px);
+  
   overflow-y: auto;
   // background-color: #fff;
   z-index: 5;
@@ -23,6 +27,57 @@
   display: flex;
   flex-direction: column;
 }
+@media(max-width: #{$sm}px) {
+  .fixedTopActiveReport {
+    max-width: calc(100vw - 16px - 16px);
+  }
+}
+@media(min-width: calc(#{$sm + 1}px + 1px)) and (max-width: #{$md}px) {
+  .fixedTopActiveReport {
+    max-width: 400px;
+  }
+}
+@media(min-width: calc(#{$md + 1}px + 1px)) and (max-width: #{$lg}px) {
+  .fixedTopActiveReport {
+    max-width: 600px;
+  }
+}
+@media(min-width: calc(#{$lg + 1}px + 1px)) {
+  .fixedTopActiveReport {
+    max-width: 800px;
+  }
+}
+
+.fixedTopSPClientFrame {
+  transition: all 0.3s linear;
+  border: 8px solid black;
+  left: 16px;
+  min-width: 300px;
+  height: calc(100vh - 16px - 16px - 125px);
+  
+  overflow-y: auto;
+  background-color: #fff;
+  z-index: 5;
+  border-radius: 24px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 10px 4px;
+  transform: translateX(calc(-100% - 16px));
+}
+.isOpened {
+  transform: translateX(0);
+}
+@media(max-width: #{$sm}px) {
+  .fixedTopSPClientFrame { width: calc(100vw - 16px - 16px); }
+}
+@media(min-width: calc(#{$sm + 1}px + 1px)) and (max-width: #{$md}px) {
+  .fixedTopSPClientFrame { min-width: 400px; max-width: 400px; }
+}
+@media(min-width: calc(#{$md + 1}px + 1px)) and (max-width: #{$lg}px) {
+  .fixedTopSPClientFrame { min-width: 400px; max-width: 600px; }
+}
+@media(min-width: calc(#{$lg + 1}px + 1px)) {
+  .fixedTopSPClientFrame { min-width: 400px; max-width: 800px; }
+}
+
 .stickyTopHeader {
   position: sticky;
   top: 0;

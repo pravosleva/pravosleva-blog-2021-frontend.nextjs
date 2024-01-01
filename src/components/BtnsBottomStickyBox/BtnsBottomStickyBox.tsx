@@ -2,7 +2,7 @@ import { styled } from '@mui/material/styles'
 // import Container from '@mui/material/Container'
 
 const CustomBox = styled('div')<any>(({ theme }) => {
-  console.log(theme.breakpoints.values)
+  // console.log(theme.breakpoints.values)
   return ({
     width: '100%',
     // color: theme.palette.success.main,

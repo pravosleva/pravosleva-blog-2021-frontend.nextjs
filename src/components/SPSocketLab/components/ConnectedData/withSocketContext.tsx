@@ -8,11 +8,15 @@ export type TSocketMicroStore = {
   isConnected: boolean;
   isConnectedToPrivateRoom: boolean;
   reportItems: any[];
+  
+  imeiFilter: string | null;
 }
 export const initialState = {
   isConnected: false,
   isConnectedToPrivateRoom: false,
   reportItems: [],
+
+  imeiFilter: null,
 }
 const { Provider, useStore } = createFastContext<TSocketMicroStore>(initialState);
 
@@ -71,6 +75,9 @@ export namespace NEvent {
     reportType: EReportType;
     stateValue: string;
 
+    stepDetails?: {
+      [key: string]: any;
+    };
     _wService?: {
       _perfInfo: {
         tsList: TPerfInfoItem[];

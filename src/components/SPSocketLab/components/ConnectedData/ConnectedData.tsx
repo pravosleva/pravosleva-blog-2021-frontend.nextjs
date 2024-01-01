@@ -1,6 +1,6 @@
 import classes from './ConnectedData.module.scss'
 import { WithSocketContext } from './withSocketContext'
-import { useCallback, useEffect, useRef, memo } from 'react'
+import { useCallback, useEffect, useRef, memo, useMemo, useState } from 'react'
 import { groupLog } from '~/utils/groupLog'
 import { NEvent, useStore, TSocketMicroStore, initialState } from './withSocketContext'
 import {
@@ -13,7 +13,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import { io, Socket } from 'socket.io-client'
 import { getRandomString } from '~/utils/getRandomString'
-import { Button, Stack, IconButton } from '@mui/material'
+import { Alert, Button, IconButton, Stack } from '@mui/material'
 import ImportExportIcon from '@mui/icons-material/ImportExport'
 import { useSnapshot } from 'valtio'
 import { useProxy } from 'valtio/utils'
@@ -21,10 +21,21 @@ import { vi } from './vi'
 import { ReportListItem } from './ReportListItem'
 import { CollapsibleBox, Fab } from '~/ui-kit.special'
 import clsx from 'clsx'
+import { getTimeDiff } from '~/utils/time-tools/getTimeDiff'
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
+import { useWindowSize } from '~/hooks/useWindowSize'
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import { FiltersContent } from './FiltersContent'
+import { testTextByAnyWord } from '~/utils/string-tools/testTextByAnyWord'
+import { getNormalizedWordsArr } from '~/utils/string-tools/getNormalizedWords'
+import sizeof from 'object-sizeof'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const isDev = process.env.NODE_ENV === 'development'
+// const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
-const NEXT_APP_SOCKET_API_ENDPOINT = isDev ? 'http://localhost:3000' : (process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro')
+// const NEXT_APP_SOCKET_API_ENDPOINT = isDev ? 'http://localhost:3000' : (process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro')
+const NEXT_APP_SOCKET_API_ENDPOINT = 'http://pravosleva.pro'
 const spReportRoomId = 'FOR_EXAMPLE'
 
 const UI = memo(({ onConnClick, onDisconnClick }: {
@@ -45,130 +56,360 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
     viProxy.activeReport = null
   }, [])
 
+  const { isMobile, isDesktop } = useWindowSize()
+  const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
+
+  const [isFiltersOpened, setIsFiltersOpened] = useState(false)
+  const filtersToggle = useCallback(() => {
+    setIsFiltersOpened((s) => !s)
+  }, [setIsFiltersOpened])
+
+  const [imeiFilter] = useStore((store: TSocketMicroStore) => store.imeiFilter)
+
+  const hasAnyFilter = useMemo(() => !!imeiFilter, [imeiFilter])
+  const filteredReports = useMemo(() => {
+    if (!!imeiFilter) return viState.items.filter(({ imei }) => !!imei ? testTextByAnyWord({ text: imei, words: getNormalizedWordsArr(imeiFilter.split(' ').filter(str => !!str)) }) : false)
+    else return viState.items
+  }, [imeiFilter, viState.items])
+
+  const datasizeInfo = useMemo(() => {
+    const inB = sizeof(viState.items)
+    const inKB = inB * 0.0009765625
+    const inMB = inB / 1048576
+    switch (true) {
+      case inMB > 1: return `${inMB.toFixed(1)} MB`
+      case inKB > 1: return `${inKB.toFixed(1)} kB`
+      default: return `${inB.toFixed(1)} B`
+    }
+  }, [viState.items])
+
+  const [isTestedIFrameOpened, setIsTestedIFrameOpened] = useState(false)
+  const handleGetTestedIframeToggle = useCallback(() => {
+    setIsTestedIFrameOpened((s) => !s)
+  }, [setIsTestedIFrameOpened])
+
   return (
     <>
-    <Stack spacing={2}>
-      {
-        !isConnectedToPrivateRoom ? (
-          <Button
-            ref={connectBtnRef}
-            size='small'
-            startIcon={<ImportExportIcon />}
-            // fullWidth
-            variant='contained'
-            color='primary'
-            onClick={() => onConnClick(disconnectBtnRef)}
-            endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
-            disabled={!isConnected}
-          >
-            <span className='truncate'>Connect to private room</span>
-          </Button>
-        ) : (
-          <Button
-            ref={disconnectBtnRef}
-            size='small'
-            startIcon={<CloseIcon />}
-            // fullWidth
-            variant="outlined"
-            color='primary'
-            onClick={() => onDisconnClick(connectBtnRef)}
-            endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
-            disabled={!isConnected}
-          >
-            <span className='truncate'>Disconnect from private room</span>
-          </Button>
-        )
-      }
       <div
+        className='backdrop-blur--lite'
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          // border: '1px solid red',
-          gap: '0px',
+          // borderTop: '1px solid lightgray',
+          borderBottom: '1px solid lightgray',
+          padding: '64px 0 32px 0',
+          position: 'sticky',
+          top: 0,
+          zIndex: 2,
         }}
       >
-        {viState.items.map((ps) => (
-          <ReportListItem
-            key={`${ps.ts}-${ps.room}-${ps.appVersion}-${ps.stateValue}`}
-            // @ts-ignore
-            report={ps}
-            onSetActiveReport={handleSetActiveReport}
-          />
-        ))}
+        <ResponsiveBlock
+          isLimited
+          isPaddedMobile
+        >
+          <h1 style={{ margin: 0 }}>SP exp ({datasizeInfo})</h1>
+        </ResponsiveBlock>
       </div>
-    </Stack>
-    {
-      !!viState.activeReport && (
-        <>
-          <div className={clsx(classes.fixedTop, 'backdrop-blur')}>
-            <div className={classes.stickyTopHeader}>
-              {viState.activeReport.stateValue}
-            </div>
+      <ResponsiveBlock
+        isLimited
+        isPaddedMobile
+        style={{
+          // borderTop: '1px solid lightgray',
+          // borderBottom: '1px solid lightgray',
+          padding: '32px 0 32px 0',
+        }}
+      >
+        <Stack spacing={2}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              // border: '1px solid red',
+              gap: '0px',
+            }}
+          >
+            {filteredReports.map((ps) => (
+              <ReportListItem
+                key={`${ps.ts}-${ps.room}-${ps.appVersion}-${ps.stateValue}`}
+                // @ts-ignore
+                report={ps}
+                onSetActiveReport={handleSetActiveReport}
+              />
+            ))}
             {
-              !!viState.activeReport._wService
-                ? viState.activeReport._wService?._perfInfo.tsList.length > 0 && (
-                  <>
-                    {
-                      viState.activeReport._wService?._perfInfo.tsList.map((item, i, a) => {
-                        const isFirst = i === 0
-                        const details = isFirst ? `${(item.p / 1000).toFixed(1)} s` : `+${((item.p - a[i - 1].p) / 1000).toFixed(1)} s`
-                        return (
-                          <div
-                            key={`${item.ts}-${i}`}
-                          >
-                            <CollapsibleBox
-                              label={`${item.name || item.descr} (${details})`}
-                              descritpion={
-                                <pre
-                                  style={{ fontFamily: 'system-ui' }}
-                                  className={classes.pre}
-                                >
-                                  {JSON.stringify(item, null, 4)}
-                                </pre>
-                              }
-                            />
-                          </div>
-                      )})
-                    }
+              filteredReports.length === 0 && (
+                <Alert
+                  // sx={{ mb: 2 }}
+                  variant="standard"
+                  severity="info"
+                >
+                  Список пуст
+                </Alert>
+              )
+            }
+          </div>
+        </Stack>
+
+        {
+          isConnected && (
+            <Fab
+              className='fadeIn'
+              onClick={handleGetTestedIframeToggle}
+              style={{
+                position: 'fixed',
+                zIndex: 6,
+                top: '32px',
+                left: '32px',
+                color: '#000',
+              }}
+            >
+              {
+                isTestedIFrameOpened ? (
+                  <i className="fas fa-arrow-left" style={{ fontSize: '35px' }} />
+                ) : (
+                  <i className="fas fa-mobile" style={{ fontSize: '35px' }} />
+                )
+              }
+            </Fab>
+          )
+        }
+        <iframe
+          src='https://pravosleva.pro/dist.sp-tradein-2023/'
+          // height='500px'
+          // width='500px'
+          className={clsx(classes.fixedTop, classes.fixedTopSPClientFrame, { [classes.isOpened]: isTestedIFrameOpened })}
+        ></iframe>
+
+        {
+          !!viState.activeReport && (
+            <>
+              <div className={clsx(classes.fixedTop, classes.fixedTopActiveReport, 'backdrop-blur')}>
+                <div className={classes.stickyTopHeader}>
+                  {!!viState.activeReport.imei ? `${viState.activeReport.imei} | ${viState.activeReport.stateValue.replace('stepMachine:', '')}` : viState.activeReport.stateValue}
+                </div>
+                {
+                  viState.activeReport.stepDetails && (
                     <CollapsibleBox
-                      label='Full report'
+                      label={`⚙️ Step details${
+                        !!viState.activeReport._wService
+                        ? viState.activeReport._wService?._perfInfo.tsList.length > 2
+                          ? ` (${getTimeDiff({ startDate: new Date(viState.activeReport._wService._perfInfo.tsList[1].ts), finishDate: new Date(viState.activeReport._wService._perfInfo.tsList[viState.activeReport._wService._perfInfo.tsList.length - 1].ts) }).message})`
+                          : ''
+                        : ''}`}
                       descritpion={
                         <pre
                           style={{ fontFamily: 'system-ui' }}
                           className={classes.pre}
                         >
-                          {JSON.stringify(viState.activeReport, null, 4)}
+                          {JSON.stringify(viState.activeReport.stepDetails, null, 4)}
                         </pre>
                       }
                     />
-                  </>
-              ) : (
-                <div>
-                  <pre
-                    style={{ fontFamily: 'system-ui' }}
-                    className={classes.pre}
-                  >
-                    {JSON.stringify(viState.activeReport, null, 4)}
-                  </pre>
-                </div>
-              )
-            }
-          </div>
-          <Fab
-            onClick={handleResetActiveReport}
+                  )
+                }
+                {
+                  !!viState.activeReport._wService
+                    ? viState.activeReport._wService?._perfInfo.tsList.length > 0 && (
+                      <>
+                        {
+                          viState.activeReport._wService?._perfInfo.tsList.map((item, i, a) => {
+                            const isFirst = i === 0
+                            const details = isFirst ? `${(item.p / 1000).toFixed(1)} s` : `+${((item.p - a[i - 1].p) / 1000).toFixed(1)} s`
+                            return (
+                              <div
+                                key={`${item.ts}-${i}`}
+                              >
+                                <CollapsibleBox
+                                  label={`${item.name || item.descr} (${details})`}
+                                  descritpion={
+                                    <pre
+                                      style={{ fontFamily: 'system-ui' }}
+                                      className={classes.pre}
+                                    >
+                                      {JSON.stringify(item, null, 4)}
+                                    </pre>
+                                  }
+                                />
+                              </div>
+                          )})
+                        }
+                      </>
+                  ) : (
+                    <div>
+                      <pre
+                        style={{ fontFamily: 'system-ui' }}
+                        className={classes.pre}
+                      >
+                        {JSON.stringify(viState.activeReport, null, 4)}
+                      </pre>
+                    </div>
+                  )
+                }
+              </div>
+              <Fab
+                onClick={handleResetActiveReport}
+                style={{
+                  position: 'fixed',
+                  zIndex: 6,
+                  top: '32px',
+                  right: '32px',
+                  color: '#000',
+                }}
+              >
+                <i className="fas fa-times-circle" style={{ fontSize: '35px' }} />
+              </Fab>
+            </>
+          )
+        }
+      </ResponsiveBlock>
+      {
+        isMobile && isBrowser && isConnected && (
+          <div
             style={{
-              position: 'fixed',
-              zIndex: 6,
-              top: '32px',
-              right: '32px',
-              color: '#000',
+              marginTop: 'auto',
+              position: 'sticky',
+              bottom: '0px',
+              zIndex: 2,
+              padding: '16px',
+              // backgroundColor: '#fff',
+              borderTop: '1px solid lightgray',
+
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
             }}
+            className='backdrop-blur--lite'
           >
-            <i className="fas fa-times-circle" style={{ fontSize: '35px' }} />
-          </Fab>
-        </>
-      )
-    }
+            {
+              !isTestedIFrameOpened && isFiltersOpened && <FiltersContent />
+            }
+            <div className='special-grid-actions'>
+              {
+                !isConnectedToPrivateRoom ? (
+                  <Button
+                    ref={connectBtnRef}
+                    size='small'
+                    startIcon={<ImportExportIcon />}
+                    fullWidth
+                    variant='contained'
+                    color='primary'
+                    onClick={() => onConnClick(disconnectBtnRef)}
+                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    disabled={!isConnected}
+                  >
+                    <span className='truncate'>Connect to private room</span>
+                  </Button>
+                ) : (
+                  <Button
+                    ref={disconnectBtnRef}
+                    size='small'
+                    startIcon={<CloseIcon />}
+                    fullWidth
+                    variant="outlined"
+                    color='primary'
+                    onClick={() => onDisconnClick(connectBtnRef)}
+                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    disabled={!isConnected}
+                  >
+                    <span className='truncate'>Disconnect from private room</span>
+                  </Button>
+                )
+              }
+              {
+                !isTestedIFrameOpened && (
+                  <Button
+                    // ref={disconnectBtnRef}
+                    size='small'
+                    startIcon={<FilterAltIcon />}
+                    fullWidth
+                    variant={hasAnyFilter ? 'contained' : 'outlined'}
+                    color={isFiltersOpened ? 'error' : 'primary'}
+                    onClick={filtersToggle}
+                    endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                    disabled={!isConnected}
+                  >
+                    <span className='truncate'>Filters</span>
+                  </Button>
+                )
+              }
+            </div>
+          </div>
+        )
+      }
+      {
+        isDesktop && isBrowser && (
+          <div
+            style={{
+              marginTop: 'auto',
+              // position: 'sticky',
+              position: 'fixed',
+              bottom: '0px',
+              zIndex: 2,
+              padding: '16px',
+              width: '500px',
+              boxShadow: 'rgba(0, 0, 0, 0.2) 0px 0px 10px 4px',
+              borderTopRightRadius: '16px',
+
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}
+            className={clsx('backdrop-blur--lite')}
+          >
+            {
+              isFiltersOpened && <FiltersContent />
+            }
+            <div className='special-grid-actions'>
+              {
+                !isConnectedToPrivateRoom ? (
+                  <Button
+                    ref={connectBtnRef}
+                    size='small'
+                    startIcon={<ImportExportIcon />}
+                    fullWidth
+                    variant='contained'
+                    color='primary'
+                    onClick={() => onConnClick(disconnectBtnRef)}
+                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    disabled={!isConnected}
+                  >
+                    <span className='truncate'>Connect to private room</span>
+                  </Button>
+                ) : (
+                  <Button
+                    ref={disconnectBtnRef}
+                    size='small'
+                    startIcon={<CloseIcon />}
+                    fullWidth
+                    variant="outlined"
+                    color='primary'
+                    onClick={() => onDisconnClick(connectBtnRef)}
+                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    disabled={!isConnected}
+                  >
+                    <span className='truncate'>Disconnect from private room</span>
+                  </Button>
+                )
+              }
+              {
+                !isTestedIFrameOpened && (
+                  <Button
+                    // ref={disconnectBtnRef}
+                    size='small'
+                    startIcon={<FilterAltIcon />}
+                    fullWidth
+                    variant={hasAnyFilter ? 'contained' : 'outlined'}
+                    color={isFiltersOpened ? 'error' : 'secondary'}
+                    onClick={filtersToggle}
+                    endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                    disabled={!isConnected}
+                  >
+                    <span className='truncate'>Filters</span>
+                  </Button>
+                )
+              }
+            </div>
+          </div>
+        )
+      }
     </>
   )
 })

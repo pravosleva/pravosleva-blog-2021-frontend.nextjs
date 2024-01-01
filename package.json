@@ -73,6 +73,7 @@
     "nextjs-progressbar": "^0.0.16",
     "node-sass": "^9.0.0",
     "notistack": "^3.0.1",
+    "object-sizeof": "^2.6.3",
     "prismjs": "^1.29.0",
     "ramda": "^0.29.0",
     "react": "17.x",
