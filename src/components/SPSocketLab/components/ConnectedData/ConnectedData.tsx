@@ -312,7 +312,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Connect to private room</span>
+                    <span className='truncate'>Online</span>
                   </Button>
                 ) : (
                   <Button
@@ -327,7 +327,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     endIcon={<Brightness1Icon color='success' />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Disconnect from private room</span>
+                    <span className='truncate'>Disconnect</span>
                   </Button>
                 )
               }
@@ -385,7 +385,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Connect to private room</span>
+                    <span className='truncate'>Online</span>
                   </Button>
                 ) : (
                   <Button
@@ -400,7 +400,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     endIcon={<Brightness1Icon color='success' />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Disconnect from private room</span>
+                    <span className='truncate'>Disconnect</span>
                   </Button>
                 )
               }

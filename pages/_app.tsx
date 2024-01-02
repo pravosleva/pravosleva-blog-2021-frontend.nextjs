@@ -93,6 +93,11 @@ function AppWithRedux(props: MyAppProps) {
           integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
           crossOrigin="anonymous"
         />
+        <script
+          type="text/javascript"
+          defer
+          src='/static/common/eruda.custom.js'
+        />
       </Head>
       {
         isServer ? (

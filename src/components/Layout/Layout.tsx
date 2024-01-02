@@ -42,7 +42,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
             >
               <ResponsiveBlock isLimited isPaddedMobile>
                 <div style={{ lineHeight: '70px' }}>
-                  <span>© 2018 – {fullYear}</span>
+                  <span>© 2018 – {fullYear} Pravosleva corp.</span>
                 </div>
               </ResponsiveBlock>
             </footer>
