@@ -74,6 +74,7 @@ function AppWithRedux(props: MyAppProps) {
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <link rel="stylesheet" href="/static/css/gosuslugi.css" />
         <link href="/static/css/layout.css" rel="stylesheet" />
+        <link href="/static/css/animations.css" rel="stylesheet" />
         <link href="/static/css/fix.sweetalert2.css" rel="stylesheet" />
         <link href="/static/css/backdrop-blur.css" rel="stylesheet" />
         <link href="/static/css/audit-list.css" rel="stylesheet" />

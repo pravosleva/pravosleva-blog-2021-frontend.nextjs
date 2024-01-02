@@ -13,7 +13,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import { io, Socket } from 'socket.io-client'
 import { getRandomString } from '~/utils/getRandomString'
-import { Alert, Button, IconButton, Stack } from '@mui/material'
+import { Alert, Button, IconButton, Stack, Typography } from '@mui/material'
 import ImportExportIcon from '@mui/icons-material/ImportExport'
 import { useSnapshot } from 'valtio'
 import { useProxy } from 'valtio/utils'
@@ -29,8 +29,9 @@ import { FiltersContent } from './FiltersContent'
 import { testTextByAnyWord } from '~/utils/string-tools/testTextByAnyWord'
 import { getNormalizedWordsArr } from '~/utils/string-tools/getNormalizedWords'
 import sizeof from 'object-sizeof'
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import Brightness1Icon from '@mui/icons-material/Brightness1'
 
 // const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -105,7 +106,20 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           isLimited
           isPaddedMobile
         >
-          <h1>SP exp</h1>
+          <Typography
+            variant="h5"
+            display="block"
+            // gutterBottom
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: '16px',
+            }}
+          >
+            <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>SP exp</span>
+            <Brightness1Icon color={isConnected ? 'success' : 'error'} />
+          </Typography>
           <div>Cache size <b>{datasizeInfo}</b> | Total reports <b>{viState.items.length}</b>{!!hasAnyFilter ? <><br /><span>Displayed reports <b>{filteredReports.length}</b></span></> : ''}</div>
         </ResponsiveBlock>
       </div>
@@ -182,9 +196,10 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
         {
           !!viState.activeReport && (
             <>
-              <div className={clsx(classes.fixedTop, classes.fixedTopActiveReport, 'backdrop-blur')}>
+              <div className={clsx(classes.fixedTop, classes.fixedTopActiveReport, 'backdrop-blur', 'fade-in-speed-2')}>
                 <div className={classes.stickyTopHeader}>
-                  {!!viState.activeReport.imei ? `${viState.activeReport.imei} | ${viState.activeReport.stateValue.replace('stepMachine:', '')}` : viState.activeReport.stateValue}
+                  {!!viState.activeReport.imei && <div>{viState.activeReport.imei}</div>}
+                  <div>{viState.activeReport.stateValue.replace('stepMachine:', '')}</div>
                 </div>
                 {
                   viState.activeReport.stepDetails && (
@@ -219,7 +234,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                                 key={`${item.ts}-${i}`}
                               >
                                 <CollapsibleBox
-                                  label={`${item.name || item.descr} (${details})`}
+                                  label={`${details}: ${item.name || item.descr}`}
                                   descritpion={
                                     <pre
                                       style={{ fontFamily: 'system-ui' }}
@@ -249,7 +264,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                 onClick={handleResetActiveReport}
                 style={{
                   position: 'fixed',
-                  zIndex: 6,
+                  zIndex: 7,
                   top: '32px',
                   right: '32px',
                   color: '#000',
@@ -293,7 +308,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     variant='contained'
                     color='primary'
                     onClick={() => onConnClick(disconnectBtnRef)}
-                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
                     <span className='truncate'>Connect to private room</span>
@@ -307,30 +323,26 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     variant="outlined"
                     color='primary'
                     onClick={() => onDisconnClick(connectBtnRef)}
-                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    endIcon={<Brightness1Icon color='success' />}
                     disabled={!isConnected}
                   >
                     <span className='truncate'>Disconnect from private room</span>
                   </Button>
                 )
               }
-              {
-                !isTestedIFrameOpened && (
-                  <Button
-                    // ref={disconnectBtnRef}
-                    size='small'
-                    startIcon={<FilterAltIcon />}
-                    fullWidth
-                    variant={hasAnyFilter ? 'contained' : 'outlined'}
-                    color={isFiltersOpened ? 'error' : 'primary'}
-                    onClick={filtersToggle}
-                    endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-                    disabled={!isConnected}
-                  >
-                    <span className='truncate'>Filters</span>
-                  </Button>
-                )
-              }
+              <Button
+                size='small'
+                startIcon={<FilterAltIcon />}
+                fullWidth
+                variant={hasAnyFilter ? 'contained' : 'outlined'}
+                color={isFiltersOpened ? 'error' : 'secondary'}
+                onClick={filtersToggle}
+                endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                disabled={!isConnected || isTestedIFrameOpened}
+              >
+                <span className='truncate'>Filters</span>
+              </Button>
             </div>
           </div>
         )
@@ -369,7 +381,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     variant='contained'
                     color='primary'
                     onClick={() => onConnClick(disconnectBtnRef)}
-                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
                     <span className='truncate'>Connect to private room</span>
@@ -383,30 +396,26 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     variant="outlined"
                     color='primary'
                     onClick={() => onDisconnClick(connectBtnRef)}
-                    endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+                    endIcon={<Brightness1Icon color='success' />}
                     disabled={!isConnected}
                   >
                     <span className='truncate'>Disconnect from private room</span>
                   </Button>
                 )
               }
-              {
-                !isTestedIFrameOpened && (
-                  <Button
-                    // ref={disconnectBtnRef}
-                    size='small'
-                    startIcon={<FilterAltIcon />}
-                    fullWidth
-                    variant={hasAnyFilter ? 'contained' : 'outlined'}
-                    color={isFiltersOpened ? 'error' : 'secondary'}
-                    onClick={filtersToggle}
-                    endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-                    disabled={!isConnected}
-                  >
-                    <span className='truncate'>Filters</span>
-                  </Button>
-                )
-              }
+              <Button
+                size='small'
+                startIcon={<FilterAltIcon />}
+                fullWidth
+                variant={hasAnyFilter ? 'contained' : 'outlined'}
+                color={isFiltersOpened ? 'error' : 'secondary'}
+                onClick={filtersToggle}
+                endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                disabled={!isConnected || isTestedIFrameOpened}
+              >
+                <span className='truncate'>Filters</span>
+              </Button>
             </div>
           </div>
         )
@@ -622,7 +631,9 @@ const Logic = () => {
 export const ConnectedData = () => {
   return (
     <WithSocketContext>
-      <div className={classes.wrapper}>
+      <div
+        // className={classes.wrapper}
+      >
         <Logic />
       </div>
     </WithSocketContext>

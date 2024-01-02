@@ -54,6 +54,13 @@ export const ReportListItem = memo((ps: TProps) => {
   }, [ps.report.reportType])
 
   const viSnap = useSnapshot(vi.FOR_EXAMPLE)
+  const {
+    report: {
+      _wService,
+      stepDetails,
+      ...restReportProps
+    },
+  } = ps
 
   return (
     <div
@@ -109,22 +116,22 @@ export const ReportListItem = memo((ps: TProps) => {
             (!!ps.report._wService
             ? ps.report._wService?._perfInfo.tsList.length > 0 && (
               <>
+                <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
+                  {JSON.stringify(restReportProps, null, 4)}
+                </pre>
                 {
                   ps.report.stepDetails && (
                     <CollapsibleBox
                       label={`⚙️ Step details${ps.report._wService?._perfInfo.tsList.length > 2 ? ` (${getTimeDiff({ startDate: new Date(ps.report._wService._perfInfo.tsList[1].ts), finishDate: new Date(ps.report._wService._perfInfo.tsList[ps.report._wService._perfInfo.tsList.length - 1].ts) }).message})` : ''}`}
                       descritpion={
-                        <pre
-                          style={{ fontFamily: 'system-ui' }}
-                          className={classes.pre}
-                        >
+                        <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
                           {JSON.stringify(ps.report.stepDetails, null, 4)}
                         </pre>
                       }
                     />
                   )
                 }
-                {
+                {/*
                   ps.report._wService?._perfInfo.tsList.map((item, i, a) => {
                     const isFirst = i === 0
                     const details = isFirst ? `${(item.p / 1000).toFixed(1)} s` : `+${((item.p - a[i - 1].p) / 1000).toFixed(1)} s`
@@ -145,7 +152,7 @@ export const ReportListItem = memo((ps: TProps) => {
                         />
                       </div>
                   )})
-                }
+                */}
               </>
           ) : (
             <div>
