@@ -45,7 +45,7 @@ export const siteSearchSlice: any = createSlice({
             state.sqt = [action.payload, ...state.sqt.filter(({ normalized }) => normalized !== action.payload.normalized)]
             break
           default:
-            if (state.sqt.length >= limits.sqt) {
+            if (state.sqt.length > limits.sqt) {
               state.sqt.pop()
             }
             state.sqt.unshift(action.payload)

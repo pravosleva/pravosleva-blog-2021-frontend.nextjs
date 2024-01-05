@@ -8,7 +8,6 @@
 }
 .fixedTopActiveReport {
   right: 16px;
-  min-width: 300px;
   max-height: calc(100vh - 16px - 16px);
   
   overflow-y: auto;
@@ -27,22 +26,26 @@
 }
 @media(max-width: #{$sm}px) {
   .fixedTopActiveReport {
+    min-width: 300px;
     max-width: calc(100vw - 16px - 16px);
   }
 }
 @media(min-width: calc(#{$sm + 1}px + 1px)) and (max-width: #{$md}px) {
   .fixedTopActiveReport {
+    min-width: 400px;
     max-width: 400px;
   }
 }
 @media(min-width: calc(#{$md + 1}px + 1px)) and (max-width: #{$lg}px) {
   .fixedTopActiveReport {
-    max-width: 600px;
+    min-width: 500px;
+    max-width: 500px;
   }
 }
 @media(min-width: calc(#{$lg + 1}px + 1px)) {
   .fixedTopActiveReport {
-    max-width: 800px;
+    min-width: 500px;
+    max-width: 500px;
   }
 }
 

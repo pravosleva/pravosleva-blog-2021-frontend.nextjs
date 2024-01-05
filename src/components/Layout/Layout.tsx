@@ -42,7 +42,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
             >
               <ResponsiveBlock isLimited isPaddedMobile>
                 <div style={{ lineHeight: '70px' }}>
-                  <span>© 2018 – {fullYear} Pravosleva corp.</span>
+                  <span>© 2018 – {fullYear}, Pravosleva, Inc. or its affiliates</span>
                 </div>
               </ResponsiveBlock>
             </footer>

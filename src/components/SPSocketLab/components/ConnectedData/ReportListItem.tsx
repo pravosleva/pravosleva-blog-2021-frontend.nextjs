@@ -2,7 +2,7 @@ import { Badge, Chip } from '@mui/material'
 import { useCallback, useMemo, useState, memo, useEffect } from "react"
 import { NEvent } from './withSocketContext'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
+// import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { CollapsibleBox } from '~/ui-kit.special';
 import classes from './ReportListItem.module.scss'
 import clsx from 'clsx'
@@ -44,7 +44,7 @@ export const ReportListItem = memo((ps: TProps) => {
 
   const Icon = useMemo(() => {
     switch (ps.report.reportType) {
-      case NEvent.EReportType.DEFAULT: return <BookmarkIcon color='disabled' />
+      case NEvent.EReportType.DEFAULT: return <BookmarkBorderIcon color='disabled' />
       case NEvent.EReportType.INFO: return <InfoIcon color='primary' />
       case NEvent.EReportType.SUCCESS: return <TaskAltIcon color='success' />
       case NEvent.EReportType.ERROR: return <ErrorIcon color='error' />

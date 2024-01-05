@@ -6,6 +6,7 @@ import { TState as TGlobalThemingState } from './reducers/globalTheme'
 import { TState as TCookieOfferState } from './reducers/cookieOffer'
 import { TState as TPageMetaState } from './reducers/pageMeta'
 import { NSiteSearchState } from './reducers/siteSearch'
+import { TState as TCustomDevToolsState } from './reducers/customDevTools'
 
 type TProject = {
   name: string;
@@ -39,4 +40,5 @@ export interface IRootState extends Store {
   cookieOffer: TCookieOfferState;
   pageMeta: TPageMetaState;
   siteSearch: NSiteSearchState.TState;
+  customDevTools: TCustomDevToolsState;
 }

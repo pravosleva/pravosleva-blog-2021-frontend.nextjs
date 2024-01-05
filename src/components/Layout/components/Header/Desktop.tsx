@@ -21,6 +21,8 @@ import { breakpoints } from '~/mui/theme'
 import loadable from '@loadable/component'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { IRootState } from '~/store/IRootState'
+import MemoryIcon from '@mui/icons-material/Memory'
+import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 
 // @ts-ignore
 const Identicon = loadable(() => import(/* webpackChunkName: "identicon" */ 'react-hooks-identicons'), {
@@ -91,6 +93,12 @@ const _DesktopHeader = ({
   // const userInfo = !!useSelector((state: IRootState) => state.userInfo?.fromServer)
   const router = useRouter()
   const dispatch = useDispatch()
+  const isBrowserMemoryMonitorEnabled = !!useSelector((state: IRootState) => state.customDevTools.browserMemoryMonitor.isEnabled)
+  const toggleBrowserMemoryMonitorDevTools = useCallback((e) => {
+    e.preventDefault()
+    dispatch(toggleBrowserMemoryMonitor())
+  }, [])
+
   const handleLogoutCb = useCallback(async () => {
     // const result = await logout()
     //   .then(() => {
@@ -135,110 +143,139 @@ const _DesktopHeader = ({
       <Headroom style={{ zIndex: 5 }}>
         <header style={{ boxShadow: '0 0 4px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.28)' }}>
           
-            <Nav>
-              <ResponsiveBlock isLimited isPaddedMobile>
-                <ul
+          <Nav>
+            <ResponsiveBlock isLimited isPaddedMobile>
+              <ul
+                style={{
+                  textTransform: 'uppercase',
+                  letterSpacing: '.1em',
+                  // display: 'flex',
+                  // gap: '10px',
+                }}
+              >
+                <li
                   style={{
-                    textTransform: 'uppercase',
-                    letterSpacing: '.1em',
-                    // display: 'flex',
-                    // gap: '10px',
+                    // marginLeft: '20px',
+                    // marginBottom: '0px',
+                    // margin: '0 auto 0 20px'
+                    margin: '0 auto 0 0'
                   }}
                 >
-                  <li
-                    style={{
-                      // marginLeft: '20px',
-                      // marginBottom: '0px',
-                      // margin: '0 auto 0 20px'
-                      margin: '0 auto 0 0'
-                    }}
-                  >
-                    <Link href="/" as="/">
-                      <a
+                  <Link href="/" as="/">
+                    <a
+                      style={{
+                        color: '#fff',
+                        textDecoration: `none`,
+                      }}
+                    >
+                      Pravosleva
+                    </a>
+                  </Link>
+                </li>
+                {/*<li style={{ margin: '0 auto 0 0' }} className="muted">
+                  usersConnected.length > 0 && (
+                    <span title={getIPs(usersConnected)}>
+                      <i className="fas fa-globe" style={{ marginRight: '15px' }}></i>
+                      {t('ONLINE')}: {usersConnected.length}
+                    </span>
+                  )
+                </li>*/}
+
+                {
+                  !isBrowserMemoryMonitorEnabled && (
+                    <li
+                      className='fade-in-effect'
+                      style={{
+                        marginBottom: '0px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        // cursor: 'pointer',
+                      }}
+                      onClick={toggleBrowserMemoryMonitorDevTools}
+                    >
+                      <LangLink
                         style={{
-                          color: '#fff',
-                          textDecoration: `none`,
+                          // color: '#fff',
+                          // textDecoration: `none`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          cursor: 'pointer',
                         }}
+                        isCurrentSelection={isBrowserMemoryMonitorEnabled}
                       >
-                        Pravosleva
+                        <MemoryIcon />
+                      </LangLink>
+                    </li>
+                  )
+                }
+
+                {suppoerLocales.map((lang: any) => (
+                  <li
+                    key={lang.label}
+                    style={{ marginBottom: '0px', cursor: 'pointer' }}
+                  >
+                    <Link href="/">
+                      <LangLink
+                        isCurrentSelection={lang.value === currentLang}
+                        onClick={handleSetLang(lang.value)}
+                        title={lang.name}
+                      >
+                        {lang.label}
+                      </LangLink>
+                    </Link>
+                  </li>
+                ))}
+
+                {/* <ThemeToggler /> */}
+
+                {!isAuthenticated && (
+                  <li className="fade-in-effect" style={{ marginBottom: '0px' }}>
+                    <Link href="/auth/login" as="/auth/login">
+                      <a style={{ color: isCurrentPathCb(router.pathname, '/auth/login') ? '#ff781e' : '#fff' }}>
+                        {t('LOGIN')}
                       </a>
                     </Link>
                   </li>
-                  {/*<li style={{ margin: '0 auto 0 0' }} className="muted">
-                    usersConnected.length > 0 && (
-                      <span title={getIPs(usersConnected)}>
-                        <i className="fas fa-globe" style={{ marginRight: '15px' }}></i>
-                        {t('ONLINE')}: {usersConnected.length}
-                      </span>
-                    )
-                  </li>*/}
-                  {suppoerLocales.map((lang: any) => (
-                    <li
-                      key={lang.label}
-                      style={{ marginBottom: '0px', cursor: 'pointer' }}
-                    >
-                      <Link href="/">
-                        <LangLink
-                          isCurrentSelection={lang.value === currentLang}
-                          onClick={handleSetLang(lang.value)}
-                          title={lang.name}
-                        >
-                          {lang.label}
-                        </LangLink>
-                      </Link>
-                    </li>
-                  ))}
-
-                  {/* <ThemeToggler /> */}
-
-                  {!isAuthenticated && (
-                    <li className="fade-in-effect" style={{ marginBottom: '0px' }}>
-                      <Link href="/auth/login" as="/auth/login">
-                        <a style={{ color: isCurrentPathCb(router.pathname, '/auth/login') ? '#ff781e' : '#fff' }}>
-                          {t('LOGIN')}
-                        </a>
-                      </Link>
-                    </li>
-                  )}
-                  {isAuthenticated && (
-                    <li style={{ marginBottom: '0px' }} onClick={handleLogout}>
-                      <a href="#">{t('LOGOUT')}</a>
-                    </li>
-                  )}
-                  {/* isAuthenticated && process.browser && (
-                    <li style={{ marginBottom: '0px' }} className="avatar-wrapper">
-                      <div
-                        style={{ cursor: 'pointer' }}
-                        onClick={redirectToProfile}
-                        className="avatar-wrapper"
-                        title={t('PROFILE')}
-                      >
-                        <Identicon
-                          string={userInfo.email}
-                          size={30}
-                          bg="transparent"
-                          fg={isCurrentPathCb(router.pathname, '/profile') ? '#ff781e' : '#fff'}
-                          count={5}
-                          padding={1}
-                        />
-                      </div>
-                    </li>
-                  ) */}
-                  <li style={{ marginBottom: '0px' }}>
-                    <MenuFlexWrapper>
-                      <Button
-                        onClick={handleMenuOpen}
-                        typeName='secondaryWhite'
-                        width='narrow'
-                        size='xsmall'
-                      >
-                        {t('MENU')}
-                      </Button>
-                    </MenuFlexWrapper>
+                )}
+                {isAuthenticated && (
+                  <li style={{ marginBottom: '0px' }} onClick={handleLogout}>
+                    <a href="#">{t('LOGOUT')}</a>
                   </li>
-                </ul>
-              </ResponsiveBlock>
-            </Nav>
+                )}
+                {/* isAuthenticated && process.browser && (
+                  <li style={{ marginBottom: '0px' }} className="avatar-wrapper">
+                    <div
+                      style={{ cursor: 'pointer' }}
+                      onClick={redirectToProfile}
+                      className="avatar-wrapper"
+                      title={t('PROFILE')}
+                    >
+                      <Identicon
+                        string={userInfo.email}
+                        size={30}
+                        bg="transparent"
+                        fg={isCurrentPathCb(router.pathname, '/profile') ? '#ff781e' : '#fff'}
+                        count={5}
+                        padding={1}
+                      />
+                    </div>
+                  </li>
+                ) */}
+                <li style={{ marginBottom: '0px' }}>
+                  <MenuFlexWrapper>
+                    <Button
+                      onClick={handleMenuOpen}
+                      typeName='secondaryWhite'
+                      width='narrow'
+                      size='xsmall'
+                    >
+                      {t('MENU')}
+                    </Button>
+                  </MenuFlexWrapper>
+                </li>
+              </ul>
+            </ResponsiveBlock>
+          </Nav>
           
         </header>
       </Headroom>

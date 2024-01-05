@@ -27,6 +27,7 @@ import Head from 'next/head'
 // import '../public/static/css/link-as-rippled-btn.css'
 // import '../public/static/css/custom-breadcrumbs.css'
 // import '../public/static/css/block-quotes.css'
+import { ClientPerfWidget } from '~/components'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -132,6 +133,7 @@ function AppWithRedux(props: MyAppProps) {
                     {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                     <CssBaseline />
                     <Component {...pageProps} />
+                    <ClientPerfWidget position='top-center' />
                   </ThemeProvider>
                 </SCThemeProvider>
               </CacheProvider>

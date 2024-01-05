@@ -136,17 +136,15 @@ export const withLab = (io: Socket) => {
               loopers[channelName] = looper
               looper.start(notifRandomQuote)
               io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
-                // socketId: socket.id,
                 clientId: socket.handshake.query.uniqueClientKey,
                 message: 'Looper created and started',
               })
             } else {
               looper.start(notifRandomQuote)
-              io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
-                // socketId: socket.id,
-                clientId: socket.handshake.query.uniqueClientKey,
-                message: 'Looper started',
-              })
+              // io.to(channelName).emit(NEvent.ServerOutgoing.COMMON_MESSAGE, {
+              //   clientId: socket.handshake.query.uniqueClientKey,
+              //   message: 'Looper started',
+              // })
             }
           } else console.log(`-- !isFirst`)
           // --

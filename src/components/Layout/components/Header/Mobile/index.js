@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import Headroom from 'react-headroom'
 import styled, { css } from 'styled-components'
 import Link from 'next/link'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { withMobileMenu } from './hocs/with-mobile-menu'
 import { HamburgerIcon, CrossCloseIcon } from './components'
 // import { showAsyncToast } from '@/actions'
@@ -16,6 +16,8 @@ import { LangLink } from '../components/LangLink'
 import { breakpoints } from '~/mui/theme'
 // import { userInfoActions } from '@/store/reducers/user-info'
 import loadable from '@loadable/component'
+import MemoryIcon from '@mui/icons-material/Memory'
+import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 
 const Identicon = loadable(() => import(/* webpackChunkName: "identicon" */ 'react-hooks-identicons'), {
   ssr: false,
@@ -99,7 +101,12 @@ const MobileHeader = ({
   currentLang,
 }) => {
   const isAuthenticated = !!useSelector((state) => state.userInfo?.fromServer?.id)
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
+  const isBrowserMemoryMonitorEnabled = !!useSelector((state) => state.customDevTools.browserMemoryMonitor.isEnabled)
+  const toggleBrowserMemoryMonitorDevTools = useCallback((e) => {
+    e.preventDefault()
+    dispatch(toggleBrowserMemoryMonitor())
+  }, [])
   const userInfo = !!useSelector((state) => state.userInfo?.fromServer)
   const router = useRouter()
   // const handleLogoutCb = useCallback(async () => {
@@ -116,6 +123,7 @@ const MobileHeader = ({
   //     dispatch(userInfoActions.fillDelta({ fromServer: null, isLoadedSuccessfully: true }))
   //   })
   // }, 500)
+
   const isCurrentPathCb = useCallback(isCurrentPath, [])
   const handleSetLang = useCallback(
     (value) => (e) => {
@@ -161,6 +169,38 @@ const MobileHeader = ({
                 <a style={{ lineHeight: '40px' }}>Pravosleva</a>
               </Link>
             </li>
+
+            {
+              !isBrowserMemoryMonitorEnabled && (
+                <li
+                  className='fade-in-effect'
+                  style={{
+                    marginBottom: '0px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    // cursor: 'pointer',
+                    // border: '1px solid red',
+                    minWidth: '40px',
+                  }}
+                  onClick={toggleBrowserMemoryMonitorDevTools}
+                >
+                  <LangLink
+                    style={{
+                      // color: '#fff',
+                      // textDecoration: `none`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                    }}
+                    isCurrentSelection={isBrowserMemoryMonitorEnabled}
+                  >
+                    <MemoryIcon />
+                  </LangLink>
+                </li>
+              )
+            }
+
             {!!suppoerLocales &&
               suppoerLocales.length > 0 &&
               suppoerLocales.map((lang) => (
@@ -173,6 +213,7 @@ const MobileHeader = ({
                     display: 'flex',
                     justifyContent: 'center',
                     fontWeight: '500',
+                    // border: '1px solid red',
                   }}
                 >
                   <Link href="/">
@@ -196,6 +237,7 @@ const MobileHeader = ({
                   minWidth: '40px',
                   marginBottom: '0px',
                   fontFamily: 'Montserrat',
+                  // border: '1px solid red',
                 }}
                 className="fade-in-effect"
                 title={t('LOGIN')}

@@ -198,9 +198,15 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
             <>
               <div className={clsx(classes.fixedTop, classes.fixedTopActiveReport, 'backdrop-blur', 'fade-in-speed-2')}>
                 <div className={classes.stickyTopHeader}>
-                  {!!viState.activeReport.imei && <div>{viState.activeReport.imei}</div>}
                   <div>{viState.activeReport.stateValue.replace('stepMachine:', '')}</div>
                 </div>
+                {
+                  !!viState.activeReport.imei && (
+                    <ResponsiveBlock style={{ padding: '0 16px 0 16px', margin: '0 0 16px 0' }}>
+                      <b className='inline-code'>{viState.activeReport.imei}</b>
+                    </ResponsiveBlock>
+                  )
+                }
                 {
                   viState.activeReport.stepDetails && (
                     <CollapsibleBox
@@ -434,8 +440,10 @@ type TStandartCommonEvent = {
   notistackProps?: Partial<IOptionsObject>;
 }
 
-const Logic = () => {
+const Logic = memo(() => {
   const [_isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
+  // const [isConnectedToPrivateRoom] = useStore((store: TSocketMicroStore) => store.isConnectedToPrivateRoom)
+  
   const viState = useProxy(vi)
   const addReportItem = useCallback((report: NEvent.TReport) => {
     if (!!report) viState.FOR_EXAMPLE.items = [report, ...viState.FOR_EXAMPLE.items]
@@ -470,13 +478,15 @@ const Logic = () => {
     } else console.log(`elm is ${typeof elm}`)
   }, [])
 
+  const autoconnectCustomDisabledRef = useRef(false)
   const handleWannaBeConnected = useCallback((disconnectBtnRef: React.RefObject<HTMLButtonElement>) => {
+    autoconnectCustomDisabledRef.current = false
     if (!!socketRef.current) {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_CONNECTED_TO_ROOM, { roomId: spReportRoomId }, (data: TStandartTargetCallback) => {
         if (data.ok) {
           setStore({ isConnectedToPrivateRoom: true })
           showNotif(data?.message || 'Connected to private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000, ...(data?.notistackProps || {}) })
-          disableDelayToggler({ elm: disconnectBtnRef.current, ms: 2000 })
+          if (!!disconnectBtnRef?.current) disableDelayToggler({ elm: disconnectBtnRef.current, ms: 2000 })
         } else {
           setStore({ isConnectedToPrivateRoom: false })
           showNotif(data?.message || 'Connection to private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000, ...(data?.notistackProps || {}) })
@@ -487,13 +497,20 @@ const Logic = () => {
       groupLog({ spaceName: '⛔ FRONT: Socket was not connected yet?', items: ['socketRef.current', socketRef.current] })
     }
   }, [])
+  // useLayoutEffect(() => {
+  //   if (autoconnectCustomDisabledRef.current)
+  //     return
+  //   else if (_isConnected && !isConnectedToPrivateRoom)
+  //     setTimeout(handleWannaBeConnected, 500)
+  // }, [_isConnected, isConnectedToPrivateRoom])
   const handleWannaBeDisonnected = useCallback((connectBtnRef: React.RefObject<HTMLButtonElement>) => {
+    autoconnectCustomDisabledRef.current = true
     if (!!socketRef.current) {
       socketRef.current.emit(NEvent.ServerIncoming.WANNA_BE_DISCONNECTED_FROM_ROOM, { roomId: spReportRoomId }, (data: TStandartTargetCallback) => {
         if (data.ok) {
           setStore({ isConnectedToPrivateRoom: false })
           showNotif(data?.message || 'Disconnected from private channel successfully (No message from backend)', { variant: 'success', autoHideDuration: 5000, ...(data?.notistackProps || {}) })
-          disableDelayToggler({ elm: connectBtnRef.current, ms: 2000 })
+          if (!!connectBtnRef?.current) disableDelayToggler({ elm: connectBtnRef.current, ms: 2000 })
         } else {
           // setStore({ isConnectedToPrivateRoom: false })
           showNotif(data?.message || 'Disconnection from private channel errored (No message from backend)', { variant: 'error', autoHideDuration: 7000, ...(data?.notistackProps || {}) })
@@ -626,9 +643,9 @@ const Logic = () => {
       onDisconnClick={(connectBtnRef) => handleWannaBeDisonnected(connectBtnRef)}
     />
   )
-}
+})
 
-export const ConnectedData = () => {
+export const ConnectedData = memo(() => {
   return (
     <WithSocketContext>
       <div
@@ -638,4 +655,4 @@ export const ConnectedData = () => {
       </div>
     </WithSocketContext>
   )
-}
+})
