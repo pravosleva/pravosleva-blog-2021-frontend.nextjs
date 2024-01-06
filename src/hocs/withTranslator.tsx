@@ -45,7 +45,7 @@ export const withTranslator = <T,>(
     }, [])
     const getTranslatedText = useCallback((str: string, opts: any) => {
       // console.groupCollapsed(`${str} <- ${current}`)
-      const result = intl.get(str, opts)
+      const result = intl.get(str, opts) || str
       // console.log(result)
       // console.groupEnd()
       return result

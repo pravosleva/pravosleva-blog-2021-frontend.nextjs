@@ -184,7 +184,10 @@ export const ClientPerfWidget = (ps: TProps) => {
       {
         isBrowserMemoryMonitorEnabled && (
           <button
-            className={clsx(classes.absoluteToggler, 'backdrop-blur--lite')}
+            className={clsx(
+              classes.absoluteToggler,
+              // 'backdrop-blur--lite',
+            )}
             onClick={handleOpenToggle}
           >
             {/* <span>⚙️</span>

@@ -2,7 +2,7 @@
   padding: 8px;
   border-radius: 16px;
   font-size: 13px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 10px 4px;
+  box-shadow: none;
   transition: all 0.3s linear;
 }
 // .relativeBox { position: relative; }
@@ -11,6 +11,7 @@
 }
 .isOpened {
   transform: translateX(-50%) translateY(0%);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 10px 4px;
 }
 .absoluteToggler {
   cursor: pointer;
@@ -29,7 +30,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  // background-color: rgba(255,255,255,0.5);
+  background-color: rgba(255,255,255,0.8);
 }
 
 .stack0 {

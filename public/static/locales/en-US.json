@@ -7,10 +7,22 @@
   "COMPANY_NAME": "Company name",
   "COMMENT": "Comment",
   "HOME": "Home",
+  "DEMO": "Demo",
+
+  "PROJECT_BRIEF@AUDITOR_HELPER": "Auditor helper",
+  "PROJECT_BRIEF@SEO_EXP": "SEO experience",
+  "PROJECT_BRIEF@CAR_SERVICE_BOOK": "Car service book",
+  "PROJECT_BRIEF@PROBABILITY_THEORY": "Probabillity theory",
+  "PROJECT_BRIEF@SP_TRADEIN": "",
+  "PROJECT_GO_BTN:LINK": "Read more",
+  "PROJECT_GO_BTN:LINK_GOTO": "Go",
+  "PROJECT_GO_BTN:LINK_TG": "Telegram",
+
+  "PROJECT_DESCR@TRADEIN": "Online logger in SharedWorker demonstration",
 
   "AUDIT_LIST_PROJECT_DESCR": "We can do it better!",
-  "AUTO_PARK_PROJECT_DESCR": "Car service book",
-  "TEAM_SCORING_PROJECT_DESCR": "How much is your forecast, lier?",
+  "AUTO_PARK_PROJECT_DESCR": "Hello world",
+  "TEAM_SCORING_PROJECT_DESCR": "How much is your forecast, liar?",
 
   "SOCKET_LAB/HEADER": "SocketLab exp",
   "SOCKET_LAB/CONTENT/isConnected": "Connect",

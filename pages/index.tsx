@@ -7,7 +7,7 @@ import * as React from 'react'
 import { Layout } from '~/components/Layout'
 import Head from 'next/head'
 import { ProjectsPage } from '~/components/ProjectsPage'
-import { SocketLab } from '~/components/SocketLab'
+// import { SocketLab } from '~/components/SocketLab'
 
 // type TLink = {
 //   name: string;
@@ -126,7 +126,7 @@ export default function Index() {
             </Stack>
           </Box>
         </Container> */}
-        <SocketLab />
+        {/* <SocketLab /> */}
       </Layout>
     </>
   );
