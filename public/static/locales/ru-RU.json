@@ -14,11 +14,15 @@
   "PROJECT_BRIEF@CAR_SERVICE_BOOK": "Сервис авто (по пробегу)",
   "PROJECT_BRIEF@PROBABILITY_THEORY": "Теория вероятности",
   "PROJECT_BRIEF@SP_TRADEIN": "",
+  "PROJECT_BRIEF@CARGO_2016": "Three.js",
+
   "PROJECT_GO_BTN:LINK": "Читать",
   "PROJECT_GO_BTN:LINK_GOTO": "Перейти",
   "PROJECT_GO_BTN:LINK_TG": "Телеграм",
 
   "PROJECT_DESCR@TRADEIN": "Онлайн логгер внутри отдельного потока SharedWorker",
+  "PROJECT_DESCR@CARGO_2016": "Оценка заполненности фуры",
+  "PROJECT_DESCR@FAMILY_TREE": "Генеалогическое дерево",
 
   "AUDIT_LIST_PROJECT_DESCR": "Мы сделаем это лучше!",
   "AUTO_PARK_PROJECT_DESCR": "Просто сервисная книжка",

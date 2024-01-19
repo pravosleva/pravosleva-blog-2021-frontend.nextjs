@@ -1,3 +1,5 @@
+import serverTiming from 'server-timing'
+import { TEnhancedRequest } from '~/srv.utils/types'
 import axios from 'axios'
 import betterModuleAlias from 'better-module-alias'
 import packageJson from './package.json'
@@ -14,8 +16,14 @@ const { api } = require('~/srv.express-next-api')
 // const { crossDeviceState } = require('~/utils/next/crossDeviceState')
 
 const isDev = process.env.NODE_ENV !== 'production'
-const app = require('express')()
-const server = require('http').Server(app)
+const expressApp = require('express')()
+expressApp.use(
+  serverTiming({
+    // Only send metrics if query parameter `debug` is set to `true`
+    // enabled: (req, res) => req.query.debug === 'true',
+  })
+)
+const server = require('http').Server(expressApp)
 const io = require('socket.io')(server, {
   cors: {
     origin: [
@@ -46,8 +54,8 @@ const { parse } = require('url')
 
 const enhancedIO = rootSocketLogic(io)
 
-// app.use(addRequestId) // NOTE: New additional field req.id
-// app.use('*', ipDetectorMW, geoipLiteMW)
+// expressApp.use(addRequestId) // NOTE: New additional field req.id
+// expressApp.use('*', ipDetectorMW, geoipLiteMW)
 // NOTE: For example: const ip = req.clientIp; const geo = req.geo;
 
 const state = {
@@ -58,20 +66,27 @@ const state = {
 nextApp
   .prepare()
   .then(() => {
-    app.use('/express-next-api', api)
-    app.use('/e-api', api)
+    expressApp.use('/express-next-api', api)
+    expressApp.use('/e-api', api)
 
-    app.all('*', (req: any, res: any) => {
+    expressApp.all('*', (req: TEnhancedRequest, res: any) => {
+      req.startTime('express-side-info', 'INFO: Was intercepted by express')
       req.io = enhancedIO
       // req.crossDeviceState = crossDeviceState
 
       const parsedUrl = parse(req.url, true)
       const { pathname } = parsedUrl
 
+      req.endTime('express-side-info')
+
       if (pathname === '/sw.js' || /^\/(workbox|worker|fallback)-\w+\.js$/.test(pathname)) {
+        req.startTime('express-side-info-2', 'Will be intercepted by nextApp.serveStatic')
+        req.endTime('express-side-info-2')
         const filePath = join(__dirname, '.next', pathname)
         nextApp.serveStatic(req, res, filePath)
       } else {
+        req.startTime('express-side-info-3', 'Will be intercepted by nextHanlder')
+        req.endTime('express-side-info-3')
         return nextHanlder(req, res, parsedUrl)
       }
     })

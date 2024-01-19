@@ -8,7 +8,7 @@
 }
 .fixedTopActiveReport {
   right: 16px;
-  max-height: calc(100vh - 16px - 16px);
+  max-height: calc(100svh - 16px - 16px);
   
   overflow-y: auto;
   // background-color: #fff;
@@ -54,8 +54,8 @@
   border: 8px solid black;
   left: 16px;
   min-width: 300px;
-  // height: calc(100vh - 16px - 16px - 125px);
-  height: calc(100vh - 16px - 16px);
+  // height: calc(100svh - 16px - 16px - 125px);
+  height: calc(100svh - 16px - 16px);
   
   overflow-y: auto;
   background-color: #fff;

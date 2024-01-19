@@ -5,11 +5,11 @@
 }
 @media (max-width: #{$sm}px) {
   .limitedHeight {
-    min-height: calc(100dvh - 40px);
+    min-height: calc(100svh - 40px);
   }
 }
 @media (min-width: calc(#{$sm}px + 1px)) {
   .limitedHeight {
-    min-height: calc(100dvh - 50px);
+    min-height: calc(100svh - 50px);
   }
 }

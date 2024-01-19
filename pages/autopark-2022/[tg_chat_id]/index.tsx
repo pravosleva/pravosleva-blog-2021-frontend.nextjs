@@ -50,6 +50,13 @@ export default function MyProjects({
       <Head>
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}`} />
+        <script
+          type="text/javascript"
+          defer
+          dangerouslySetInnerHTML={{
+            __html: `if (typeof customEruda !== 'undefined') setTimeout(customEruda.initIfNecessary, 1000);`,
+          }}
+        />
       </Head>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <Container maxWidth="xs">

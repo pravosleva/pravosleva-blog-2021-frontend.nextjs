@@ -100,6 +100,27 @@ const projects: TProject[] = [
   },
   {
     id: 4,
+    title: 'FamilyTree exp',
+    description: 'PROJECT_DESCR@FAMILY_TREE',
+    img: {
+      src: '/static/img/projects/family-tree.png',
+      alt: 'loading...',
+    },
+    links: [
+      {
+        href: 'https://pravosleva.pro/dist.family-tree-2023/#/?debug=1',
+        as: 'https://pravosleva.pro/dist.family-tree-2023/#/?debug=1',
+        text: 'DEMO',
+        color: ELinkColor.YELLOW,
+        icon: ELinkIcon.ARROW,
+      },
+    ],
+    uiDate: '2023',
+    // brief: 'PROJECT_BRIEF@SP_TRADEIN',
+    tags: [],
+  },
+  {
+    id: 5,
     title: 'AutoPark',
     description: 'AUTO_PARK_PROJECT_DESCR',
     img: {
@@ -120,7 +141,7 @@ const projects: TProject[] = [
     tags: ['telegram'],
   },
   {
-    id: 5,
+    id: 6,
     title: 'TeamScoring',
     description: 'TEAM_SCORING_PROJECT_DESCR',
     img: {
@@ -139,6 +160,27 @@ const projects: TProject[] = [
     uiDate: '2019',
     brief: 'PROJECT_BRIEF@PROBABILITY_THEORY',
     tags: [],
+  },
+  {
+    id: 7,
+    title: 'Cargo 2016',
+    brief: 'PROJECT_BRIEF@CARGO_2016',
+    description: 'PROJECT_DESCR@CARGO_2016',
+    img: {
+      src: '/static/img/projects/cargo-2016.2.jpg',
+      alt: 'loading...',
+    },
+    links: [
+      {
+        href: 'https://selection4test.ru',
+        as: 'https://selection4test.ru',
+        text: 'DEMO',
+        color: ELinkColor.YELLOW,
+        icon: ELinkIcon.ARROW,
+      },
+    ],
+    uiDate: '2016',
+    tags: ['threejs', 's4t'],
   },
 ]
 
