@@ -1,7 +1,7 @@
-import { Response as IResponse } from 'express'
+import { Request as IRequest } from 'express'
 // import axios from 'axios'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
-import { TEnhancedRequest } from '~/srv.utils/types'
+import { TEnhancedResponse } from '~/srv.utils/types'
 
 export const rules = {
   params: {
@@ -19,14 +19,13 @@ export const rules = {
   }
 }
 
-export const getNote = async (req: TEnhancedRequest, res: IResponse) => {
+export const getNote = async (req: IRequest, res: TEnhancedResponse) => {
   const { id } = req.params
-  req.startTime('css_get_note', `code-samples.space: Get remote note ${id}`)
+  res.startTime('css_get_note', `code-samples.space: Get remote note ${id}`)
 
   let url = `http://code-samples.space/api/notes/${id}`
 
   const noteResult = await universalHttpClient.get(url)
-
   res.endTime('css_get_note')
 
   if (noteResult.isOk && !!noteResult.response) {

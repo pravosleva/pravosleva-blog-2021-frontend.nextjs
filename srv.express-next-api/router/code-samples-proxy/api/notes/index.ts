@@ -66,6 +66,7 @@ codeSamplesProxyApi.get(
   withReqParamsValidationMW({
     rules: singleNoteRules,
   }),
+  // @ts-ignore
   getNote,
 )
 

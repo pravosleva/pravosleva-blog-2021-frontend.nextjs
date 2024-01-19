@@ -1,5 +1,5 @@
 import serverTiming from 'server-timing'
-import { TEnhancedRequest } from '~/srv.utils/types'
+import { TEnhancedRequest, TEnhancedResponse } from '~/srv.utils/types'
 import axios from 'axios'
 import betterModuleAlias from 'better-module-alias'
 import packageJson from './package.json'
@@ -69,24 +69,24 @@ nextApp
     expressApp.use('/express-next-api', api)
     expressApp.use('/e-api', api)
 
-    expressApp.all('*', (req: TEnhancedRequest, res: any) => {
-      req.startTime('express-side-info', 'INFO: Was intercepted by express')
+    expressApp.all('*', (req: TEnhancedRequest, res: TEnhancedResponse) => {
+      res.startTime('express-side-info', 'INFO: Was intercepted by express')
       req.io = enhancedIO
       // req.crossDeviceState = crossDeviceState
 
       const parsedUrl = parse(req.url, true)
       const { pathname } = parsedUrl
 
-      req.endTime('express-side-info')
+      res.endTime('express-side-info')
 
       if (pathname === '/sw.js' || /^\/(workbox|worker|fallback)-\w+\.js$/.test(pathname)) {
-        req.startTime('express-side-info-2', 'Will be intercepted by nextApp.serveStatic')
-        req.endTime('express-side-info-2')
+        res.startTime('express-side-info-2', 'Will be intercepted by nextApp.serveStatic')
+        res.endTime('express-side-info-2')
         const filePath = join(__dirname, '.next', pathname)
         nextApp.serveStatic(req, res, filePath)
       } else {
-        req.startTime('express-side-info-3', 'Will be intercepted by nextHanlder')
-        req.endTime('express-side-info-3')
+        res.startTime('express-side-info-3', 'Will be intercepted by nextHanlder')
+        res.endTime('express-side-info-3')
         return nextHanlder(req, res, parsedUrl)
       }
     })
