@@ -1,0 +1,1 @@
+@keyframes fadeIn{0%{display:none;opacity:0}1%{display:block;opacity:0}100%{display:block;opacity:1}}.fade-in-speed-2{animation:.2s ease-out fadeIn}

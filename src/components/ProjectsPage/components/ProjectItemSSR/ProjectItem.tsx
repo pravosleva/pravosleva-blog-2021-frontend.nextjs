@@ -1,12 +1,13 @@
 import clsx from 'clsx';
-import classes from './ProjectItem.module.scss'
+// import classes from './ProjectItem.module.scss'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 // import Link from 'next/link'
 import Link from '~/components/Link'
 import { Button } from '@mui/material'
-import { ELinkColor, ELinkIcon } from './types'
+import { ELinkColor, ELinkIcon } from '../ProjectItem/types'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import LinkIcon from '@mui/icons-material/Link'
+import { useStyles } from '../ProjectItemSSR/useStyles'
 
 type TProps = {
   title: string;
@@ -25,6 +26,9 @@ type TProps = {
   img: {
     src: string;
     alt: string;
+    color: {
+      average: string;
+    };
   };
   isLast?: boolean;
 };
@@ -64,22 +68,28 @@ const linkIconMap: {
   [ELinkIcon.TG]: <TelegramIcon />,
 }
 
-export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, links, isLast }: TProps) => {
+export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, links,
+  // isLast,
+}: TProps) => {
+  const muiStyles = useStyles()
   return (
-    <div className={clsx(classes.blogCard, { [classes.alt]: isLast } )}>
-      <div className={classes.meta}>
+    <div className={clsx(
+      muiStyles.blogCard,
+      // { [classes.alt]: isLast }
+    )}>
+      <div className={muiStyles.meta}>
         <div
-          className={classes.photo}
+          className={muiStyles.photo}
           style={{
-            backgroundImage: `url(${img.src})`,
+            backgroundImage: `linear-gradient(${img.color.average}, ${img.color.average}), url(${img.src})`,
           }}
         ></div>
-        <ul className={clsx(classes.details)}>
-          {!!author && <li className={classes.author}>{author}</li>}
-          <li className={clsx(classes.date)}>{uiDate}</li>
+        <ul className={clsx(muiStyles.details, 'details')}>
+          {!!author && <li className={'author'}>{author}</li>}
+          <li className={clsx('date')}>{uiDate}</li>
           {
             tags.length > 0 && (
-              <li className={classes.tags}>
+              <li className={'tags'}>
                 <ul>
                   {tags.map((t) => (
                     <li key={t}>
@@ -94,11 +104,11 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
           }
         </ul>
       </div>
-      <div className={classes.description}>
+      <div className={muiStyles.description}>
         <h1>{title}</h1>
         <h2>{brief || ''}</h2>
-        {!!descr && <p>{descr}</p>}
-        <div className={classes.readMore}>
+        {!!descr && <p className={muiStyles.par}>{descr}</p>}
+        <div className={'readMore'}>
 
           {/* <Link href={link.href} as={link.as}>
             {link.text}

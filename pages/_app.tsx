@@ -18,15 +18,24 @@ import { useStore } from 'react-redux';
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider as SCThemeProvider } from 'styled-components'
 import { Theme } from '~/ui-kit/Theme'
-// import '../public/static/css/article.css'
 import Head from 'next/head'
-// import '../public/static/css/layout.css'
-// import '../public/static/css/global-theming.css'
-// import '../public/static/css/standart-form.css'
-// import '../public/static/css/rippled-btn.css'
-// import '../public/static/css/link-as-rippled-btn.css'
-// import '../public/static/css/custom-breadcrumbs.css'
-// import '../public/static/css/block-quotes.css'
+
+// import '../public/static/css/min/gosuslugi.css'
+import '../public/static/css/min/animations.css'
+import '../public/static/css/min/fix.sweetalert2.css'
+// import '../public/static/css/min/backdrop-blur.css'
+// import '../public/static/css/article.css'
+import '../public/static/css/min/audit-list.css'
+// import '../public/static/css/min/layout.css'
+// import '../public/static/css/min/project-list.css'
+// import '../public/static/css/min/global-theming.css'
+import '../public/static/css/min/standart-form.css'
+// import '../public/static/css/min/rippled-btn.css'
+// import '../public/static/css/min/link-as-rippled-btn.css'
+// import '../public/static/css/min/custom-breadcrumbs.css'
+import '../public/static/css/min/block-quotes.css'
+import '../public/static/css/min/sp-nw-2022.css'
+
 import { ClientPerfWidget } from '~/components'
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -73,20 +82,20 @@ function AppWithRedux(props: MyAppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-        <link rel="stylesheet" href="/static/css/gosuslugi.css" />
-        <link href="/static/css/layout.css" rel="stylesheet" />
-        <link href="/static/css/animations.css" rel="stylesheet" />
-        <link href="/static/css/fix.sweetalert2.css" rel="stylesheet" />
-        <link href="/static/css/backdrop-blur.css" rel="stylesheet" />
-        <link href="/static/css/audit-list.css" rel="stylesheet" />
-        <link href="/static/css/project-list.css" rel="stylesheet" />
-        <link href="/static/css/global-theming.css" rel="stylesheet" />
-        <link href="/static/css/standart-form.css" rel="stylesheet" />
-        <link href="/static/css/rippled-btn.css" rel="stylesheet" />
-        <link href="/static/css/link-as-rippled-btn.css" rel="stylesheet" />
-        <link href="/static/css/custom-breadcrumbs.css" rel="stylesheet" />
-        <link href="/static/css/block-quotes.css" rel="stylesheet" />
-        <link href="/static/css/sp-nw-2022.css" rel="stylesheet" />
+        <link rel="stylesheet" href="/static/css/min/gosuslugi.css" />
+        <link href="/static/css/min/layout.css" rel="stylesheet" />
+        {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
+        {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}
+        <link href="/static/css/min/backdrop-blur.css" rel="stylesheet" />
+        {/* <link href="/static/css/min/audit-list.css" rel="stylesheet" /> */}
+        <link href="/static/css/min/project-list.css" rel="stylesheet" />
+        <link href="/static/css/min/global-theming.css" rel="stylesheet" />
+        {/* <link href="/static/css/min/standart-form.css" rel="stylesheet" /> */}
+        <link href="/static/css/min/rippled-btn.css" rel="stylesheet" />
+        <link href="/static/css/min/link-as-rippled-btn.css" rel="stylesheet" />
+        <link href="/static/css/min/custom-breadcrumbs.css" rel="stylesheet" />
+        {/* <link href="/static/css/min/block-quotes.css" rel="stylesheet" /> */}
+        {/* <link href="/static/css/min/sp-nw-2022.css" rel="stylesheet" /> */}
         <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
         <link
           rel="stylesheet"

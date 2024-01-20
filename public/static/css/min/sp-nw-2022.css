@@ -1,0 +1,1 @@
+.price-grid-2c{display:grid}@media (max-width:600px){.price-grid-2c{grid-template-columns:2fr 1fr;grid-gap:8px 8px}}@media (min-width:601px){.price-grid-2c{grid-template-columns:1fr 1fr;grid-gap:8px 8px}}

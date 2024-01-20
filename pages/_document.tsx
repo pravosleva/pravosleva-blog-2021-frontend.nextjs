@@ -8,7 +8,7 @@ import { ServerStyleSheet } from 'styled-components'
 import { ServerStyleSheets } from '@mui/styles';
 
 const isProd = process.env.NODE_ENV === 'production'
-const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
+// const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
 const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 
 export default class MyDocument extends Document {
@@ -55,7 +55,7 @@ export default class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
-          {
+          {/*
             isProd && !!YANDEX_COUNTER_ID && (
               <noscript>
                 <div>
@@ -67,7 +67,7 @@ export default class MyDocument extends Document {
                 </div>
               </noscript>
             )
-          }
+          */}
         </body>
       </Html>
     );
@@ -137,21 +137,21 @@ MyDocument.getInitialProps = async (ctx) => {
       muiSheet.getStyleElement(),
       ...emotionStyleTags,
     ]
-    const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
-      <script
-        type="text/javascript"
-        defer
-        dangerouslySetInnerHTML={{
-          __html: `
-(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-ym(${YANDEX_COUNTER_ID}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
-`,
-        }}
-      />
-    ) : null
-    if (!!yaMetrica) styles.push(yaMetrica)
+//     const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
+//       <script
+//         type="text/javascript"
+//         defer
+//         dangerouslySetInnerHTML={{
+//           __html: `
+// (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+// m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+// (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+// ym(${YANDEX_COUNTER_ID}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
+// `,
+//         }}
+//       />
+//     ) : null
+//     if (!!yaMetrica) styles.push(yaMetrica)
     const gMetrica = isProd && !!GA_TRACKING_ID ? (
       <>
         <script

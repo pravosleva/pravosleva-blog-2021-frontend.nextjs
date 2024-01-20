@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 
 // import classes from './ProjectsPage.module.scss'
 import { Stack, Typography } from '@mui/material'
-import { ProjectItem, ELinkColor, ELinkIcon } from './components/ProjectItem5'
+import { ProjectItem, ELinkColor, ELinkIcon } from './components/ProjectItem'
+import { ProjectItem as ProjectItemSSR } from './components/ProjectItemSSR'
 import { BreadCrumbs } from '../BreadCrumbs'
 import { withTranslator } from '~/hocs/withTranslator'
 
@@ -14,6 +15,9 @@ type TProject = {
   img: {
     src: string;
     alt: string;
+    color: {
+      average: string;
+    };
   },
   links: {
     href: string;
@@ -35,6 +39,9 @@ const projects: TProject[] = [
     img: {
       src: '/static/img/projects/audit-v2.jpg',
       alt: 'loading...',
+      color: {
+        average: '#d79695',
+      },
     },
     links: [
       {
@@ -56,6 +63,9 @@ const projects: TProject[] = [
     img: {
       src: '/static/img/projects/blog.jpg',
       alt: 'loading...',
+      color: {
+        average: '#5b6567',
+      },
     },
     links: [
       {
@@ -77,6 +87,9 @@ const projects: TProject[] = [
     img: {
       src: '/static/img/projects/tradein.png',
       alt: 'loading...',
+      color: {
+        average: '#54586e',
+      },
     },
     links: [
       // {
@@ -105,6 +118,9 @@ const projects: TProject[] = [
     img: {
       src: '/static/img/projects/family-tree.png',
       alt: 'loading...',
+      color: {
+        average: '#e3e0e9',
+      },
     },
     links: [
       {
@@ -126,6 +142,9 @@ const projects: TProject[] = [
     img: {
       src: '/static/img/projects/autopark.jpg',
       alt: 'loading...',
+      color: {
+        average: '#7c8084',
+      },
     },
     links: [
       {
@@ -147,6 +166,9 @@ const projects: TProject[] = [
     img: {
       src: '/static/img/projects/scoring.jpg',
       alt: 'loading...',
+      color: {
+        average: '#bcc3a5',
+      },
     },
     links: [
       {
@@ -169,6 +191,9 @@ const projects: TProject[] = [
     img: {
       src: '/static/img/projects/cargo-2016.2.jpg',
       alt: 'loading...',
+      color: {
+        average: '#e1ebef',
+      },
     },
     links: [
       {
@@ -192,7 +217,7 @@ export const ProjectsPage = withTranslator(({ t }) => {
     return items[randomIndex]
   }
   
-  const [headerText, setHeaderText] = useState<string>('')
+  const [headerText, setHeaderText] = useState<string>('🐱 🥤')
   useEffect(() => {
     setHeaderText(`${getRandomValue({
       items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳', '⛄', '☃️'],
@@ -200,6 +225,8 @@ export const ProjectsPage = withTranslator(({ t }) => {
       items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'],
     })}`)
   }, [])
+
+  const isSSR = useMemo(() => typeof window === 'undefined', [typeof window])
 
   return (
     <>
@@ -263,6 +290,25 @@ export const ProjectsPage = withTranslator(({ t }) => {
                 tags,
               }, i, a) => {
                 const isLast = i === a.length - 1
+
+                if (isSSR) return (
+                  <ProjectItemSSR
+                    key={id}
+                    uiDate={uiDate}
+                    img={img}
+                    title={title}
+                    // descr={description}
+                    author='Den Pol'
+                    links={links.map(({ text, ...rest }) => ({ ...rest, text: t(text) }))}
+                    brief={!!brief ? t(brief) : brief}
+                    tags={tags}
+                    // title={title}
+                    // img={img}
+                    // link={link}
+                    descr={!!description ? t(description) : undefined}
+                    isLast={isLast}
+                  />
+                )
                 return (
                   <ProjectItem
                     key={id}
