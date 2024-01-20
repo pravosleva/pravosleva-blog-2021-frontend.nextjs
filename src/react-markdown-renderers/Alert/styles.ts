@@ -31,6 +31,7 @@ export const useStyles = makeStyles((_theme) => ({
   likeBlockuote: {
     '& h2': {
       lineHeight: '18px',
+      marginTop: 0,
     },
     fontSize: '1em',
     maxWidth: '100%',
@@ -42,7 +43,7 @@ export const useStyles = makeStyles((_theme) => ({
     /* padding: 1.2em 30px 1.2em 75px; */
     padding: '1.2em 30px 1.2em 50px',
     // borderLeft: '8px solid #78c0a8',
-    lineHeight: '1.6',
+    // lineHeight: '1.6',
     position: 'relative',
     background: '#ededed',
     // quotes: '"“" "”" "‘" "’"',
