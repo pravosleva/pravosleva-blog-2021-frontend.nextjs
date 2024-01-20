@@ -81,7 +81,7 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
         <div
           className={muiStyles.photo}
           style={{
-            backgroundImage: `linear-gradient(${img.color.average}, ${img.color.average}), url(${img.src})`,
+            backgroundImage: `radial-gradient(circle, ${img.color.average} 10%, ${img.color.average} 100%), url(${img.src})`,
           }}
         ></div>
         <ul className={clsx(muiStyles.details, 'details')}>
@@ -108,7 +108,7 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
         <h1>{title}</h1>
         <h2>{brief || ''}</h2>
         {!!descr && <p className={muiStyles.par}>{descr}</p>}
-        <div className={'readMore'}>
+        <div className={muiStyles.readMore}>
 
           {/* <Link href={link.href} as={link.as}>
             {link.text}

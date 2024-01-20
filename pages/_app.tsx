@@ -82,32 +82,114 @@ function AppWithRedux(props: MyAppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        
+        <link
+          href="/static/css/min/gosuslugi.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link rel="stylesheet" href="/static/css/min/gosuslugi.css" />
+
+        <link
+          href="/static/css/min/layout.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/css/min/layout.css" rel="stylesheet" />
+
         {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
         {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}
+
+        <link
+          href="/static/css/min/backdrop-blur.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/css/min/backdrop-blur.css" rel="stylesheet" />
+
         {/* <link href="/static/css/min/audit-list.css" rel="stylesheet" /> */}
+
+        <link
+          href="/static/css/min/project-list.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/css/min/project-list.css" rel="stylesheet" />
+        
+        <link
+          href="/static/css/min/global-theming.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/css/min/global-theming.css" rel="stylesheet" />
+        
         {/* <link href="/static/css/min/standart-form.css" rel="stylesheet" /> */}
+
+        <link
+          href="/static/css/min/rippled-btn.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/css/min/rippled-btn.css" rel="stylesheet" />
+
+        <link
+          href="/static/css/min/link-as-rippled-btn.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/css/min/link-as-rippled-btn.css" rel="stylesheet" />
+
+        <link
+          href="/static/css/min/custom-breadcrumbs.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/css/min/custom-breadcrumbs.css" rel="stylesheet" />
+
         {/* <link href="/static/css/min/block-quotes.css" rel="stylesheet" /> */}
+
         {/* <link href="/static/css/min/sp-nw-2022.css" rel="stylesheet" /> */}
+
+        <link
+          href="/static/prismjs/themes/prism-material-theme.min.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
+        
+        <link
+          href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
         <link
           rel="stylesheet"
           href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
           integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
           crossOrigin="anonymous"
         />
-        <script
-          type="text/javascript"
-          defer
-          src='/static/common/eruda.custom.js'
-        />
+
+        <script type="text/javascript" defer src='/static/common/eruda.custom.js' />
       </Head>
       {
         isServer ? (

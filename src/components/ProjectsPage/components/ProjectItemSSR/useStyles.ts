@@ -213,4 +213,10 @@ export const useStyles = makeStyles((theme) => ({
       left: '0% !important',
     },
   },
+
+  readMore: {
+    marginTop: 'auto',
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
 }))

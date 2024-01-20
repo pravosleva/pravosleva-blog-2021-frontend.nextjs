@@ -57,7 +57,7 @@
 /* BLOCKQUOTE */
 .description-markdown .otro-blockquote {
   /* font-size: 1.4em; */
-  font-size: 1em;
+  font-size: 0.75em;
   /* max-width: 100%; */
   max-width: 550px;
   border-radius: 8px;

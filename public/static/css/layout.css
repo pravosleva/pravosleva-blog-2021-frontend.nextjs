@@ -136,6 +136,7 @@ samp {
   font-family: system-ui, monospace;
   font-size: 0.9em;
 }
+pre,pre *{font-family:system-ui !important}
 figure {
   margin: 1em 40px;
 }

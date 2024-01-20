@@ -16,15 +16,15 @@
     //     "generateScopedName": "babel-cfg__[name]__[local]___[hash:base64:5]"
     //   }
     // ],
-    ["styled-components", { "ssr": true }],
-    [
-      "prismjs",
-      {
-        "languages": ["javascript", "css", "html", "json", "bash"],
-        "plugins": ["line-numbers", "show-language"],
-        "css": true
-      }
-    ]
+    ["styled-components", { "ssr": true }]
+    // [
+    //   "prismjs",
+    //   {
+    //     "languages": ["javascript", "css", "html", "json", "bash"],
+    //     "plugins": ["line-numbers", "show-language"],
+    //     "css": true
+    //   }
+    // ]
   ],
   "compact": true
 }

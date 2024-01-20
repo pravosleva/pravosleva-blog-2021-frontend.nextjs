@@ -6,6 +6,7 @@ import createEmotionCache from '~/createEmotionCache';
 import { metrics } from '~/constants'
 import { ServerStyleSheet } from 'styled-components'
 import { ServerStyleSheets } from '@mui/styles';
+// import { Partytown } from '@builder.io/partytown/react'
 
 const isProd = process.env.NODE_ENV === 'production'
 // const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
@@ -154,19 +155,24 @@ MyDocument.getInitialProps = async (ctx) => {
 //     if (!!yaMetrica) styles.push(yaMetrica)
     const gMetrica = isProd && !!GA_TRACKING_ID ? (
       <>
+        {/* <Partytown
+          // debug
+          forward={['dataLayer.push']}
+          lib='/static/~partytown/'
+        /> */}
         <script
           async
+          type='text/javascript'
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
         />
         <script
+          type="text/javascript"
           dangerouslySetInnerHTML={{
             __html: `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', '${GA_TRACKING_ID}', {
-  page_path: window.location.pathname,
-});
+gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
         `,
           }}
         />

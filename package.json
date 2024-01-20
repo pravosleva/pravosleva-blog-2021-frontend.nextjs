@@ -20,7 +20,8 @@
     "start": "NODE_ENV=production node server.dist/run.js",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "transpile-server": "node_modules/.bin/tsc --downlevelIteration --project tsconfig.server.json",
-    "test": "jest"
+    "test": "jest",
+    "_partytown": "node_modules/@builder.io/partytown/bin/partytown.cjs copylib ./public/static/~partytown"
   },
   "_moduleAliases": {
     "$tests": "./tests",
@@ -116,6 +117,7 @@
     "webpack": "5.x"
   },
   "devDependencies": {
+    "@builder.io/partytown": "^0.8.2",
     "@types/express": "^4.17.17",
     "@types/html-to-text": "^9.0.2",
     "@types/js-cookie": "^2.2.7",

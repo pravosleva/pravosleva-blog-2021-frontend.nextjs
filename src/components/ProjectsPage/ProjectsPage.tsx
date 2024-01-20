@@ -37,9 +37,11 @@ const projects: TProject[] = [
     title: 'AuditList',
     description: 'AUDIT_LIST_PROJECT_DESCR',
     img: {
-      src: '/static/img/projects/audit-v2.jpg',
+      // NOTE: Converter online https://cloudconvert.com/
+      src: '/static/img/projects/audit-v2.webp',
       alt: 'loading...',
       color: {
+        // NOTE: Get average color online https://matkl.github.io/average-color/
         average: '#d79695',
       },
     },
@@ -61,7 +63,7 @@ const projects: TProject[] = [
     title: 'SEO exp',
     description: 'BLOG',
     img: {
-      src: '/static/img/projects/blog.jpg',
+      src: '/static/img/projects/blog.webp',
       alt: 'loading...',
       color: {
         average: '#5b6567',
@@ -85,7 +87,7 @@ const projects: TProject[] = [
     title: 'Trade-In exp',
     description: 'PROJECT_DESCR@TRADEIN',
     img: {
-      src: '/static/img/projects/tradein.png',
+      src: '/static/img/projects/tradein.webp',
       alt: 'loading...',
       color: {
         average: '#54586e',
@@ -116,7 +118,7 @@ const projects: TProject[] = [
     title: 'FamilyTree exp',
     description: 'PROJECT_DESCR@FAMILY_TREE',
     img: {
-      src: '/static/img/projects/family-tree.png',
+      src: '/static/img/projects/family-tree.webp',
       alt: 'loading...',
       color: {
         average: '#e3e0e9',
@@ -140,7 +142,7 @@ const projects: TProject[] = [
     title: 'AutoPark',
     description: 'AUTO_PARK_PROJECT_DESCR',
     img: {
-      src: '/static/img/projects/autopark.jpg',
+      src: '/static/img/projects/autopark.webp',
       alt: 'loading...',
       color: {
         average: '#7c8084',
@@ -164,7 +166,7 @@ const projects: TProject[] = [
     title: 'TeamScoring',
     description: 'TEAM_SCORING_PROJECT_DESCR',
     img: {
-      src: '/static/img/projects/scoring.jpg',
+      src: '/static/img/projects/scoring.webp',
       alt: 'loading...',
       color: {
         average: '#bcc3a5',
@@ -189,7 +191,7 @@ const projects: TProject[] = [
     brief: 'PROJECT_BRIEF@CARGO_2016',
     description: 'PROJECT_DESCR@CARGO_2016',
     img: {
-      src: '/static/img/projects/cargo-2016.2.jpg',
+      src: '/static/img/projects/cargo-2016.2.webp',
       alt: 'loading...',
       color: {
         average: '#e1ebef',
