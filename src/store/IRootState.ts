@@ -7,33 +7,14 @@ import { TState as TCookieOfferState } from './reducers/cookieOffer'
 import { TState as TPageMetaState } from './reducers/pageMeta'
 import { NSiteSearchState } from './reducers/siteSearch'
 import { TState as TCustomDevToolsState } from './reducers/customDevTools'
-
-type TProject = {
-  name: string;
-  description: string;
-  items: any[];
-}
+import { TState as TAutoparkState } from './reducers/autopark'
 
 export interface IRootState extends Store {
   [x: string]: any;
   // toaster: {
   //   items: IToast[];
   // };
-  autopark: {
-    activeProject: {
-      [key: string]: any;
-    } | null;
-    userCheckerResponse: {
-      ok: boolean;
-      message?: string;
-      password?: number;
-      projects?: {
-        [key: string]: TProject;
-      }
-    } | null;
-    x: number;
-    isOneTimePasswordCorrect: boolean;
-  };
+  autopark: TAutoparkState;
   todo2023: TTodo2023State;
   todo2023NotPersisted: TTodo2023NotPersistedState;
   globalTheme: TGlobalThemingState;

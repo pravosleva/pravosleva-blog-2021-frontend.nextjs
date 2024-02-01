@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import clsx from 'clsx'
 
 export namespace NBreadCrumbs {
   export type TLegendItem = {
@@ -24,8 +25,8 @@ export const BreadCrumbs = ({
         {
           legend.map(({ link, labelCode, noTranslate }) => {
             if (!link) return (
-              <li className='truncate' itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={link}>
-                <span style={{ fontWeight: 'bold', color: 'black', fontFamily: 'Montserrat' }}>{noTranslate ? labelCode : t(labelCode)}</span>
+              <li className={clsx('truncate', 'target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={link}>
+                <span style={{ fontWeight: 'bold', fontFamily: 'Montserrat' }}>{noTranslate ? labelCode : t(labelCode)}</span>
               </li>
             )
 

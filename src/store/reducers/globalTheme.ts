@@ -3,7 +3,7 @@ import { HYDRATE } from "next-redux-wrapper"
 // import { IRootState } from '~/store/IRootState'
 
 export type TState = {
-  theme: 'light' | 'light-gray' | 'dark-gray' | 'dark';
+  theme: 'light' | 'gray' | 'hard-gray' | 'dark-gray' | 'dark';
 };
 export const initialState: TState = {
   theme: 'light',

@@ -6,7 +6,7 @@ import { IRootState } from '~/store/IRootState'
 import { withTranslator } from '~/hocs/withTranslator'
 import { getStringWithUpperCaseFirstChar } from '~/utils/getStringWithUpperCaseFirstChar'
 
-export const ThemeToggler = withTranslator(({ t }: any) => {
+export const ThemeToggler = withTranslator(({ t, type }: any) => {
   const { onSetNextTheme } = useGlobalTheming()
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const themeIcon = useMemo(() => getThemeIcon(currentTheme), [currentTheme])
@@ -15,7 +15,13 @@ export const ThemeToggler = withTranslator(({ t }: any) => {
     <>
       <li
         onClick={onSetNextTheme}
-        style={{ marginLeft: '0px', marginRight: '0px', marginBottom: '0px', cursor: 'pointer' }}
+        style={{
+          width: type === 'desktop' ? '50px' : '40px',
+          height: type === 'desktop' ? '50px' : '40px',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          cursor: 'pointer',
+          // border: '1px solid red',
+        }}
         className="muted no-muted-on-hover"
         title={t('CURRENT_THEME_IS', { theme: getStringWithUpperCaseFirstChar(currentTheme) })}
       >

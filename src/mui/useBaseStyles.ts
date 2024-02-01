@@ -101,7 +101,7 @@ export const useBaseStyles = makeStyles((theme) => ({
       listStyleType: "'✪'", // 'disc',
       '& > li::marker': {
         // transform: 'translateY(-2px)',
-        color: '#4183c4',
+        // color: '#4183c4',
         // content: '✪',
       },
     },

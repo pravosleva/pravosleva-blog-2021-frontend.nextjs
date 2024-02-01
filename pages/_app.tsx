@@ -29,7 +29,7 @@ import '../public/static/css/min/audit-list.css'
 // import '../public/static/css/min/layout.css'
 // import '../public/static/css/min/project-list.css'
 // import '../public/static/css/min/global-theming.css'
-import '../public/static/css/min/standart-form.css'
+// import '../public/static/css/min/standart-form.css'
 // import '../public/static/css/min/rippled-btn.css'
 // import '../public/static/css/min/link-as-rippled-btn.css'
 // import '../public/static/css/min/custom-breadcrumbs.css'
@@ -133,7 +133,14 @@ function AppWithRedux(props: MyAppProps) {
         />
         <link href="/static/css/min/global-theming.css" rel="stylesheet" />
         
-        {/* <link href="/static/css/min/standart-form.css" rel="stylesheet" /> */}
+        <link
+          href="/static/css/min/standart-form.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
+        <link href="/static/css/min/standart-form.css" rel="stylesheet" />
 
         <link
           href="/static/css/min/rippled-btn.css"

@@ -68,7 +68,7 @@ function FacebookCircularProgress(
         <Typography
           variant="caption"
           component="div"
-          color="text.secondary"
+          // color='text.secondary'
         >{`${Math.round(props.value)}%`}</Typography>
       </Box>
     </Box>
@@ -93,6 +93,7 @@ export const CircularWithValueLabel = ({
   // }, []);
 
   // return <CircularProgressWithLabel value={progressValue} />;
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <FacebookCircularProgress value={progressValue} />

@@ -9,6 +9,8 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import { IconButton } from '@mui/material'
 import { useStore, TDesktopAuditState } from '~/components/audit-helper/desktop/AuditGrid/WithStateContext'
 import clsx from 'clsx'
+// import { useSelector } from 'react-redux'
+// import { IRootState } from '~/store/IRootState'
 
 type TProps = {
   audit: TAudit;
@@ -56,12 +58,14 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }:
       setStore({ activeAuditId: auditId })
   }, [])
   const isAuditActive = useMemo<boolean>(() => activeAuditId === audit.id, [activeAuditId])
-
+  
   return (
     <div className={clsx(styles.wrapper, { [styles.activeWrapper]: isAuditActive })}>
       <div className={styles.display}>
         <div className={styles.circleBox}>
-          <CircularWithValueLabel progressValue={completeJobsPercentage} />
+          <CircularWithValueLabel
+            progressValue={completeJobsPercentage}
+          />
         </div>
         <div className={styles.displayTitle}>
           <div className={styles.name}>{audit.name}</div>
@@ -101,7 +105,8 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }:
           )
         }
         <IconButton
-          color={isAuditActive ? 'info' : 'default'}
+          // color={isAuditActive ? 'info' : 'default'}
+          color='info'
           aria-label="select-audit"
           onClick={handleSelectAuditAsActive({ auditId: isAuditActive ? null : audit.id })}
         >

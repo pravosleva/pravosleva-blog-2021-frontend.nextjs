@@ -177,6 +177,7 @@
 .box .inputBox input:invalid ~ label,
 .box .inputBox textarea:invalid ~ label {
   color: #f44336;
+  font-weight: bold;
 }
 /*
 .box .inputBox input:invalid {
@@ -198,6 +199,12 @@ body.gray .box button[type='button'] {
   background: gray;
   color: #fff;
 }
+body.gray .box .inputBox input:invalid ~ label,
+body.gray .box .inputBox textarea:invalid ~ label {
+  color:#db0000;
+  font-weight: bold;
+}
+
 /* 3. HARD-GRAY */
 body.hard-gray .box .inputBox input,
 body.hard-gray .box .inputBox textarea {
@@ -236,6 +243,12 @@ body.hard-gray .box h2.gradient-animate-effect {
   background-size: 200%;
   animation: animate 4s linear infinite;
 }
+body.hard-gray .box .inputBox input:invalid ~ label,
+body.hard-gray .box .inputBox textarea:invalid ~ label {
+  color:#ff8659;
+  font-weight: bold;
+}
+
 /* 4. DARK */
 body.dark .box button[type='button'] {
   background: gray;
@@ -244,6 +257,7 @@ body.dark .box button[type='button'] {
 body.dark .box .inputBox input:invalid ~ label,
 body.dark .box .inputBox textarea:invalid ~ label {
   color: #ff781e;
+  font-weight: bold;
 }
 body.dark .box h2.gradient-animate-effect {
   color: #fff;

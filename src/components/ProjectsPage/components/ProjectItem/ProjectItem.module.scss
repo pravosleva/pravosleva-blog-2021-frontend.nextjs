@@ -73,6 +73,10 @@ $color_grey_dark: #a2a2a2;
     ul li {
       display: inline-block;
     }
+
+    .author {
+      font-weight: bold;
+    }
     .author::before {
       // font-family: FontAwesome;
       margin-right: 16px;

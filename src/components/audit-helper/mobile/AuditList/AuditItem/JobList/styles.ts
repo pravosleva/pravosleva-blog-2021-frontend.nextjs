@@ -39,5 +39,7 @@ export const useStyles = makeStyles((theme) => ({
       bottom: 0,
       zIndex: 1,
     },
+    borderTopLeftRadius: '16px',
+    borderTopRightRadius: '16px',
   },
 }))

@@ -67,7 +67,7 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, li
         }}
       >
         <div
-          className="article-body"
+          // className="article-body"
           style={{
             boxSizing: 'border-box',
             // overflowX: 'hidden',

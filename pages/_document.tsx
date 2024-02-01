@@ -32,20 +32,19 @@ export default class MyDocument extends Document {
           <link rel="icon" type="image/png" sizes="32x32" href="https://pravosleva.pro/static/img/logo/favicon-32x32.png" />
           <link rel="icon" type="image/png" sizes="16x16" href="https://pravosleva.pro/static/img/logo/favicon-16x16.png" />
 
-          <link rel="manifest" href="/static/manifest.json" />
+          {/* <link rel="manifest" href="/static/manifest.json" /> */}
           <link rel="mask-icon" href="/static/img/logo/safari-pinned-tab.svg" color="#5bbad5" />
           <meta name="msapplication-TileColor" content="#0162c8" />
           <meta name="theme-color" content="#0162c8" />
           
           <link rel="canonical" href='https://pravosleva.pro/'></link>
           
-          <meta name="application-name" content="Pravosleva" />
+          {/* <meta name="application-name" content="Pravosleva" />
+          <meta name="apple-mobile-web-app-title" content="Pravosleva" /> */}
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          <meta name="apple-mobile-web-app-title" content="Pravosleva" />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
-          
           <meta name="msapplication-tap-highlight" content="no" />
           
           <link
@@ -174,6 +173,39 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
         `,
+          }}
+        />
+        <script
+          async
+          dangerouslySetInnerHTML={{
+            __html: `const rippledButtons = document.querySelectorAll('.link-as-rippled-btn');
+
+rippledButtons.forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    // e.preventDefault();
+    console.log(e.clientX, e.target.offsetLeft)
+    // const x = e.clientX - e.target.offsetLeft;
+    // const y = e.clientY - e.target.offsetTop;
+    const x = e.clientX - e.target.offsetLeft;
+    const y = e.clientY;
+
+    const ripples = document.createElement('span');
+    ripples.classList.add('ripples');
+
+    // ripples.style.left = x + 'px';
+    // ripples.style.top = y + 'px';
+    ripples.style.left = x + 'px';
+    ripples.style.top = '50%';
+
+    console.log(this)
+    this.appendChild(ripples);
+    console.log(this)
+
+    setTimeout(() => {
+      ripples.remove();
+    }, 1000);
+  })
+})`,
           }}
         />
       </>

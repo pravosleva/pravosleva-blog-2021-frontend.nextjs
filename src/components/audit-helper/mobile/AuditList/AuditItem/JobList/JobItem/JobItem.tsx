@@ -28,6 +28,8 @@ import ReportIcon from '@mui/icons-material/Report'
 // import CloseIcon from '@mui/icons-material/Close'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { useSelector } from "react-redux"
+import { IRootState } from "~/store/IRootState"
 
 type TProps = {
   job: IJob;
@@ -120,7 +122,20 @@ export const JobItem = memo(({
       default: return <ReportIcon />
     }
   }, [job.status, job.tsUpdate])
-  
+
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  const iconColor = useMemo(() => {
+    switch (currentTheme) {
+      case 'dark':
+      case 'hard-gray':
+        return '#fff'
+      case 'gray':
+        return '#683434'
+      case 'light':
+      default: return 'inherit'
+    }
+  }, [currentTheme])
+
   return (
     <div
       style={{
@@ -152,7 +167,7 @@ export const JobItem = memo(({
           {
             job.subjobs.length > 0 && (
               <IconButton aria-label="open" onClick={handleOpenToggle}>
-                {isOpened ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                {isOpened ? <ExpandLessIcon htmlColor={iconColor} /> : <ExpandMoreIcon htmlColor={iconColor} />}
               </IconButton>
             )
           }
@@ -179,7 +194,7 @@ export const JobItem = memo(({
                   aria-haspopup="true"
                   onClick={handleMenuOpen}
                 >
-                  <MoreVertIcon />
+                  <MoreVertIcon htmlColor={iconColor} />
                 </IconButton>
                 <Menu
                   id="long-job-menu"

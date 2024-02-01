@@ -10,6 +10,8 @@ import {
 } from 'react'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import clsx from 'clsx'
+import { IRootState } from '~/store/IRootState'
+import { useSelector } from 'react-redux'
 // import { AddAnythingNewDialog } from '~/components/Todo2023.online/components/TodoConnected/components'
 
 export type TAuditListProps = {
@@ -83,6 +85,8 @@ export const AuditGrid = ({
 
   if (isServer) return <CircularIndeterminate />
 
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+
   return (
     <WithStateContext>
       <div className={styles.wrapper}>
@@ -92,7 +96,9 @@ export const AuditGrid = ({
               <div
                 className={clsx(
                   styles.stickyTopPanel,
-                  'backdrop-blur--lite',
+                  {
+                    ['backdrop-blur--lite']: currentTheme === 'light',
+                  },
                 )}
                 style={{
                   // height: '50px',

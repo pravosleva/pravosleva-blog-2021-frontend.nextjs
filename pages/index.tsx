@@ -72,6 +72,7 @@ export default function Index() {
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
         <title>Pravosleva</title>
+        <link rel="manifest" href="/static/manifest.json" />
         <meta name="description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое.' />
 
         {/* <!-- Facebook Meta Tags --> */}

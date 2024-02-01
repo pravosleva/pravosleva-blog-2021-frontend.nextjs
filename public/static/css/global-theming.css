@@ -32,6 +32,21 @@ body.light .description-markdown .otro-blockquote::before {
 body.light .description-markdown .otro-blockquote span {
   color: #333333;
 }
+body.light .bx_breadcrumbs > ul > li.target > span {
+  color: #000;
+}
+
+body.light .big-text {
+  text-shadow: 2px 2px lightgray, 4px 4px white, 6px 6px lightgray;
+}
+body.light .big-text:hover {
+  text-shadow: 2px 2px #ff7373, 4px 4px white, 6px 6px #ff7373;
+}
+
+body.light div.article-body ul li::marker {
+  color: #0162c8;
+}
+
 
 /* GRAY */
 
@@ -54,6 +69,9 @@ body.gray textarea {
 body.gray footer {
   color: #fff;
   background-color: rgba(0, 0, 0, 0.7);
+}
+body.gray .bx_breadcrumbs > ul > li.target > span {
+  color: #683434;
 }
 /* Article */
 body.gray .article-wrapper {
@@ -86,6 +104,13 @@ body.gray .description-markdown .otro-blockquote span {
   color: #333333;
 }
 
+body.gray .big-text {
+  text-shadow: 2px 2px lightgray, 4px 4px white, 6px 6px lightgray;
+}
+body.gray .big-text:hover {
+  text-shadow: 2px 2px #ff7373, 4px 4px white, 6px 6px #ff7373;
+}
+
 /* HARD-GRAY */
 
 body.hard-gray .article-body a,
@@ -99,6 +124,9 @@ body.hard-gray .galleries-wrapper a:hover {
 body.hard-gray .bx_breadcrumbs > ul > li > a,
 body.hard-gray .bx_breadcrumbs > ul > li > span {
   color: rgba(255, 255, 255, 0.5);
+}
+body.hard-gray .bx_breadcrumbs > ul > li.target > span {
+  color: #fff;
 }
 body.hard-gray {
   background-color: #666;
@@ -164,12 +192,36 @@ body.hard-gray .active-card {
 body.hard-gray .description-markdown .otro-blockquote {
   color: inherit;
   border-left: 8px solid #fff;
+  background-color: gray;
 }
 body.hard-gray .description-markdown .otro-blockquote::before {
   color: #fff;
 }
 body.hard-gray .description-markdown .otro-blockquote span {
   color: #fff;
+}
+
+body.hard-gray .bx_breadcrumbs ul,
+body.hard-gray .bx_breadcrumbs ul > li,
+body.hard-gray .bx_breadcrumbs ul > li > span {
+  color: #fff;
+}
+
+body.hard-gray .projects-grid h1,
+body.hard-gray .projects-grid p {
+  color: #000;
+}
+
+body.hard-gray .big-text {
+  text-shadow: none;
+}
+body.hard-gray .big-text:hover {
+  text-shadow: none;
+}
+
+body.hard-gray #audit-name,
+body.hard-gray #audit-description {
+  color: #000;
 }
 
 /* DARK */
@@ -230,10 +282,42 @@ body.dark .active-card {
 body.dark .description-markdown .otro-blockquote {
   color: inherit;
   border-left: 8px solid #39e5ac;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 body.dark .description-markdown .otro-blockquote::before {
   color: #39e5ac;
 }
 body.dark .description-markdown .otro-blockquote span {
   color: #fff;
+}
+
+body.dark .bx_breadcrumbs ul,
+body.dark .bx_breadcrumbs ul > li,
+body.dark .bx_breadcrumbs ul > li > span {
+  color: #fff;
+}
+
+body.dark .projects-grid h1,
+body.dark .projects-grid p {
+  color: #000;
+}
+
+body.dark .projects-grid > div {
+  outline: 4px solid #ff781e;
+}
+
+body.dark .big-text {
+  text-shadow: none;
+}
+body.dark .big-text:hover {
+  text-shadow: none;
+}
+
+body.dark div.article-body ul li::marker {
+  color: #39e5ac;
+}
+
+body.dark #audit-name,
+body.dark #audit-description {
+  color: #000;
 }

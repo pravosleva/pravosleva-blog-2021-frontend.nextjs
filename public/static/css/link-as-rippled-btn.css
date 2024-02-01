@@ -26,7 +26,8 @@ body.gray a.link-as-rippled-btn:hover {
 }
 /* 3. HARD-GRAY */
 body.hard-gray a.link-as-rippled-btn:hover {
-  box-shadow: 0 0 4px 0 rgba(255, 255, 255, 1);
+  /* box-shadow: 0 0 4px 0 rgba(255, 255, 255, 1); */
+  background: linear-gradient(90deg, #0162c8, #0162c8);
 }
 /* 4. DARK */
 body.dark a.link-as-rippled-btn {

@@ -13,7 +13,7 @@ import { isCurrentPath } from '@/utils/routing/isCurrentPath'
 import { Button } from '@/ui-kit/atoms'
 import { MenuModal } from './components/MenuModal'
 import { useUnscrolledBody } from '~/hooks/useUnscrolledBody'
-// import { ThemeToggler } from '../ThemeToggler'
+import { ThemeToggler } from '../ThemeToggler'
 import { withTranslator } from '@/hocs/withTranslator'
 import { LangLink } from './components/LangLink'
 import { breakpoints } from '~/mui/theme'
@@ -46,9 +46,9 @@ const Nav = styled('div')`
     line-height: 50px;
     font-size: 16px;
   }
-  & ul > li:not(:last-child) {
+  /* & ul > li:not(:last-child) {
     margin-right: 1rem;
-  }
+  } */
   & ul > li:first-child {
     margin-left: auto;
   }
@@ -187,9 +187,9 @@ const _DesktopHeader = ({
                       className='fade-in-effect'
                       style={{
                         marginBottom: '0px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        // cursor: 'pointer',
+                        cursor: 'pointer',
+                        // border: '1px solid red',
+                        width: '50px', height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'
                       }}
                       onClick={toggleBrowserMemoryMonitorDevTools}
                     >
@@ -212,7 +212,11 @@ const _DesktopHeader = ({
                 {suppoerLocales.map((lang: any) => (
                   <li
                     key={lang.label}
-                    style={{ marginBottom: '0px', cursor: 'pointer' }}
+                    style={{
+                      marginBottom: '0px', cursor: 'pointer',
+                      // border: '1px solid red',
+                      width: '50px', height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    }}
                   >
                     <Link href="/">
                       <LangLink
@@ -226,10 +230,10 @@ const _DesktopHeader = ({
                   </li>
                 ))}
 
-                {/* <ThemeToggler /> */}
+                <ThemeToggler type='desktop' />
 
                 {!isAuthenticated && (
-                  <li className="fade-in-effect" style={{ marginBottom: '0px' }}>
+                  <li className="fade-in-effect" style={{ marginBottom: '0px', padding: '0 16px' }}>
                     <Link href="/auth/login" as="/auth/login">
                       <a style={{ color: isCurrentPathCb(router.pathname, '/auth/login') ? '#ff781e' : '#fff' }}>
                         {t('LOGIN')}
@@ -238,7 +242,7 @@ const _DesktopHeader = ({
                   </li>
                 )}
                 {isAuthenticated && (
-                  <li style={{ marginBottom: '0px' }} onClick={handleLogout}>
+                  <li style={{ marginBottom: '0px', padding: '0 16px' }} onClick={handleLogout}>
                     <a href="#">{t('LOGOUT')}</a>
                   </li>
                 )}
@@ -261,7 +265,11 @@ const _DesktopHeader = ({
                     </div>
                   </li>
                 ) */}
-                <li style={{ marginBottom: '0px' }}>
+                <li style={{
+                  marginBottom: '0px',
+                  // border: '1px solid red',
+                  // padding: '0 0 0 16px',
+                }}>
                   <MenuFlexWrapper>
                     <Button
                       onClick={handleMenuOpen}

@@ -47,14 +47,14 @@ const icons: {
     component: <WhatshotIcon />,
     muiSettings: {
       color: 'error',
-      variant: 'outlined',
+      variant: 'filled',
     },
   },
   [ESubjobStatus.IS_DONE]: {
     component: <DoneIcon />,
     muiSettings: {
       color: 'success',
-      variant: 'outlined',
+      variant: 'filled',
     },
   },
 }

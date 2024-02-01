@@ -86,10 +86,10 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
         ></div>
         <ul className={clsx(classes.details, 'details')}>
           {!!author && <li className={classes.author}>{author}</li>}
-          <li className={clsx('date')}>{uiDate}</li>
+          <li className={classes.date}>{uiDate}</li>
           {
             tags.length > 0 && (
-              <li className={'tags'}>
+              <li className={classes.tags}>
                 <ul>
                   {tags.map((t) => (
                     <li key={t}>

@@ -32,7 +32,7 @@ export const useGlobalTheming = () => {
 
       if (!!theme) {
         document.body.classList.add(theme)
-        // dispatch(globalThemeActions.setTheme(theme))
+        dispatch(setTheme(theme))
       } else {
         document.body.classList.add(currentTheme)
       }
@@ -53,7 +53,10 @@ export const useGlobalTheming = () => {
         document.body.classList.remove(...toRemove)
         document.body.classList.add(nextTheme)
         dispatch(setTheme(nextTheme))
-        Cookie.set('theme', nextTheme, { expires: themeCookieExpiresDays })
+        Cookie.set('theme', nextTheme, {
+          expires: themeCookieExpiresDays,
+          sameSite: 'strict',
+        })
       }
     },
     onReset: () => {

@@ -10,9 +10,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 // import { TheProject } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
-import { setActiveProject } from '~/store/reducers/autopark'
+import { TUserCheckerResponse, setActiveProject } from '~/store/reducers/autopark'
 import { Report } from '~/components/Autopark2022/components'
-// import Head from 'next/head'
+import Head from 'next/head'
 import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase';
@@ -34,7 +34,16 @@ export default function MyProjects({
   chat_id,
   project_id,
   projectDataResponse,
-}: any) {
+}: {
+  userCheckerResponse: TUserCheckerResponse;
+  errorMsg?: string;
+  chat_id: string;
+  project_id: string;
+  projectDataResponse: {
+    name: string;
+    description: string;
+  } | null;
+}) {
   if (userCheckerResponse?.code === 'not_found') return (
     <>
       {/* <Head>
@@ -49,9 +58,26 @@ export default function MyProjects({
 
   return (
     <>
-      {/* <Head>
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </Head> */}
+      <Head>
+        <title>{projectDataResponse?.name || 'My Car'} | Report</title>
+        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_name=${projectDataResponse?.name || 'My Car'}`} />
+        <meta name="application-name" content={projectDataResponse?.name || 'My Car'} />
+        <meta name="apple-mobile-web-app-title" content={projectDataResponse?.name || 'My Car'} />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
+        <script
+          type="text/javascript"
+          defer
+          dangerouslySetInnerHTML={{
+            __html: `if (typeof customEruda !== 'undefined') setTimeout(customEruda.initIfNecessary, 1000);`,
+          }}
+        />
+        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
+      </Head>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <Container maxWidth="xs">
           <Box sx={{ p: 2 }} style={{ fontWeight: 'bold' }}>

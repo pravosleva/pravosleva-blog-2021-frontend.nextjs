@@ -15,6 +15,8 @@ import {
 } from '@mui/material'
 import { CircularWithValueLabel } from '~/components/CircularWithValueLabel'
 import { CommentBtn } from '~/components/audit-helper/common/CommentBtn'
+import { useSelector } from "react-redux"
+import { IRootState } from "~/store/IRootState"
 
 type TProps = {
   audit: TAudit;
@@ -80,6 +82,18 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
     audit,
   }).value, [audit.tsUpdate])
 
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  const iconColor = useMemo(() => {
+    switch (currentTheme) {
+      case 'dark':
+      case 'hard-gray':
+        return '#fff'
+      case 'gray':
+        return '#683434'
+      case 'light':
+      default: return 'inherit'
+    }
+  }, [currentTheme])
   return (
     <div
       style={{
@@ -98,7 +112,15 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
 
           position: 'sticky',
           top: '0px',
-          backgroundColor: '#fff',
+          backgroundColor: currentTheme === 'light'
+            ? '#fff'
+            : currentTheme === 'dark'
+              ? '#000'
+              : currentTheme === 'gray'
+              ? '#d3d3d3'
+              : currentTheme === 'hard-gray'
+              ? '#666'
+              : '#fff',
           zIndex: 2,
           borderBottom: '1px solid lightgray',
 
@@ -142,7 +164,7 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
               {
                 audit.jobs.length > 0 && (
                   <IconButton aria-label="delete" onClick={handleToggle}>
-                    {isOpened ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    {isOpened ? <ExpandLessIcon htmlColor={iconColor} /> : <ExpandMoreIcon htmlColor={iconColor} />}
                   </IconButton>
                 )
               }

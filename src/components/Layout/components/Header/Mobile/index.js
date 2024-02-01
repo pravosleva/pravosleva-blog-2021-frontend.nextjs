@@ -10,7 +10,7 @@ import { HamburgerIcon, CrossCloseIcon } from './components'
 import { useRouter } from 'next/router'
 // import { useDebouncedCallback } from '@/hooks/useDebouncedCallback'
 import { isCurrentPath } from '@/utils/routing/isCurrentPath'
-// import { ThemeToggler } from '../../ThemeToggler'
+import { ThemeToggler } from '../../ThemeToggler'
 import { withTranslator } from '@/hocs/withTranslator'
 import { LangLink } from '../components/LangLink'
 import { breakpoints } from '~/mui/theme'
@@ -227,7 +227,7 @@ const MobileHeader = ({
                   </Link>
                 </li>
               ))}
-            {/* <ThemeToggler /> */}
+            <ThemeToggler />
             {!isAuthenticated && (
               <li
                 style={{
