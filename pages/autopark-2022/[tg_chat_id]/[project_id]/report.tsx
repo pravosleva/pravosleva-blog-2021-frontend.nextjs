@@ -60,7 +60,7 @@ export default function MyProjects({
     <>
       <Head>
         <title>{projectDataResponse?.name || 'My Car'} | Report</title>
-        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_name=${projectDataResponse?.name || 'My Car'}`} />
+        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_name=${projectDataResponse?.name || 'My Car'}&project_type=autopark_report`} />
         <meta name="application-name" content={projectDataResponse?.name || 'My Car'} />
         <meta name="apple-mobile-web-app-title" content={projectDataResponse?.name || 'My Car'} />
         <meta name="apple-mobile-web-app-capable" content="yes" />

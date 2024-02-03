@@ -188,6 +188,8 @@ function AppWithRedux(props: MyAppProps) {
           as="style"
           // @ts-ignore
           fetchpriority="high"
+          integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
+          crossOrigin="anonymous"
         />
         <link
           rel="stylesheet"
