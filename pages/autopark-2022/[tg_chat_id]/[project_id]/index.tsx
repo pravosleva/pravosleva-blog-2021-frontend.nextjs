@@ -61,6 +61,7 @@ export default function MyProjects({
   return (
     <>
       <Head>
+        <title>{projectDataResponse?.name || 'My Car'}</title>
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_type=autopark`} />
         <script
