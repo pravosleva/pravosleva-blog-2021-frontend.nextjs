@@ -5,9 +5,9 @@ import { useSnackbar, SnackbarMessage as TSnackbarMessage, OptionsObject as IOpt
 import {
   // Block,
   SettingFlexBtn,
-} from '~/ui-kit.special'
-import { getTargetDate } from '~/ui-kit.special/utils/scoring/getTargetDate'
-import { ProgressBar } from '~/ui-kit.special/ProgressBar/Refreshed'
+} from '~/ui-kit.team-scoring-2019'
+import { getTargetDate } from '~/ui-kit.team-scoring-2019/utils/scoring/getTargetDate'
+import { ProgressBar } from '~/ui-kit.team-scoring-2019/ProgressBar/Refreshed'
 import {
   AbsoluteBottomRightBadge,
   AbsoluteCircleBtn,
@@ -21,6 +21,14 @@ import { MobileInfiniteCalendar } from './components/DatePicker/MobileInfiniteCa
 import { groupLog } from '~/utils/groupLog'
 import { TTask } from '~/components/time-scoring/types'
 import { useCompare } from '~/hooks/useDeepEffect'
+// import EditCalendarIcon from '@mui/icons-material/EditCalendar'
+import EventIcon from '@mui/icons-material/Event'
+import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/Delete'
+import PenIcon from '@mui/icons-material/Edit'
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
+import HelpIcon from '@mui/icons-material/Help'
+import StarIcon from '@mui/icons-material/Star'
 
 const DesktopOnly = styled('div')`
   @media (max-width: 767px) {
@@ -353,10 +361,11 @@ export const TimeManagementContent = ({
                                 removeTaskFromLS(id)
                               }}
                             >
-                              <i
+                              {/* <i
                                 className="fa fa-trash"
                                 style={{ fontSize: '14px', color: 'white' }}
-                              />
+                            /> */}
+                              <DeleteIcon fontSize='small' htmlColor='#fff' />
                             </AbsoluteCircleBtn>
                             <AbsoluteCircleBtn
                               topRightStyles="top: 10px; right: 50px;"
@@ -373,10 +382,11 @@ export const TimeManagementContent = ({
                                 })
                               }}
                             >
-                              <i
+                              {/* <i
                                 className="fa fa-pen"
                                 style={{ fontSize: '12px', color: 'white' }}
-                              />
+                              /> */}
+                              <PenIcon fontSize='small' htmlColor='#fff' />
                             </AbsoluteCircleBtn>
                             {
                               !!realFinishDate && (
@@ -389,10 +399,11 @@ export const TimeManagementContent = ({
                                   }}
                                   title='Кнопка сброса параметра "реального финиша" realFinishDate (например, если вы хотите добавить время). Сейчас эта задача формирует статистику.'
                                 >
-                                  <i
+                                  {/* <i
                                     className="fa fa-power-off"
                                     style={{ fontSize: '14px', color: 'white' }}
-                                  />
+                                  /> */}
+                                  <PowerSettingsNewIcon htmlColor='#fff' fontSize='small' />
                                 </AbsoluteCircleBtn>
                               )
                             }
@@ -428,10 +439,11 @@ export const TimeManagementContent = ({
                                 </CircleBtn> */}
 
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', opacity: '0.3', color: '#fff' }}>
-                                  <i
+                                  {/* <i
                                     className="fa fa-star"
                                     style={{ fontSize: '12px' }}
-                                  />
+                                  /> */}
+                                  <StarIcon fontSize='small' htmlColor='#fff' />
                                   <span>{complexity}</span>
                                 </div>
                                 
@@ -447,10 +459,11 @@ export const TimeManagementContent = ({
                                         window.alert('Процент отклонения по времени относительно самого неудачного кейса аналогичной сложности')
                                       }}
                                     >
-                                      <i
+                                      {/* <i
                                         className="fa fa-question"
                                         style={{ fontSize: '14px', color: 'white' }}
-                                      />
+                                      /> */}
+                                      <HelpIcon fontSize='small' htmlColor='#fff' />
                                     </CircleBtn>
                                   </>
                                 )}
@@ -678,7 +691,7 @@ export const TimeManagementContent = ({
 
                         return (
                           <li
-                            key={Math.random()}
+                            key={id}
                             style={{ position: 'relative' }}
                           >
                             <button
@@ -703,10 +716,11 @@ export const TimeManagementContent = ({
                                 removeTaskFromLS(id)
                               }}
                             >
-                              <i
+                              {/* <i
                                 className="fa fa-trash"
                                 style={{ fontSize: '14px', color: 'white' }}
-                              />
+                              /> */}
+                              <DeleteIcon fontSize='small' htmlColor='#fff' />
                             </button>
                             <button
                               style={{
@@ -738,10 +752,11 @@ export const TimeManagementContent = ({
                                 })
                               }}
                             >
-                              <i
+                              {/* <i
                                 className="fa fa-pencil-alt"
                                 style={{ fontSize: '12px', color: 'white' }}
-                              />
+                              /> */}
+                              <PenIcon fontSize='small' htmlColor='#fff' />
                             </button>
                             {
                               !!realFinishDate && (
@@ -770,10 +785,11 @@ export const TimeManagementContent = ({
                                     if (isConfirmed) setRealFinishDate(null, id)
                                   }}
                                 >
-                                  <i
+                                  {/* <i
                                     className="fa fa-power-off"
                                     style={{ fontSize: '14px', color: 'white' }}
-                                  />
+                                  /> */}
+                                  <PowerSettingsNewIcon htmlColor='#fff' fontSize='small' />
                                 </button>
                               )
                             }
@@ -852,16 +868,18 @@ export const TimeManagementContent = ({
                                 <pre style={{ margin: 0 }}>{JSON.stringify({ startDate, forecastFinishDate, realFinishDate }, null, 2)}</pre>
                                 <div style={{ display: 'flex', lineHeight: 'unset', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', }}>
                                   {activeTaskID === id ? (
-                                    <i
-                                      style={{ marginBottom: '16px' }}
-                                      // className='fa fa-chevron-circle-up'
-                                      className='fas fa-times-circle'
-                                    />
+                                    // <i
+                                    //   style={{ marginBottom: '16px' }}
+                                    //   // className='fa fa-chevron-circle-up'
+                                    //   className='fas fa-times-circle'
+                                    // />
+                                    <CloseIcon style={{ marginBottom: '16px' }} />
                                   ) : (
-                                    <i
-                                      // className='fa fa-chevron-circle-down'
-                                      className='fas fa-calendar'
-                                    />
+                                    // <i
+                                    //   // className='fa fa-chevron-circle-down'
+                                    //   className='fas fa-calendar'
+                                    // />
+                                    <EventIcon style={{ marginBottom: '16px' }} />
                                   )}
                                 </div>
                               </>

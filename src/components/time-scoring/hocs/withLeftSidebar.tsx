@@ -6,11 +6,20 @@ import { compose, withStateHandlers } from 'recompose'
 import styled, { css } from 'styled-components'
 import ReactHtmlParser from 'react-html-parser'
 import { MyDayPicker } from '~/components/time-scoring/TimeManagementContent/components/DatePicker/MyDayPicker'
-import { getAverageResult } from '~/ui-kit.special/utils/scoring/getAverageResult'
-import { Block, CollapsibleBox, FlexColumn, Note, StickyH2, StickyTopBox } from '~/ui-kit.special'
-import { Btn } from '~/ui-kit.special/Btn/Btn'
+import { getAverageResult } from '~/ui-kit.team-scoring-2019/utils/scoring/getAverageResult'
+import { Block, CollapsibleBox, FlexColumn, Note, StickyH2, StickyTopBox } from '~/ui-kit.team-scoring-2019'
+import { Btn } from '~/ui-kit.team-scoring-2019/Btn/Btn'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { TTask } from '../types'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import HelpIcon from '@mui/icons-material/Help'
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+// import BalanceIcon from '@mui/icons-material/Balance'
+import StarIcon from '@mui/icons-material/Star'
+// import StarBorderIcon from '@mui/icons-material/StarBorder'
+import BlockIcon from '@mui/icons-material/Block'
+// import TelegramIcon from '@mui/icons-material/Telegram';
 
 const Wrapper = styled("div")`
   width: 100%;
@@ -230,9 +239,9 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                   infoSet.add(getTestDatesAnalysis('date100'))
 
                   const descr: string[] = [
-                    '<i class="fas fa-thumbs-up" style="min-width: 22px;"></i><span>В лучшем случае</span>',
-                    '<i class="fas fa-balance-scale" style="min-width: 22px;"></i><span>Скорее всего</span>',
-                    '<i class="fas fa-thumbs-down" style="min-width: 22px;"></i><span>В худшем случае</span>',
+                    '👍 <span>В лучшем случае</span>',
+                    '⚖️ </i><span>Скорее всего</span>',
+                    '👎 <span>В худшем случае</span>',
                   ]
                   let infoHtml: string = ''
                   switch (infoSet.size) {
@@ -243,7 +252,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                       infoHtml = [...infoSet].map((str, i) => `<span style='display:flex;flex-direction:row;gap:8px;align-items:center;'><span style=\'display:flex;flex-direction:row;gap:8px;align-items:center;\'>${i === 0 ? descr[0] : descr[descr.length - 1]}</span><b>${str}</b></span>`).join('')
                       break
                     case 1:
-                      infoHtml = [...infoSet].map((str) => `<span style='display:flex;flex-direction:row;gap:8px;align-items:center;'><i class="fas fa-balance-scale" style="min-width: 22px;"></i><span>Ожидаемая дата</span><b>${str}</b></span>`).join('')
+                      infoHtml = [...infoSet].map((str) => `<span style='display:flex;flex-direction:row;gap:8px;align-items:center;'>⚖️ <span>Ожидаемая дата</span><b>${str}</b></span>`).join('')
                       break
                     default:
                       infoHtml = 'Нет данных'
@@ -295,7 +304,13 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                                     : "rgb(0, 191, 255)",
                               }}
                             >
-                              <i className={props.activeEmployee === employee ? "fa fa-chevron-up" : "fa fa-chevron-down"} />
+
+                              {/* <i className={props.activeEmployee === employee ? "fa fa-chevron-up" : "fa fa-chevron-down"} /> */}
+                              {
+                                props.activeEmployee === employee
+                                  ? <KeyboardArrowUpIcon fontSize='small' />
+                                  : <KeyboardArrowDownIcon fontSize='small' />
+                              }
                               <div
                                 className='truncate'
                                 style={{
@@ -378,25 +393,26 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                                     // e.stopPropagation();
                                     if (props.activeComplexity !== rate) { props.complexityToggler(rate) }
                                   }}
+                                  style={{ color: 'gray' }}
                                 >
-                                  <i
-                                    className="fa fa-star"
+                                  <StarIcon
+                                    fontSize='small'
                                     style={{
                                       transition: "all 0.3s linear",
-                                      color:
-                                        props.activeComplexity >= rate
-                                          ? "gray"
-                                          : "lightgray",
+                                      opacity: props.activeComplexity >= rate
+                                      ? 1
+                                      : 0.2,
                                     }}
-                                  />
+                                   />
                                 </span>
                               ))}
                               <span
                                 onClick={(_e) => {
                                   if (props.activeComplexity !== 0) { props.complexityToggler(0) }
                                 }}
+                                style={{ color: 'gray' }}
                               >
-                                <i
+                                {/* <i
                                   className="fa fa-ban"
                                   style={{
                                     transition: "all 0.3s linear",
@@ -404,6 +420,15 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                                       props.activeComplexity === 0
                                         ? "gray"
                                         : "lightgray",
+                                  }}
+                                /> */}
+                                <BlockIcon
+                                  fontSize='small'
+                                  style={{
+                                    transition: "all 0.3s linear",
+                                    opacity: props.activeComplexity === 0
+                                    ? 1
+                                    : 0.2,
                                   }}
                                 />
                               </span>
@@ -504,7 +529,8 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
             <FlexColumn>
               <StickyH2
                 label='FAQ'
-                Icon={<i className="fas fa-question-circle" />}
+                // Icon={<i className="fas fa-question-circle" />}
+                Icon={<HelpIcon />}
               />
               {/*
               <p>taskList= {JSON.stringify(props.taskList)}<br />testDates= {JSON.stringify(props.testDates)}</p>
@@ -609,7 +635,8 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
               <StickyBottom>
                 <StickyH2
                   label='Feedback'
-                  Icon={<i className="far fa-comment" />}
+                  // Icon={<i className="far fa-comment" />}
+                  Icon={<ChatBubbleOutlineIcon />}
                 />
                 <Block
                   style={{
@@ -651,7 +678,9 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                     }}
                     // style={{ minWidth: '86px' }}
                   >
-                    <i className="fab fa-telegram-plane"></i>
+                    {/* <i className="fab fa-telegram-plane"></i> */}
+                    TG
+                    {/* <TelegramIcon fontSize='small' style={{ margin: 0, padding: 0 }} /> */}
                   </Btn>
                 </Block>
               </StickyBottom>

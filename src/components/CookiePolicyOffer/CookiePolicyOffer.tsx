@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
-import { Button } from '@/ui-kit/atoms'
+import { Button } from '~/ui-kit.uremont/atoms'
 import Cookie from 'js-cookie'
 import { withTranslator } from '~/hocs/withTranslator'
 import {

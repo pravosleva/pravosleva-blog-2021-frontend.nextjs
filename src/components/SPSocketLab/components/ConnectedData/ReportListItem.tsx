@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState, memo, useEffect } from "react"
 import { NEvent } from './withSocketContext'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 // import BookmarkIcon from '@mui/icons-material/Bookmark';
-import { CollapsibleBox } from '~/ui-kit.special';
+import { CollapsibleBox } from '~/ui-kit.team-scoring-2019';
 import classes from './ReportListItem.module.scss'
 import clsx from 'clsx'
 import InfoIcon from '@mui/icons-material/Info';

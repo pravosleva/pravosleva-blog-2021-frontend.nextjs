@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
-import { Modal } from '@/ui-kit'
-import { FooterRow } from '@/ui-kit/molecules/Modal/FooterRow'
-import { Button } from '@/ui-kit/atoms'
+import { Modal } from '~/ui-kit.uremont'
+import { FooterRow } from '~/ui-kit.uremont/molecules/Modal/FooterRow'
+import { Button } from '~/ui-kit.uremont/atoms'
 import Link from 'next/link'
 import { isCurrentPath } from '~/utils/routing/isCurrentPath'
 import { useRouter } from 'next/router'
@@ -15,7 +15,7 @@ import { useDebouncedCallback } from '~/hooks/useDebouncedCallback'
 // import { userInfoActions } from '@/store/reducers/user-info'
 import { useGlobalTheming } from '~/hooks/useGlobalTheming'
 import { enable } from '~/store/reducers/cookieOffer'
-import { ESize } from '~/ui-kit/organisms/Modal/components/ModalContent'
+import { ESize } from '~/ui-kit.uremont/organisms/Modal/components/ModalContent'
 
 interface IProps {
   isOpened: boolean

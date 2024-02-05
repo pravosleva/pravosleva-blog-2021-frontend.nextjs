@@ -4,12 +4,19 @@ import { compose, withStateHandlers } from 'recompose'
 import styled, { css } from 'styled-components'
 // import ReactHtmlParser from 'react-html-parser'
 // import moment from 'moment'
-import { SpeedGraph } from '~/ui-kit.special/SpeedGraph'
-import { DistributionFunctionGraph } from '~/ui-kit.special/DistributionFunctionGraph'
-import { Block, FlexColumn, Note, StickyH2 } from '~/ui-kit.special'
+import { SpeedGraph } from '~/ui-kit.team-scoring-2019/SpeedGraph'
+import { DistributionFunctionGraph } from '~/ui-kit.team-scoring-2019/DistributionFunctionGraph'
+import { Block, FlexColumn, Note, StickyH2 } from '~/ui-kit.team-scoring-2019'
 import { TTask } from '~/components/time-scoring/types'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { Alert, EType } from '~/react-markdown-renderers/Alert'
+import InfoIcon from '@mui/icons-material/Info'
+import SpeedIcon from '@mui/icons-material/Speed'
+import BarChartIcon from '@mui/icons-material/BarChart'
+// import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+// import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 
 const Wrapper = styled("div")`
   width: 100%;
@@ -169,7 +176,8 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                     <StickyH2
                       label={props.activeEmployee}
                       description='Confidence distribution curve'
-                      Icon={<i className="fa fa-chart-bar" />}
+                      // Icon={<i className="fa fa-chart-bar" />}
+                      Icon={<BarChartIcon />}
                     />
                     <Block>
                       <DistributionFunctionGraph
@@ -231,7 +239,8 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                     <StickyH2
                       label={props.activeEmployee}
                       description='Speed distridution'
-                      Icon={<i className="fas fa-tachometer-alt" />}
+                      // Icon={<i className="fas fa-tachometer-alt" />}
+                      Icon={<SpeedIcon />}
                     />
                     <Block>
                       <SpeedGraph
@@ -264,7 +273,8 @@ export const withAbsoluteList = (ComposedComponent: any) =>
               <FlexColumn>
                 <StickyH2
                   label='About'
-                  Icon={<i className="fas fa-info-circle" />}
+                  // Icon={<i className="fas fa-info-circle" />}
+                  Icon={<InfoIcon />}
                 />
                 <Block>
                   <Note>
@@ -324,17 +334,17 @@ export const withAbsoluteList = (ComposedComponent: any) =>
           </Content>
           <ListDesktopToggler onClick={() => props.listToggler()}>
             {props.listOpened ? (
-              <i
-                style={{ fontSize: "20px", color: '#fff' }}
-                // className="fa fa-angle-double-left"
-                className='fas fa-chevron-left'
-              />
+              // <i
+              //   style={{ fontSize: "20px", color: '#fff' }}
+              //   className='fas fa-chevron-left'
+              // />
+              <KeyboardArrowLeftIcon fontSize='small' htmlColor='#fff' />
             ) : (
-              <i
-                style={{ fontSize: "20px", color: '#fff' }}
-                // className="fa fa-angle-double-right"
-                className='fas fa-chevron-right'
-              />
+              // <i
+              //   style={{ fontSize: "20px", color: '#fff' }}
+              //   className='fas fa-chevron-right'
+              // />
+              <KeyboardArrowRightIcon fontSize='small' htmlColor='#fff' />
             )}
           </ListDesktopToggler>
         </InternalListWrapper>

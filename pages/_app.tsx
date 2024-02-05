@@ -17,7 +17,7 @@ import { useStore } from 'react-redux';
 // import { IRootState } from '~/store/IRootState';
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider as SCThemeProvider } from 'styled-components'
-import { Theme } from '~/ui-kit/Theme'
+import { Theme } from '~/ui-kit.uremont/Theme'
 import Head from 'next/head'
 
 // import '../public/static/css/min/gosuslugi.css'
@@ -182,7 +182,7 @@ function AppWithRedux(props: MyAppProps) {
         />
         <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
         
-        <link
+        {/* <link
           href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
           rel="preload"
           as="style"
@@ -196,6 +196,21 @@ function AppWithRedux(props: MyAppProps) {
           href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
           integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
           crossOrigin="anonymous"
+        /> */}
+        <link
+          href="/static/fonts/fontawesome@5.8.0.all.min.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+          // integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
+          // crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="/static/fonts/fontawesome@5.8.0.all.min.css"
+          // integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
+          // crossOrigin="anonymous"
         />
 
         <script type="text/javascript" defer src='/static/common/eruda.custom.js' />

@@ -16,7 +16,8 @@ import styled from 'styled-components'
 import {
   Block,
   Btn,
-} from '~/ui-kit.special'
+} from '~/ui-kit.team-scoring-2019'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
 const Layout = styled('div').attrs({
   className: 'backdrop-blur--dark',
@@ -238,7 +239,8 @@ export const MobileInfiniteCalendar = memo(({
               {/* <i className="fas fa-calendar"></i> */}
               {/* <span /> */}
               <span>Calendar</span>
-              <i className="fas fa-arrow-right"></i>
+              {/* <i className="fas fa-arrow-right"></i> */}
+              <ArrowForwardIcon fontSize='small' />
             </Btn>
           </Block>
         )

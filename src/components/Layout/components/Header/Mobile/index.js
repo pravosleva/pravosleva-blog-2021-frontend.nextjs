@@ -18,6 +18,7 @@ import { breakpoints } from '~/mui/theme'
 import loadable from '@loadable/component'
 import MemoryIcon from '@mui/icons-material/Memory'
 import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
+import FingerprintIcon from '@mui/icons-material/Fingerprint'
 
 const Identicon = loadable(() => import(/* webpackChunkName: "identicon" */ 'react-hooks-identicons'), {
   ssr: false,
@@ -248,13 +249,14 @@ const MobileHeader = ({
                       color: isCurrentPathCb(router.pathname, '/auth/login') ? '#ff781e' : '#FFF',
                       height: '100%',
                       width: '100%',
-                      textAlign: 'center',
+                      // textAlign: 'center',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}
                     className={`${!isCurrentPathCb(router.pathname, '/auth/login') ? ' muted no-muted-on-hover' : ''}`}
                   >
-                    <span style={{ height: '100%' }}>
-                      <i className="fas fa-fingerprint"></i>
-                    </span>
+                    <FingerprintIcon fontSize='small' />
                   </a>
                 </Link>
               </li>

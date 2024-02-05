@@ -3,7 +3,13 @@ import React from 'react'
 // import PropTypes from 'prop-types'
 import styled, { css } from 'styled-components'
 import { groupLog } from '~/utils/groupLog'
-import { Fab } from '~/ui-kit.special'
+import { Fab } from '~/ui-kit.team-scoring-2019'
+// import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+// import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import BarChartIcon from '@mui/icons-material/BarChart'
+import InfoIcon from '@mui/icons-material/Info'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 
 /*
   FAB EXAMPLES:
@@ -92,8 +98,8 @@ export const ContentWithMobileTogglers = (props: TProps) => (
     >
       {
         !!props.activeEmployee
-        ? <i className="fa fa-chart-bar" style={{ fontSize: "20px" }} />
-        : <i className="fas fa-info" style={{ fontSize: "18px" }} />
+        ? <BarChartIcon /> // <i className="fa fa-chart-bar" style={{ fontSize: "20px" }} />
+        : <InfoIcon /> // <i className="fas fa-info" style={{ fontSize: "18px" }} />
       }
     </ListMobileToggler>
 
@@ -110,8 +116,8 @@ export const ContentWithMobileTogglers = (props: TProps) => (
     >
       {
         !!props.activeEmployee
-        ? <i className="fas fa-filter" style={{ fontSize: "16px" }}></i>
-        : <i className="fas fa-ellipsis-v" style={{ fontSize: "20px" }} />
+        ? <FilterAltIcon /> // <i className="fas fa-filter" style={{ fontSize: "16px" }}></i>
+        : <MoreVertIcon /> // <i className="fas fa-ellipsis-v" style={{ fontSize: "20px" }} />
       }
     </SidebarMobileToggler>
 

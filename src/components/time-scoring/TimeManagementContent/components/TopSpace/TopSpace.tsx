@@ -8,7 +8,15 @@ import {
   Btn,
   ClosableSearchPanelToggler,
   Pie,
-} from '~/ui-kit.special'
+} from '~/ui-kit.team-scoring-2019'
+import StarIcon from '@mui/icons-material/Star'
+import StarBorderIcon from '@mui/icons-material/StarBorder'
+import BlockIcon from '@mui/icons-material/Block'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 const TopSpaceWrapper = styled('div')<{ test?: boolean }>`
   ${(p) => p.test &&
@@ -176,8 +184,10 @@ export const TopSpace = ({
             onClick={addNewEmployeeToLS}
             style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
           >
-            <i className="fa fa-plus" />
-            <i className="fa fa-user-circle" />
+            {/* <i className="fa fa-plus" /> */}
+            <AddIcon fontSize='small' />
+            {/* <i className="fa fa-user-circle" /> */}
+            <AccountCircleIcon fontSize='small' />
           </Btn>
           {employeeNames &&
           Array.isArray(employeeNames) &&
@@ -201,7 +211,8 @@ export const TopSpace = ({
                   }
                 })
               }} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                <i className="fa fa-plus" />
+                {/* <i className="fa fa-plus" /> */}
+                <AddIcon fontSize='small' />
                 <span>Task</span>
               </Btn>
               <Btn
@@ -209,8 +220,10 @@ export const TopSpace = ({
                 onClick={() => removeEmployeeFromLS()}
                 style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
               >
-                <i className="fa fa-minus" />
-                <i className="fa fa-user-circle" />
+                {/* <i className="fa fa-minus" /> */}
+                <RemoveIcon fontSize='small' />
+                {/* <i className="fa fa-user-circle" /> */}
+                <AccountCircleIcon fontSize='small' />
               </Btn>
             </>
             ) : null}
@@ -225,38 +238,52 @@ export const TopSpace = ({
             />
             {[1, 2, 3, 4, 5].map((rate) => (
               <span
-                style={{ cursor: 'pointer' }}
+                style={{
+                  cursor: 'pointer',
+                  transition: 'all 0.3s linear',
+                  opacity: activeComplexity >= rate ? 1 : 0.2,
+                }}
                 key={rate}
                 onClick={(e) => {
                   e.stopPropagation()
                   if (activeComplexity !== rate) complexityToggler(rate)
                 }}
               >
-                <i
+                {/* <i
                   className="fa fa-star"
                   style={{
                     transition: 'all 0.3s linear',
                     color: '#fff',
                     opacity: activeComplexity >= rate ? '1' : '0.2',
                   }}
-                />
+                /> */}
+                {
+                  activeComplexity >= rate
+                  ? <StarIcon fontSize='small' htmlColor='#fff' />
+                  : <StarBorderIcon fontSize='small' htmlColor='#fff' />
+                }
               </span>
             ))}
             <span
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                transition: 'all 0.3s linear',
+                opacity: activeComplexity === 0 ? 1 : 0.2,
+              }}
               onClick={(e) => {
                 e.stopPropagation()
                 if (activeComplexity !== 0) complexityToggler(0)
               }}
             >
-              <i
+              {/* <i
                 className="fa fa-ban"
                 style={{
                   transition: 'all 0.3s linear',
                   color: '#fff',
                   opacity: activeComplexity === 0 ? '1' : '0.2',
                 }}
-              />
+              /> */}
+              <BlockIcon fontSize='small' htmlColor='#fff' />
             </span>
           </StarsWrapper>
         </StarsExternalWrapper>
@@ -271,9 +298,11 @@ export const TopSpace = ({
         isDiagramRequired && (
           <ToolsPanelToggler onClick={handleToggleToolsPanel}>
             {isToolsOpened ? (
-              <i className="fas fa-chevron-up" />
+              // <i className="fas fa-chevron-up" />
+              <KeyboardArrowUpIcon fontSize='small' />
             ) : (
-              <i className="fas fa-chevron-down" />
+              // <i className="fas fa-chevron-down" />
+              <KeyboardArrowDownIcon fontSize='small' />
             )}
           </ToolsPanelToggler>
         )

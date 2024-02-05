@@ -3,12 +3,17 @@ import classes from './Widget.module.scss'
 // import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { useState, useCallback } from 'react'
 import { useWindowSize } from '~/hooks/useWindowSize'
-import { Fab } from '~/ui-kit.special'
+import { Fab } from '~/ui-kit.team-scoring-2019'
 import styled, { css } from 'styled-components'
+// import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+// import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 
 const MobileToggler = styled(Fab)<{
   opened?: boolean;
 }>`
+  position: fixed;
   bottom: 16px;
   left: 16px;
   z-index: 100;
@@ -26,7 +31,10 @@ const MobileToggler = styled(Fab)<{
       background-color: #0162c8;
       color: #fff;
     `}
-  position: fixed;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 export const Widget = ({
@@ -75,17 +83,19 @@ export const Widget = ({
             >
               {
                 isOpened ? (
-                  <i
-                    style={{ fontSize: "20px", color: 'inherit' }}
-                    // className="fa fa-angle-double-left"
-                    className='fas fa-chevron-left'
-                  />
+                  // <i
+                  //   style={{ fontSize: "20px", color: 'inherit' }}
+                  //   // className="fa fa-angle-double-left"
+                  //   className='fas fa-chevron-left'
+                  // />
+                  <KeyboardArrowLeftIcon />
                 ) : (
-                  <i
-                    style={{ fontSize: "20px", color: 'inherit' }}
-                    // className="fa fa-angle-double-left"
-                    className='fas fa-chevron-right'
-                  />
+                  // <i
+                  //   style={{ fontSize: "20px", color: 'inherit' }}
+                  //   // className="fa fa-angle-double-left"
+                  //   className='fas fa-chevron-right'
+                  // />
+                  <KeyboardArrowRightIcon />
                 )
               }
             </button>
@@ -100,17 +110,19 @@ export const Widget = ({
           >
             {
               isOpened ? (
-                <i
-                  style={{ fontSize: "20px", color: 'inherit' }}
-                  // className="fa fa-angle-double-left"
-                  className='fas fa-chevron-left'
-                />
+                // <i
+                //   style={{ fontSize: "20px", color: 'inherit' }}
+                //   // className="fa fa-angle-double-left"
+                //   className='fas fa-chevron-left'
+                // />
+                <KeyboardArrowLeftIcon />
               ) : (
-                <i
-                  style={{ fontSize: "20px", color: 'inherit' }}
-                  // className="fa fa-angle-double-left"
-                  className='fas fa-chevron-right'
-                />
+                // <i
+                //   style={{ fontSize: "20px", color: 'inherit' }}
+                //   // className="fa fa-angle-double-left"
+                //   className='fas fa-chevron-right'
+                // />
+                <KeyboardArrowRightIcon />
               )
             }
           </MobileToggler>
