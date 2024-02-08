@@ -59,7 +59,7 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
             <ResponsiveBlock
               isLimitedForDesktop
             >
-              <div className="article-wrapper">
+              <article className="article-wrapper">
                 <div className={clsx('tiles-grid-item-in-article', 'white', 'article-wrapper__big-image-as-container')}>
                   <h1 className='article-page-title'>
                     {article?.original.title}
@@ -75,7 +75,7 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
                     {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
                   </small>
                 </div>
-              </div>
+              </article>
             </ResponsiveBlock>
           )}
 

@@ -201,10 +201,6 @@ class httpClientSingletone {
       }
     })
 
-    // console.log('-- strapiHttpClient:createTodo:result')
-    // console.log(result)
-    // console.log('--')
-
     if (result.isOk && typeof result.response?.data?.id === 'number') return Promise.resolve({
       ok: true,
       res: result.response,

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import {
   Alert,
-  Box,
+  // Box,
   Button,
   Container,
   Grid,
@@ -64,22 +64,23 @@ export default function MyProjects({
         <title>{projectDataResponse?.name || 'My Car'}</title>
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_type=autopark`} />
-        <script
+        {/* <script
           type="text/javascript"
           defer
           dangerouslySetInnerHTML={{
             __html: `if (typeof customEruda !== 'undefined') setTimeout(customEruda.initIfNecessary, 1000);`,
           }}
-        />
+        /> */}
       </Head>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
         <Container maxWidth="xs">
           {/* <Typography variant="h4" component="h1" gutterBottom>
             Project
           </Typography> */}
-          <Box sx={{ p: 2 }} style={{ fontWeight: 'bold' }}>
+          {/* <Box sx={{ p: 2 }} style={{ fontWeight: 'bold' }}>
             <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
-          </Box>
+          </Box> */}
+          <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
 
           <TheProject
             chat_id={chat_id}

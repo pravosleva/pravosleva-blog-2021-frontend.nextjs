@@ -8,6 +8,8 @@ import {
 } from '~/srv.socket-logic/withAuditListSocketLogic/utils'
 import { strapiHttpClient, universalHttpClient } from '~/srv.utils'
 
+const isDev = process.env.NODE_ENV === 'development'
+const baseEHelperUrl = isDev ? 'http://localhost:5000' : '/express-helper'
 const getChannelName = (tg_chat_id: number): string => `audit-list:${tg_chat_id}`
 
 const delay = (ms = 200) => new Promise((res) => {
@@ -28,7 +30,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
         .then(({ instance }) => {
           const counter = instance.counters.get(room) || 0
           if (counter === 1) {
-            universalHttpClient.post('/express-helper/subprojects/aux-state/looper.start', {
+            universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/looper.start`, {
               namespace: 'audit-list',
               // tg_chat_id: room,
             })
@@ -56,7 +58,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       // }>()
 
       // const t0 = performance.now()
-      universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/get-item`, {
+      universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/get-item`, {
         namespace: 'audit-list',
         tg_chat_id: room,
       })
@@ -233,7 +235,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
 
       const fixResponses = []
       for (const audit of audits) {
-        const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+        const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
           namespace: 'audit-list',
           tg_chat_id: room,
           audit,
@@ -247,7 +249,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
 
         await delay(200)
       }
-      // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+      // const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/save-item`, {
       //     namespace: 'audit-list',
       //     tg_chat_id: room,
       //     audits,
@@ -268,14 +270,14 @@ export const withAuditListSocketLogic = (io: Socket) => {
       stateInstance.removeAudit({ room, auditId })
         .then(async ({ audits }) => {
 
-          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/remove-audit-item`, {
+          // const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/remove-audit-item`, {
           //   namespace: 'audit-list',
           //   tg_chat_id: room,
           //   // audits,
           //   auditId,
           // }).then((res) => res).catch((err) => err)
 
-          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/remove-audit-item`, {
+          const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/remove-audit-item`, {
             namespace: 'audit-list',
             tg_chat_id: room,
             auditId,
@@ -307,7 +309,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
         newAuditData,
       })
         .then(async ({ isOk, message, audits, updatedAudit }) => {
-          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+          const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
             namespace: 'audit-list',
             tg_chat_id: room,
             audit: updatedAudit,
@@ -343,7 +345,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           const targetIndex = audits.findIndex(({ id }) => id === auditId)
           let fixResponse
           if (targetIndex !== -1) {
-            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
@@ -371,7 +373,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.SUBJOB_ADD, ({ room, auditId, name, jobId }: NEventData.NServerIncoming.TSUBJOB_ADD, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addSubjob({ room, auditId, name, jobId })
         .then(async ({ audits }) => {
-          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          // const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/save-item`, {
           //   namespace: 'audit-list',
           //   tg_chat_id: room,
           //   audits,
@@ -379,7 +381,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           const targetIndex = audits.findIndex(({ id }) => id === auditId)
           let fixResponse
           if (targetIndex !== -1) {
-            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
@@ -407,7 +409,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.JOB_TOGGLE_DONE, ({ room, auditId, jobId, }: NEventData.NServerIncoming.TJOB_TOGGLE_DONE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.toggleJobDone({ room, auditId, jobId })
         .then(async ({ audits }) => {
-          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          // const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/save-item`, {
           //   namespace: 'audit-list',
           //   tg_chat_id: room,
           //   audits,
@@ -415,7 +417,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           const targetIndex = audits.findIndex(({ id }) => id === auditId)
           let fixResponse
           if (targetIndex !== -1) {
-            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
@@ -443,7 +445,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.JOB_REMOVE, ({ room, auditId, jobId, }: NEventData.NServerIncoming.TJOB_REMOVE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.removeJob({ room, auditId, jobId })
         .then(async ({ audits }) => {
-          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          // const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/save-item`, {
           //   namespace: 'audit-list',
           //   tg_chat_id: room,
           //   audits,
@@ -451,7 +453,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           const targetIndex = audits.findIndex(({ id }) => id === auditId)
           let fixResponse
           if (targetIndex !== -1) {
-            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
@@ -472,7 +474,6 @@ export const withAuditListSocketLogic = (io: Socket) => {
           });
         })
         .catch((err) => {
-          console.log(err)
           if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
@@ -480,7 +481,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.SUBJOB_TOGGLE_DONE, ({ room, auditId, jobId, subjobId, }: NEventData.NServerIncoming.TSUBJOB_TOGGLE_DONE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.toggleSubjobDone({ room, auditId, jobId, subjobId })
         .then(async ({ audits }) => {
-          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          // const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/save-item`, {
           //   namespace: 'audit-list',
           //   tg_chat_id: room,
           //   audits,
@@ -488,7 +489,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           const targetIndex = audits.findIndex(({ id }) => id === auditId)
           let fixResponse
           if (targetIndex !== -1) {
-            fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+            fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
               namespace: 'audit-list',
               tg_chat_id: room,
               audit: audits[targetIndex],
@@ -517,14 +518,14 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.AUDIT_ADD, ({ room, name, description, jobs }: NEventData.NServerIncoming.TAUDIT_ADD, cb?: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
       stateInstance.addAudit({ room, name, description, jobs })
         .then(async ({ audits, newAudit }) => {
-          // const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/save-item`, {
+          // const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/save-item`, {
           //   namespace: 'audit-list',
           //   tg_chat_id: room,
           //   audits,
           // }).then((res) => res).catch((err) => err)
           // console.log(`-- audit added: audits.len ${audits.length}`)
 
-          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+          const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
             namespace: 'audit-list',
             tg_chat_id: room,
             audit: newAudit,
@@ -552,7 +553,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
     socket.on(NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT, ({ room, auditId, comment }: NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT, cb?: NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB) => {
       stateInstance.updateAuditComment({ room, auditId, comment })
         .then(async ({ audits, updatedAudit }) => {
-          const fixResponse = await universalHttpClient.post(`/express-helper/subprojects/aux-state/${room}/replace-audit-item`, {
+          const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
             namespace: 'audit-list',
             tg_chat_id: room,
             audit: updatedAudit,
@@ -639,7 +640,6 @@ export const withAuditListSocketLogic = (io: Socket) => {
             else throw new Error(e.message || 'ERR.194')
           })
           .catch((err) => {
-            console.log(err)
             if (!!cb) cb({
               room: ev.room,
               isOk: err?.isOk || false,
@@ -716,7 +716,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
             const counter = instance.counters.get(tg_chat_id) || 0
 
             if (counter <= 0) {
-              universalHttpClient.post('/express-helper/subprojects/aux-state/looper.stop', {
+              universalHttpClient.post('${baseEHelperUrl}/subprojects/aux-state/looper.stop', {
                 namespace: 'audit-list',
                 // tg_chat_id,
               }).then((res) => res).catch((err) => err)

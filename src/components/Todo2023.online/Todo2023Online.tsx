@@ -95,8 +95,30 @@ const Logic = ({ room }: TLogicProps) => {
   const localAudits = useSelector((store: IRootState) => store.todo2023.localAudits)
   const { enqueueSnackbar } = useSnackbar()
   const showStandartSocketErrMsg = useCallback(({ showSuccessMsg, cb }: { showSuccessMsg: boolean; cb?: () => void; }) => ({ isOk, message }: { isOk: boolean; message?: string }) => {
-    if (!isOk) enqueueSnackbar(message || 'Что-то пошло не так', { variant: 'error', autoHideDuration: 7000 })
-    else if (showSuccessMsg) enqueueSnackbar(message || 'Ok', { variant: 'success', autoHideDuration: 7000 })
+    if (!isOk) enqueueSnackbar(message || 'Что-то пошло не так', {
+      variant: 'error',
+      autoHideDuration: 30000,
+      action: (snackbarId) => (
+        <IconButton
+          onClick={() => closeSnackbar(snackbarId)}
+          size='small'
+        >
+          <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+        </IconButton>
+      ),
+    })
+    else if (showSuccessMsg) enqueueSnackbar(message || 'Ok', {
+      variant: 'success',
+      autoHideDuration: 7000,
+      action: (snackbarId) => (
+        <IconButton
+          onClick={() => closeSnackbar(snackbarId)}
+          size='small'
+        >
+          <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+        </IconButton>
+      ),
+    })
     
     if (!!cb) cb()
   }, [enqueueSnackbar])
@@ -135,7 +157,8 @@ const Logic = ({ room }: TLogicProps) => {
         //   dispatch(replaceStrapiTodo(data.strapiTodos || []))
         // }
         if (!ok) enqueueSnackbar(`FRONT App init Error <- ${message || 'Что-то пошло не так'}`, {
-          variant: 'error', autoHideDuration: 30000,
+          variant: 'error',
+          autoHideDuration: 30000,
           action: (snackbarId) => (
             <IconButton
               onClick={() => closeSnackbar(snackbarId)}
@@ -228,6 +251,7 @@ const Logic = ({ room }: TLogicProps) => {
             break
           }
           case !!data?._specialReport?.fixResponse && !data._specialReport.fixResponse?.isOk: {
+            // console.log(data._specialReport.fixResponse)
             enqueueSnackbar(`${data._specialReport.fixResponse?.response?.message || 'ERR_224 Remote AUDITLIST_REPLACE (проблемы с удаленным хранилищем)'}`, {
               variant: 'error',
               autoHideDuration: 30000,

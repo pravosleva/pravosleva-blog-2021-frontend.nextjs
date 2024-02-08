@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  Box,
+  // Box,
   Button,
   Container,
   Grid,
@@ -16,6 +16,7 @@ import Head from 'next/head'
 import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase';
+// import { ResponsiveBlock } from '~/mui/ResponsiveBlock';
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -78,11 +79,42 @@ export default function MyProjects({
         />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
       </Head>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          // justifyContent: 'center',
+          // alignItems: 'center',
+          minHeight: '100svh',
+          // border: '1px solid red',
+          width: '100%',
+        }}
+      >
+        {/* <ResponsiveBlock
+          style={{
+            border: '1px dashed red',
+            width: '100%',
+
+            // position: 'sticky',
+            // top: 0,
+          }}
+          isLimitedForDesktop
+          isPaddedMobile
+          className='backdrop-blur--lite'
+        >
+          
+        </ResponsiveBlock> */}
+        
         <Container maxWidth="xs">
-          <Box sx={{ p: 2 }} style={{ fontWeight: 'bold' }}>
-            <code>{projectDataResponse?.name || 'ERR: Noname'}</code>
-          </Box>
+          {/* <Box
+            sx={{ pt: 2, pb: 2,
+            }}
+            style={{ fontWeight: 'bold' }}
+          >
+            <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
+          </Box> */}
+
+          <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
           
           {
             typeof window !== 'undefined' && (

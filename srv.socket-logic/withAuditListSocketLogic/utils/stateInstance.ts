@@ -468,9 +468,9 @@ class Singleton {
         namespace,
       })
 
-      console.log('-- stateInstance:addTodo:result')
-      console.log(result)
-      console.log('--')
+      // console.log('-- stateInstance:addTodo:result')
+      // console.log(result)
+      // console.log('--')
 
       if (result.ok && !!result.res?.data) {
         return Promise.resolve({ isOk: true, data: result.res?.data })
@@ -479,6 +479,7 @@ class Singleton {
         throw new Error(result.message || 'ERR')
       }
     } catch (err: any) {
+      console.log(err)
       return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }

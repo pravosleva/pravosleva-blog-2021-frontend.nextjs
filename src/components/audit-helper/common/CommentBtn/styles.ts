@@ -48,7 +48,7 @@ export const useStyles = makeStyles((theme) => ({
     color: '#fff',
     borderRadius: '0 4px 0 8px',
     // padding: '2px 10px',
-    padding: '0px 10px 2px 10px',
+    padding: '0px 8px 2px 10px',
     fontSize: '12px',
     fontWeight: 'bold',
   },

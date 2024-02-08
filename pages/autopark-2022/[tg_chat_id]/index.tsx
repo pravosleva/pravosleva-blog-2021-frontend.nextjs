@@ -51,15 +51,15 @@ export default function MyProjects({
         <title>Autopark</title>
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_type=autopark`} />
-        <script
+        {/* <script
           type="text/javascript"
           defer
           dangerouslySetInnerHTML={{
             __html: `if (typeof customEruda !== 'undefined') setTimeout(customEruda.initIfNecessary, 1000);`,
           }}
-        />
+        /> */}
       </Head>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
         <Container maxWidth="xs">
           <Autopark2022 chat_id={chat_id} />
         </Container>

@@ -15,7 +15,7 @@ const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang="en" prefix="og: http://ogp.me/ns#">
+      <Html lang="ru" prefix="og: http://ogp.me/ns#">
         <Head>
           <meta charSet="utf-8" />
           <meta httpEquiv='Content-Type' content='text/html;charset=UTF-8' />
