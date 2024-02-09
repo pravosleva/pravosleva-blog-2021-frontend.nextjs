@@ -918,7 +918,7 @@ const Logic = ({ room }: TLogicProps) => {
             onRequestPage={handleRequestPage}
           />
         </Widget>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
           <Container maxWidth="xs">
             <Stack
               direction='column'

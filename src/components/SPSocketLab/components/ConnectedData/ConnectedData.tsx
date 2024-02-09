@@ -32,6 +32,8 @@ import sizeof from 'object-sizeof'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Brightness1Icon from '@mui/icons-material/Brightness1'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone'
 
 // const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -178,9 +180,11 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
             >
               {
                 isTestedIFrameOpened ? (
-                  <i className="fas fa-arrow-left" style={{ fontSize: '35px' }} />
+                  // <i className="fas fa-arrow-left" style={{ fontSize: '35px' }} />
+                  <ArrowBackIcon />
                 ) : (
-                  <i className="fas fa-mobile" style={{ fontSize: '35px' }} />
+                  // <i className="fas fa-mobile" style={{ fontSize: '35px' }} />
+                  <PhoneIphoneIcon />
                 )
               }
             </Fab>
@@ -276,7 +280,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                   color: '#000',
                 }}
               >
-                <i className="fas fa-times-circle" style={{ fontSize: '35px' }} />
+                {/* <i className="fas fa-times-circle" style={{ fontSize: '35px' }} /> */}
+                <CloseIcon />
               </Fab>
             </>
           )

@@ -197,21 +197,6 @@ function AppWithRedux(props: MyAppProps) {
           integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
           crossOrigin="anonymous"
         /> */}
-        <link
-          href="/static/fonts/fontawesome@5.8.0.all.min.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-          // integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
-          // crossOrigin="anonymous"
-        />
-        <link
-          rel="stylesheet"
-          href="/static/fonts/fontawesome@5.8.0.all.min.css"
-          // integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
-          // crossOrigin="anonymous"
-        />
 
         <script type="text/javascript" defer src='/static/common/eruda.custom.js' />
       </Head>
