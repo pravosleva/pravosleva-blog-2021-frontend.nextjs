@@ -95,9 +95,9 @@ class httpClientSingletone {
       .then(httpErrorHandler) // res -> res.data
       // .then(apiErrorHandler) // data -> data
       .then((res) => {
-        console.log('-- get:res')
-        console.log(res)
-        console.log('--')
+        // console.log('-- get:res')
+        // console.log(res)
+        // console.log('--')
         // switch (true) {
         //   case !!res?.data:
         //     return res
@@ -120,9 +120,9 @@ class httpClientSingletone {
       .then(httpErrorHandler) // res -> res.data
       // .then(apiErrorHandler) // data -> data
       .then((res) => {
-        console.log('-- strapiHttpClient:post:res')
-        console.log(res)
-        console.log('--')
+        // console.log('-- strapiHttpClient:post:res')
+        // console.log(res)
+        // console.log('--')
         // switch (true) {
         //   case res?.data:
         //     return res
@@ -270,10 +270,6 @@ class httpClientSingletone {
   }> {
     const result = await this.get('/todos')
 
-    // console.log('-- strapiHttpClient:getTodos:result')
-    // console.log(result)
-    // console.log('--')
-
     if (result.isOk && Array.isArray(result.response?.data)) return Promise.resolve({
       ok: true,
       res: result.response,
@@ -362,9 +358,9 @@ class httpClientSingletone {
           ) {
             return json.data.data.todos
           } else {
-            console.log('- not ok: json?.data?.data')
-            console.log(json?.data?.data)
-            console.log('-')
+            // console.log('- not ok: json?.data?.data')
+            // console.log(json?.data?.data)
+            // console.log('-')
           }
 
           const msg = this.getStrapiGqlErrMsg('GraphQL API Error', json?.data?.errors)
@@ -464,7 +460,7 @@ class httpClientSingletone {
       })
         // .then(httpErrorHandler) // res -> res.data
         .then((json: any) => {
-          console.log(json)
+          // console.log(json)
           // if (
           //   Array.isArray(json?.data?.data?.todos?.data
           //   && !!json?.data?.data?.todos?.meta
@@ -478,7 +474,7 @@ class httpClientSingletone {
           //   console.log('-')
           // }
 
-          console.log(json?.data?.errors)
+          // console.log(json?.data?.errors)
 
           const msg = this.getStrapiGqlErrMsg('GraphQL API Error', json?.data?.errors)
           throw new ApiError(msg)

@@ -6,6 +6,7 @@ import Head from 'next/head'
 import { Todo2023Online } from '~/components/Todo2023.online/Todo2023Online'
 import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { enableBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
 
@@ -60,6 +61,10 @@ const getInitialPropsWithStore = async ({
   store: any;
 }) => {
   const baseProps = await getInitialPropsBase(ctx)
+
+  if (baseProps.devTools.isClientPerfWidgetOpened)
+    store.dispatch(enableBrowserMemoryMonitor())
+
   const { query: { tg_chat_id } } = ctx
   const _pageService: TPageService = {
     isOk: true,
@@ -101,6 +106,6 @@ const getInitialPropsWithStore = async ({
 TodoOnline.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => (ctx: IPageContext) => getInitialPropsWithStore({ ctx, store })
-);
+)
 
 export default TodoOnline

@@ -510,7 +510,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           });
         })
         .catch((err) => {
-          console.log(err)
+          // console.log(err)
           if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
@@ -545,7 +545,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           });
         })
         .catch((err) => {
-          console.log(err)
+          // console.log(err)
           if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
@@ -568,7 +568,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           });
         })
         .catch((err) => {
-          console.log(err)
+          // console.log(err)
           if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
         })
     })
@@ -661,7 +661,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
             else throw new Error(e.message || 'ERR.216')
           })
           .catch((err) => {
-            console.log(err)
+            // console.log(err)
             if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
           })
     })
@@ -689,7 +689,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
           else throw new Error(e.message || 'ERR.242')
         })
         .catch((err) => {
-          console.log(err)
+          // console.log(err)
           if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
         })
     })

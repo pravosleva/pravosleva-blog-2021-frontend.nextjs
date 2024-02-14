@@ -192,6 +192,7 @@ const _DesktopHeader = ({
                         width: '50px', height: '50px', display: 'flex', justifyContent: 'center', alignItems: 'center'
                       }}
                       onClick={toggleBrowserMemoryMonitorDevTools}
+                      title='Or try this 👉 ?open_clent_perf_widget=1 👈'
                     >
                       <LangLink
                         style={{
