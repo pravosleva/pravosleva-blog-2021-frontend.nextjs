@@ -25,7 +25,7 @@ import '../public/static/css/min/animations.css'
 import '../public/static/css/min/fix.sweetalert2.css'
 // import '../public/static/css/min/backdrop-blur.css'
 // import '../public/static/css/article.css'
-import '../public/static/css/min/audit-list.css'
+// import '../public/static/css/min/audit-list.css'
 // import '../public/static/css/min/layout.css'
 // import '../public/static/css/min/project-list.css'
 // import '../public/static/css/min/global-theming.css'
@@ -113,7 +113,14 @@ function AppWithRedux(props: MyAppProps) {
         />
         <link href="/static/css/min/backdrop-blur.css" rel="stylesheet" />
 
-        {/* <link href="/static/css/min/audit-list.css" rel="stylesheet" /> */}
+        <link
+          href="/static/css/min/audit-list.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
+        <link href="/static/css/min/audit-list.css" rel="stylesheet" />
 
         <link
           href="/static/css/min/project-list.css"

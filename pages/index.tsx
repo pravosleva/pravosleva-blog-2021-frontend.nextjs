@@ -76,7 +76,7 @@ export default function Index() {
         <meta name="description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое.' />
 
         {/* <!-- Facebook Meta Tags --> */}
-        <meta property="og:url" content="https://pravosleva.pro/blog" />
+        <meta property="og:url" content="https://pravosleva.pro" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="ru_RU" />
         <meta property="og:locale:alternate" content="be_BY" />

@@ -13,11 +13,14 @@ type TAuthData = {
 }
 type TBaseProps = {
   authData: TAuthData;
+  devTools: {
+    isClientPerfWidgetOpened: boolean;
+  },
 }
 
 export const getInitialPropsBase = async (ctx: any): Promise<TBaseProps> => {
   // const { req, query } = ctx
-  const { query: { tg_chat_id } } = ctx
+  const { query: { tg_chat_id, open_clent_perf_widget } } = ctx
   const authData: TAuthData = {
     oneTime: {
       jwt: {
@@ -56,5 +59,8 @@ export const getInitialPropsBase = async (ctx: any): Promise<TBaseProps> => {
     // baseProp3: 1,
 
     authData,
+    devTools: {
+      isClientPerfWidgetOpened: open_clent_perf_widget === '1',
+    },
   };
 }

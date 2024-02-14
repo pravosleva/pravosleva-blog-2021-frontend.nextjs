@@ -38,7 +38,7 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   let url = 'http://code-samples.space/api/notes?limit=60'
   if (!!q_title_all_words && typeof q_title_all_words === 'string') { 
     const modifiedQueryTitleAllWords = q_title_all_words.replace(/\s/g, '')
-    url = `http://code-samples.space/api/notes?limit=60&q_title_all_words=${modifiedQueryTitleAllWords}`
+    url = `http://code-samples.space/api/notes?limit=60&q_title_all_words=${encodeURIComponent(modifiedQueryTitleAllWords)}`
   }
 
   const notesResult = await universalHttpClient.get(url)

@@ -15,6 +15,7 @@
   "PROJECT_BRIEF@PROBABILITY_THEORY": "Probabillity theory",
   "PROJECT_BRIEF@SP_TRADEIN": "",
   "PROJECT_BRIEF@CARGO_2016": "Three.js",
+  "PROJECT_BRIEF@RED_SHARK": "Volkswagen Golf 4",
 
   "PROJECT_GO_BTN:LINK": "Read more",
   "PROJECT_GO_BTN:LINK_GOTO": "Go",
@@ -27,6 +28,7 @@
   "AUDIT_LIST_PROJECT_DESCR": "We can do it better!",
   "AUTO_PARK_PROJECT_DESCR": "Hello world",
   "TEAM_SCORING_PROJECT_DESCR": "How much is your forecast, liar?",
+  "RED_SHARK_PROJECT_DESCR": "2002",
 
   "SOCKET_LAB/HEADER": "SocketLab exp",
   "SOCKET_LAB/CONTENT/isConnected": "Connect",

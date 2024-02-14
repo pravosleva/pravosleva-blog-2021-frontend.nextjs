@@ -88,14 +88,14 @@ export const Widget = ({
                   //   // className="fa fa-angle-double-left"
                   //   className='fas fa-chevron-left'
                   // />
-                  <KeyboardArrowLeftIcon />
+                  <KeyboardArrowLeftIcon fontSize='large' />
                 ) : (
                   // <i
                   //   style={{ fontSize: "20px", color: 'inherit' }}
                   //   // className="fa fa-angle-double-left"
                   //   className='fas fa-chevron-right'
                   // />
-                  <KeyboardArrowRightIcon />
+                  <KeyboardArrowRightIcon fontSize='large' />
                 )
               }
             </button>
@@ -115,14 +115,14 @@ export const Widget = ({
                 //   // className="fa fa-angle-double-left"
                 //   className='fas fa-chevron-left'
                 // />
-                <KeyboardArrowLeftIcon />
+                <KeyboardArrowLeftIcon fontSize='large' />
               ) : (
                 // <i
                 //   style={{ fontSize: "20px", color: 'inherit' }}
                 //   // className="fa fa-angle-double-left"
                 //   className='fas fa-chevron-right'
                 // />
-                <KeyboardArrowRightIcon />
+                <KeyboardArrowRightIcon fontSize='large' />
               )
             }
           </MobileToggler>

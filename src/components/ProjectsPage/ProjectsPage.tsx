@@ -163,6 +163,30 @@ const projects: TProject[] = [
   },
   {
     id: 6,
+    title: 'RedShark',
+    description: 'RED_SHARK_PROJECT_DESCR',
+    img: {
+      src: '/static/img/blog/red-shark.jpg',
+      alt: 'loading...',
+      color: {
+        average: '#7a665e',
+      },
+    },
+    links: [
+      {
+        href: '/blog/q/[search_query_title]',
+        as: '/blog/q/краснаяАкула',
+        text: 'PROJECT_GO_BTN:LINK_GOTO',
+        color: ELinkColor.YELLOW,
+        icon: ELinkIcon.ARROW,
+      },
+    ],
+    uiDate: '2022',
+    brief: 'PROJECT_BRIEF@RED_SHARK',
+    tags: ['краснаяАкула'],
+  },
+  {
+    id: 7,
     title: 'TeamScoring',
     description: 'TEAM_SCORING_PROJECT_DESCR',
     img: {
@@ -186,7 +210,7 @@ const projects: TProject[] = [
     tags: [],
   },
   {
-    id: 7,
+    id: 8,
     title: 'Cargo 2016',
     brief: 'PROJECT_BRIEF@CARGO_2016',
     description: 'PROJECT_DESCR@CARGO_2016',
@@ -229,7 +253,7 @@ export const ProjectsPage = withTranslator(({ t }) => {
   }, [])
 
   const isSSR = useMemo(() => typeof window === 'undefined', [typeof window])
-
+  
   return (
     <>
       <ResponsiveBlock

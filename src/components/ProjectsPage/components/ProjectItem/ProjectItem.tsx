@@ -1,3 +1,4 @@
+// import { forwardRef } from 'react'
 import clsx from 'clsx';
 import classes from './ProjectItem.module.scss'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -8,6 +9,7 @@ import { ELinkColor, ELinkIcon } from './types'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import LinkIcon from '@mui/icons-material/Link'
 // import { useStyles } from '../ProjectItemSSR/useStyles'
+import { useInView } from 'react-intersection-observer'
 
 type TProps = {
   title: string;
@@ -72,16 +74,30 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
   // isLast,
 }: TProps) => {
   // const muiStyles = useStyles()
+  const {
+    ref,
+    inView,
+    // entry,
+  } = useInView({
+    /* Optional options */
+    threshold: 0,
+  })
+
   return (
-    <div className={clsx(
-      classes.blogCard,
-      // { [classes.alt]: isLast }
-    )}>
+    <div
+      className={clsx(
+        classes.blogCard,
+        // { [classes.alt]: isLast }
+      )}
+      ref={ref}
+    >
       <div className={classes.meta}>
         <div
           className={classes.photo}
           style={{
-            backgroundImage: `url(${img.src})`,
+            backgroundImage: inView
+              ? `url(${img.src})`
+              : `radial-gradient(circle, ${img.color.average} 10%, ${img.color.average} 100%)`,
           }}
         ></div>
         <ul className={clsx(classes.details, 'details')}>

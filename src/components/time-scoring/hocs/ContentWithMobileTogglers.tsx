@@ -98,8 +98,8 @@ export const ContentWithMobileTogglers = (props: TProps) => (
     >
       {
         !!props.activeEmployee
-        ? <BarChartIcon /> // <i className="fa fa-chart-bar" style={{ fontSize: "20px" }} />
-        : <InfoIcon /> // <i className="fas fa-info" style={{ fontSize: "18px" }} />
+        ? <BarChartIcon fontSize='large' /> // <i className="fa fa-chart-bar" style={{ fontSize: "20px" }} />
+        : <InfoIcon fontSize='large' /> // <i className="fas fa-info" style={{ fontSize: "18px" }} />
       }
     </ListMobileToggler>
 
@@ -116,8 +116,8 @@ export const ContentWithMobileTogglers = (props: TProps) => (
     >
       {
         !!props.activeEmployee
-        ? <FilterAltIcon /> // <i className="fas fa-filter" style={{ fontSize: "16px" }}></i>
-        : <MoreVertIcon /> // <i className="fas fa-ellipsis-v" style={{ fontSize: "20px" }} />
+        ? <FilterAltIcon fontSize='large' /> // <i className="fas fa-filter" style={{ fontSize: "16px" }}></i>
+        : <MoreVertIcon fontSize='large' /> // <i className="fas fa-ellipsis-v" style={{ fontSize: "20px" }} />
       }
     </SidebarMobileToggler>
 

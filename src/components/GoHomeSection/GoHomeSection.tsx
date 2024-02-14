@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { IRootState } from '~/store/IRootState';
 // import { useSearch } from '~/hooks/useSearch'
 import { useCompare } from '~/hooks/useDeepEffect'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
 
 export const GoHomeSection = ({
   t,
@@ -17,8 +18,16 @@ export const GoHomeSection = ({
     href: '/',
     as: '/',
     Component: (
-      <a className="link-as-rippled-btn truncate" style={{ whiteSpace: 'pre' }}>
-        <i className="fas fa-arrow-left"></i>
+      <a
+        className="link-as-rippled-btn truncate"
+        style={{
+          whiteSpace: 'pre',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        {/* <i className="fas fa-arrow-left"></i> */}
+        <KeyboardArrowLeftIcon />
         <span style={{ marginLeft: '10px', whiteSpace: 'pre' }}>{t('GO_BACK_TO_THE_HOMEPAGE')}</span>
       </a>
     ),

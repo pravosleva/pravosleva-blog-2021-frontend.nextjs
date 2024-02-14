@@ -50,16 +50,16 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
         <meta property="og:locale:alternate" content="uk_UA" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:title" content='🔎 Look what I found' />
+        <meta property="og:title" content='🔎 Check it out' />
         <meta property="og:description" content={`What about ${searchQueryTitle.normalized}`} />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="og:site_name" content="Pravosleva" />
+        <meta property="og:site_name" content="Pravosleva | Search" />
 
         {/* <!-- Twitter Meta Tags --> */}
-        <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="twitter:domain" content="pravosleva.pro" />
-        <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
-        <meta name="twitter:title" content='🔎 Look what I found' />
+        <meta name="twitter:card" content="summary" />
+        {/* <meta property="twitter:domain" content="pravosleva.pro" /> */}
+        <link rel="canonical" href={thisPageUrl}></link>
+        <meta name="twitter:title" content='🔎 Check it out' />
         <meta name="twitter:description" content={`What about ${searchQueryTitle.normalized}`} />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
@@ -89,7 +89,17 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
     let list: TArticle[] = []
 
     const withoutSpaces = typeof search_query_title === 'string' ? search_query_title.replace(/\s/g, '') : ''
-    const normalized = !!withoutSpaces ? search_query_title.replace(/\s/g, '').split(',').join(', ') : ''
+    const normalized = !!withoutSpaces
+      ? search_query_title.replace(/\s/g, '')
+        .split(',')
+        // .map((tag: any) => !!tag && typeof tag === 'string' ? decodeURIComponent(tag) : '')
+        // .filter((normalizedTag: string) => !!normalizedTag)
+        .join(', ')
+      : ''
+
+    console.log(`withoutSpaces -> ${withoutSpaces}`)
+    console.log(`normalized -> ${normalized}`)
+    console.log(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
 
     switch (true) {
       case !!withoutSpaces: {
@@ -98,7 +108,7 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
           withoutSpaces,
           normalized,
         }))
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${withoutSpaces}`)
+        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
         if (noteResult.ok && !!noteResult?.response?.data && Array.isArray(noteResult.response.data)) {
           _pageService.isOk = true
           _pageService.response = noteResult.response

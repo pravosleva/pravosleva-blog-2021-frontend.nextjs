@@ -44,12 +44,13 @@ export const useStyles = makeStyles((theme) => ({
     right: 0,
     // @ts-ignore
     // backgroundColor: theme.palette.primary.dark,
-    backgroundColor: 'rgba(203,213,225,1)',
+    backgroundColor: 'rgb(203, 213, 225)',
     color: '#fff',
     borderRadius: '0 4px 0 8px',
     // padding: '2px 10px',
     padding: '0px 8px 2px 10px',
     fontSize: '12px',
+    lineHeight: '1.5em',
     fontWeight: 'bold',
   },
   absoluteControls: {
