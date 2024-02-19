@@ -65,7 +65,12 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
                     {article?.original.title}
                   </h1>
                   {article?.brief && (
-                    <div className='article-wrapper__big-image-as-container__brief'>
+                    <div
+                      className='article-wrapper__big-image-as-container__brief'
+                      style={{
+                        fontSize: '0.8em',
+                      }}
+                    >
                       <ReactMarkdown
                         children={article.brief}
                       />

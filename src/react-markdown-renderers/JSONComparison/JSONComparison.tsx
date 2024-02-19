@@ -1,19 +1,11 @@
 import { useMemo } from 'react'
 import { getJSONDiffs } from '~/utils/getJSONDiffs'
 import { useStyles } from './styles'
+import { isValidJson } from '~/utils/isValidJson'
 
 type TProps = {
-  json1: any
-  json2: any
-}
-
-function isValidJson(str: string): boolean {
-  try {
-    JSON.parse(str)
-  } catch (e) {
-    return false
-  }
-  return true
+  json1: string;
+  json2: string;
 }
 
 export const JSONComparison = ({ json1, json2 }: TProps) => {

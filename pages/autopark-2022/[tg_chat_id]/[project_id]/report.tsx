@@ -133,7 +133,7 @@ export default function MyProjects({
             zIndex: 2,
             padding: '16px',
             // backgroundColor: '#fff',
-            // borderTop: '1px solid lightgray',
+            borderTop: '1px solid lightgray',
           }}
           className='backdrop-blur--lite'
         >

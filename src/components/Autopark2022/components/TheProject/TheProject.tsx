@@ -115,11 +115,15 @@ export const TheProject = ({
 
           return (
             <ListItem
+              sx={{
+                pl: 0,
+                pr: 0,
+              }}
               key={id}
               secondaryAction={
                 (isOneTimePasswordCorrect || isDev)
                 ? (
-                  <>
+                  <div style={{ transform: 'translateX(16px' }}>
                     <ProjectMenu
                       onDelete={() => {
                         handleDelete(id)
@@ -134,7 +138,7 @@ export const TheProject = ({
                     <IconButton edge="end" aria-label="delete" onClick={()}>
                       <DeleteIcon />
                     </IconButton> */}
-                  </>
+                  </div>
                 ) : null
               }
             >

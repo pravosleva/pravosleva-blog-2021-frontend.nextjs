@@ -3,6 +3,7 @@ import JsxParser from 'react-jsx-parser'
 import Gist from 'react-gist'
 import { Alert } from './Alert'
 import { ImageInNewTab } from './ImageRenderer'
+import { ImagesGalleryBox, TProps as TImagesGalleryBoxProps } from './ImagesGalleryBox'
 import { JSONComparison } from './JSONComparison'
 
 const componentTransforms = {
@@ -14,6 +15,7 @@ const componentTransforms = {
   Gist: ({ gistId }: { gistId: string }) => <Gist id={gistId} />,
   ImageInNewTab: (props: any) => <ImageInNewTab {...props} />,
   JSONComparison: (props: any) => <JSONComparison {...props} />,
+  ImagesGalleryBox: (props: TImagesGalleryBoxProps) => <ImagesGalleryBox {...props} />
 }
 
 // @ts-ignore

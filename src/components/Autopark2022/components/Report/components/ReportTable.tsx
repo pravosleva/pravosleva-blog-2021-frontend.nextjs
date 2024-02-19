@@ -40,8 +40,17 @@ export const ReportTable = ({
   report
 }: TProps) => {
   return (
-    <TableContainer component={Paper}>
-      <Table size="small" aria-label="simple table">
+    <TableContainer
+      component={Paper}
+      style={{
+        boxShadow: 'none',
+        marginBottom: '16px',
+      }}
+    >
+      <Table
+        size="small"
+        aria-label="simple table"
+      >
         <TableHead>
           <TableRow>
             <StyledTableCell>Замена расходников</StyledTableCell>

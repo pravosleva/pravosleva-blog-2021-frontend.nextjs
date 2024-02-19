@@ -43,13 +43,15 @@ export const ProjectMenu = ({
 
   return (
     <>
-      <Tooltip title="Account settings">
+      <Tooltip title='Project menu'>
         <IconButton
           onClick={handleClick}
-          size="small"
-          sx={{ ml: 2 }}
-          aria-controls={open ? 'account-menu' : undefined}
-          aria-haspopup="true"
+          size='small'
+          sx={{
+            ml: 2,
+          }}
+          aria-controls={open ? 'project-menu' : undefined}
+          aria-haspopup='true'
           aria-expanded={open ? 'true' : undefined}
         >
           <MoreVertIcon />
