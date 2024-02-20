@@ -105,6 +105,15 @@ const Index = () => {
         <meta name="twitter:description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
+
+        <link
+          href="/static/css/min/project-list.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
+        <link href="/static/css/min/project-list.css" rel="stylesheet" />
       </Head>
       <Layout>
         <ProjectsPage />

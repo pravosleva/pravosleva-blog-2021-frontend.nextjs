@@ -5,6 +5,7 @@ import Rating from '@mui/material/Rating'
 import {
   // AddNewBtn, AddNewBtn, AuditList, AuditGrid,
   NTodo,
+  statusUiCodes,
 } from '~/components/audit-helper'
 import { SyntheticEvent, useCallback } from 'react'
 // import { useWindowSize } from '~/hooks/useWindowSize'
@@ -98,35 +99,35 @@ export const TodoListItem = ({
               endIcon: !!status ? StatusIcons[status] : undefined, // <PanoramaFishEyeIcon />,
               size: 'small',
             }}
-            label='Статус'
+            label={statusUiCodes[status]}
             items={[
               {
-                label: 'Info',
+                label: statusUiCodes[NTodo.EStatus.INFO],
                 value: NTodo.EStatus.INFO,
                 ItemIcon: <InfoIcon color='info' />,
               },
               {
-                label: 'Warning',
+                label: statusUiCodes[NTodo.EStatus.WARNING],
                 value: NTodo.EStatus.WARNING,
                 ItemIcon: <WarningIcon color='warning' />,
               },
               {
-                label: 'Danger',
+                label: statusUiCodes[NTodo.EStatus.DANGER],
                 value: NTodo.EStatus.DANGER,
                 ItemIcon: <ReportIcon color='error' />,
               },
               {
-                label: 'Ok',
+                label: statusUiCodes[NTodo.EStatus.SUCCESS],
                 value: NTodo.EStatus.SUCCESS,
                 ItemIcon: <CheckCircleIcon color='success' />,
               },
               {
-                label: 'Завершена',
+                label: statusUiCodes[NTodo.EStatus.IS_DONE],
                 value: NTodo.EStatus.IS_DONE,
                 ItemIcon: <CheckCircleIcon />,
               },
               {
-                label: 'No status',
+                label: statusUiCodes[NTodo.EStatus.NO_STATUS],
                 value: NTodo.EStatus.NO_STATUS,
                 ItemIcon: <PanoramaFishEyeIcon />,
               },

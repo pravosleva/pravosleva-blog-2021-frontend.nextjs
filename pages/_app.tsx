@@ -121,15 +121,6 @@ function AppWithRedux(props: MyAppProps) {
           fetchpriority="high"
         />
         <link href="/static/css/min/audit-list.css" rel="stylesheet" />
-
-        <link
-          href="/static/css/min/project-list.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/min/project-list.css" rel="stylesheet" />
         
         <link
           href="/static/css/min/global-theming.css"
@@ -204,6 +195,15 @@ function AppWithRedux(props: MyAppProps) {
           integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
           crossOrigin="anonymous"
         /> */}
+
+        <link
+          href="/static/css/variant.react-image-ligthbox.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
+        <link href="/static/css/variant.react-image-ligthbox.css" rel="stylesheet" />
 
         <script type="text/javascript" defer src='/static/common/eruda.custom.js' />
       </Head>

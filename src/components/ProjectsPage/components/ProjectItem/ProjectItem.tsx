@@ -10,6 +10,7 @@ import TelegramIcon from '@mui/icons-material/Telegram'
 import LinkIcon from '@mui/icons-material/Link'
 // import { useStyles } from '../ProjectItemSSR/useStyles'
 import { useInView } from 'react-intersection-observer'
+import { useStyles } from './styles'
 
 type TProps = {
   title: string;
@@ -82,11 +83,13 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
     /* Optional options */
     threshold: 0,
   })
+  const styles = useStyles()
 
   return (
     <div
       className={clsx(
         classes.blogCard,
+        styles.blogCardV2,
         // { [classes.alt]: isLast }
       )}
       ref={ref}

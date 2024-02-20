@@ -95,6 +95,7 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
               {!!article.original.description ? (
                 <div className="description-markdown">
                   <ReactMarkdown
+                    // key={Math.random()}
                     renderers={baseRenderers}
                     // @ts-ignore
                     plugins={[gfm, { singleTilde: false }]}

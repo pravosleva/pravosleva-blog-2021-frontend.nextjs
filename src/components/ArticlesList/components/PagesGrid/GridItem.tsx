@@ -69,7 +69,8 @@ export const GridItem = ({ article }: TProps) => {
                   color='primary'
                   component={Link}
                   noLinkStyle
-                  href={`/blog/article/${slugMap.get(_id)?.slug}`}
+                  href={`/blog/article/${slugMap.get(_id)?.slug || ''}`}
+                  // as='/blog/article/[slug]'
                   target='_self'
                   endIcon={<ArrowForwardIcon />}
                   sx={{

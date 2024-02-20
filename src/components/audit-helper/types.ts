@@ -46,7 +46,7 @@ export namespace NTodo {
     DANGER = 'danger',
     SUCCESS = 'success',
     IS_DONE = 'is_done',
-  };  
+  };
   export type TItem = {
     label: string;
     description: string;
@@ -77,5 +77,16 @@ export namespace NTodo {
       total: number;
     };
   } | null
+}
+
+export const statusUiCodes: {
+  [key in NTodo.EStatus]: string;
+} = {
+  [NTodo.EStatus.INFO]: 'Принято к сведению',
+  [NTodo.EStatus.DANGER]: 'В процессе',
+  [NTodo.EStatus.WARNING]: 'Отложено',
+  [NTodo.EStatus.SUCCESS]: 'Готово',
+  [NTodo.EStatus.IS_DONE]: 'Завершено',
+  [NTodo.EStatus.NO_STATUS]: 'Без статуса',
 }
 // --

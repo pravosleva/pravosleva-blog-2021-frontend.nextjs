@@ -70,6 +70,7 @@ export const MenuAsBtn = ({
         !!badgeCounter ? (
           <Badge badgeContent={badgeCounter} color="primary">
             <Button
+              className='truncate'
               id="demo-positioned-button"
               aria-controls={open ? 'demo-positioned-menu' : undefined}
               aria-haspopup="true"
@@ -82,11 +83,12 @@ export const MenuAsBtn = ({
               size={btn.size}
               disabled={isDisabled}
             >
-              {btnLabel.length > 7 ? `${btnLabel.substring(0, 7)}...` : btnLabel}
+              {btnLabel.length > 10 ? `${btnLabel.substring(0, 10)}...` : btnLabel}
             </Button>
           </Badge>
         ) : (
           <Button
+            className='truncate'
             id="demo-positioned-button"
             aria-controls={open ? 'demo-positioned-menu' : undefined}
             aria-haspopup="true"
@@ -99,7 +101,7 @@ export const MenuAsBtn = ({
             size={btn.size}
             disabled={isDisabled}
           >
-            {btnLabel.length > 7 ? `${btnLabel.substring(0, 7)}...` : btnLabel}
+            {btnLabel.length > 10 ? `${btnLabel.substring(0, 10)}...` : btnLabel}
           </Button>
         )
       }
