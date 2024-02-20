@@ -69,9 +69,15 @@ export const GridItem = ({ article }: TProps) => {
                   color='primary'
                   component={Link}
                   noLinkStyle
-                  href={`/blog/article/${slugMap.get(_id)?.slug || ''}`}
-                  // as='/blog/article/[slug]'
-                  target='_self'
+
+                  // NOTE: v1
+                  // href={`https://pravosleva.pro/blog/article/${slugMap.get(_id)?.slug || ''}`}
+                  // target='_self'
+                  
+                  // NOTE: v2
+                  href='/blog/article/[slug]'
+                  as={`/blog/article/${slugMap.get(_id)?.slug || ''}`}
+
                   endIcon={<ArrowForwardIcon />}
                   sx={{
                     backgroundColor: '#FFC800',
