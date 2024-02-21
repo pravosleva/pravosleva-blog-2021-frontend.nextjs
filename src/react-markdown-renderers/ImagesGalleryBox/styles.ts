@@ -39,7 +39,7 @@ export const useStyles = makeStyles((theme) =>
       '& > img': {
         // border: '1px dashed red',
         height: '200px',
-        minWidth: '100%',
+        width: '100%',
         objectFit: 'cover',
 
         borderRadius: '16px',
