@@ -112,7 +112,10 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
                 <ul>
                   {tags.map((t) => (
                     <li key={t}>
-                      <Link href='/blog/q/[search_query_title]' as={`/blog/q/${t}`}>
+                      <Link
+                        href='/blog/q/[search_query_title]'
+                        as={`/blog/q/${encodeURIComponent(t)}`}
+                      >
                         #{t}
                       </Link>
                     </li>

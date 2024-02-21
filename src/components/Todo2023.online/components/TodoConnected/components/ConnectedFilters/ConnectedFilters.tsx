@@ -8,7 +8,7 @@ import {
 import ReportIcon from '@mui/icons-material/Report'
 import WarningIcon from '@mui/icons-material/Warning'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import { NTodo } from '~/components/audit-helper'
+import { NTodo, statusUiCodes } from '~/components/audit-helper'
 // import DoDisturbIcon from '@mui/icons-material/DoDisturb'
 import { MenuAsBtn } from '~/mui'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
@@ -187,31 +187,37 @@ export const ConnectedFilters = () => {
               value: null,
               ItemIcon: <ClearIcon />,
               // hasDividerAfter: true,
+              isSelected: !todoPriorityFilter,
             },
             {
               label: '1',
               value: 1,
               ItemIcon: <StarIcon />,
+              isSelected: todoPriorityFilter === 1,
             },
             {
               label: '2',
               value: 2,
               ItemIcon: <StarIcon />,
+              isSelected: todoPriorityFilter === 2,
             },
             {
               label: '3',
               value: 3,
               ItemIcon: <StarIcon />,
+              isSelected: todoPriorityFilter === 3,
             },
             {
               label: '4',
               value: 4,
               ItemIcon: <StarIcon />,
+              isSelected: todoPriorityFilter === 4,
             },
             {
               label: '5',
               value: 5,
               ItemIcon: <StarIcon />,
+              isSelected: todoPriorityFilter === 5,
             }
           ]}
         />
@@ -303,31 +309,37 @@ export const ConnectedFilters = () => {
               value: null,
               ItemIcon: <ClearIcon />,
               // hasDividerAfter: true,
+              isSelected: !todoStatusFilter,
             },
             {
-              label: 'Info',
+              label: statusUiCodes[NTodo.EStatus.INFO],
               value: NTodo.EStatus.INFO,
               ItemIcon: <InfoIcon color='info' />,
+              isSelected: todoStatusFilter === NTodo.EStatus.INFO,
             },
             {
-              label: 'Warning',
+              label: statusUiCodes[NTodo.EStatus.WARNING],
               value: NTodo.EStatus.WARNING,
               ItemIcon: <WarningIcon color='warning' />,
+              isSelected: todoStatusFilter === NTodo.EStatus.WARNING,
             },
             {
-              label: 'Danger',
+              label: statusUiCodes[NTodo.EStatus.DANGER],
               value: NTodo.EStatus.DANGER,
               ItemIcon: <ReportIcon color='error' />,
+              isSelected: todoStatusFilter === NTodo.EStatus.DANGER,
             },
             {
-              label: 'Ok',
+              label: statusUiCodes[NTodo.EStatus.SUCCESS],
               value: NTodo.EStatus.SUCCESS,
               ItemIcon: <CheckCircleIcon color='success' />,
+              isSelected: todoStatusFilter === NTodo.EStatus.SUCCESS,
             },
             {
-              label: 'Is done',
+              label: statusUiCodes[NTodo.EStatus.IS_DONE],
               value: NTodo.EStatus.IS_DONE,
               ItemIcon: StatusIcons[NTodo.EStatus.IS_DONE],
+              isSelected: todoStatusFilter === NTodo.EStatus.IS_DONE,
             },
           ]}
         />
@@ -361,7 +373,7 @@ export const ConnectedFilters = () => {
         items={
           [...new Set(strapiTodos.map(({ namespace }) => namespace))]
             // .filter((val => !namespacesFilter.includes(val)))
-            .map((value) => ({ label: value, value }))
+            .map((value) => ({ label: value, value, isSelected: namespacesFilter.includes(value) }))
         }
         // badgeCounter={namespacesFilter.length}
       />

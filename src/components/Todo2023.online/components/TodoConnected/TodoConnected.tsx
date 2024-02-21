@@ -517,7 +517,7 @@ export const TodoConnected = ({
               ) : (
                 <div>¯\_(ツ)_/¯</div>
               )
-            : <div>Connecting...</div>
+            : <b style={{ fontSize: 'small' }}>Connecting...</b>
           }
           {MemoizedMenu}
         </div>

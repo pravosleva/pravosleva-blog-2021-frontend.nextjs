@@ -71,12 +71,12 @@ export const GridItem = ({ article }: TProps) => {
                   noLinkStyle
 
                   // NOTE: v1
-                  // href={`https://pravosleva.pro/blog/article/${slugMap.get(_id)?.slug || ''}`}
-                  // target='_self'
+                  href={`https://pravosleva.pro/blog/article/${slugMap.get(_id)?.slug || ''}`}
+                  target='_self'
                   
                   // NOTE: v2
-                  href='/blog/article/[slug]'
-                  as={`/blog/article/${slugMap.get(_id)?.slug || ''}`}
+                  // href='/blog/article/[slug]'
+                  // as={`/blog/article/${slugMap.get(_id)?.slug || ''}`}
 
                   endIcon={<ArrowForwardIcon />}
                   sx={{

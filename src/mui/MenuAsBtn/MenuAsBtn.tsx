@@ -21,6 +21,7 @@ type TItem = {
   value: string | number | null;
   ItemIcon?: React.ReactNode;
   hasDividerAfter?: boolean;
+  isSelected: boolean;
 };
 type TProps = {
   btn: {
@@ -126,7 +127,7 @@ export const MenuAsBtn = ({
       >
         {
           items.map(({
-            value, label, ItemIcon,
+            value, label, ItemIcon, isSelected,
             // hasDividerAfter,
           }, i) => {
             // const isSelected = label === btnLabel
@@ -152,8 +153,9 @@ export const MenuAsBtn = ({
             // )
             return (
               <MenuItem
-                onClick={handleSelect({ value, label })}
+                onClick={handleSelect({ value, label, isSelected })}
                 key={`${label}-${i}`}
+                selected={isSelected}
               >
                 {
                   !!ItemIcon

@@ -105,31 +105,37 @@ export const TodoListItem = ({
                 label: statusUiCodes[NTodo.EStatus.INFO],
                 value: NTodo.EStatus.INFO,
                 ItemIcon: <InfoIcon color='info' />,
+                isSelected: status === NTodo.EStatus.INFO,
               },
               {
                 label: statusUiCodes[NTodo.EStatus.WARNING],
                 value: NTodo.EStatus.WARNING,
                 ItemIcon: <WarningIcon color='warning' />,
+                isSelected: status === NTodo.EStatus.WARNING,
               },
               {
                 label: statusUiCodes[NTodo.EStatus.DANGER],
                 value: NTodo.EStatus.DANGER,
                 ItemIcon: <ReportIcon color='error' />,
+                isSelected: status === NTodo.EStatus.DANGER,
               },
               {
                 label: statusUiCodes[NTodo.EStatus.SUCCESS],
                 value: NTodo.EStatus.SUCCESS,
                 ItemIcon: <CheckCircleIcon color='success' />,
+                isSelected: status === NTodo.EStatus.SUCCESS,
               },
               {
                 label: statusUiCodes[NTodo.EStatus.IS_DONE],
                 value: NTodo.EStatus.IS_DONE,
                 ItemIcon: <CheckCircleIcon />,
+                isSelected: status === NTodo.EStatus.IS_DONE,
               },
               {
                 label: statusUiCodes[NTodo.EStatus.NO_STATUS],
                 value: NTodo.EStatus.NO_STATUS,
                 ItemIcon: <PanoramaFishEyeIcon />,
+                isSelected: status === NTodo.EStatus.NO_STATUS,
               },
             ]}
           />
