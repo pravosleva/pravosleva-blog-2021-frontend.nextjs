@@ -149,6 +149,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/jpg',
     },
   },
+  'red-shark-2022-9': {
+    id: '65cb3d1c6917cd0d733cddd7',
+    brief: 'А у Вас был повод съездить?',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/red-shark.jpg',
+      size: {
+        w: 1000,
+        h: 562,
+      },
+      type: 'image/jpg',
+    },
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

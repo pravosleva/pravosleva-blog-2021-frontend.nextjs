@@ -24,7 +24,7 @@ export const useStyles = makeStyles((theme) =>
       
       // @ts-ignore
       [theme.breakpoints.down('sm')]: {
-        gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
       },
       // @ts-ignore
       [theme.breakpoints.up('md')]: {
