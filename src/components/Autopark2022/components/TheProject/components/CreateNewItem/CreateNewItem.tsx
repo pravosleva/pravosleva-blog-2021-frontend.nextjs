@@ -138,13 +138,13 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
             </Box> */}
             <Grid container spacing={2}>
               <Grid item xs={6}>
-              <TextField value={name} size='small' fullWidth disabled={isLoading} variant="outlined" label="Name" type="text" onChange={handleChangeName}></TextField>
+              <TextField value={name} size='small' fullWidth disabled={isLoading} variant="outlined" label="Наименование" type="text" onChange={handleChangeName}></TextField>
               </Grid>
               <Grid item xs={6}>
-              <TextField value={description} size='small' fullWidth disabled={isLoading} variant="outlined" label="Description" type="text" onChange={handleChangeDescr}></TextField>
+              <TextField value={description} size='small' fullWidth disabled={isLoading} variant="outlined" label="Описание" type="text" onChange={handleChangeDescr}></TextField>
               </Grid>
               <Grid item xs={6}>
-                <TextField value={mileageLast} size='small' fullWidth disabled={isLoading} variant="outlined" label="Mileage Last" type="number" onChange={handleChangeMileageLast}></TextField>
+                <TextField value={mileageLast} size='small' fullWidth disabled={isLoading} variant="outlined" label="Крайний пробег" type="number" onChange={handleChangeMileageLast}></TextField>
               </Grid>
               <Grid item xs={6}>
                 {/* <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
@@ -162,14 +162,14 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
                   />
                   <b>{mileageDelta}&nbsp;km</b>
                 </Stack> */}
-                <TextField value={mileageDelta} size='small' fullWidth disabled={isLoading} variant="outlined" label="Mileage Delta" type="number" onChange={handleChangeMileageDelta}></TextField>
+                <TextField value={mileageDelta} size='small' fullWidth disabled={isLoading} variant="outlined" label="Интервал замены" type="number" onChange={handleChangeMileageDelta}></TextField>
               </Grid>
 
               <Grid item xs={6}>
                 <Button fullWidth disabled={isLoading || !name || !mileageLast || !mileageDelta || !description} variant='contained' onClick={handleSubmit} color='primary' startIcon={<LocalFireDepartmentIcon />}>Создать</Button>
               </Grid>
               <Grid item xs={6}>
-                <Button fullWidth variant='outlined' onClick={handleClose} color='primary' startIcon={<CloseIcon />}>Отмена</Button>
+                <Button fullWidth variant='outlined' onClick={handleClose} color='error' startIcon={<CloseIcon />}>Отмена</Button>
               </Grid>
             </Grid>
 

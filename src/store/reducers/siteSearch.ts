@@ -28,14 +28,14 @@ export const siteSearchSlice: any = createSlice({
   initialState,
   reducers: {
     addSQT: (state: NSiteSearchState.TState, action: { type: string; payload: NSiteSearchState.TSQTState }) => {
-      if (!Array.isArray(state.sqt)) state.sqt = []
+      if (!Array.isArray(state.sqt)) state.sqt = [action.payload]
       else {
         if (state.sqt.length >= limits.sqt) {
           const newArr: any[] = []
           state.sqt.forEach((item, i) => {
             if (i <= limits.sqt) newArr.push(item)
           })
-          newArr.pop()
+          // newArr.pop()
           state.sqt = newArr
         }
 
@@ -45,10 +45,9 @@ export const siteSearchSlice: any = createSlice({
             state.sqt = [action.payload, ...state.sqt.filter(({ normalized }) => normalized !== action.payload.normalized)]
             break
           default:
-            if (state.sqt.length > limits.sqt) {
-              state.sqt.pop()
-            }
             state.sqt.unshift(action.payload)
+
+            if (state.sqt.length > limits.sqt) state.sqt.pop()
             break
         }
       }

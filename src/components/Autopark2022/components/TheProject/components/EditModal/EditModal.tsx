@@ -157,7 +157,7 @@ export const EditModal = ({
               fullWidth
               // disabled={isLoading}
               variant="outlined"
-              label="Name"
+              label="Наименование"
               type="text"
               onChange={handleChangeName}
             ></TextField>
@@ -169,17 +169,17 @@ export const EditModal = ({
               fullWidth
               // disabled={isLoading}
               variant="outlined"
-              label="Description"
+              label="Описание"
               type="text"
               onChange={handleChangeDescr}
             ></TextField>
           </Box>
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid item xs={6}>
-              <TextField value={mileageLast} size='small' fullWidth variant="outlined" label="Mileage Last" type="number" onChange={handleChangeMileageLast}></TextField>
+              <TextField value={mileageLast} size='small' fullWidth variant="outlined" label="Крайний пробег" type="number" onChange={handleChangeMileageLast}></TextField>
             </Grid>
             <Grid item xs={6}>
-              <TextField value={mileageDelta} size='small' fullWidth variant="outlined" label="Mileage Delta" type="number" onChange={handleChangeMileageDelta}></TextField>
+              <TextField value={mileageDelta} size='small' fullWidth variant="outlined" label="Интервал замены" type="number" onChange={handleChangeMileageDelta}></TextField>
             </Grid>
           </Grid>
 
@@ -190,11 +190,11 @@ export const EditModal = ({
           <Grid container spacing={2}>
             {!!onClose && (
               <Grid item xs={6}>
-                <Button fullWidth variant='outlined' onClick={onClose} color='primary' sx={{ mb: 2 }}>Close</Button>
+                <Button fullWidth variant='outlined' onClick={onClose} color='primary' sx={{ mb: 2 }}>Закрыть</Button>
               </Grid>
             )}
             <Grid item xs={6}>
-              <Button fullWidth variant='contained' onClick={handleSubmit} disabled={!isFormCorrect} color='primary'>Send</Button>
+              <Button fullWidth variant='contained' onClick={handleSubmit} disabled={!isFormCorrect} color='primary'>Отправить</Button>
             </Grid>
           </Grid>
         </Box>

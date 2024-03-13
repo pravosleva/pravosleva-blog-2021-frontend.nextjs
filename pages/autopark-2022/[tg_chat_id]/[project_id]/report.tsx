@@ -163,7 +163,7 @@ export default function MyProjects({
                 shallow
                 fullWidth
               >
-                Projects
+                Проекты
               </Button>
             </Grid>
           </Grid>

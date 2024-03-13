@@ -127,7 +127,7 @@ export default function MyProjects({
                 shallow
                 fullWidth
               >
-                Projects
+                Проекты
               </Button>
             </Grid>
             {
@@ -143,7 +143,7 @@ export default function MyProjects({
                     shallow
                     fullWidth
                   >
-                    Report
+                    Отчет
                   </Button>
                 </Grid>
               )

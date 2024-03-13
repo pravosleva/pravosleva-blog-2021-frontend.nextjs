@@ -53,13 +53,13 @@ export const ReportTable = ({
       >
         <TableHead>
           <TableRow>
-            <StyledTableCell>Замена расходников</StyledTableCell>
-            <StyledTableCell align="right">Left, km</StyledTableCell>
+            <StyledTableCell>Список расходников</StyledTableCell>
+            <StyledTableCell align="right">До замены</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {report.map(({ name, description, id, diff }) => {
-            const isFired= diff < deadLineKM
+            const isFired = diff < deadLineKM
 
             return (
               <StyledTableRow

@@ -119,7 +119,7 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
         <>
           <h1>Not found, try again...</h1>
           <div>
-            Hey, where is the f*cking <code>id</code> in query params?
+            Hey, where is the f*ckn <code>id</code> in query params?
           </div>
         </>
       )}

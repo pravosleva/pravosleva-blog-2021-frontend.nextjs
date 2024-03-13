@@ -2,11 +2,13 @@ import { TArticleTools } from './types'
 import { list as articlesListAboutBash } from './bash'
 import { list as articlesListAboutJSVanilla, bg as bgJSVanilla } from './js-vanilla'
 import { list as articlesListAboutNginx } from './nginx'
+import { list as articlesListAboutRedShark } from './red-shark'
 
 export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
   ...articlesListAboutNginx,
   ...articlesListAboutJSVanilla,
+  ...articlesListAboutRedShark,
   'team-scoring': {
     id: '653053616917cd0d733cddb9',
     brief: 'По мотивам статьи Joel Spolsky',
@@ -137,28 +139,16 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/png',
     },
   },
-  'red-shark-2024-2': {
-    id: '65cb39166917cd0d733cddd6',
-    brief: 'Давно планировал ремонт правой стороны (порог, крыло)',
+  'mongodb-notes-0': {
+    id: '5fcf89195c65457d85706310',
+    brief: 'Чтоб не забыть',
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/red-shark.jpg',
+      src: 'https://pravosleva.pro/static/img/blog/logo-mongodb-2.png',
       size: {
-        w: 1000,
-        h: 562,
+        w: 360,
+        h: 360,
       },
-      type: 'image/jpg',
-    },
-  },
-  'red-shark-2022-9': {
-    id: '65cb3d1c6917cd0d733cddd7',
-    brief: 'А у Вас был повод съездить?',
-    bg: {
-      src: 'https://pravosleva.pro/static/img/blog/red-shark.jpg',
-      size: {
-        w: 1000,
-        h: 562,
-      },
-      type: 'image/jpg',
+      type: 'image/png',
     },
   },
 }

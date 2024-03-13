@@ -153,7 +153,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
         setAdditionalServiceErr(err.message || 'ERR')
       })
   }, [selectedBrand])
-  const [selectedTransmission, setSelectedTransmission] = useState<'MT' | 'AT'>('MT')
+  const [selectedTransmission, setSelectedTransmission] = useState<'MT' | 'AT' | 'AMT' | 'CVT'>('MT')
   const [description, setDescription] = useState('')
   const resetAll = useCallback(() => {
     setDescription('')
@@ -221,7 +221,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 id='vendors'
                 options={brandsOptions}
                 fullWidth
-                renderInput={(params) => <TextField {...params} required label="Brand" />}
+                renderInput={(params) => <TextField {...params} required label="Бренд" />}
                 onChange={(e: any) => {
                   setSelectedBrand(e.target.textContent)
                   setSelectedModel(null)
@@ -251,7 +251,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                     id='models'
                     options={modelsOptions}
                     fullWidth
-                    renderInput={(params) => <TextField {...params} label="Model" required value={selectedModel} />}
+                    renderInput={(params) => <TextField {...params} label="Модель" required value={selectedModel} />}
                     onChange={(e: any) => {
                       setSelectedGeneration(null)
                       setSelectYear(null)
@@ -270,7 +270,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                   labelId="transmission-select-label"
                   id="transmission-select"
                   value={selectedTransmission}
-                  label="Transmission"
+                  label="Трансмиссия"
                   fullWidth
                   onChange={(e: any) => {
                     setSelectedTransmission(e.target.value)
@@ -278,6 +278,8 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 >
                   <MenuItem value='MT'>MT</MenuItem>
                   <MenuItem value='AT'>AT</MenuItem>
+                  <MenuItem value='AMT'>AMT</MenuItem>
+                  <MenuItem value='CVT'>CVT</MenuItem>
                 </Select>
               </FormControl>
             </Box>
@@ -328,7 +330,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
             }
             <Box sx={{ mb: 2 }}>
               <FormControl size='small' fullWidth required>
-                <InputLabel id="year-select-label">Year</InputLabel>
+                <InputLabel id="year-select-label">Год</InputLabel>
                 <Select
                   size='small'
                   variant='outlined'
@@ -374,7 +376,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 >Создать</Button>
               </Grid>
               <Grid item xs={6}>
-                <Button fullWidth variant='outlined' onClick={handleClose} color='primary' startIcon={<CloseIcon />}>Отмена</Button>
+                <Button fullWidth variant='outlined' onClick={handleClose} color='error' startIcon={<CloseIcon />}>Отмена</Button>
               </Grid>
             </Grid>
           </>

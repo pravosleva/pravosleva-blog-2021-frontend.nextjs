@@ -54,7 +54,7 @@ const Wrapper = styled('div')<{ test?: boolean; }>`
       border: 1px solid red;
     `}
   width: 100%;
-  min-height: 100dvh;
+  min-height: 100svh;
   height: 100%;
   box-sizing: border-box;
 

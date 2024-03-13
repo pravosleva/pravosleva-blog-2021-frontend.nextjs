@@ -7,7 +7,7 @@ import { IRootState } from '~/store/IRootState'
 // import { CreateNewItem } from './components'
 // import FolderIcon from '@mui/icons-material/Folder'
 // import DeleteIcon from '@mui/icons-material/Delete'
-import axios from 'axios';
+import axios from 'axios'
 // import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import BuildIcon from '@mui/icons-material/Build'
 // import EditIcon from '@mui/icons-material/Edit'
@@ -123,7 +123,7 @@ export const TheProject = ({
               secondaryAction={
                 (isOneTimePasswordCorrect || isDev)
                 ? (
-                  <div style={{ transform: 'translateX(16px' }}>
+                  <div style={{ transform: 'translateX(16px)' }}>
                     <ProjectMenu
                       onDelete={() => {
                         handleDelete(id)
