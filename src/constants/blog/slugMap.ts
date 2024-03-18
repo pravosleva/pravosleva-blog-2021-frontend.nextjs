@@ -151,6 +151,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/png',
     },
   },
+  'autopark-beta': {
+    id: '65f1b62b0ce21b2be9dc4973',
+    brief: 'Пробую сделать удобный сервис, чтоб напоминал про расходники с настраиваемым интервалом пробега',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-autopark-no-slogan.big.png',
+      size: {
+        w: 869,
+        h: 869,
+      },
+      type: 'image/png',
+    },
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

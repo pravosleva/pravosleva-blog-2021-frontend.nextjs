@@ -263,7 +263,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
             </Box>
             <Box sx={{ mb: 2 }}>
               <FormControl fullWidth required>
-                <InputLabel id="transmission-select-label">Transmission</InputLabel>
+                <InputLabel id="transmission-select-label">Трансмиссия</InputLabel>
                 <Select
                   size='small'
                   variant='outlined'
@@ -382,7 +382,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
           </>
         ) : (
           <Box>
-            <Button fullWidth disabled={isLoading} variant='contained' onClick={handleOpen} color='primary' startIcon={<AddIcon />}>Create New Project</Button>
+            <Button fullWidth disabled={isLoading} variant='contained' onClick={handleOpen} color='primary' startIcon={<AddIcon />}>Добавить авто</Button>
           </Box>
         )
       }

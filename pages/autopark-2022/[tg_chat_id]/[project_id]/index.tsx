@@ -127,7 +127,7 @@ export default function MyProjects({
                 shallow
                 fullWidth
               >
-                Проекты
+                Гараж
               </Button>
             </Grid>
             {

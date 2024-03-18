@@ -302,7 +302,8 @@ body.dark .projects-grid p {
   color: #000;
 }
 
-body.dark .projects-grid > div {
+body.dark .projects-grid > div:focus,
+body.dark .projects-grid > div:active {
   outline: 4px solid #ff781e;
 }
 

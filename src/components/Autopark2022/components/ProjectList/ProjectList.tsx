@@ -60,6 +60,7 @@ export const ProjectList = ({
       })
   }, [chat_id])
 
+  if (Object.keys(projects).length === 0) return null
   return (
     <>
       <Box>

@@ -142,7 +142,8 @@ const projects: TProject[] = [
     title: 'AutoPark',
     description: 'AUTO_PARK_PROJECT_DESCR',
     img: {
-      src: '/static/img/projects/autopark.webp',
+      // src: '/static/img/projects/autopark.webp',
+      src: '/static/img/projects/autopark-logo.big.png',
       alt: 'loading...',
       color: {
         average: '#7c8084',
@@ -150,16 +151,23 @@ const projects: TProject[] = [
     },
     links: [
       {
-        href: 'https://t.me/pravosleva_bot?start=autopark',
-        as: 'https://t.me/pravosleva_bot?start=autopark',
-        text: 'PROJECT_GO_BTN:LINK_TG',
-        color: ELinkColor.TG,
-        icon: ELinkIcon.TG,
+        href: '/blog/q/[search_query_title]',
+        as: '/blog/q/autoPark',
+        text: 'PROJECT_GO_BTN:LINK_GOTO',
+        color: ELinkColor.YELLOW,
+        icon: ELinkIcon.ARROW,
       },
+      // {
+      //   href: 'https://t.me/pravosleva_bot?start=autopark',
+      //   as: 'https://t.me/pravosleva_bot?start=autopark',
+      //   text: 'PROJECT_GO_BTN:LINK_TG',
+      //   color: ELinkColor.TG,
+      //   icon: ELinkIcon.TG,
+      // },
     ],
     uiDate: '2022',
     brief: 'PROJECT_BRIEF@CAR_SERVICE_BOOK',
-    tags: ['telegram'],
+    tags: ['autoPark2022', 'telegram'],
   },
   {
     id: 6,

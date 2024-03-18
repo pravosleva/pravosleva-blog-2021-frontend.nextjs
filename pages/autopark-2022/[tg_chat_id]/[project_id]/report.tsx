@@ -70,13 +70,13 @@ export default function MyProjects({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-tap-highlight" content="no" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
-        <script
+        {/* <script
           type="text/javascript"
           defer
           dangerouslySetInnerHTML={{
             __html: `if (typeof customEruda !== 'undefined') setTimeout(customEruda.initIfNecessary, 1000);`,
           }}
-        />
+        /> */}
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
       </Head>
       <div
@@ -163,7 +163,7 @@ export default function MyProjects({
                 shallow
                 fullWidth
               >
-                Проекты
+                Гараж
               </Button>
             </Grid>
           </Grid>
