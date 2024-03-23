@@ -74,28 +74,41 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   if (!isBrowser) return null
 
   useEffect(() => {
-    console.log('debouncedCounter', debouncedCounter)
+    // console.log('debouncedCounter', debouncedCounter)
     if (!!passwordRef.current) { // !userCheckerResponse?.ok
       setIsLoading(true)
       setApiErr('')
       fetchCheckPassword({ chat_id, password: passwordRef.current })
         .then((data) => {
-          
-          if (data?.ok) {
-            dispatch(setIsOneTimePasswordCorrect(true))
-            if (!!data?.projects) dispatch(updateProjects(data.projects))
+          switch (true) {
+            case data?.ok:
+              dispatch(setIsOneTimePasswordCorrect(true))
+              if (!!data?.projects) dispatch(updateProjects(data.projects))
+              else {
+                setApiErr(data?.message || 'No data.projects; No err.message')
+              }
+
+              setIsLoading(false)
+              break
+            case !!data?.message:
+              setApiErr(data.message)
+
+              setIsLoading(false)
+              break
+            default:
+              setApiErr('ERROR 99; No err.message')
+              setIsLoading(false)
+              break
           }
 
-          else if (!!data?.message) setApiErr(data.message)
           return data
         })
         .catch((err)=> {
-          if (!!err?.message) setApiErr(err.message)
+          setApiErr(err?.message || 'ERROR 107; No err.message')
+          setIsLoading(false)
           return err
         })
-        .finally(() => {
-          setIsLoading(false)
-        })
+        .finally(() => setIsLoading(false))
     } else {
       setIsLoading(false)
     }

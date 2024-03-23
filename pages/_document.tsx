@@ -177,8 +177,11 @@ gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
         />
         <script
           async
+          type='text/javascript'
           dangerouslySetInnerHTML={{
-            __html: `const rippledButtons = document.querySelectorAll('.link-as-rippled-btn');
+            __html: `function detectBtnsAndSetHandlers () {
+const rippledButtons = document.querySelectorAll('.link-as-rippled-btn');
+console.log(rippledButtons);
 
 rippledButtons.forEach(btn => {
   btn.addEventListener('click', function(e) {
@@ -197,7 +200,7 @@ rippledButtons.forEach(btn => {
     ripples.style.left = x + 'px';
     ripples.style.top = '50%';
 
-    console.log(this)
+    console.log(this);
     this.appendChild(ripples);
     console.log(this)
 
@@ -205,7 +208,10 @@ rippledButtons.forEach(btn => {
       ripples.remove();
     }, 1000);
   })
-})`,
+})
+}
+
+setTimeout(detectBtnsAndSetHandlers, 3000);`,
           }}
         />
       </>
