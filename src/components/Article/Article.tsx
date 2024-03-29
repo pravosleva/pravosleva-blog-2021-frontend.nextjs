@@ -69,6 +69,7 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
                       className='article-wrapper__big-image-as-container__brief'
                       style={{
                         fontSize: '0.8em',
+                        maxWidth: '550px',
                       }}
                     >
                       <ReactMarkdown
