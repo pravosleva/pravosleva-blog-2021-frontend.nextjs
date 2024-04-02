@@ -406,7 +406,7 @@ class Singleton {
     isOk: boolean;
     message?: string;
     data?: {
-      id: 0;
+      id: number;
       attributes: {
         label: string;
         priority: number;
@@ -448,7 +448,7 @@ class Singleton {
     try {
       const result = await strapiHttpClient.createTodo<{
         data: {
-          id: 0;
+          id: number;
           attributes: {
             label: string;
             priority: number;

@@ -716,7 +716,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
             const counter = instance.counters.get(tg_chat_id) || 0
 
             if (counter <= 0) {
-              universalHttpClient.post('${baseEHelperUrl}/subprojects/aux-state/looper.stop', {
+              universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/looper.stop`, {
                 namespace: 'audit-list',
                 // tg_chat_id,
               }).then((res) => res).catch((err) => err)
