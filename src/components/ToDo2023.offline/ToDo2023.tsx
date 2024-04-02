@@ -43,6 +43,7 @@ import { useWindowSize } from '~/hooks/useWindowSize'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import { useIsInViewport } from '~/hooks/useIsInViewport'
+import TelegramIcon from '@mui/icons-material/Telegram'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -432,7 +433,7 @@ export const ToDo2023 = memo(() => {
                     </Button>
                   </span>
                 ) : (
-                  lastVisitedOnlinePages?.length > 0 && (
+                  lastVisitedOnlinePages?.length > 0 ? (
                     <span>
                       <Button
                         size='small'
@@ -445,6 +446,21 @@ export const ToDo2023 = memo(() => {
                         target='_self'
                       >
                         Online {lastVisitedOnlinePages[0].tg_chat_id}
+                      </Button>
+                    </span>
+                  ) : (
+                    <span>
+                      <Button
+                        size='small'
+                        endIcon={<TelegramIcon />}
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        noLinkStyle
+                        href='https://t.me/pravosleva_bot?start=auditlist'
+                        target='_self'
+                      >
+                        Online
                       </Button>
                     </span>
                   )

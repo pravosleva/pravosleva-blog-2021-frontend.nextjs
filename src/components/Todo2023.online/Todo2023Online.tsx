@@ -19,7 +19,7 @@ import {
 import { IRootState } from '~/store/IRootState'
 import { useCompare } from '~/hooks/useDeepEffect'
 import { /* VariantType, */ closeSnackbar, useSnackbar } from 'notistack'
-import { AddNewBtn, AuditList, AuditGrid, NTodo, TAudit } from '~/components/audit-helper'
+import { AddNewBtn, AuditList, AuditGrid, NTodo, TAudit, stateHelper } from '~/components/audit-helper'
 import {
   Box,
   Button,
@@ -651,7 +651,7 @@ const Logic = ({ room }: TLogicProps) => {
           }
         }
       }
-      syncToolTimeoutRef.current = setTimeout(doIt, 5000)
+      syncToolTimeoutRef.current = setTimeout(doIt, 10000)
 
       return () => {
         if (!!syncToolTimeoutRef.current) clearTimeout(syncToolTimeoutRef.current)
@@ -746,15 +746,15 @@ const Logic = ({ room }: TLogicProps) => {
                 <>
                   <MenuItem selected={false} onClick={autoSyncOptionToggle}>
                     <ListItemIcon><SyncIcon fontSize="small" color={isAutoSyncEnabled ? 'success' : 'error'} /></ListItemIcon>
-                    <Typography variant="inherit">Autosync {isAutoSyncEnabled ? 'ON' : 'Off'}</Typography>
+                    <Typography variant='inherit' className='truncate'>Синхронизация с локальными данными {isAutoSyncEnabled ? 'On' : 'Off'}</Typography>
                   </MenuItem>
                   <MenuItem
                     selected={false}
                     onClick={handlePush({ noConfirmMessage: false })}
                     disabled={localAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value}
                   >
-                    <ListItemIcon><SendIcon fontSize="small" color='error' /></ListItemIcon>
-                    <Typography variant="inherit">Restore from local ({localAudits.length})</Typography>
+                    <ListItemIcon><SendIcon fontSize='small' color={localAudits.length > remoteAudits.length ? 'success' : 'error'} /></ListItemIcon>
+                    <Typography variant='inherit' className='truncate'>Восстановить <b>{localAudits.length}</b> из браузера (локальные данные)</Typography>
                   </MenuItem>
                 </>
               )
@@ -764,8 +764,8 @@ const Logic = ({ room }: TLogicProps) => {
               onCopy={handleCopyLink}
             >
               <MenuItem selected={false}>
-                <ListItemIcon><ContentCopyIcon fontSize="small" /></ListItemIcon>
-                <Typography variant="inherit">Copy link</Typography>
+                <ListItemIcon><ContentCopyIcon fontSize='small' /></ListItemIcon>
+                <Typography variant='inherit'>Копировать ссылку</Typography>
               </MenuItem>
             </CopyToClipboard>
             <MenuItem
@@ -773,8 +773,8 @@ const Logic = ({ room }: TLogicProps) => {
               onClick={handleLocalBackup}
               disabled={(!isConnected) || isAutoSyncEnabled || (remoteAudits.length === 0 || lastLocalAudits.tsUpdate.value === lastRemoteAudits.tsUpdate.value)}
             >
-              <ListItemIcon><SaveIcon fontSize="small" color='error' /></ListItemIcon>
-              <Typography variant="inherit">Local backup ({remoteAudits.length})</Typography>
+              <ListItemIcon><SaveIcon fontSize='small' color={localAudits.length < remoteAudits.length ? 'success' : 'error'} /></ListItemIcon>
+              <Typography variant='inherit' className='truncate'>Сохранить <b>{remoteAudits.length}</b> в память браузера (локальные данные)</Typography>
             </MenuItem>
             {
               lastVisitedOnlinePages.length > 0 && (
@@ -904,6 +904,18 @@ const Logic = ({ room }: TLogicProps) => {
   }, [])
   // --
 
+  // const completedAuditsLen = useMemo<number>(() => {
+  //   return remoteAudits.reduce((acc, cur) => {
+  //     // if (cur.jobs.)
+  //     return acc
+  //   }, 0)
+  // }, [useCompare([remoteAudits])])
+  const completedAuditsLen = useMemo<number>(() => {
+    return stateHelper.getIncompletedAuditsCounter({
+      audits: remoteAudits,
+    }).value
+  }, [useCompare([remoteAudits])])
+
   switch (true) {
     case isMobile: return (
       <>
@@ -947,7 +959,7 @@ const Logic = ({ room }: TLogicProps) => {
                   }}
                 >
                   <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                  <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room}</span>
+                  <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room} <span style={{ opacity: 0.5, fontSize: 'small' }}>{completedAuditsLen} / {remoteAudits.length}</span></span>
                 </Typography>
                 {/*
                 <Button
@@ -1119,7 +1131,7 @@ const Logic = ({ room }: TLogicProps) => {
                   Offline
                 </Button>
                 <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room}</span>
+                <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room} <span style={{ opacity: 0.5, fontSize: 'small' }}>{completedAuditsLen} / {remoteAudits.length}</span></span>
               </div>
               <div>
                 {

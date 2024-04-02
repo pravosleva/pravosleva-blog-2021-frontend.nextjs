@@ -1,6 +1,6 @@
 {
   "name": "frontend.nextjs",
-  "version": "5.0.1-seo-timing-debug",
+  "version": "5.0.2",
   "private": true,
   "engines": {
     "node": ">=16.18.0 <=20.x.x",

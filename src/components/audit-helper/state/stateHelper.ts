@@ -148,6 +148,33 @@ class SingletoneState {
       }),
     }
   }
+
+  getIncompletedAuditsCounter({
+    audits,
+  }: {
+    audits: TAudit[];
+  }): {
+    value: number;
+    percentage: number;
+  } {
+    const totalAuditsCounter = audits.length
+    let completeAuditsCounter = 0
+
+    try {
+      for (const audit of audits) {
+        if (this.getCompleteJobsPercentage({ audit }).value === 100) completeAuditsCounter += 1
+      }
+    } catch (err) {
+      console.warn(err)
+    }
+
+    return {
+      value: completeAuditsCounter,
+      percentage: this._linear({
+        x: completeAuditsCounter, x1: 0, y1: 0, x2: totalAuditsCounter, y2: 100
+      }),
+    }
+  }
   // --
 }
 

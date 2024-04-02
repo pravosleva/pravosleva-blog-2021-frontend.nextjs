@@ -10,7 +10,7 @@ export const NamespaceListItem = ({
   return (
     <div
       style={{
-        border: '1px solid red',
+        // border: '1px solid red',
         display: 'flex',
         flexDirection: 'column',
       }}
