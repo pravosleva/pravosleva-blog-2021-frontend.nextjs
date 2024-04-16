@@ -24,10 +24,12 @@ const StyledTableCell: any = styled(TableCell)(({ theme }) => ({
     fontSize: 14,
   },
 }))
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
+const StyledTableRow = styled(TableRow)(({
+  // theme,
+}) => ({
+  // '&:nth-of-type(odd)': {
+  //   backgroundColor: theme.palette.action.hover,
+  // },
   // hide last border
   '&:last-child td, &:last-child th': {
     border: 0,
@@ -48,13 +50,13 @@ export const ReportTable = ({
       }}
     >
       <Table
-        size="small"
-        aria-label="simple table"
+        size='small'
+        aria-label='simple table'
       >
         <TableHead>
           <TableRow>
             <StyledTableCell>Список расходников</StyledTableCell>
-            <StyledTableCell align="right">До замены</StyledTableCell>
+            <StyledTableCell align='right'>До замены</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -66,12 +68,24 @@ export const ReportTable = ({
                 key={id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell
+                  component='th'
+                  scope='row'
+                  sx={{ pl: 0 }}
+                >
                   {name}
                   <br />
                   <small>{description}</small>
                 </StyledTableCell>
-                <StyledTableCell align="right"><Chip icon={isFired ? <LocalFireDepartmentIcon /> : undefined} label={<b>{getPrettyPrice(diff)}</b>} color={isFired ? "error" : "default"} /></StyledTableCell>
+                <StyledTableCell
+                  align='right'
+                  sx={{ pr: 0 }}
+                >
+                  <Chip
+                    icon={isFired ? <LocalFireDepartmentIcon /> : undefined}
+                    label={<b>{getPrettyPrice(diff)}</b>} color={isFired ? 'error' : 'default'}
+                  />
+                </StyledTableCell>
               </StyledTableRow>
             )
           })}

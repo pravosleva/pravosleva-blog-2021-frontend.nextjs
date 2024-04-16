@@ -15,6 +15,8 @@ import { marks } from '~/components/Autopark2022/components/CarSelectSample/car-
 // import { ContentCut } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import axiosRetry from 'axios-retry'
+import Chip from '@mui/material/Chip'
+import clsx from 'clsx'
 
 const getVendorOptions = () => marks.map((m) => ({ label: m.name, ...m }))
 
@@ -153,7 +155,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
         setAdditionalServiceErr(err.message || 'ERR')
       })
   }, [selectedBrand])
-  const [selectedTransmission, setSelectedTransmission] = useState<'MT' | 'AT' | 'AMT' | 'CVT'>('MT')
+  const [selectedTransmission, setSelectedTransmission] = useState<'MT' | 'AT' | 'AMT' | 'CVT' | ''>('')
   const [description, setDescription] = useState('')
   const resetAll = useCallback(() => {
     setDescription('')
@@ -184,8 +186,8 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
     setApiErr('')
     fetchCreateProject({
       chat_id,
-      name: `${selectedBrand} ${selectedModel}, ${selectedTransmission}, ${selectedYear}`,
-      description: `${(hasGenerationsByUremont && !!selectedGeneration) ? `${selectedGeneration} / ` : ''}${description || ''}`,
+      name: `${selectedBrand} ${selectedModel}, ${selectedTransmission || '[Выберите тип трансмиссии]'}, ${selectedYear}`,
+      description: clsx(selectedGeneration, description),
     })
       .then((res) => {
         if (res.ok) {
@@ -221,7 +223,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                 id='vendors'
                 options={brandsOptions}
                 fullWidth
-                renderInput={(params) => <TextField {...params} required label="Бренд" />}
+                renderInput={(params) => <TextField {...params} required label='Бренд' />}
                 onChange={(e: any) => {
                   setSelectedBrand(e.target.textContent)
                   setSelectedModel(null)
@@ -241,7 +243,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               {
                 !!additionalServiceErr
                 ? (
-                  <Alert severity="error" variant='filled'>{additionalServiceErr}</Alert>
+                  <Alert severity='error' variant='filled'>{additionalServiceErr}</Alert>
                 )
                 : (
                   <Autocomplete
@@ -251,7 +253,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                     id='models'
                     options={modelsOptions}
                     fullWidth
-                    renderInput={(params) => <TextField {...params} label="Модель" required value={selectedModel} />}
+                    renderInput={(params) => <TextField {...params} label='Модель' required value={selectedModel} />}
                     onChange={(e: any) => {
                       setSelectedGeneration(null)
                       setSelectYear(null)
@@ -262,15 +264,36 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               }
             </Box>
             <Box sx={{ mb: 2 }}>
-              <FormControl fullWidth required>
+              <Autocomplete
+                value={
+                  !selectedTransmission
+                  ? { label: '' }
+                  : { label: selectedTransmission }
+                }
+                size='small'
+                disablePortal
+                id='transmission'
+                options={[
+                  { label: 'MT' },
+                  { label: 'AT' },
+                  { label: 'AMT' },
+                  { label: 'CVT' }
+                ]}
+                fullWidth
+                renderInput={(params) => <TextField {...params} label='Трансмиссия' required value={selectedTransmission} />}
+                onChange={(e: any) => {
+                  setSelectedTransmission(e.target.textContent)
+                }}
+              />
+              {/* <FormControl fullWidth required>
                 <InputLabel id="transmission-select-label">Трансмиссия</InputLabel>
                 <Select
                   size='small'
                   variant='outlined'
-                  labelId="transmission-select-label"
-                  id="transmission-select"
+                  labelId='transmission-select-label'
+                  id='transmission-select'
                   value={selectedTransmission}
-                  label="Трансмиссия"
+                  label='Трансмиссия'
                   fullWidth
                   onChange={(e: any) => {
                     setSelectedTransmission(e.target.value)
@@ -281,7 +304,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                   <MenuItem value='AMT'>AMT</MenuItem>
                   <MenuItem value='CVT'>CVT</MenuItem>
                 </Select>
-              </FormControl>
+              </FormControl> */}
             </Box>
             {generationOptions.length > 0 && (
               <Box sx={{ mb: 2 }}>
@@ -293,7 +316,15 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               generationOptions.map(({ label, image, descr }) => {
                 const isSelected = label === selectedGeneration
                 return (
-                  <Card key={image} sx={{ maxWidth: '100%', mb: 2 }} variant='outlined'>
+                  <Card
+                    key={image}
+                    sx={{ maxWidth: '100%', mb: 2, borderRadius: 2 }}
+                    variant='outlined'
+                    onClick={() => {
+                      setSelectYear(null)
+                      setSelectedGeneration(label)
+                    }}
+                  >
                     <CardMedia
                       sx={{
                         backgroundColor: '#F0F0F0',
@@ -312,7 +343,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <Button
+                      {/* <Button
                         size="small"
                         variant={isSelected ? 'contained' : 'outlined'}
                         color='secondary'
@@ -321,8 +352,13 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                           setSelectedGeneration(label)
                         }}
                         startIcon={isSelected ? <CheckIcon /> : undefined}
-                      >{isSelected ? 'This!' : 'Select'}</Button>
+                      >{isSelected ? 'This!' : 'Select'}</Button> */}
                       {/* <Button size="small">Learn More</Button> */}
+                      <Chip
+                        icon={isSelected ? <CheckIcon /> : undefined}
+                        label={isSelected ? 'Выбрано' : 'Доступно'}
+                        color={isSelected ? 'success' : 'default'}
+                      />
                     </CardActions>
                   </Card>
                 )
@@ -335,9 +371,9 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                   size='small'
                   variant='outlined'
                   labelId="year-select-label"
-                  id="year-select"
+                  id='year-select'
                   value={selectedYear || undefined}
-                  label="Year"
+                  label='Год'
                   fullWidth
                   onChange={(e: any) => {
                     setSelectYear(e.target.value)
@@ -353,7 +389,16 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
             </Box>  
 
             <Box sx={{ mb: 2 }}>
-              <TextField value={description} size='small' fullWidth disabled={isLoading} variant="outlined" label="Description" type="text" onChange={handleChangeDescr}></TextField>
+              <TextField
+                value={description}
+                size='small'
+                fullWidth
+                disabled={isLoading}
+                variant='outlined'
+                label='Имя / Метка'
+                type='text'
+                onChange={handleChangeDescr}
+              ></TextField>
             </Box>
 
             {
