@@ -499,6 +499,13 @@
 			"sort_id": 0
 		},
 		{
+			"id": 4156,
+			"name": "Exeed",
+			"type_id": 1,
+			"image": "https://uservice.io/static/img/brands/exeed.png",
+			"sort_id": 0
+		},
+		{
 			"id": 59,
 			"name": "FAW",
 			"type_id": 1,
@@ -695,6 +702,13 @@
 			"sort_id": 0
 		},
 		{
+			"id": 4163,
+			"name": "Kaiyi ",
+			"type_id": 1,
+			"image": "https://uservice.io/static/img/brands/kaiyi.png",
+			"sort_id": 0
+		},
+		{
 			"id": 93,
 			"name": "Koenigsegg",
 			"type_id": 1,
@@ -888,6 +902,13 @@
 			"name": "Oldsmobile",
 			"type_id": 1,
 			"image": "https://uservice.io/static/img/brands/oldsmobile.png",
+			"sort_id": 0
+		},
+		{
+			"id": 4157,
+			"name": "Omoda",
+			"type_id": 1,
+			"image": "https://uservice.io/static/img/brands/omoda.png",
 			"sort_id": 0
 		},
 		{
@@ -1189,6 +1210,13 @@
 			"name": "Vortex",
 			"type_id": 1,
 			"image": "https://uservice.io/static/img/brands/vortex.png",
+			"sort_id": 0
+		},
+		{
+			"id": 4162,
+			"name": "Voyah",
+			"type_id": 1,
+			"image": "https://uservice.io/static/img/brands/voyah.png",
 			"sort_id": 0
 		},
 		{
