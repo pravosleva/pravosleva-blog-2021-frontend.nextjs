@@ -607,7 +607,8 @@ export const TodoConnected = ({
         }
 
         {
-          strapiTodos.length > 0 && strapiTodosMeta?.pagination.page !== strapiTodosMeta?.pagination.pageCount && (
+          // strapiTodos.length > 0 && strapiTodosMeta?.pagination.page !== strapiTodosMeta?.pagination.pageCount && (
+          strapiTodos.length > 0 && (
             <div
               className={clsx(classes.footer)}
               style={{
