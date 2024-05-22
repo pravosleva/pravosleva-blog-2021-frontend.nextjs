@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io'
+import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 import { NEvent } from './types'
 import { state } from './state'
 
@@ -13,8 +14,18 @@ const mws = {
     _info?: any;
   }> {
     const appVersionSupports = [
-      '3.0.6-beta',
       '3.0.7-beta',
+      '4.0.0',
+      '4.0.1',
+      '4.0.2',
+      '4.0.3',
+      '4.0.4',
+      '4.0.5',
+      '4.0.6',
+      '4.0.7',
+      '4.0.8',
+      '4.0.9',
+      '4.0.10',
     ]
     if (!data?.appVersion || !appVersionSupports.includes(data.appVersion))
       return Promise.reject({
@@ -78,6 +89,75 @@ export const withSP = (io: Socket) => {
                 message: 'New report',
                 report: incData,
               })
+            // -- NOTE: Report to Google Sheets
+            try {
+              const getIsCorrectFormat = (val: any): { ok: boolean; reason?: string } => {
+                const result: { ok: boolean; reason?: string } = {
+                  ok: true,
+                }
+                switch (true) {
+                  case !val:
+                    result.ok = false
+                    result.reason = 'Should not be empty'
+                    break
+                  case !val.appVersion:
+                    result.ok = false
+                    result.reason = 'appVersion not be empty'
+                    break
+                  case !val.room:
+                    result.ok = false
+                    result.reason = 'room is required'
+                    break
+                  case !val.metrixEventType:
+                    result.ok = false
+                    result.reason = 'metrixEventType is required'
+                    break
+                  case !val.stateValue:
+                    result.ok = false
+                    result.reason = 'stateValue is required'
+                    break
+                  case !val.reportType:
+                    result.ok = false
+                    result.reason = 'reportType is required'
+                    break
+                  default: break
+                }
+                return result
+              }
+              const validated = getIsCorrectFormat(incData)
+              if (validated.ok) universalHttpClient.post(
+                '/express-helper/sp/report/v2/offline-tradein/mtsmain2024/send',
+                {
+                  eventCode: 'common',
+                  appVersion: incData.appVersion,
+                  room: incData.room,
+                  metrixEventType: incData.metrixEventType,
+                  stateValue: incData.stateValue,
+                  reportType: incData.reportType,
+                  stepDetails: incData.stepDetails || undefined,
+                  imei: incData.imei,
+                  ts: incData.ts,
+                  tradeinId: incData.tradeinId,
+                  uniquePageLoadKey: incData.uniquePageLoadKey,
+                  uniqueUserDataLoadKey: incData.uniqueUserDataLoadKey,
+                },
+              )
+              else throw new Error(validated.reason || 'No reason')
+            } catch (err: any) {
+              const ts = new Date().getTime()
+              universalHttpClient.post(
+                'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
+                {
+                  resultId: ts,
+                  chat_id: 432590698, // NOTE: Den Pol
+                  ts,
+                  eventCode: 'aux_service',
+                  about: `⛔ withSP mw Errored (${incData.appVersion})`,
+                  targetMD: `Не удалось отправить event: ${err.message || 'NO ERR'}`,
+                },
+              )
+            }
+            // --
           }
           else throw new Error(e.reason || 'ERR (no reason)')
         })

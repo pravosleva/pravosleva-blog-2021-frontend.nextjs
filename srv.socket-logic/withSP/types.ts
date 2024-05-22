@@ -19,10 +19,16 @@ export namespace NEvent {
       __eType: string;
       // name: string;
       input: {
+        // ts: string;
         room: string;
+        // reportType: EReportType;
         appVersion: string;
         metrixEventType: string;
         stateValue: string;
+        // imei: string;
+        stepDetails?: {
+          [key: string]: any;
+        };
       };
     };
   }
@@ -34,16 +40,23 @@ export namespace NEvent {
     SUCCESS = 'success',
   }
   export type TReport = {
+    ts: string;
     room: string;
     appVersion: string;
     metrixEventType: string;
     reportType: EReportType;
     stateValue: string;
-
+    stepDetails?: {
+      [key: string]: any;
+    };
+    imei: string;
+    tradeinId?: number | null;
     _wService?: {
       _perfInfo: {
         tsList: TPerfInfoItem[];
       };
     };
+    uniquePageLoadKey?: string;
+    uniqueUserDataLoadKey?: string;
   }
 }
