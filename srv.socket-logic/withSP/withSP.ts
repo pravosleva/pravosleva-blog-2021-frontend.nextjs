@@ -140,6 +140,7 @@ export const withSP = (io: Socket) => {
                   tradeinId: incData.tradeinId,
                   uniquePageLoadKey: incData.uniquePageLoadKey,
                   uniqueUserDataLoadKey: incData.uniqueUserDataLoadKey,
+                  gitSHA1: incData.gitSHA1,
                 },
               )
               else throw new Error(validated.reason || 'No reason')
