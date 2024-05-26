@@ -12,12 +12,17 @@ const bg = {
 export const list: {[key: string]: TArticleTools} = {
   'nginx-get-public-ip': {
     id: '602cfad280b2f31ebde37da0',
-    brief: 'How to get IP from NGINX',
+    brief: 'Заметки начинающего DevOps инженера',
     bg,
   },
   'nginx-logs': {
     id: '650b202fdb108f2f99272e15',
-    brief: 'Hey bro, where is my logs?',
+    brief: 'Заметки начинающего DevOps инженера',
+    bg,
+  },
+  'nginx-restricting-access-with-http-basic-authentication': {
+    id: '664c7c2a2cb16d1e5d6be440',
+    brief: 'Заметки начинающего DevOps инженера',
     bg,
   },
 }

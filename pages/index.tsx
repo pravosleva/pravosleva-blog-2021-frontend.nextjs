@@ -81,7 +81,7 @@ const Index = () => {
         {/* <!-- HTML Meta Tags --> */}
         <title>Pravosleva</title>
         <link rel="manifest" href="/static/manifest.json" />
-        <meta name="description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое.' />
+        <meta name="description" content='Заметки начинающего разраба.' />
 
         {/* <!-- Facebook Meta Tags --> */}
         <meta property="og:url" content="https://pravosleva.pro" />
@@ -93,7 +93,7 @@ const Index = () => {
         <meta property="og:locale:alternate" content="uk_UA" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое' />
+        <meta property="og:description" content='Заметки начинающего разраба' />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="og:site_name" content="Pravosleva" />
 
@@ -102,7 +102,7 @@ const Index = () => {
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
         <meta name="twitter:title" content="Web exp" />
-        <meta name="twitter:description" content='Кто никогда не совершал ошибок, тот никогда не пробовал что-то новое' />
+        <meta name="twitter:description" content='Заметки начинающего разраба' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 

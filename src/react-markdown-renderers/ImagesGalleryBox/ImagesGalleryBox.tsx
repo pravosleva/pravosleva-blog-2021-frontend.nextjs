@@ -36,7 +36,8 @@ type TNormalizedItem = {
     value: string;
     title: string;
   }[];
-  caption: string;
+  title?: string;
+  caption?: string;
 }
 export type TProps = {
   itemsJson: string;
@@ -76,7 +77,7 @@ export const ImagesGalleryBox = memo(({ itemsJson } : TProps) => {
               <Image
                 key={src}
                 src={src}
-                alt={caption}
+                alt={caption || 'img'}
                 onClickHandler={() => handleClick(i)}
               />
             )
@@ -97,7 +98,8 @@ export const ImagesGalleryBox = memo(({ itemsJson } : TProps) => {
         /* @ts-ignore */
         <Lightbox
           mainSrc={currentImage.original}
-          imageTitle={currentImage.caption}
+          imageTitle={currentImage.title}
+          imageCaption={currentImage.caption}
           mainSrcThumbnail={currentImage.src}
           nextSrc={nextImage.original}
           nextSrcThumbnail={nextImage.src}
