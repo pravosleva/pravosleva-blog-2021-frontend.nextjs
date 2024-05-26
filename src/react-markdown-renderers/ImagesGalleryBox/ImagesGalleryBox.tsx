@@ -106,6 +106,8 @@ export const ImagesGalleryBox = memo(({ itemsJson } : TProps) => {
           onCloseRequest={handleClose}
           onMovePrevRequest={handleMovePrev}
           onMoveNextRequest={handleMoveNext}
+          // enableZoom={false}
+          // closeLabel='Закрыть'
         />
       )}
     </div>
