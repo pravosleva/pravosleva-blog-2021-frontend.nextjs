@@ -15,6 +15,9 @@ const mws = {
   }> {
     const appVersionSupports = [
       '3.0.7-beta',
+      '3.0.8-beta',
+      '3.0.9-beta',
+      '3.0.10-beta',
       '4.0.0',
       '4.0.1',
       '4.0.2',
