@@ -27,7 +27,7 @@ const getIconByType = (type: EType, icon?: string) => {
   }
 }
 
-export const useStyles = makeStyles((_theme) => ({
+export const useStyles = makeStyles((theme) => ({
   likeBlockuote: {
     '& h2': {
       lineHeight: '18px',
@@ -41,7 +41,7 @@ export const useStyles = makeStyles((_theme) => ({
     fontStyle: 'normal',
     color: '#555',
     /* padding: 1.2em 30px 1.2em 75px; */
-    padding: '1.2em 30px 1.2em 50px',
+    padding: '1.2em 30px 1.2em 60px',
     // borderLeft: '8px solid #78c0a8',
     // lineHeight: '1.6',
     position: 'relative',
@@ -55,11 +55,15 @@ export const useStyles = makeStyles((_theme) => ({
       position: 'absolute',
       left: '8px',
       top: '5px',
+      paddingRight: '',
     },
     boxShadow: '0 8px 6px -6px rgba(0,0,0,0.3)',
     '& a': {
       color: '#FFF',
       textDecoration: 'underline',
+    },
+    '& p': {
+      margin: 0,
     },
   },
   likeBlockuote_success: {
@@ -117,8 +121,9 @@ export const useStyles = makeStyles((_theme) => ({
       // textShadow: '3px 3px rgba(222,222,222,0.4)',
       textShadow: '0px 0px 7px #FFF',
     },
-    // '& a': {
-    //   color: theme.palette.primary.main,
-    // },
+    '& a': {
+      // @ts-ignore
+      color: theme.palette.primary.main,
+    },
   },
 }))

@@ -10,17 +10,18 @@
   "DEMO": "Демо",
 
   "PROJECT_BRIEF@AUDITOR_HELPER": "Планировщик аудитора",
-  "PROJECT_BRIEF@SEO_EXP": "SEO опыты",
+  "PROJECT_BRIEF@SEO_EXP": "",
   "PROJECT_BRIEF@CAR_SERVICE_BOOK": "Сервис авто (по пробегу)",
-  "PROJECT_BRIEF@PROBABILITY_THEORY": "Теория вероятности",
+  "PROJECT_BRIEF@PROBABILITY_THEORY": "Теория вероятности в действии",
   "PROJECT_BRIEF@SP_TRADEIN": "",
-  "PROJECT_BRIEF@CARGO_2016": "Three.js",
+  "PROJECT_BRIEF@CARGO_2016": "Опыт с Three.js",
   "PROJECT_BRIEF@RED_SHARK": "Volkswagen Golf 4",
 
   "PROJECT_GO_BTN:LINK": "Читать",
   "PROJECT_GO_BTN:LINK_GOTO": "Перейти",
   "PROJECT_GO_BTN:LINK_TG": "Телеграм",
 
+  "PROJECT_DESCR@SEO_EXP": "Заметки начинающего разраба",
   "PROJECT_DESCR@TRADEIN": "Онлайн логгер внутри отдельного потока SharedWorker",
   "PROJECT_DESCR@CARGO_2016": "Оценка заполненности фуры",
   "PROJECT_DESCR@FAMILY_TREE": "Генеалогическое дерево",

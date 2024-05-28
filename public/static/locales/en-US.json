@@ -10,17 +10,18 @@
   "DEMO": "Demo",
 
   "PROJECT_BRIEF@AUDITOR_HELPER": "Auditor helper",
-  "PROJECT_BRIEF@SEO_EXP": "SEO experience",
+  "PROJECT_BRIEF@SEO_EXP": "",
   "PROJECT_BRIEF@CAR_SERVICE_BOOK": "Car service book",
-  "PROJECT_BRIEF@PROBABILITY_THEORY": "Probabillity theory",
+  "PROJECT_BRIEF@PROBABILITY_THEORY": "Probabillity theory in action",
   "PROJECT_BRIEF@SP_TRADEIN": "",
-  "PROJECT_BRIEF@CARGO_2016": "Three.js",
+  "PROJECT_BRIEF@CARGO_2016": "Three.js exp",
   "PROJECT_BRIEF@RED_SHARK": "Volkswagen Golf 4",
 
   "PROJECT_GO_BTN:LINK": "Read more",
   "PROJECT_GO_BTN:LINK_GOTO": "Go",
   "PROJECT_GO_BTN:LINK_TG": "Telegram",
 
+  "PROJECT_DESCR@SEO_EXP": "Dev experience notes",
   "PROJECT_DESCR@TRADEIN": "Online logger in SharedWorker demonstration",
   "PROJECT_DESCR@CARGO_2016": "Truck occupancy estimation",
   "PROJECT_DESCR@FAMILY_TREE": "Genealogical tree",

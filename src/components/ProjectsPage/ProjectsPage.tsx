@@ -34,7 +34,7 @@ type TProject = {
 const projects: TProject[] = [
   {
     id: 1,
-    title: 'AuditList',
+    title: 'AuditList 2023',
     description: 'AUDIT_LIST_PROJECT_DESCR',
     img: {
       // NOTE: Converter online https://cloudconvert.com/
@@ -60,8 +60,9 @@ const projects: TProject[] = [
   },
   {
     id: 2,
-    title: 'SEO exp',
-    description: 'BLOG',
+    title: 'BLOG',
+    description: 'PROJECT_DESCR@SEO_EXP',
+    // brief: 'PROJECT_BRIEF@SEO_EXP',
     img: {
       src: '/static/img/projects/blog.webp',
       alt: 'loading...',
@@ -139,7 +140,7 @@ const projects: TProject[] = [
   },
   {
     id: 5,
-    title: 'AutoPark',
+    title: 'AutoPark 2022',
     description: 'AUTO_PARK_PROJECT_DESCR',
     img: {
       // src: '/static/img/projects/autopark.webp',
@@ -171,7 +172,7 @@ const projects: TProject[] = [
   },
   {
     id: 6,
-    title: 'RedShark',
+    title: 'RedShark 2022',
     description: 'RED_SHARK_PROJECT_DESCR',
     img: {
       src: '/static/img/blog/red-shark.jpg',
@@ -348,7 +349,7 @@ export const ProjectsPage = withTranslator(({ t }) => {
                     key={id}
                     uiDate={uiDate}
                     img={img}
-                    title={title}
+                    title={t(title)}
                     // descr={description}
                     author='Den Pol'
                     links={links.map(({ text, ...rest }) => ({ ...rest, text: t(text) }))}
