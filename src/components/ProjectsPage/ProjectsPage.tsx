@@ -60,31 +60,6 @@ const projects: TProject[] = [
   },
   {
     id: 2,
-    title: 'BLOG',
-    description: 'PROJECT_DESCR@SEO_EXP',
-    // brief: 'PROJECT_BRIEF@SEO_EXP',
-    img: {
-      src: '/static/img/projects/blog.webp',
-      alt: 'loading...',
-      color: {
-        average: '#5b6567',
-      },
-    },
-    links: [
-      {
-        href: '/blog',
-        as: '/blog',
-        text: 'PROJECT_GO_BTN:LINK_GOTO',
-        color: ELinkColor.YELLOW,
-        icon: ELinkIcon.ARROW,
-      },
-    ],
-    uiDate: '2023',
-    // brief: 'PROJECT_BRIEF@SEO_EXP',
-    tags: ['seo'],
-  },
-  {
-    id: 3,
     title: 'Trade-In exp',
     description: 'PROJECT_DESCR@TRADEIN',
     img: {
@@ -115,7 +90,7 @@ const projects: TProject[] = [
     tags: [],
   },
   {
-    id: 4,
+    id: 3,
     title: 'FamilyTree exp',
     description: 'PROJECT_DESCR@FAMILY_TREE',
     img: {
@@ -139,7 +114,7 @@ const projects: TProject[] = [
     tags: [],
   },
   {
-    id: 5,
+    id: 4,
     title: 'AutoPark 2022',
     description: 'AUTO_PARK_PROJECT_DESCR',
     img: {
@@ -171,7 +146,7 @@ const projects: TProject[] = [
     tags: ['autoPark2022', 'telegram'],
   },
   {
-    id: 6,
+    id: 5,
     title: 'RedShark 2022',
     description: 'RED_SHARK_PROJECT_DESCR',
     img: {
@@ -195,7 +170,7 @@ const projects: TProject[] = [
     tags: ['краснаяАкула'],
   },
   {
-    id: 7,
+    id: 6,
     title: 'TeamScoring',
     description: 'TEAM_SCORING_PROJECT_DESCR',
     img: {
@@ -216,6 +191,31 @@ const projects: TProject[] = [
     ],
     uiDate: '2019',
     brief: 'PROJECT_BRIEF@PROBABILITY_THEORY',
+    tags: [],
+  },
+  {
+    id: 7,
+    title: 'BLOG',
+    description: 'PROJECT_DESCR@SEO_EXP',
+    // brief: 'PROJECT_BRIEF@SEO_EXP',
+    img: {
+      src: '/static/img/projects/blog.webp',
+      alt: 'loading...',
+      color: {
+        average: '#5b6567',
+      },
+    },
+    links: [
+      {
+        href: '/blog',
+        as: '/blog',
+        text: 'PROJECT_GO_BTN:LINK_GOTO',
+        color: ELinkColor.YELLOW,
+        icon: ELinkIcon.ARROW,
+      },
+    ],
+    uiDate: '2018',
+    // brief: 'PROJECT_BRIEF@SEO_EXP',
     tags: [],
   },
   {

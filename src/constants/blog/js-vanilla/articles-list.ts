@@ -20,4 +20,9 @@ export const list: {[key: string]: TArticleTools} = {
     brief: 'Fetch retry sample',
     bg,
   },
+  // 'simple-test': {
+  //   id: '6655de148bbf9b44b4ec61ec',
+  //   brief: 'JS exp',
+  //   bg,
+  // },
 }

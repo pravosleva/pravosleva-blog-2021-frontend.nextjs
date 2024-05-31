@@ -69,6 +69,7 @@ import {
   replaceStrapiTodos,
   updateStrapiTodosAndMeta,
 } from '~/store/reducers/todo2023NotPersisted'
+import clsx from 'clsx'
 import { AddAnythingNewDialog } from './components/TodoConnected/components'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
@@ -1014,7 +1015,7 @@ const Logic = ({ room }: TLogicProps) => {
                   // backgroundColor: '#fff',
                   // borderTop: '1px solid lightgray',
                 }}
-                className='backdrop-blur--lite'
+                className={clsx('backdrop-blur--lite', 'box-shadow-top__mobile')}
               >
                 {
                   isOneTimePasswordCorrect ? (

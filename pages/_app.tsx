@@ -82,6 +82,15 @@ function AppWithRedux(props: MyAppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+        <link
+          href="/static/css/min/common.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
+        <link rel="stylesheet" href="/static/css/min/common.css" />
         
         <link
           href="/static/css/min/gosuslugi.css"

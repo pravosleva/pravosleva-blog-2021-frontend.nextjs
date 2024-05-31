@@ -44,6 +44,7 @@ import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import { useIsInViewport } from '~/hooks/useIsInViewport'
 import TelegramIcon from '@mui/icons-material/Telegram'
+import clsx from 'clsx'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -311,7 +312,7 @@ export const ToDo2023 = memo(() => {
                   // backgroundColor: '#fff',
                   // borderTop: '1px solid lightgray',
                 }}
-                className='backdrop-blur--lite'
+                className={clsx('backdrop-blur--lite', 'box-shadow-top__mobile')}
               >
                 <Box sx={{ pt:0, pb: 2 }}>
                   <AddNewBtn

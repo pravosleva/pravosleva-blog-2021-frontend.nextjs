@@ -19,7 +19,7 @@ export const GoHomeSection = ({
     as: '/',
     Component: (
       <a
-        className="link-as-rippled-btn truncate"
+        className='link-as-rippled-btn truncate'
         style={{
           whiteSpace: 'pre',
           display: 'flex',
@@ -28,7 +28,7 @@ export const GoHomeSection = ({
       >
         {/* <i className="fas fa-arrow-left"></i> */}
         <KeyboardArrowLeftIcon />
-        <span style={{ marginLeft: '10px', whiteSpace: 'pre' }}>{t('GO_BACK_TO_THE_HOMEPAGE')}</span>
+        <span style={{ marginLeft: '10px', whiteSpace: 'pre' }} className='truncate'>{t('GO_BACK_TO_THE_HOMEPAGE')}</span>
       </a>
     ),
   }]

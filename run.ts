@@ -111,7 +111,7 @@ nextApp
             },
             null,
             2
-          )}\n\`\`\``,
+          )}\`\`\``,
         })
         .then((res) => res.data)
         .catch((err) => err)
@@ -128,7 +128,7 @@ nextApp
         ts,
         eventCode: 'aux_service',
         about: `\`/frontend.nextjs@${packageJson.version}\`\n⛔ Errored`,
-        targetMD: `\`\`\`json\n${ex.stack}\n\`\`\``,
+        targetMD: `\`\`\`json\n${ex.stack}\`\`\``,
       })
       .then((res) => res.data)
       .catch((err) => err)

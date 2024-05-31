@@ -99,6 +99,7 @@ export const AuditGrid = ({
                   {
                     ['backdrop-blur--lite']: currentTheme === 'light',
                   },
+                  'box-shadow-top__mobile',
                 )}
                 style={{
                   // height: '50px',
