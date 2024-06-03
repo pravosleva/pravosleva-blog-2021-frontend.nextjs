@@ -32,6 +32,7 @@ export const CollapsibleBox = ({
           cursor: 'pointer',
           color: 'rgb(0, 191, 255)',
           userSelect: 'none',
+          WebkitTapHighlightColor: 'transparent',
         }}
         onClick={handleToggle}
         title={label}

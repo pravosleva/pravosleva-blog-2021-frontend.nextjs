@@ -25,4 +25,5 @@ export const Fab = styled('button').attrs({
   box-shadow: 0 5px 10px 0px rgba(7,7,7,.3);
 
   transition: background-color 0.5s ease-in-out;
+  -webkit-tap-highlight-color: transparent;
 `
