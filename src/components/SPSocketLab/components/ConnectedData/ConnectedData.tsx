@@ -191,7 +191,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           )
         }
         <iframe
-          src='https://pravosleva.pro/dist.sp-tradein-2023/'
+          src='https://pravosleva.pro/dist.sp-tradein-2023/?debug=1'
           // height='500px'
           // width='500px'
           className={clsx(classes.fixedTop, classes.fixedTopSPClientFrame, { [classes.isOpened]: isTestedIFrameOpened })}
