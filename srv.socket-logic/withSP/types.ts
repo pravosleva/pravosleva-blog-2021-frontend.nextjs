@@ -59,5 +59,6 @@ export namespace NEvent {
     uniquePageLoadKey?: string;
     uniqueUserDataLoadKey?: string;
     gitSHA1?: string;
+    specialClientKey?: string;
   }
 }

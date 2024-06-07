@@ -14,17 +14,17 @@ const mws = {
     _info?: any;
   }> {
     const appVersionSupports = [
-      '3.0.7-beta',
-      '3.0.8-beta',
+      // '3.0.7-beta',
+      // '3.0.8-beta',
       '3.0.9-beta',
       '3.0.10-beta',
-      '4.0.0',
-      '4.0.1',
-      '4.0.2',
-      '4.0.3',
-      '4.0.4',
-      '4.0.5',
-      '4.0.5-fix',
+      // '4.0.0',
+      // '4.0.1',
+      // '4.0.2',
+      // '4.0.3',
+      // '4.0.4',
+      // '4.0.5',
+      // '4.0.5-fix',
       '4.0.6',
       '4.0.6-fix',
       '4.0.7-beta',
@@ -184,6 +184,7 @@ export const withSP = (io: Socket) => {
                   uniquePageLoadKey: incData.uniquePageLoadKey,
                   uniqueUserDataLoadKey: incData.uniqueUserDataLoadKey,
                   gitSHA1: incData.gitSHA1,
+                  specialClientKey: incData.specialClientKey,
                 },
               )
               else throw new Error(validated.reason || 'No reason')

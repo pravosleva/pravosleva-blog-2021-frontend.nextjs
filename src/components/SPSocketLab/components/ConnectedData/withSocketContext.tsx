@@ -83,6 +83,7 @@ export namespace NEvent {
         tsList: TPerfInfoItem[];
       };
     };
+    specialClientKey?: string;
   }
   export type TIncomingDataFormat = {
     report: TReport;
