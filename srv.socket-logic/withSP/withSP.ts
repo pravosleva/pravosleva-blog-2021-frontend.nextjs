@@ -85,6 +85,48 @@ const mws = {
 
 export const withSP = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
+    let ip: string | undefined
+    
+    // -- MOTE: Get IP adress exp
+    // const ip = socket.handshake.address // NOTE: Doesnt work
+    try {
+      const possibleHeaders: {
+        [key: string]: {
+          converter: ({ val }: { val: any; }) => string | undefined;
+        };
+      } = {
+        'x-real-ip': {
+          converter: ({ val }) => val,
+        },
+        // 'x-forwarded-for': {
+        //   converter: ({ val }) => typeof val === 'string' ? val.split(",")[0] : undefined,
+        // },
+        // 'cf-connecting-ip': {
+        //   converter: ({ val }) => val,
+        // },
+        // 'fastly-client-ip': {
+        //   converter: ({ val }) => val,
+        // },
+      }
+      for (const header in possibleHeaders) {
+        if (
+          !!socket.handshake.headers?.[header]
+          && typeof socket.handshake.headers?.[header] === 'string'
+        ) {
+          ip = possibleHeaders[header].converter({ val: socket.handshake.headers?.[header] })
+          if (!!ip) break;
+        }
+      }
+      // if (!ip && !!socket.conn.remoteAddress) {
+      //   // ip = socket.conn.remoteAddress
+      //   // ip = socket.manager.handshaken[socket.id].address
+      // }
+    } catch (err) {
+      // NOTE: Have no idea yet...
+      console.log(err)
+    }
+    // --
+
     if (!!socket.handshake.query.roomId && typeof socket.handshake.query.roomId === 'string') {
       state.getStateInfo(socket.handshake.query.roomId)
         .then(({ isOk, message, items }) => {
@@ -185,6 +227,7 @@ export const withSP = (io: Socket) => {
                   uniqueUserDataLoadKey: incData.uniqueUserDataLoadKey,
                   gitSHA1: incData.gitSHA1,
                   specialClientKey: incData.specialClientKey,
+                  ip,
                 },
               )
               else throw new Error(validated.reason || 'No reason')
