@@ -23,7 +23,7 @@ const loopers: {
   [key: string]: NLooper.TResut;
 } = {}
 
-const quoteNotifIntervalInMinutes = 2
+const quoteNotifIntervalInMinutes = 5
 const quoteNotifAutoHideLimitInMinutes = 1
 
 export const withLab = (io: Socket) => {

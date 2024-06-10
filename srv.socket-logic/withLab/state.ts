@@ -7,9 +7,18 @@ import {
 
 type TSocketId = string
 type TRoomList = string[]
-type TState = { socketReestr: Map<TSocketId, TRoomList>; counters: {[key: string]: number} }
+type TState = {
+  socketReestr: Map<TSocketId, TRoomList>;
+  counters: {
+    [key: string]: number;
+  };
+}
 
-type TOperationResult = Promise<{ isOk: boolean; message?: string; instance: Singleton }>
+type TOperationResult = Promise<{
+  isOk: boolean;
+  message?: string;
+  instance: Singleton;
+}>
 
 export class Singleton {
   private static instance: Singleton
@@ -45,10 +54,6 @@ export class Singleton {
   }
   public decSocketInReestr ({ clientId }: { clientId: string }): TOperationResult {
     const roomList = this.state.socketReestr.get(clientId)
-
-    console.log('---roomList')
-    console.log(roomList)
-    console.log('---')
 
     // Step 1: Socket reestr
     this.state.socketReestr.delete(clientId)
