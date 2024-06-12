@@ -17,12 +17,12 @@ export const standartReportService = ({
   mws.checkAppVersion({ data: incData })
     .then((e) => {
       if (e.ok) {
-        state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip } })
+        state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent } })
         io
           .in(getChannelName(incData.room))
           .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPORT_EV, {
             message: 'New report',
-            report: { ...incData, _ip: ip },
+            report: { ...incData, _ip: ip, _userAgent: userAgent },
           })
         // -- NOTE: Report to Google Sheets
         try {

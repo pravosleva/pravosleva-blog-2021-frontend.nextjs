@@ -35,6 +35,8 @@ import Brightness1Icon from '@mui/icons-material/Brightness1'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone'
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 
 // const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -115,6 +117,24 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
   const handleGetTestedIframeToggle = useCallback(() => {
     setIsTestedIFrameOpened((s) => !s)
   }, [setIsTestedIFrameOpened])
+
+  const { enqueueSnackbar } = useSnackbar()
+  const showNotif = useCallback((msg: TSnackbarMessage, opts?: IOptionsObject) => {
+    if (!document.hidden) enqueueSnackbar(msg, {
+      ...opts,
+      action: (snackbarId) => (
+        <IconButton
+          onClick={() => closeSnackbar(snackbarId)}
+          size='small'
+        >
+          <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+        </IconButton>
+      ),
+    })
+  }, [])
+  const handleCopy = useCallback((_text: string) => {
+    showNotif('Copied', { variant: 'error', autoHideDuration: 5000 })
+  }, [])
 
   return (
     <>
@@ -235,23 +255,46 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'flex-start',
-                      gap: '0px',
+                      gap: '8px',
                       width: '100%',
                       fontSize: 'small',
                     }}
                     className={clsx(classes.commonInfo)}
                   >
                     <b>{viState.activeReport.stateValue.replace('stepMachine:', '')}</b>
-                    {
-                    !!viState.activeReport.imei && (
-                      <>
-                        <div>IMEI: <b>{viState.activeReport.imei}</b></div>
-                        {!!viState.activeReport._ip && (
-                          <div>IP: <b>{viState.activeReport._ip}</b></div>
-                        )}
-                      </>
-                    )
-                  }
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'flex-start',
+                        gap: '8px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          // alignItems: 'flex-start',
+                          gap: '0px',
+                          // minWidth: '120px',
+                          fontFamily: 'system-ui, monospace',
+                        }}
+                      >
+                        <div style={{ display: 'inline-flex', gap: '8px' }}><span>IMEI</span><b>{viState.activeReport.imei || 'No'}</b></div>
+                        {!!viState.activeReport._ip && <div style={{ display: 'inline-flex', gap: '8px' }}><span>IP</span><b>{viState.activeReport._ip}</b></div>}
+                        <div style={{ display: 'inline-flex', gap: '8px' }}>{viState.activeReport.appVersion}</div>
+                      </div>
+                      {
+                      !!viState.activeReport._userAgent && (
+                        <>
+                          <div
+                            style={{ borderRight: '1px solid black', minHeight: '100%', alignSelf: 'normal' }}
+                          />
+                          <div>{viState.activeReport._userAgent}</div>
+                        </>
+                      )
+                    }
+                    </div>
                   </div>
                 </div>
                 
@@ -265,12 +308,27 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                           : ''
                         : ''}`}
                       descritpion={
-                        <pre
-                          style={{ fontFamily: 'system-ui' }}
-                          className={classes.pre}
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            // </div>alignItems: 'flex-start',
+                            gap: '8px',
+                          }}
                         >
-                          {JSON.stringify(viState.activeReport.stepDetails, null, 4)}
-                        </pre>
+                          <CopyToClipboard
+                            text={JSON.stringify(viState.activeReport.stepDetails, null, 2)}
+                            onCopy={handleCopy}
+                          >
+                            <Button size='small' fullWidth variant='outlined' startIcon={<ContentCopyIcon />}>Copy to clipboard</Button>
+                          </CopyToClipboard>
+                          <pre
+                            style={{ fontFamily: 'system-ui' }}
+                            className={classes.pre}
+                          >
+                            {JSON.stringify(viState.activeReport.stepDetails, null, 4)}
+                          </pre>
+                        </div>
                       }
                     />
                   )

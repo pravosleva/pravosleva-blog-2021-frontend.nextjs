@@ -71,6 +71,7 @@ export namespace NEvent {
     gitSHA1?: string;
     specialClientKey?: string;
     _ip?: string;
+    _userAgent?: string;
   }
 }
 

@@ -89,6 +89,7 @@ export namespace NEvent {
     };
     specialClientKey?: string;
     _ip?: string;
+    _userAgent?: string;
   }
   export type TIncomingDataFormat = {
     report: TReport;

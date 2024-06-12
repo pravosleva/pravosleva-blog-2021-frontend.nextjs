@@ -96,7 +96,8 @@
 .stickyTopHeader {
   position: sticky;
   top: 0;
-  border-bottom: 1px solid lightgray;
+  // border-bottom: 1px solid lightgray;
+  box-shadow: 0 10px 7px -8px #223c5033; /* See also TOP: 0 -10px 7px -8px #223c5033 */
   background-color: #fff;
   // margin-bottom: 16px;
   font-weight: bold;
