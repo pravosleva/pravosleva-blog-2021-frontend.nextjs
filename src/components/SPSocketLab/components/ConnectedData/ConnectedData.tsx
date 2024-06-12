@@ -34,6 +34,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Brightness1Icon from '@mui/icons-material/Brightness1'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone'
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
 
 // const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -68,12 +69,36 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
   }, [setIsFiltersOpened])
 
   const [imeiFilter] = useStore((store: TSocketMicroStore) => store.imeiFilter)
+  const [appVersionFilter] = useStore((store: TSocketMicroStore) => store.clientAppVersionFilter)
+  const [ipFilter] = useStore((store: TSocketMicroStore) => store.ipFilter)
 
-  const hasAnyFilter = useMemo(() => !!imeiFilter, [imeiFilter])
+  const hasAnyFilter = useMemo(() => !!imeiFilter || !!appVersionFilter || !!ipFilter, [
+    imeiFilter,
+    appVersionFilter,
+    ipFilter,
+  ])
   const filteredReports = useMemo(() => {
-    if (!!imeiFilter) return viState.items.filter(({ imei }) => !!imei ? testTextByAnyWord({ text: imei, words: getNormalizedWordsArr(imeiFilter.split(' ').filter(str => !!str)) }) : false)
-    else return viState.items
-  }, [imeiFilter, viState.items])
+    if (hasAnyFilter) {
+      return viState.items
+        .filter(({ imei, _ip, appVersion }) => {
+          const results = []
+
+          if (!!imei && !!imeiFilter)
+            results.push(testTextByAnyWord({ text: imei, words: getNormalizedWordsArr(imeiFilter.split(' ').filter(str => !!str)) }))
+
+          // if (!!appVersion && !!appVersionFilter) 
+          //   results.push(testTextByAnyWord({ text: appVersion, words: [appVersionFilter] }))
+
+          if (!!appVersion && !!appVersionFilter) 
+            results.push(appVersion === appVersionFilter)
+
+          if (!!_ip && !!ipFilter)
+            results.push(testTextByAnyWord({ text: _ip, words: [ipFilter] }))
+          
+          return results.every((val) => val === true)
+        })
+    } else return viState.items
+  }, [hasAnyFilter, imeiFilter, appVersionFilter, ipFilter, viState.items])
 
   const datasizeInfo = useMemo(() => {
     const inB = sizeof(viState.items)
@@ -122,7 +147,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
             <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>SP exp</span>
             <Brightness1Icon color={isConnected ? 'success' : 'error'} />
           </Typography>
-          <div>Cache size <b>{datasizeInfo}</b> | Total reports <b>{viState.items.length}</b>{!!hasAnyFilter ? <><br /><span>Displayed reports <b>{filteredReports.length}</b></span></> : ''}</div>
+          <div>Cache size <b>{datasizeInfo}</b> | Total <b>{viState.items.length}</b> | <span>Displayed <b>{hasAnyFilter ? filteredReports.length : 'all'}</b></span>
+          </div>
         </ResponsiveBlock>
       </div>
       <ResponsiveBlock
@@ -133,6 +159,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           // borderBottom: '1px solid lightgray',
           padding: '32px 0 32px 0',
         }}
+        className='fadeIn'
       >
         <Stack spacing={2}>
           <div
@@ -140,7 +167,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
               display: 'flex',
               flexDirection: 'column',
               // border: '1px solid red',
-              gap: '0px',
+              gap: '16px',
             }}
           >
             {filteredReports.map((ps) => (
@@ -191,7 +218,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           )
         }
         <iframe
-          src='https://pravosleva.pro/dist.sp-tradein-2023/?debug=1'
+          src='https://pravosleva.pro/dist.sp-tradein-2023/#/?debug=1'
           // height='500px'
           // width='500px'
           className={clsx(classes.fixedTop, classes.fixedTopSPClientFrame, { [classes.isOpened]: isTestedIFrameOpened })}
@@ -201,20 +228,37 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           !!viState.activeReport && (
             <>
               <div className={clsx(classes.fixedTop, classes.fixedTopActiveReport, 'backdrop-blur', 'fade-in-speed-2')}>
-                <div className={classes.stickyTopHeader}>
-                  <div>{viState.activeReport.stateValue.replace('stepMachine:', '')}</div>
+                
+                <div className={clsx(classes.stickyTopHeader)}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '0px',
+                      width: '100%',
+                      fontSize: 'small',
+                    }}
+                    className={clsx(classes.commonInfo)}
+                  >
+                    <b>{viState.activeReport.stateValue.replace('stepMachine:', '')}</b>
+                    {
+                    !!viState.activeReport.imei && (
+                      <>
+                        <div>IMEI: <b>{viState.activeReport.imei}</b></div>
+                        {!!viState.activeReport._ip && (
+                          <div>IP: <b>{viState.activeReport._ip}</b></div>
+                        )}
+                      </>
+                    )
+                  }
+                  </div>
                 </div>
-                {
-                  !!viState.activeReport.imei && (
-                    <ResponsiveBlock style={{ padding: '0 16px 0 16px', margin: '0 0 16px 0' }}>
-                      <b className='inline-code'>{viState.activeReport.imei}</b>
-                    </ResponsiveBlock>
-                  )
-                }
+                
                 {
                   viState.activeReport.stepDetails && (
                     <CollapsibleBox
-                      label={`⚙️ Step details${
+                      label={`Step details${
                         !!viState.activeReport._wService
                         ? viState.activeReport._wService?._perfInfo.tsList.length > 2
                           ? ` (${getTimeDiff({ startDate: new Date(viState.activeReport._wService._perfInfo.tsList[1].ts), finishDate: new Date(viState.activeReport._wService._perfInfo.tsList[viState.activeReport._wService._perfInfo.tsList.length - 1].ts) }).message})`
@@ -303,7 +347,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
               flexDirection: 'column',
               gap: '16px',
             }}
-            className='backdrop-blur--lite'
+            className={clsx(['backdrop-blur--lite', 'fadeIn'])}
           >
             {
               !isTestedIFrameOpened && isFiltersOpened && <FiltersContent />
@@ -323,22 +367,23 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Online</span>
+                    <span className='truncate'>Offline</span>
                   </Button>
                 ) : (
                   <Button
                     ref={disconnectBtnRef}
                     size='small'
-                    startIcon={<CloseIcon />}
+                    // startIcon={<CloseIcon />}
+                    startIcon={<PowerSettingsNewIcon />}
                     fullWidth
-                    variant="outlined"
-                    color='primary'
+                    variant='contained'
+                    color='success'
                     onClick={() => onDisconnClick(connectBtnRef)}
                     // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
-                    endIcon={<Brightness1Icon color='success' />}
+                    endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Disconnect</span>
+                    <span className='truncate'>Online</span>
                   </Button>
                 )
               }
@@ -347,7 +392,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                 startIcon={<FilterAltIcon />}
                 fullWidth
                 variant={hasAnyFilter ? 'contained' : 'outlined'}
-                color={isFiltersOpened ? 'error' : 'secondary'}
+                color={hasAnyFilter ? 'error' : 'primary'}
                 onClick={filtersToggle}
                 endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
                 disabled={!isConnected || isTestedIFrameOpened}
@@ -369,14 +414,15 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
               zIndex: 2,
               padding: '16px',
               width: '500px',
-              boxShadow: 'rgba(0, 0, 0, 0.2) 0px 0px 10px 4px',
+              // boxShadow: 'rgba(0, 0, 0, 0.2) 0px 0px 10px 4px',
+              boxShadow: '0 14px 30px -8px rgba(0,0,0,.2)',
               borderTopRightRadius: '16px',
 
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
             }}
-            className={clsx('backdrop-blur--lite')}
+            className={clsx(['backdrop-blur--lite', 'fadeIn'])}
           >
             {
               isFiltersOpened && <FiltersContent />
@@ -396,22 +442,23 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Online</span>
+                    <span className='truncate'>Offline</span>
                   </Button>
                 ) : (
                   <Button
                     ref={disconnectBtnRef}
                     size='small'
-                    startIcon={<CloseIcon />}
+                    // startIcon={<CloseIcon />}
+                    startIcon={<PowerSettingsNewIcon />}
                     fullWidth
-                    variant="outlined"
-                    color='primary'
+                    variant='contained'
+                    color='success'
                     onClick={() => onDisconnClick(connectBtnRef)}
                     // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
-                    endIcon={<Brightness1Icon color='success' />}
+                    endIcon={<Brightness1Icon />}
                     disabled={!isConnected}
                   >
-                    <span className='truncate'>Disconnect</span>
+                    <span className='truncate'>Online</span>
                   </Button>
                 )
               }
@@ -420,7 +467,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                 startIcon={<FilterAltIcon />}
                 fullWidth
                 variant={hasAnyFilter ? 'contained' : 'outlined'}
-                color={isFiltersOpened ? 'error' : 'secondary'}
+                color={hasAnyFilter ? 'error' : 'primary'}
                 onClick={filtersToggle}
                 endIcon={isFiltersOpened ? <ExpandMoreIcon /> : <ExpandLessIcon />}
                 disabled={!isConnected || isTestedIFrameOpened}

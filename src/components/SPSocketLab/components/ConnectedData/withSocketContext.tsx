@@ -10,6 +10,8 @@ export type TSocketMicroStore = {
   reportItems: any[];
   
   imeiFilter: string | null;
+  clientAppVersionFilter: string | null;
+  ipFilter: string | null;
 }
 export const initialState = {
   isConnected: false,
@@ -17,6 +19,8 @@ export const initialState = {
   reportItems: [],
 
   imeiFilter: null,
+  clientAppVersionFilter: null,
+  ipFilter: null,
 }
 const { Provider, useStore } = createFastContext<TSocketMicroStore>(initialState);
 
@@ -84,6 +88,7 @@ export namespace NEvent {
       };
     };
     specialClientKey?: string;
+    _ip?: string;
   }
   export type TIncomingDataFormat = {
     report: TReport;

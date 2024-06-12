@@ -301,7 +301,7 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
                                 color:
                                   props.activeEmployee === employee
                                     ? "#e46046"
-                                    : "rgb(0, 191, 255)",
+                                    : "#0162c8",
                               }}
                             >
 
@@ -536,7 +536,13 @@ export const withLeftSidebar = (ComposedComponent: React.ReactNode): React.React
               <p>taskList= {JSON.stringify(props.taskList)}<br />testDates= {JSON.stringify(props.testDates)}</p>
               */}
               <Block>
-                <Note>
+                <Note
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                  }}
+                >
                   <CollapsibleBox
                     label='Что нужно для появления статистики?'
                     descritpion={

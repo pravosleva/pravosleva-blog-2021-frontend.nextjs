@@ -103,12 +103,16 @@ export const ReportListItem = memo((ps: TProps) => {
           <Chip label={ps.report.appVersion} />
         </div>
       </div>
+
       <div
         style={{
           maxWidth: '100%',
           width: '100%',
           // paddingLeft: '8px',
-          // borderLeft: '4px solid lightgray'
+          // borderLeft: '4px solid lightgray',
+          display: isOpened ? 'flex' : 'none',
+          flexDirection: 'column',
+          gap: '16px',
         }}
       >
         {
@@ -122,7 +126,7 @@ export const ReportListItem = memo((ps: TProps) => {
                 {
                   ps.report.stepDetails && (
                     <CollapsibleBox
-                      label={`⚙️ Step details${ps.report._wService?._perfInfo.tsList.length > 2 ? ` (${getTimeDiff({ startDate: new Date(ps.report._wService._perfInfo.tsList[1].ts), finishDate: new Date(ps.report._wService._perfInfo.tsList[ps.report._wService._perfInfo.tsList.length - 1].ts) }).message})` : ''}`}
+                      label={`Step details${ps.report._wService?._perfInfo.tsList.length > 2 ? ` (${getTimeDiff({ startDate: new Date(ps.report._wService._perfInfo.tsList[1].ts), finishDate: new Date(ps.report._wService._perfInfo.tsList[ps.report._wService._perfInfo.tsList.length - 1].ts) }).message})` : ''}`}
                       descritpion={
                         <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
                           {JSON.stringify(ps.report.stepDetails, null, 4)}
@@ -155,14 +159,12 @@ export const ReportListItem = memo((ps: TProps) => {
                 */}
               </>
           ) : (
-            <div>
-              <pre
-                style={{ fontFamily: 'system-ui' }}
-                className={classes.pre}
-              >
-                {JSON.stringify(ps.report, null, 4)}
-              </pre>
-            </div>
+            <pre
+              style={{ fontFamily: 'system-ui' }}
+              className={classes.pre}
+            >
+              {JSON.stringify(ps.report, null, 4)}
+            </pre>
           ))
         }
       </div>

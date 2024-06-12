@@ -4,7 +4,7 @@ import {
   // snapshot,
 } from 'valtio/vanilla'
 // NOTE: See also https://valtio.pmnd.rs/docs/introduction/getting-started
-import { NEvent } from './types'
+import { NEvent } from '~/srv.socket-logic/withSP/types'
 
 type TRoomId = string
 type TState = {

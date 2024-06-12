@@ -53,7 +53,7 @@ export const withLab = (io: Socket) => {
             notistackProps: {
               anchorOrigin: {
                 vertical: 'bottom',
-                horizontal: 'left',
+                horizontal: 'right',
               },
             },
           })
@@ -105,7 +105,7 @@ export const withLab = (io: Socket) => {
               notistackProps: {
                 anchorOrigin: {
                   vertical: 'bottom',
-                  horizontal: 'left',
+                  horizontal: 'right',
                 },
               },
             })
@@ -165,7 +165,7 @@ export const withLab = (io: Socket) => {
                 autoHideDuration: 35 * 1000,
                 anchorOrigin: {
                   vertical: 'bottom',
-                  horizontal: 'left',
+                  horizontal: 'right',
                 },
               },
             })
@@ -179,7 +179,7 @@ export const withLab = (io: Socket) => {
             notistackProps: {
               anchorOrigin: {
                 vertical: 'bottom',
-                horizontal: 'left',
+                horizontal: 'right',
               },
             },
           })
@@ -211,7 +211,7 @@ export const withLab = (io: Socket) => {
             notistackProps: {
               anchorOrigin: {
                 vertical: 'bottom',
-                horizontal: 'left',
+                horizontal: 'right',
               },
             },
           })

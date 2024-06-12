@@ -2,7 +2,7 @@ import * as React from 'react'
 import TextField from '@mui/material/TextField'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 
-type TOption = {
+export type TOption = {
   inputValue?: string;
   label: string;
   value: string;
