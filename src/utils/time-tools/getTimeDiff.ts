@@ -1,4 +1,5 @@
 export const getZero = (n: number): string => n < 10 ? `0${n}` : `${n}`
+export const getZero2 = (n: number): string => n < 10 ? `00${n}` : n < 100 ? `0${n}` : `${n}`
 
 const difference2Parts = (milliseconds: number) => {
   const secs = Math.floor(Math.abs(milliseconds) / 1000);

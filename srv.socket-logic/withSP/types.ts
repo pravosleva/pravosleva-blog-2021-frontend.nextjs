@@ -72,6 +72,7 @@ export namespace NEvent {
     specialClientKey?: string;
     _ip?: string;
     _userAgent?: string;
+    _clientReferer?: string;
   }
 }
 

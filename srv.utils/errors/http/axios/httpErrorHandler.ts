@@ -2,7 +2,7 @@ import { HttpError } from '~/srv.utils/errors/http/HttpError'
 import { AxiosResponse } from 'axios'
 
 export const httpErrorHandler = (obj: AxiosResponse): any | HttpError => {
-  console.log(obj)
+  // console.log(obj)
   /* NOTE: obj[key] example
   data: {
     data: null,

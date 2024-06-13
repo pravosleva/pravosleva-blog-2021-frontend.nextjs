@@ -125,7 +125,7 @@ export const withLab = (io: Socket) => {
                 autoHideDuration: quoteNotifAutoHideLimitInMinutes * 60 * 1000,
                 anchorOrigin: {
                   vertical: 'bottom',
-                  horizontal: 'left',
+                  horizontal: 'center',
                 },
               },
             })

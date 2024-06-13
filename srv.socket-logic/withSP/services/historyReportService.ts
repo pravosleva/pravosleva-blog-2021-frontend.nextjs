@@ -8,21 +8,28 @@ export const historyReportService = ({
   io,
   socket,
   clientUserAgent: userAgent,
+  clientReferer,
 }: {
   ip?: string;
   io: Socket;
   socket: Socket;
   clientUserAgent?: string;
-}) => (incData: NEvent.TReport) => {
+  clientReferer?: string;
+}) => (incData: NEvent.TReport, cb?: ({ message, ok }: { message: string, ok: boolean }) => void) => {
   mws.checkAppVersion({ data: incData })
     .then(async (e) => {
+      console.log('-- EV LOG:historyReportService')
+      console.log(e)
+      console.log(incData)
+      console.log('-- /EV')
+      
       if (e.ok) {
-        state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent } })
+        state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer } })
         io
           .in(getChannelName(incData.room))
           .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPORT_EV, {
             message: 'New report',
-            report: { ...incData, _ip: ip, _userAgent: userAgent },
+            report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer },
           })
         // -- NOTE: Report to Google Sheets
         try {
@@ -47,6 +54,7 @@ export const historyReportService = ({
                 specialClientKey: incData.specialClientKey,
                 ip,
                 userAgent,
+                clientReferer,
               },
             )
 
@@ -73,6 +81,7 @@ export const historyReportService = ({
                     '',
                     `\`IP: ${ip || 'No'}\``,
                     `\`IMEI: ${incData.imei || 'No'}\``,
+                    `\`Client referer: ${clientReferer || 'No'}\``,
                     '',
                     !!incData.stepDetails?.commentByUser
                       ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
@@ -82,6 +91,7 @@ export const historyReportService = ({
               )
             } else {
               const uiMsg = result.response.id ? `Ok #${result.response.id}` : 'Ok'
+              if (typeof cb === 'function') cb({ message: uiMsg, ok: true })
               io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_OK, {
                 _message: 'Данные сохранены в Google Sheets',
                 message: uiMsg,
@@ -92,6 +102,7 @@ export const historyReportService = ({
           else throw new Error(validated.reason || 'No reason')
         } catch (err: any) {
           const message = `Не удалось нормально обработать ивент. Причина: ${err.message || 'No err.message'}`
+          if (typeof cb === 'function') cb({ message, ok: false })
           io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR, {
             message,
             yourData: incData,
@@ -112,6 +123,7 @@ export const historyReportService = ({
                 '',
                 `\`IP: ${ip || 'No'}\``,
                 `\`IMEI: ${incData.imei || 'No'}\``,
+                `\`Received from: ${clientReferer || 'No'}\``,
               ].join('\n'),
             },
           )
@@ -121,9 +133,10 @@ export const historyReportService = ({
       else throw new Error(e.reason || 'ERR (no reason)')
     })
     .catch((err) => {
+      if (typeof cb === 'function') cb({ ok: false, message: `Dont reconnect. Reason: ${err?.reason || 'No reason'}` })
       io.to(socket.id).emit(NEvent.ServerOutgoing.DONT_RECONNECT, {
         socketId: socket.id,
-        message: err?.reason || 'ERR',
+        message: err?.reason || 'No reason',
         yourData: incData,
         _info: err?._info,
       })

@@ -37,6 +37,15 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone'
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { CollapsibleBox as NewCollapsibleBox } from '~/ui-kit.sp-tradein2024-devtools'
+import collapsibleBoxClasses from '~/ui-kit.sp-tradein2024-devtools/CollapsibleBox/CollapsibleBox.module.scss'
+import baseClasses from '~/ui-kit.sp-tradein2024-devtools/Base.module.scss'
+// import { getNormalizedDateTime4 } from '~/utils/time-tools/timeConverter'
+// import HighlightOffIcon from '@mui/icons-material/HighlightOff'
+// import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
+// import TimelapseIcon from '@mui/icons-material/Timelapse'
+// import WarningIcon from '@mui/icons-material/Warning'
+import { XHRReport } from './components'
 
 // const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -285,21 +294,22 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                         <div style={{ display: 'inline-flex', gap: '8px' }}>{viState.activeReport.appVersion}</div>
                       </div>
                       {
-                      !!viState.activeReport._userAgent && (
-                        <>
-                          <div
-                            style={{ borderRight: '1px solid black', minHeight: '100%', alignSelf: 'normal' }}
-                          />
-                          <div>{viState.activeReport._userAgent}</div>
-                        </>
-                      )
-                    }
+                        !!viState.activeReport._userAgent && (
+                          <>
+                            <div
+                              style={{ borderRight: '1px solid black', minHeight: '100%', alignSelf: 'normal' }}
+                            />
+                            <div>{viState.activeReport._userAgent}</div>
+                          </>
+                        )
+                      }
                     </div>
+                    {!!viState.activeReport._clientReferer && <div style={{ display: 'inline-flex', gap: '8px' }}><span>{viState.activeReport._clientReferer}</span></div>}
                   </div>
                 </div>
                 
                 {
-                  viState.activeReport.stepDetails && (
+                  !!viState.activeReport.stepDetails && (
                     <CollapsibleBox
                       label={`Step details${
                         !!viState.activeReport._wService
@@ -312,8 +322,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                           style={{
                             display: 'flex',
                             flexDirection: 'column',
-                            // </div>alignItems: 'flex-start',
-                            gap: '8px',
+                            // alignItems: 'flex-start',
+                            gap: '16px',
                           }}
                         >
                           <CopyToClipboard
@@ -322,12 +332,132 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                           >
                             <Button size='small' fullWidth variant='outlined' startIcon={<ContentCopyIcon />}>Copy to clipboard</Button>
                           </CopyToClipboard>
-                          <pre
+                          {/* <pre
                             style={{ fontFamily: 'system-ui' }}
                             className={classes.pre}
                           >
                             {JSON.stringify(viState.activeReport.stepDetails, null, 4)}
-                          </pre>
+                          </pre> */}
+
+                          <div
+                            className={clsx(
+                              // classes.wrapper,
+                              baseClasses.stack0,
+                              baseClasses.truncate,
+                              collapsibleBoxClasses.wrapperV1,
+                            )}
+                            style={{
+                              width: '100%',
+                              // border: '1px solid red',
+                              // maxHeight: '305px',
+                              // overflowY: 'auto',
+                              fontWeight: 'bold',
+                            }}
+                          >
+                            <NewCollapsibleBox
+                              title='stepDetails'
+                              level={1}
+                            >
+                              {
+                                Object.keys(viState.activeReport.stepDetails).map((key) => {
+                                  if (
+                                    typeof viState.activeReport?.stepDetails?.[key] === 'string'
+                                    || typeof viState.activeReport?.stepDetails?.[key] === 'number'
+                                  ) return (
+                                    <NewCollapsibleBox
+                                      title={key}
+                                      key={key}
+                                      level={2}
+                                    >
+                                      <pre className={clsx(baseClasses.preStyled)}>
+                                        {viState.activeReport?.stepDetails?.[key]}
+                                      </pre>
+                                    </NewCollapsibleBox>
+                                  )
+                                  else if (typeof viState.activeReport?.stepDetails?.[key] === 'object' && !viState.activeReport?.stepDetails?.[key]) return (
+                                    <NewCollapsibleBox
+                                      title={key}
+                                      key={key}
+                                      level={2}
+                                    >
+                                      <pre className={clsx(baseClasses.preStyled)}>
+                                        {String(viState.activeReport?.stepDetails?.[key])}
+                                      </pre>
+                                    </NewCollapsibleBox>
+                                  )
+                                  else return (
+                                    <NewCollapsibleBox
+                                      title={key}
+                                      key={key}
+                                      level={2}
+                                    >
+                                      {
+                                        Object.keys(viState.activeReport?.stepDetails?.[key]).map((partOfNetwork) => {
+                                          if (
+                                            typeof viState.activeReport?.stepDetails?.[key][partOfNetwork] === 'string'
+                                            || typeof viState.activeReport?.stepDetails?.[key][partOfNetwork] === 'number'
+                                          ) return (
+                                            <NewCollapsibleBox
+                                              title={partOfNetwork}
+                                              key={partOfNetwork}
+                                              level={3}
+                                            >
+                                              <pre className={clsx(baseClasses.preStyled)}>
+                                                {viState.activeReport?.stepDetails?.[key][partOfNetwork]}
+                                              </pre>
+                                            </NewCollapsibleBox>
+                                          )
+                                          else if (typeof viState.activeReport?.stepDetails?.[key][partOfNetwork] === 'object' && !viState.activeReport?.stepDetails?.[key][partOfNetwork]) return (
+                                            <NewCollapsibleBox
+                                              title={partOfNetwork}
+                                              key={partOfNetwork}
+                                              level={3}
+                                            >
+                                              <pre className={clsx(baseClasses.preStyled)}>
+                                                {String(viState.activeReport?.stepDetails?.[key][partOfNetwork])}
+                                              </pre>
+                                            </NewCollapsibleBox>
+                                          )
+                                          else return (
+                                            <NewCollapsibleBox
+                                              title={partOfNetwork}
+                                              key={partOfNetwork}
+                                              level={3}
+                                            >
+                                              {
+                                                Object.keys(viState.activeReport?.stepDetails?.[key][partOfNetwork]).map((tsstr) => {
+                                                  if (
+                                                    key === 'network'
+                                                    && partOfNetwork === 'xhr'                                                    && tsstr === 'state'
+                                                  ) return (
+                                                    <XHRReport
+                                                      xhr={viState.activeReport?.stepDetails?.[key][partOfNetwork]}
+                                                      level={4}
+                                                    />
+                                                  )
+                                                  else return (
+                                                    <NewCollapsibleBox
+                                                      title={tsstr}
+                                                      key={tsstr}
+                                                      level={4}
+                                                    >
+                                                      <pre className={clsx(baseClasses.preStyled)}>
+                                                        {JSON.stringify(viState.activeReport?.stepDetails?.[key][partOfNetwork][tsstr], null, 2)}
+                                                    </pre>
+                                                  </NewCollapsibleBox>
+                                                )
+                                              })
+                                              }
+                                            </NewCollapsibleBox>
+                                          )
+                                        })
+                                      }
+                                    </NewCollapsibleBox>
+                                  )
+                                })
+                              }
+                            </NewCollapsibleBox>
+                          </div>
                         </div>
                       }
                     />

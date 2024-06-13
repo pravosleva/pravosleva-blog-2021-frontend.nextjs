@@ -11,11 +11,16 @@ export const withSP = (io: Socket) => {
   io.on('connection', function (socket: Socket) {
     let ip: string | undefined
     let userAgent: string | undefined
+    let clientReferer: string | undefined
+
+    console.log('- EV LOG: socket connection: socket.handshake.headers')
+    console.log(socket.handshake.headers)
+    console.log('- /EV')
     
     // -- MOTE: 1. Get IP adress exp
     // const ip = socket.handshake.address // NOTE: Doesnt work
     try {
-      const possibleHeaders: {
+      const possibleHeadersForHaveIP: {
         [key: string]: {
           converter: ({ val }: { val: any; }) => string | undefined;
         };
@@ -27,15 +32,17 @@ export const withSP = (io: Socket) => {
         // 'cf-connecting-ip': { converter: ({ val }) => val },
         // 'fastly-client-ip': { converter: ({ val }) => val },
       }
-      for (const header in possibleHeaders) {
+      for (const header in possibleHeadersForHaveIP) {
         if (
           !!socket.handshake.headers?.[header]
           && typeof socket.handshake.headers?.[header] === 'string'
         ) {
-          ip = possibleHeaders[header].converter({ val: socket.handshake.headers?.[header] })
+          ip = possibleHeadersForHaveIP[header].converter({ val: socket.handshake.headers?.[header] })
           if (!!ip) break
         }
       }
+
+      if (typeof socket.handshake.headers.referer === 'string') clientReferer = socket.handshake.headers.referer
     } catch (err) {
       // NOTE: Have no idea yet...
       console.log(err)
@@ -81,11 +88,19 @@ export const withSP = (io: Socket) => {
         })
     }
 
+    socket.prependAny((eventName, ...args) => {
+      console.log('-- prependAny LOG')
+      console.log(eventName)
+      console.log(args)
+      console.log('-- /prependAny LOG')
+    })
+
     socket.on(NEvent.ServerIncoming.SP_MX_EV, standartReportService({
       ip,
       io,
       socket,
       clientUserAgent: userAgent,
+      clientReferer,
     }))
 
     socket.on(NEvent.ServerIncoming._SP_HISTORY_REPORT_EV_DEPRECATED, historyReportService({
@@ -93,6 +108,7 @@ export const withSP = (io: Socket) => {
       io,
       socket,
       clientUserAgent: userAgent,
+      clientReferer,
     }))
 
     socket.on(NEvent.ServerIncoming.SP_HISTORY_REPORT_EV, historyReportService({
@@ -100,7 +116,15 @@ export const withSP = (io: Socket) => {
       io,
       socket,
       clientUserAgent: userAgent,
+      clientReferer,
     }))
+
+    socket.onAny((eventName, ...args) => {
+      console.log('-- onAny LOG')
+      console.log(eventName)
+      console.log(args)
+      console.log('-- /onAny LOG')
+    })
 
     // socket.on('disconnect', (reason: TDisconnectReason) => {})
   })

@@ -1,0 +1,114 @@
+// @import '~/scss-vars/sizes.scss';
+
+// NOTE: Common
+$common-control-elements-radius: 10px;
+$common-control-elements-radius-2: 20px;
+$common-control-elements-border-width: 1px;
+
+// Devtools
+$collapsible-box-toggler-height: 40;
+$collapsible-box-toggler-pad: 12;
+
+// .wrapper {
+//   border-left: 4px solid lightgray;
+//   & > * {
+//     padding-left: 0px;
+//   }
+// }
+
+.wrapperV1 {
+  border-radius: $common-control-elements-radius;
+
+  // border: 1px solid red;
+  // max-height: calc(100dvh - 200px);
+  // overflow-y: auto;
+
+  & > *:first-child {
+    border-top-left-radius: $common-control-elements-radius;
+    border-top-right-radius: $common-control-elements-radius;
+  }
+  & > *:last-child {
+    border-bottom-left-radius: $common-control-elements-radius;
+    border-bottom-right-radius: $common-control-elements-radius;
+  }
+}
+
+.toggler {
+  font-size: 0.8rem;
+
+  cursor: pointer;
+  border: none;
+  width: 100%;
+
+  text-align: left;
+
+  white-space: nowrap;
+  // overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+
+  color: #fff;
+  z-index: 4;
+  background-color: rgba(0, 0, 0, 1);
+  padding: 0px 8px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center !important;
+  gap: 8px;
+
+  &:hover {
+    color: #f9f871;
+    // background-color: rgba(0, 0, 0, 1);
+  }
+  &:active,
+  &:focus {
+    color: #75fac8;
+  }
+
+  height: #{$collapsible-box-toggler-height}px;
+  min-height: #{$collapsible-box-toggler-height}px;
+  line-height: #{$collapsible-box-toggler-height}px;
+
+  font-weight: bold;
+
+  position: sticky;
+  top: 0px;
+  &_level_1 {
+    top: #{$collapsible-box-toggler-height * 0}px;
+    padding: 0px #{$collapsible-box-toggler-pad}px;
+    z-index: 4;
+  }
+  &_level_2 {
+    top: #{$collapsible-box-toggler-height * 1}px;
+    padding-left: #{$collapsible-box-toggler-pad * 2}px;
+    z-index: 3;
+  }
+  &_level_3 {
+    top: #{$collapsible-box-toggler-height * 2}px;
+    padding-left: #{$collapsible-box-toggler-pad * 3}px;
+    z-index: 2;
+  }
+  &_level_4 {
+    top: #{$collapsible-box-toggler-height * 3}px;
+    padding-left: #{$collapsible-box-toggler-pad * 4}px;
+    z-index: 1;
+  }
+  &_level_5 {
+    top: #{$collapsible-box-toggler-height * 4}px;
+    padding-left: #{$collapsible-box-toggler-pad * 5}px;
+    z-index: 1;
+  }
+  &_level_6 {
+    top: #{$collapsible-box-toggler-height * 5}px;
+    padding-left: #{$collapsible-box-toggler-pad * 6}px;
+    z-index: 1;
+  }
+  &_level_7 {
+    top: #{$collapsible-box-toggler-height * 6}px;
+    padding-left: #{$collapsible-box-toggler-pad * 7}px;
+    z-index: 1;
+  }
+}

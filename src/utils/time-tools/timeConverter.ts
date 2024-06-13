@@ -1,3 +1,5 @@
+import { getZero, getZero2 } from './getTimeDiff'
+
 //NOTE: See also: https://github.com/pravosleva/pravosleva-blog-frontend-nextjs/blob/master/utils/timeConverter.js
 
 // 18:15
@@ -72,4 +74,14 @@ export const getFormatedDate2 = (inputDate: Date, lang = 'ru-RU') => {
   const monthIndex = inputDate.getMonth()
 
   return `${date} ${monthNames[monthIndex]}, ${inputDate.getFullYear()}`
+}
+
+// 09.11.2020 18:15:45.001
+export const getNormalizedDateTime4 = (date: string | number) => {
+  // const dt = new Date(sec * 10 ** 3)
+  const dt = new Date(date)
+  const seconds = dt.getSeconds()
+  const milliseconds = dt.getMilliseconds()
+
+  return `${getNormalizedDate(date)} ${getHoursMinutesBySeconds(date)}:${getZero(seconds)}.${getZero2(milliseconds)}`
 }

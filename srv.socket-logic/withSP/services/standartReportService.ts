@@ -8,46 +8,52 @@ export const standartReportService = ({
   io,
   socket,
   clientUserAgent: userAgent,
+  clientReferer,
 }: {
   ip?: string;
   io: Socket;
   socket: Socket;
   clientUserAgent?: string;
-}) => (incData: NEvent.TReport) => {
+  clientReferer?: string;
+}) => (incData: NEvent.TReport, cb?: ({ message, ok }: { message: string, ok: boolean }) => void) => {
   mws.checkAppVersion({ data: incData })
     .then((e) => {
       if (e.ok) {
-        state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent } })
+        state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer } })
         io
           .in(getChannelName(incData.room))
           .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPORT_EV, {
             message: 'New report',
-            report: { ...incData, _ip: ip, _userAgent: userAgent },
+            report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer },
           })
         // -- NOTE: Report to Google Sheets
         try {
           const validated = getIsCorrectFormat(incData)
-          if (validated.ok) universalHttpClient.post(
-            '/express-helper/sp/report/v2/offline-tradein/mtsmain2024/send',
-            {
-              eventCode: 'common',
-              appVersion: incData.appVersion,
-              room: incData.room,
-              metrixEventType: incData.metrixEventType,
-              stateValue: incData.stateValue,
-              reportType: incData.reportType,
-              stepDetails: incData.stepDetails || undefined,
-              imei: incData.imei,
-              ts: incData.ts,
-              tradeinId: incData.tradeinId,
-              uniquePageLoadKey: incData.uniquePageLoadKey,
-              uniqueUserDataLoadKey: incData.uniqueUserDataLoadKey,
-              gitSHA1: incData.gitSHA1,
-              specialClientKey: incData.specialClientKey,
-              ip,
-              userAgent,
-            },
-          )
+          if (validated.ok) {
+            universalHttpClient.post(
+              '/express-helper/sp/report/v2/offline-tradein/mtsmain2024/send',
+              {
+                eventCode: 'common',
+                appVersion: incData.appVersion,
+                room: incData.room,
+                metrixEventType: incData.metrixEventType,
+                stateValue: incData.stateValue,
+                reportType: incData.reportType,
+                stepDetails: incData.stepDetails || undefined,
+                imei: incData.imei,
+                ts: incData.ts,
+                tradeinId: incData.tradeinId,
+                uniquePageLoadKey: incData.uniquePageLoadKey,
+                uniqueUserDataLoadKey: incData.uniqueUserDataLoadKey,
+                gitSHA1: incData.gitSHA1,
+                specialClientKey: incData.specialClientKey,
+                ip,
+                userAgent,
+                clientReferer,
+              },
+            )
+            if (typeof cb === 'function') cb({ message: 'Ok: Отправлено. Результат не проверял', ok: true })
+          }
           else throw new Error(validated.reason || 'No reason')
         } catch (err: any) {
           const ts = new Date().getTime()
@@ -65,9 +71,11 @@ export const standartReportService = ({
                 '',
                 `\`IP: ${ip || 'No'}\``,
                 `\`IMEI: ${incData.imei || 'No'}\``,
+                `\`Client referer: ${clientReferer || 'No'}\``,
               ].join('\n'),
             },
           )
+          if (typeof cb === 'function') cb({ message: err?.message || 'No err.message', ok: false })
         }
         // --
       }
@@ -80,6 +88,7 @@ export const standartReportService = ({
         yourData: incData,
         _info: err?._info,
       })
+      if (typeof cb === 'function') cb({ ok: false, message: `Dont reconnect. Reason: ${err?.reason || 'No reason'}` })
       setTimeout(() => {
         socket.conn.close()
       }, 1000)
