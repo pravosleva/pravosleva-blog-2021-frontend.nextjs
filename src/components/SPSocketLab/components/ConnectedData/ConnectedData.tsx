@@ -327,7 +327,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                           }}
                         >
                           <CopyToClipboard
-                            text={JSON.stringify(viState.activeReport.stepDetails, null, 2)}
+                            text={JSON.stringify(viState.activeReport.stepDetails, null, 4)}
                             onCopy={handleCopy}
                           >
                             <Button size='small' fullWidth variant='outlined' startIcon={<ContentCopyIcon />}>Copy to clipboard</Button>
@@ -415,7 +415,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                                                       level={4}
                                                     >
                                                       <pre className={clsx(baseClasses.preStyled)}>
-                                                        {JSON.stringify(viState.activeReport?.stepDetails?.[key][partOfNetwork][tsstr], null, 2)}
+                                                        {JSON.stringify(viState.activeReport?.stepDetails?.[key][partOfNetwork][tsstr], null, 4)}
                                                       </pre>
                                                     </NewCollapsibleBox>
                                                   )

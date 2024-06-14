@@ -17,7 +17,7 @@ import baseClasses from '~/ui-kit.sp-tradein2024-devtools/Base.module.scss'
   level={4}
 >
   <pre className={clsx(baseClasses.preStyled)}>
-    {JSON.stringify(viState.activeReport?.stepDetails?.[key][partOfNetwork][tsstr], null, 2)}
+    {JSON.stringify(viState.activeReport?.stepDetails?.[key][partOfNetwork][tsstr], null, 4)}
   </pre>
 </NewCollapsibleBox>
 */
@@ -84,7 +84,7 @@ export const XHRReport = memo(({ xhr, level }: TProps) => {
                     }
                   >
                     <pre className={clsx(baseClasses.preStyled)}>
-                      {JSON.stringify(xhr.state[url][tsstr], null, 2)}
+                      {JSON.stringify(xhr.state[url][tsstr], null, 4)}
                     </pre>
                   </CollapsibleBox>
                 ))
