@@ -407,18 +407,10 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                                               </pre>
                                             </NewCollapsibleBox>
                                           )
-                                          else if (typeof viState.activeReport?.stepDetails?.[key][partOfNetwork] === 'object' && !viState.activeReport?.stepDetails?.[key][partOfNetwork]) return (
-                                            <NewCollapsibleBox
-                                              title={partOfNetwork}
-                                              key={partOfNetwork}
-                                              level={3}
-                                            >
-                                              <pre className={clsx(baseClasses.preStyled)}>
-                                                {String(viState.activeReport?.stepDetails?.[key][partOfNetwork])}
-                                              </pre>
-                                            </NewCollapsibleBox>
-                                          )
-                                          else return (
+                                          else if (
+                                            typeof viState.activeReport?.stepDetails?.[key][partOfNetwork] === 'object'
+                                            && !!viState.activeReport?.stepDetails?.[key][partOfNetwork]
+                                          ) return (
                                             <NewCollapsibleBox
                                               title={partOfNetwork}
                                               key={partOfNetwork}
@@ -428,7 +420,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                                                 Object.keys(viState.activeReport?.stepDetails?.[key][partOfNetwork]).map((tsstr) => {
                                                   if (
                                                     key === 'network'
-                                                    && partOfNetwork === 'xhr'                                                    && tsstr === 'state'
+                                                    && partOfNetwork === 'xhr'
+                                                    && tsstr === 'state'
                                                   ) return (
                                                     <XHRReport
                                                       xhr={viState.activeReport?.stepDetails?.[key][partOfNetwork]}
@@ -443,11 +436,22 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                                                     >
                                                       <pre className={clsx(baseClasses.preStyled)}>
                                                         {JSON.stringify(viState.activeReport?.stepDetails?.[key][partOfNetwork][tsstr], null, 2)}
-                                                    </pre>
-                                                  </NewCollapsibleBox>
-                                                )
-                                              })
+                                                      </pre>
+                                                    </NewCollapsibleBox>
+                                                  )
+                                                })
                                               }
+                                            </NewCollapsibleBox>
+                                          )
+                                          else return (
+                                            <NewCollapsibleBox
+                                              title={partOfNetwork}
+                                              key={partOfNetwork}
+                                              level={3}
+                                            >
+                                              <pre className={clsx(baseClasses.preStyled)}>
+                                                {String(viState.activeReport?.stepDetails?.[key][partOfNetwork])}
+                                              </pre>
                                             </NewCollapsibleBox>
                                           )
                                         })
