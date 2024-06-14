@@ -13,7 +13,7 @@ export const mws = {
     if (
       !data?.appVersion
       // || !clientAppVersionlistSupport.includes(data.appVersion)
-      || !testTextByAnyWord({ text: data.appVersion, words: data.appVersion.split('-') })
+      || !testTextByAnyWord({ text: data.appVersion, words: clientAppVersionlistSupport })
     )
       return Promise.reject({
         ok: false,
