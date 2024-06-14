@@ -361,31 +361,10 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                               {
                                 Object.keys(viState.activeReport.stepDetails).map((key) => {
                                   if (
-                                    typeof viState.activeReport?.stepDetails?.[key] === 'string'
-                                    || typeof viState.activeReport?.stepDetails?.[key] === 'number'
+                                    typeof viState.activeReport?.stepDetails?.[key] === 'object'
+                                    && !!viState.activeReport?.stepDetails?.[key]
+                                    && Object.keys(viState.activeReport?.stepDetails?.[key]).length > 0
                                   ) return (
-                                    <NewCollapsibleBox
-                                      title={key}
-                                      key={key}
-                                      level={2}
-                                    >
-                                      <pre className={clsx(baseClasses.preStyled)}>
-                                        {viState.activeReport?.stepDetails?.[key]}
-                                      </pre>
-                                    </NewCollapsibleBox>
-                                  )
-                                  else if (typeof viState.activeReport?.stepDetails?.[key] === 'object' && !viState.activeReport?.stepDetails?.[key]) return (
-                                    <NewCollapsibleBox
-                                      title={key}
-                                      key={key}
-                                      level={2}
-                                    >
-                                      <pre className={clsx(baseClasses.preStyled)}>
-                                        {String(viState.activeReport?.stepDetails?.[key])}
-                                      </pre>
-                                    </NewCollapsibleBox>
-                                  )
-                                  else return (
                                     <NewCollapsibleBox
                                       title={key}
                                       key={key}
@@ -410,6 +389,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                                           else if (
                                             typeof viState.activeReport?.stepDetails?.[key][partOfNetwork] === 'object'
                                             && !!viState.activeReport?.stepDetails?.[key][partOfNetwork]
+                                            && Object.keys(viState.activeReport?.stepDetails?.[key][partOfNetwork]).length > 0
                                           ) return (
                                             <NewCollapsibleBox
                                               title={partOfNetwork}
@@ -456,6 +436,17 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                                           )
                                         })
                                       }
+                                    </NewCollapsibleBox>
+                                  )
+                                  else return (
+                                    <NewCollapsibleBox
+                                      title={key}
+                                      key={key}
+                                      level={2}
+                                    >
+                                      <pre className={clsx(baseClasses.preStyled)}>
+                                        {String(viState.activeReport?.stepDetails?.[key])}
+                                      </pre>
                                     </NewCollapsibleBox>
                                   )
                                 })
