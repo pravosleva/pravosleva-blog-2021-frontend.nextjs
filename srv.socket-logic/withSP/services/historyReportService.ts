@@ -132,9 +132,10 @@ export const historyReportService = ({
                     '',
                     `\`\`\`\nIP: ${ip || 'No'}\nIMEI: ${incData.imei || 'No'}\nClient referer: ${clientReferer || 'No'}\`\`\``,
                     '',
+                    'Comment by user:',
                     !!incData.stepDetails?.commentByUser
                       ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
-                      : '(no comment)',
+                      : '\`(no incData.stepDetails?.commentByUser)\`',
                   ].join('\n'),
                 },
               )
@@ -212,6 +213,7 @@ export const historyReportService = ({
                 'Last report log:',
                 `\`\`\`\n${logger.logsAsMultilineText}\`\`\``,
                 '',
+                'Comment by user:',
                 !!incData.stepDetails?.commentByUser
                   ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
                   : '\`(no incData.stepDetails?.commentByUser)\`',
