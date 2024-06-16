@@ -211,6 +211,10 @@ export const historyReportService = ({
               targetMD: [
                 'Last report log:',
                 `\`\`\`\n${logger.logsAsMultilineText}\`\`\``,
+                '',
+                !!incData.stepDetails?.commentByUser
+                  ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
+                  : '\`(no incData.stepDetails?.commentByUser)\`',
               ].join('\n'),
             },
           ).finally(() => {
