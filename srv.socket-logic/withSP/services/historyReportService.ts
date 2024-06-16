@@ -103,7 +103,7 @@ export const historyReportService = ({
             )
 
             logger.add({
-              message: `[Result of sending to /express-helper/sp/report/v2/offline-tradein/mtsmain2024/send] isOk: ${String(result?.isOk)}${!!result?.message ? `; message: ${result.message}` : ''}`,
+              message: `[Result of sending to /express-helper/sp/report/v2/offline-tradein/mtsmain2024/send] isOk: ${String(result?.isOk)}${!!result?.message ? `; ${result.message}` : ''}`,
             })
 
             if (!result?.isOk) {
@@ -137,7 +137,7 @@ export const historyReportService = ({
                   ].join('\n'),
                 },
               )
-              logger.add({ message: `[Send err tg notif] isOk: ${String(tgNotifResult?.isOk)}${!!tgNotifResult?.message ? `; message: ${tgNotifResult.message}` : ''}` })
+              logger.add({ message: `[Send err tg notif] isOk: ${String(tgNotifResult?.isOk)}${!!tgNotifResult?.message ? `; ${tgNotifResult.message}` : ''}` })
               io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR, {
                 _message: logger.logsAsSingleLineText,
                 message: 'Сомнительно, но Ok',
