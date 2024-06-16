@@ -99,6 +99,7 @@ export const historyReportService = ({
                 ip,
                 userAgent,
                 clientReferer,
+                isObviouslyBig: true,
               },
             )
 
