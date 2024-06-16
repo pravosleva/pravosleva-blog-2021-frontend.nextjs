@@ -3,6 +3,10 @@ import { getChannelName, getIsCorrectFormat, mws, state } from '~/srv.socket-log
 import { Socket } from 'socket.io'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 
+const getArrayFromSet = (set: Set<string>): string[] => Array.from(set)
+const getLogsAsMultilineText = (set: Set<string>): string => getArrayFromSet(set).map((msg, _i) => `• \`${msg}\``).join('\n')
+const getLogsAsSingleLineText = (set: Set<string>): string => getArrayFromSet(set).join(' // ')
+
 export const historyReportService = ({
   ip,
   io,
@@ -16,12 +20,18 @@ export const historyReportService = ({
   clientUserAgent?: string;
   clientReferer?: string;
 }) => (incData: NEvent.TReport, cb?: ({ message, ok }: { message: string, ok: boolean }) => void) => {
+  let googleSheetRowNumber: number | undefined
   mws.checkAppVersion({ data: incData })
     .then(async (e) => {
       console.log('-- EV LOG:historyReportService')
       console.log(e)
       console.log(incData)
       console.log('-- /EV')
+
+      // const resultMsgs = []
+      const log = new Set<string>()
+
+      if (!!e.reason) log.add(`[Version validation result] ok: ${String(e.ok)}; reason: ${e.reason || 'Empty'})`)
       
       if (e.ok) {
         state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer } })
@@ -32,8 +42,10 @@ export const historyReportService = ({
             report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer },
           })
         // -- NOTE: Report to Google Sheets
+        const ts = new Date().getTime()
         try {
           const validated = getIsCorrectFormat(incData)
+          log.add(`[Inc data validation result] ok: ${String(validated.ok)}; reason: ${validated.reason || 'Empty'})`)
           if (validated.ok) {
             const result = await universalHttpClient.post(
               '/express-helper/sp/report/v2/offline-tradein/mtsmain2024/send',
@@ -58,25 +70,21 @@ export const historyReportService = ({
               },
             )
 
-            if (!result?.isOk) {
-              io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR, {
-                _message: 'Не удалось сохранить данные в Google Sheets (только в кэш)',
-                message: 'Сомнительно, но Ok',
-                result,
-                yourData: incData,
-              })
+            log.add(`[Result of sending to /express-helper/sp/report/v2/offline-tradein/mtsmain2024/send] isOk: ${String(result?.isOk)}; message: ${result.message || 'Empty'})`)
 
+            if (!result?.isOk) {
+              log.add('[Cur result] Cant save data to Google Sheets (cache only)')
               const ts = new Date().getTime()
-              universalHttpClient.post(
+              const tgNotifResult = await universalHttpClient.post(
                 'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
                 {
                   resultId: ts,
                   chat_id: 432590698, // NOTE: Den Pol
                   ts,
                   eventCode: 'aux_service',
-                  about: `⛔ ${incData.appVersion} -> (rep) -> withSP -> historyReportService -> e-helper: API ERR`,
+                  about: `⛔ ${incData.appVersion} (rep) -> withSP -> historyReportService -> e-helper: API ERR`,
                   targetMD: [
-                    'Не удалось отправить event в Google Sheets:',
+                    'Cant send to Google Sheets:',
                     `${result.message || 'No message'}`,
                     '',
                     `\`IP: ${ip || 'No'}\``,
@@ -85,15 +93,28 @@ export const historyReportService = ({
                     '',
                     !!incData.stepDetails?.commentByUser
                       ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
-                      : '(коммент не получен)',
+                      : '(no comment)',
+                    // '',
+                    // 'Log:',
+                    // `\`\`\`\n${resultMsgs.map((msg, i) => `${i + 1}. ${msg}`).join('\n')}\`\`\``,
                   ].join('\n'),
                 },
               )
+              log.add(`[Send err tg notif] isOk: ${String(tgNotifResult?.isOk)}; message: ${tgNotifResult?.message || 'Empty'}`)
+              io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR, {
+                _message: getLogsAsSingleLineText(log),
+                message: 'Сомнительно, но Ok',
+                result,
+                yourData: incData,
+              })
+              log.add('[Final msg for client] Сомнительно, но Ok')
             } else {
+              if (!!result?.response?.id) googleSheetRowNumber = result.response.id
+              log.add('[Cur result] Data saved to Google Sheets')
               const uiMsg = result.response.id ? `Ok #${result.response.id}` : 'Ok'
               if (typeof cb === 'function') cb({ message: uiMsg, ok: true })
               io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_OK, {
-                _message: 'Данные сохранены в Google Sheets',
+                _message: getLogsAsSingleLineText(log),
                 message: uiMsg,
                 result,
               })
@@ -101,14 +122,13 @@ export const historyReportService = ({
           }
           else throw new Error(validated.reason || 'No reason')
         } catch (err: any) {
-          const message = `Не удалось нормально обработать ивент. Причина: ${err.message || 'No err.message'}`
+          const message = `Event handling err. Reason: ${err.message || 'No err.message'}`
           if (typeof cb === 'function') cb({ message, ok: false })
           io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR, {
             message,
+            _message: getLogsAsSingleLineText(log),
             yourData: incData,
           })
-
-          const ts = new Date().getTime()
           universalHttpClient.post(
             'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
             {
@@ -119,24 +139,44 @@ export const historyReportService = ({
               about: `⛔ ${incData.appVersion} -> withSP: ERR`,
               targetMD: [
                 message,
-                'Должно все еще быть в кэше сервера',
+                'Не все пошло по плану. Скорее всего, решение вопроса все еще в кэше сервера',
                 '',
                 `\`IP: ${ip || 'No'}\``,
                 `\`IMEI: ${incData.imei || 'No'}\``,
-                `\`Received from: ${clientReferer || 'No'}\``,
+                `\`Client referer: ${clientReferer || 'No'}\``,
+                // '',
+                // 'Log:',
+                // `\`\`\`\n${resultMsgs.map((msg, _i) => `• ${msg}`).join('\n')}\`\`\``,
               ].join('\n'),
             },
           )
+        } finally {
+          universalHttpClient.post(
+            'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
+            {
+              resultId: ts,
+              chat_id: 432590698, // NOTE: Den Pol
+              ts,
+              eventCode: 'aux_service',
+              about: !!googleSheetRowNumber ? `#report${googleSheetRowNumber} Details` : 'Experience',
+              targetMD: [
+                'Last report log:',
+                getLogsAsMultilineText(log),
+              ].join('\n'),
+            },
+          ).finally(() => {
+            log.clear()
+          })
         }
         // --
       }
       else throw new Error(e.reason || 'ERR (no reason)')
     })
     .catch((err) => {
-      if (typeof cb === 'function') cb({ ok: false, message: `Dont reconnect. Reason: ${err?.reason || 'No reason'}` })
+      if (typeof cb === 'function') cb({ ok: false, message: `Dont reconnect. Reason: ${err?.reason || err?.message || 'No message'}` })
       io.to(socket.id).emit(NEvent.ServerOutgoing.DONT_RECONNECT, {
         socketId: socket.id,
-        message: err?.reason || 'No reason',
+        message: err?.reason || err?.message || 'No reason',
         yourData: incData,
         _info: err?._info,
       })

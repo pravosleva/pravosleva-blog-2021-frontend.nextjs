@@ -64,7 +64,7 @@ export const standartReportService = ({
               chat_id: 432590698, // NOTE: Den Pol
               ts,
               eventCode: 'aux_service',
-              about: `⛔ ${incData.appVersion} -> (mx) -> withSP: ERR`,
+              about: `⛔ ${incData.appVersion} (mx) -> withSP: ERR`,
               targetMD: [
                 `Не удалось отправить event: ${err.message || 'NO ERR'}`,
                 'Должно все еще быть в кэше сервера',
