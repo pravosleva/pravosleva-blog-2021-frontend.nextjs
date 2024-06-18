@@ -193,35 +193,38 @@ export const historyReportService = ({
             },
           )
         } finally {
-          universalHttpClient.post(
-            'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
-            {
-              resultId: ts,
-              
-              // NOTE: Den Pol
-              // chat_id: 432590698,
+          setTimeout(() => {
+            universalHttpClient
+              .post(
+                'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
+                {
+                  resultId: ts,
+                  
+                  // NOTE: Den Pol
+                  // chat_id: 432590698,
 
-              // NOTE: SP Report group (Offline Trade-In)
-              chat_id: -1002189284187,
-              // message_thread_id: 1,
-              // message_thread_id: 2,
+                  // NOTE: SP Report group (Offline Trade-In)
+                  chat_id: -1002189284187,
+                  // message_thread_id: 1,
+                  // message_thread_id: 2,
 
-              ts,
-              eventCode: 'aux_service',
-              about: !!googleSheetRowNumber ? `#report${googleSheetRowNumber} Details` : 'Experience',
-              targetMD: [
-                'Last report log:',
-                `\`\`\`\n${logger.logsAsMultilineText}\`\`\``,
-                '',
-                'Comment by user:',
-                !!incData.stepDetails?.commentByUser
-                  ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
-                  : '\`(no incData.stepDetails?.commentByUser)\`',
-              ].join('\n'),
-            },
-          ).finally(() => {
-            logger.clear()
-          })
+                  ts,
+                  eventCode: 'aux_service',
+                  about: !!googleSheetRowNumber ? `#report${googleSheetRowNumber} Details` : 'Experience',
+                  targetMD: [
+                    'Last report log:',
+                    `\`\`\`\n${logger.logsAsMultilineText}\`\`\``,
+                    '',
+                    'Comment by user:',
+                    !!incData.stepDetails?.commentByUser
+                      ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
+                      : '\`(no incData.stepDetails?.commentByUser)\`',
+                  ].join('\n'),
+                },
+              ).finally(() => {
+                logger.clear()
+              })
+            }, 1000)
         }
         // --
       }

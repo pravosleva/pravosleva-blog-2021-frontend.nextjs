@@ -34,4 +34,9 @@ export const list: {[key: string]: TArticleTools} = {
     brief: 'А у Вас был повод съездить?',
     bg: bgKaz,
   },
+  'red-shark-2024-5': {
+    id: '666f4e6cbde98b4a61a17fba',
+    brief: 'Дерьмо случается',
+    bg,
+  },
 }
