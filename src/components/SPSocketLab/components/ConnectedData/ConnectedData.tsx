@@ -35,8 +35,8 @@ import Brightness1Icon from '@mui/icons-material/Brightness1'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone'
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+// import { CopyToClipboard } from 'react-copy-to-clipboard'
+// import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { CollapsibleBox as NewCollapsibleBox } from '~/ui-kit.sp-tradein2024-devtools'
 import collapsibleBoxClasses from '~/ui-kit.sp-tradein2024-devtools/CollapsibleBox/CollapsibleBox.module.scss'
 import baseClasses from '~/ui-kit.sp-tradein2024-devtools/Base.module.scss'
@@ -127,23 +127,23 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
     setIsTestedIFrameOpened((s) => !s)
   }, [setIsTestedIFrameOpened])
 
-  const { enqueueSnackbar } = useSnackbar()
-  const showNotif = useCallback((msg: TSnackbarMessage, opts?: IOptionsObject) => {
-    if (!document.hidden) enqueueSnackbar(msg, {
-      ...opts,
-      action: (snackbarId) => (
-        <IconButton
-          onClick={() => closeSnackbar(snackbarId)}
-          size='small'
-        >
-          <CloseIcon fontSize='small' style={{ color: '#fff' }} />
-        </IconButton>
-      ),
-    })
-  }, [])
-  const handleCopy = useCallback((_text: string) => {
-    showNotif('Copied', { variant: 'error', autoHideDuration: 5000 })
-  }, [])
+  // const { enqueueSnackbar } = useSnackbar()
+  // const showNotif = useCallback((msg: TSnackbarMessage, opts?: IOptionsObject) => {
+  //   if (!document.hidden) enqueueSnackbar(msg, {
+  //     ...opts,
+  //     action: (snackbarId) => (
+  //       <IconButton
+  //         onClick={() => closeSnackbar(snackbarId)}
+  //         size='small'
+  //       >
+  //         <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+  //       </IconButton>
+  //     ),
+  //   })
+  // }, [])
+  // const handleCopy = useCallback((_text: string) => {
+  //   showNotif('Copied', { variant: 'error', autoHideDuration: 5000 })
+  // }, [])
 
   return (
     <>
@@ -326,12 +326,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                             gap: '16px',
                           }}
                         >
-                          <CopyToClipboard
-                            text={JSON.stringify(viState.activeReport.stepDetails, null, 4)}
-                            onCopy={handleCopy}
-                          >
-                            <Button size='small' fullWidth variant='outlined' startIcon={<ContentCopyIcon />}>Copy to clipboard</Button>
-                          </CopyToClipboard>
+                          
                           {/* <pre
                             style={{ fontFamily: 'system-ui' }}
                             className={classes.pre}
