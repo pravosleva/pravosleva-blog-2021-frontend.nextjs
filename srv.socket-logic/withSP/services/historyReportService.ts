@@ -35,7 +35,7 @@ class Logger {
   getZero2(n: number): string { return n < 10 ? `00${n}` : n < 100 ? `0${n}` : `${n}` }
 }
 
-const logger = new Logger({ counterLimit: 10000 })
+const logger = new Logger({ counterLimit: 999 })
 
 export const historyReportService = ({
   ip,
@@ -53,10 +53,10 @@ export const historyReportService = ({
   let googleSheetRowNumber: number | undefined
   mws.checkAppVersion({ data: incData })
     .then(async (e) => {
-      console.log('-- EV LOG:historyReportService')
-      console.log(e)
-      console.log(incData)
-      console.log('-- /EV')
+      // console.log('-- EV LOG:historyReportService')
+      // console.log(e)
+      // console.log(incData)
+      // console.log('-- /EV')
 
       if (!!e.reason) logger.add({ message: `[Version validation result] ok: ${String(e.ok)}${!!e.reason ? `; ${e.reason}` : ''}` })
       
