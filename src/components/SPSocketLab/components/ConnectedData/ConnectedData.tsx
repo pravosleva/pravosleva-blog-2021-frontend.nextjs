@@ -18,7 +18,6 @@ import ImportExportIcon from '@mui/icons-material/ImportExport'
 import { useSnapshot } from 'valtio'
 import { useProxy } from 'valtio/utils'
 import { vi } from './vi'
-import { ReportListItem } from './ReportListItem'
 import { CollapsibleBox, Fab } from '~/ui-kit.team-scoring-2019'
 import clsx from 'clsx'
 import { getTimeDiff } from '~/utils/time-tools/getTimeDiff'
@@ -45,7 +44,7 @@ import baseClasses from '~/ui-kit.sp-tradein2024-devtools/Base.module.scss'
 // import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 // import TimelapseIcon from '@mui/icons-material/Timelapse'
 // import WarningIcon from '@mui/icons-material/Warning'
-import { XHRReport } from './components'
+import { ReportListItem, XHRReport } from './components'
 
 // const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -176,7 +175,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
             <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>SP exp</span>
             <Brightness1Icon color={isConnected ? 'success' : 'error'} />
           </Typography>
-          <div>Cache size <b>{datasizeInfo}</b> | Total <b>{viState.items.length}</b> | <span>Displayed <b>{hasAnyFilter ? filteredReports.length : 'all'}</b></span>
+          <div>Cache size <b>{datasizeInfo}</b> | <span>Displayed <b>{hasAnyFilter ? filteredReports.length : 'all'}</b> of <b>{viState.items.length}</b></span>
           </div>
         </ResponsiveBlock>
       </div>

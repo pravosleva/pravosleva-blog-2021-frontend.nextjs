@@ -14,7 +14,7 @@ export default function About() {
   const handleClick = () => {
     try {
       const gaEvent = {
-        action: "tst.0",
+        action: "about.event-tst",
         params : { x: 1 },
       }
       const isConfirmed = window.confirm(`New event for google analytics?\n\n${JSON.stringify(gaEvent, null, 2)}`)

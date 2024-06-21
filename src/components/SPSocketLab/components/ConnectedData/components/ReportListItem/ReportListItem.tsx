@@ -1,6 +1,6 @@
 import { Badge, Chip } from '@mui/material'
 import { useCallback, useMemo, useState, memo, useEffect } from "react"
-import { NEvent } from './withSocketContext'
+import { NEvent } from '../../withSocketContext'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 // import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { CollapsibleBox } from '~/ui-kit.team-scoring-2019';
@@ -9,11 +9,12 @@ import clsx from 'clsx'
 import InfoIcon from '@mui/icons-material/Info';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { useSnapshot } from 'valtio'
-import { vi } from './vi'
+import { vi } from '../../vi'
 import { getTimeDiff } from '~/utils/time-tools/getTimeDiff'
 import { OverridableStringUnion } from '@mui/types'
 import WarningIcon from '@mui/icons-material/Warning'
 import ErrorIcon from '@mui/icons-material/Error'
+import { TimeAgoLabel } from '~/components/SPSocketLab/components/ConnectedData/components'
 
 type TProps = {
   report: NEvent.TReport;
@@ -78,7 +79,7 @@ export const ReportListItem = memo((ps: TProps) => {
           flexDirection: 'row',
           // flexWrap: 'wrap',
           alignItems: 'center',
-          gap: '16px',
+          gap: '8px',
           // paddingLeft: '16px',
           width: '100%',
           cursor: 'pointer',
@@ -97,10 +98,10 @@ export const ReportListItem = memo((ps: TProps) => {
           style={{ fontFamily: 'system-ui', textDecoration: isOpened ? 'none' : 'underline', fontWeight: 'bold' }}
           className='truncate'
         >
-          {ps.report.stateValue}
+          {ps.report._ip || 'No IP'} // {ps.report.stateValue}
         </div>
         <div style={{ fontFamily: 'system-ui', marginLeft: 'auto', wordBreak: 'keep-all', whiteSpace: 'nowrap' }}>
-          <Chip label={ps.report.appVersion} />
+          <Chip label={<TimeAgoLabel ts={ps.report.ts} />} />
         </div>
       </div>
 
