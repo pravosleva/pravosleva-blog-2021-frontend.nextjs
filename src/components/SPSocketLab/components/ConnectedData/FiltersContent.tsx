@@ -76,37 +76,7 @@ export const FiltersContent = memo(() => {
         gap: '16px',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
-        <CustomizedTextField
-          size='small'
-          disabled={!isConnected}
-          value={imeiFilter || ''}
-          fullWidth
-          variant='outlined'
-          label='IMEI'
-          type='text'
-          onChange={handleChangeImei}
-          // multiline
-          // maxRows={4}
-        />
-        <div>
-          <IconButton
-            color={!!imeiFilter ? 'error' : 'default'}
-            aria-label='imei'
-            // size='small'
-            // startIcon={<CloseIcon />}
-            // fullWidth
-            // variant='outlined'
-            
-            onClick={handleClearImeiFilter}
-            // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
-            disabled={!isConnected || !imeiFilter}
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-      </div>
-      
+
       <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>  
         {/* <Autocomplete
           onChange={(event, item) => {
@@ -188,6 +158,37 @@ export const FiltersContent = memo(() => {
             aria-label='app-version'
             onClick={handleClearAppVersionFilter}
             disabled={!isConnected || !appVersionFilter}
+          >
+            <CloseIcon />
+          </IconButton>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
+        <CustomizedTextField
+          size='small'
+          disabled={!isConnected}
+          value={imeiFilter || ''}
+          fullWidth
+          variant='outlined'
+          label='IMEI'
+          type='text'
+          onChange={handleChangeImei}
+          // multiline
+          // maxRows={4}
+        />
+        <div>
+          <IconButton
+            color={!!imeiFilter ? 'error' : 'default'}
+            aria-label='imei'
+            // size='small'
+            // startIcon={<CloseIcon />}
+            // fullWidth
+            // variant='outlined'
+            
+            onClick={handleClearImeiFilter}
+            // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
+            disabled={!isConnected || !imeiFilter}
           >
             <CloseIcon />
           </IconButton>
