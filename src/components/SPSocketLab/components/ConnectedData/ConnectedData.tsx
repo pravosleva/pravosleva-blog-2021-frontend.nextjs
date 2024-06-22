@@ -269,7 +269,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     }}
                     className={clsx(classes.commonInfo)}
                   >
-                    <b>{viState.activeReport.stateValue.replace(/(stepMachine|sm):/g, '')}</b>
+                    <b>{viState.activeReport.stateValue.replace('sm:', '')}</b>
                     <div
                       style={{
                         display: 'flex',

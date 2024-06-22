@@ -62,6 +62,7 @@ export const ReportListItem = memo((ps: TProps) => {
       ...restReportProps
     },
   } = ps
+  const uiDate = new Date(ps.report.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })
 
   return (
     <div
@@ -98,7 +99,7 @@ export const ReportListItem = memo((ps: TProps) => {
           style={{ fontFamily: 'system-ui', textDecoration: isOpened ? 'none' : 'underline', fontWeight: 'bold' }}
           className='truncate'
         >
-          {ps.report._ip || 'No IP'} // {ps.report.stateValue}
+          {ps.report._ip || 'No IP'} // {ps.report.stateValue.replace(/sm:/g, '')}
         </div>
         <div style={{ fontFamily: 'system-ui', marginLeft: 'auto', wordBreak: 'keep-all', whiteSpace: 'nowrap' }}>
           <Chip label={<TimeAgoLabel ts={ps.report.ts} />} />
@@ -121,6 +122,7 @@ export const ReportListItem = memo((ps: TProps) => {
             (!!ps.report._wService
             ? ps.report._wService?._perfInfo.tsList.length > 0 && (
               <>
+                {uiDate}
                 <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
                   {JSON.stringify(restReportProps, null, 4)}
                 </pre>
@@ -160,12 +162,15 @@ export const ReportListItem = memo((ps: TProps) => {
                 */}
               </>
           ) : (
-            <pre
-              style={{ fontFamily: 'system-ui' }}
-              className={classes.pre}
-            >
-              {JSON.stringify(ps.report, null, 4)}
-            </pre>
+            <>
+              {uiDate}
+              <pre
+                style={{ fontFamily: 'system-ui' }}
+                className={classes.pre}
+              >
+                {JSON.stringify(ps.report, null, 4)}
+              </pre>
+            </>
           ))
         }
       </div>
