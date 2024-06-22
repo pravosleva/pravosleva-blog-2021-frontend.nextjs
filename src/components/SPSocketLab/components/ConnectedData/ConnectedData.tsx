@@ -269,7 +269,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                     }}
                     className={clsx(classes.commonInfo)}
                   >
-                    <b>{viState.activeReport.stateValue.replace('sm:', '')}</b>
+                    <b>{viState.activeReport.stateValue}</b>
                     <div
                       style={{
                         display: 'flex',
@@ -304,6 +304,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                       }
                     </div>
                     {!!viState.activeReport._clientReferer && <div style={{ display: 'inline-flex', gap: '8px' }}><span>{viState.activeReport._clientReferer}</span></div>}
+                    <div>{new Date(viState.activeReport.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}</div>
                   </div>
                 </div>
                 

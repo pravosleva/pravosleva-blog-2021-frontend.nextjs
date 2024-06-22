@@ -16,6 +16,9 @@ export const standartReportService = ({
   clientUserAgent?: string;
   clientReferer?: string;
 }) => (incData: NEvent.TReport, cb?: ({ message, ok }: { message: string, ok: boolean }) => void) => {
+  const bigReportStateValues = [
+    'tradein-final',
+  ]
   mws.checkAppVersion({ data: incData })
     .then((e) => {
       if (e.ok) {
@@ -50,6 +53,7 @@ export const standartReportService = ({
                 ip,
                 userAgent,
                 clientReferer,
+                isObviouslyBig: bigReportStateValues.includes(incData.stateValue),
               },
             )
             if (typeof cb === 'function') cb({ message: 'Ok: Отправлено. Результат не проверял', ok: true })
