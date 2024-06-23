@@ -72,6 +72,8 @@ export const ReportListItem = memo((ps: TProps) => {
         gap: '16px',
         // border: '1px solid red',
         alignItems: 'flex-start',
+        userSelect: 'none',
+        WebkitTapHighlightColor: 'transparent',
       }}
     >
       <div
@@ -84,6 +86,8 @@ export const ReportListItem = memo((ps: TProps) => {
           // paddingLeft: '16px',
           width: '100%',
           cursor: 'pointer',
+          userSelect: 'none',
+          WebkitTapHighlightColor: 'transparent',
         }}
         // className='desktop-sticky-top-job-header'
         onClick={handleOpenToggle}
