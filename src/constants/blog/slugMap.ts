@@ -143,12 +143,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
     id: '5fcf89195c65457d85706310',
     brief: 'Чтоб не забыть',
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/logo-mongodb-2.png',
+      // src: 'https://pravosleva.pro/static/img/blog/logo-mongodb-2.png',
+      // size: {
+      //   w: 360,
+      //   h: 360,
+      // },
+      // type: 'image/png',
+      src: 'https://pravosleva.pro/static/img/blog/mongodb.jpg',
       size: {
-        w: 360,
-        h: 360,
+        w: 1200,
+        h: 601,
       },
-      type: 'image/png',
+      type: 'image/jpg',
     },
   },
   'autopark-beta': {
