@@ -70,6 +70,18 @@ export namespace NEvent {
     ERROR = 'error',
     SUCCESS = 'success',
   }
+  // NOTE: fast-geoip@1.1.88
+  export type TGeoIpInfo = {
+    range: [number, number];
+    country: string;
+    region: string;
+    eu: '0' | '1';
+    timezone: string;
+    city: string;
+    ll: [number, number];
+    metro: number;
+    area: number;
+  }
   export type TReport = {
     imei?: string;
     ts: number;
@@ -89,6 +101,7 @@ export namespace NEvent {
     };
     specialClientKey?: string;
     _ip?: string;
+    _geoip?: TGeoIpInfo | null;
     _userAgent?: string;
     _clientReferer?: string;
   }

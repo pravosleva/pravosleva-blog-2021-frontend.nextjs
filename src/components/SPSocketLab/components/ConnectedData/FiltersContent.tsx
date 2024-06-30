@@ -15,12 +15,15 @@ import CloseIcon from '@mui/icons-material/Close'
 // import { clientAppVersionlistSupport } from '~/srv.socket-logic/withSP/constants'
 // import { TOption } from '~/mui/CreatableAutocomplete'
 import { groupLog } from '~/utils/groupLog'
-import { sort } from '~/utils/sort-array-objects@3.0.0'
+// import { sort } from '~/utils/sort-array-objects@3.0.0'
 // NOTE: Usage sort(strapiTodos, ['priority', 'updatedAt'], -1)
 import { useSnapshot } from 'valtio'
 import { vi } from './vi'
 
 // const appVersionList: TOption[] = clientAppVersionlistSupport.map((value) => ({ inputValue: value, value, label: value }))
+
+// @ts-ignore
+// const compareNumbers = (a: string | number, b: string | number): any => a - b
 
 const CustomizedTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
@@ -43,15 +46,11 @@ export const FiltersContent = memo(() => {
 
   const [appVersionFilter] = useStore((store: TSocketMicroStore) => store.clientAppVersionFilter)
   const appVersionList = useMemo(() => {
-    return sort(
-      viState.items.reduce((acc, cur) => {
-        // @ts-ignore
-        if (!acc.includes(cur.appVersion)) acc.push(cur.appVersion)
-        return acc;
-      }, []),
-      ['appVersion'],
-      -1,
-    )
+    return viState.items.reduce((acc, cur) => {
+      // @ts-ignore
+      if (!acc.includes(cur.appVersion)) acc.push(cur.appVersion)
+      return acc;
+    }, []).sort()
   }, [viState.items])
   const handleChangeClientAppVersion = useCallback((e: TSelectChangeEvent) => {
     groupLog({ spaceName: '-> set to store', items: [e.target.value] })
@@ -67,15 +66,11 @@ export const FiltersContent = memo(() => {
 
   const [ipFilter] = useStore((store: TSocketMicroStore) => store.ipFilter)
   const ipList = useMemo(() => {
-    return sort(
-      viState.items.reduce((acc, cur) => {
-        // @ts-ignore
-        if (!!cur._ip && !acc.includes(cur._ip)) acc.push(cur._ip)
-        return acc;
-      }, []),
-      ['_ip'],
-      1,
-    )
+    return viState.items.reduce((acc, cur) => {
+      // @ts-ignore
+      if (!!cur._ip && !acc.includes(cur._ip)) acc.push(cur._ip)
+      return acc;
+    }, []).sort()
   }, [viState.items])
   const handleChangeIP = useCallback((e: any) => {
     setStore({ ipFilter: e.target.value })

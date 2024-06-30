@@ -1,4 +1,5 @@
 export * from './getChannelName'
 export * from './getIsCorrectFormat'
+export * from './logger'
 export * from './mws'
 export * from './state'

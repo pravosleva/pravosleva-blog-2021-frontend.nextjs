@@ -1,3 +1,16 @@
+// NOTE: fast-geoip@1.1.88
+export type TGeoIpInfo = {
+  range: [number, number];
+  country: string;
+  region: string;
+  eu: '0' | '1';
+  timezone: string;
+  city: string;
+  ll: [number, number];
+  metro: number;
+  area: number;
+}
+
 export namespace NEvent {
   export enum ServerIncoming {
     SP_MX_EV = 'sp-mx:offline-tradein:c:event',
@@ -55,7 +68,7 @@ export namespace NEvent {
       [key: string]: any;
 
       // -- NOTE: New report exp
-      commentByUser?: string;
+      comment?: string;
       network?: NViDevtools.TNetwork;
       // --
     };
@@ -71,6 +84,7 @@ export namespace NEvent {
     gitSHA1?: string;
     specialClientKey?: string;
     _ip?: string;
+    _geoip?: TGeoIpInfo;
     _userAgent?: string;
     _clientReferer?: string;
   }

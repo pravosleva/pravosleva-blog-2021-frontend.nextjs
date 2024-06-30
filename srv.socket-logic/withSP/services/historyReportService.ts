@@ -1,39 +1,7 @@
-import { NEvent } from '~/srv.socket-logic/withSP/types'
-import { getChannelName, getIsCorrectFormat, mws, state } from '~/srv.socket-logic/withSP/utils'
+import { NEvent, TGeoIpInfo } from '~/srv.socket-logic/withSP/types'
+import { getChannelName, getIsCorrectFormat, Logger, mws, state } from '~/srv.socket-logic/withSP/utils'
 import { Socket } from 'socket.io'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
-
-class Logger {
-  private logs: Set<string>
-  private globalCounter: number
-  private counterLimit: number
-  constructor({ counterLimit }: { counterLimit: number }) {
-    this.counterLimit = counterLimit
-    this.globalCounter = 0
-    this.logs = new Set<string>()
-  }
-  add({ message }: { message: string }) {
-    if (this.counterLimit > this.globalCounter) this.globalCounter += 1
-    else this.globalCounter = 1
-
-    this.logs.add(`${this.getZero2(this.globalCounter)}. ${message}`)
-  }
-  clear() {
-    this.logs.clear()
-  }
-  get msgs(): string[] {
-    return Array.from(this.logs)
-  }
-  get logsAsSingleLineText(): string {
-    return this.msgs.join(' // ')
-  }
-  get logsAsMultilineText(): string {
-    return this.msgs.join('\n')
-  }
-
-  getZero(n: number): string { return n < 10 ? `0${n}` : `${n}` }
-  getZero2(n: number): string { return n < 10 ? `00${n}` : n < 100 ? `0${n}` : `${n}` }
-}
 
 const logger = new Logger({ counterLimit: 999 })
 
@@ -57,6 +25,12 @@ export const historyReportService = ({
       // console.log(e)
       // console.log(incData)
       // console.log('-- /EV')
+      let geoip: TGeoIpInfo | null | undefined
+
+      if (!!ip) {
+        geoip = await logger.getGeoip(ip)
+        logger.add({ message: `[Geo] geoip: ${!!geoip ? logger.getGeoipText(geoip) : `No data (${typeof geoip})`}` })
+      }
 
       if (!!e.reason) logger.add({ message: `[Version validation result] ok: ${String(e.ok)}${!!e.reason ? `; ${e.reason}` : ''}` })
       
@@ -67,14 +41,20 @@ export const historyReportService = ({
         // -- NOTE: Report to Google Sheets
         const ts = new Date().getTime()
         try {
-          const addToReestrResult = await state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer } })
+          const modifiedReport = { ...incData }
+          if (!!ip) modifiedReport._ip = ip
+          if (!!geoip) modifiedReport._geoip = geoip
+          if (!!userAgent) modifiedReport._userAgent = userAgent
+          if (!!clientReferer) modifiedReport._clientReferer = clientReferer
+
+          const addToReestrResult = await state.addReportToReestr({ roomId: incData.room, report: modifiedReport })
           logger.add({ message: `[Add data to reestr result] isOk: ${String(addToReestrResult.isOk)}${!!addToReestrResult.message ? `; ${addToReestrResult.message}` : ''}` })
           
           if (addToReestrResult.isOk) io
             .in(getChannelName(incData.room))
             .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPORT_EV, {
               message: 'New report',
-              report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer },
+              report: modifiedReport,
             })
           else throw new Error(addToReestrResult.message || 'No message')
           
@@ -100,6 +80,7 @@ export const historyReportService = ({
                 userAgent,
                 clientReferer,
                 isObviouslyBig: true,
+                geoip,
               },
             )
 
@@ -132,10 +113,10 @@ export const historyReportService = ({
                     '',
                     `\`\`\`\nIP: ${ip || 'No'}\nIMEI: ${incData.imei || 'No'}\nClient referer: ${clientReferer || 'No'}\`\`\``,
                     '',
-                    'Comment by user:',
-                    !!incData.stepDetails?.commentByUser
-                      ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
-                      : '\`(no incData.stepDetails?.commentByUser)\`',
+                    'Comment:',
+                    !!incData.stepDetails?.comment
+                      ? `\`\`\`\n${incData.stepDetails?.comment}\`\`\``
+                      : '\`(no incData.stepDetails?.comment)\`',
                   ].join('\n'),
                 },
               )
@@ -215,10 +196,10 @@ export const historyReportService = ({
                     'Last report log:',
                     `\`\`\`\n${logger.logsAsMultilineText}\`\`\``,
                     '',
-                    'Comment by user:',
-                    !!incData.stepDetails?.commentByUser
-                      ? `\`\`\`\n${incData.stepDetails?.commentByUser}\`\`\``
-                      : '\`(no incData.stepDetails?.commentByUser)\`',
+                    'Comment:',
+                    !!incData.stepDetails?.comment
+                      ? `\`\`\`\n${incData.stepDetails?.comment}\`\`\``
+                      : '\`(no incData.stepDetails?.comment)\`',
                   ].join('\n'),
                 },
               ).finally(() => {
