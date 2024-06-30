@@ -31,6 +31,7 @@ import CloseIcon from '@mui/icons-material/Close'
 // import EditIcon from '@mui/icons-material/Edit'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 import { sort } from '~/utils/sort-array-objects@3.0.0'
+// NOTE: Usage sort(strapiTodos, ['priority', 'updatedAt'], -1)
 // import { useWindowSize } from '~/hooks/useWindowSize'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'

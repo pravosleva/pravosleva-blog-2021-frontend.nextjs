@@ -75,7 +75,6 @@ export const ActiveReportListItem = memo(() => {
               }
             </div>
             {!!viState.activeReport._clientReferer && <div style={{ display: 'inline-flex', gap: '8px' }}><span>{viState.activeReport._clientReferer}</span></div>}
-            <div>{new Date(viState.activeReport.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}</div>
           </div>
         </div>
         
@@ -262,6 +261,21 @@ export const ActiveReportListItem = memo(() => {
             </div>
           )
         }
+        <div className={clsx(classes.stickyBottomHeader)}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '8px',
+              width: '100%',
+              fontSize: 'small',
+            }}
+            className={clsx(acticeReportClasses.commonInfo)}
+          >
+            <div>{new Date(viState.activeReport.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}</div>
+          </div>
+        </div>
       </div>
       <Fab
         onClick={handleResetActiveReport}

@@ -15,6 +15,8 @@ import CloseIcon from '@mui/icons-material/Close'
 // import { clientAppVersionlistSupport } from '~/srv.socket-logic/withSP/constants'
 // import { TOption } from '~/mui/CreatableAutocomplete'
 import { groupLog } from '~/utils/groupLog'
+import { sort } from '~/utils/sort-array-objects@3.0.0'
+// NOTE: Usage sort(strapiTodos, ['priority', 'updatedAt'], -1)
 import { useSnapshot } from 'valtio'
 import { vi } from './vi'
 
@@ -41,12 +43,15 @@ export const FiltersContent = memo(() => {
 
   const [appVersionFilter] = useStore((store: TSocketMicroStore) => store.clientAppVersionFilter)
   const appVersionList = useMemo(() => {
-    return viState.items.reduce((acc, cur) => {
-      // @ts-ignore
-      if (!acc.includes(cur.appVersion)) acc.push(cur.appVersion)
-
-    return acc;
-    }, [])
+    return sort(
+      viState.items.reduce((acc, cur) => {
+        // @ts-ignore
+        if (!acc.includes(cur.appVersion)) acc.push(cur.appVersion)
+        return acc;
+      }, []),
+      ['appVersion'],
+      -1,
+    )
   }, [viState.items])
   const handleChangeClientAppVersion = useCallback((e: TSelectChangeEvent) => {
     groupLog({ spaceName: '-> set to store', items: [e.target.value] })
@@ -61,6 +66,17 @@ export const FiltersContent = memo(() => {
   }, [setStore])
 
   const [ipFilter] = useStore((store: TSocketMicroStore) => store.ipFilter)
+  const ipList = useMemo(() => {
+    return sort(
+      viState.items.reduce((acc, cur) => {
+        // @ts-ignore
+        if (!!cur._ip && !acc.includes(cur._ip)) acc.push(cur._ip)
+        return acc;
+      }, []),
+      ['_ip'],
+      1,
+    )
+  }, [viState.items])
   const handleChangeIP = useCallback((e: any) => {
     setStore({ ipFilter: e.target.value })
   }, [setStore])
@@ -76,7 +92,6 @@ export const FiltersContent = memo(() => {
         gap: '16px',
       }}
     >
-
       <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>  
         {/* <Autocomplete
           onChange={(event, item) => {
@@ -122,10 +137,7 @@ export const FiltersContent = memo(() => {
           <InputLabel id='app-ver-select-label'>Client app version</InputLabel>
           <Select
             size='small'
-            sx={{
-              borderRadius: '8px',
-              // width: '100%',
-            }}
+            sx={{ borderRadius: '8px' }}
             labelId='app-ver-select-label'
             id='app-ver-select'
             value={appVersionFilter || ''}
@@ -134,18 +146,11 @@ export const FiltersContent = memo(() => {
             // input={<CustomizedTextField label='Client app version' />}
             onChange={handleChangeClientAppVersion}
           >
-            <MenuItem
-              value=''
-              // style={getStyles(name, personName, theme)}
-            >
+            <MenuItem value=''>
               <em>None</em>
             </MenuItem>
             {appVersionList.map((str) => (
-              <MenuItem
-                key={str}
-                value={str}
-                // style={getStyles(name, personName, theme)}
-              >
+              <MenuItem key={str} value={str}>
                 {str}
               </MenuItem>
             ))}
@@ -196,7 +201,7 @@ export const FiltersContent = memo(() => {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>  
-        <CustomizedTextField
+        {/* <CustomizedTextField
           size='small'
           disabled={!isConnected}
           value={ipFilter || ''}
@@ -205,7 +210,34 @@ export const FiltersContent = memo(() => {
           label='IP'
           type='text'
           onChange={handleChangeIP}
-        />
+        /> */}
+        <FormControl
+          sx={{ width: '100%' }}
+          disabled={!isConnected}
+          size='small'
+        >
+          <InputLabel id='ip-select-label'>IP</InputLabel>
+          <Select
+            size='small'
+            sx={{ borderRadius: '8px' }}
+            labelId='ip-select-label'
+            id='ip-select'
+            value={ipFilter || ''}
+            renderValue={() => ipFilter}
+            label='IP'
+            // input={<CustomizedTextField label='Client app version' />}
+            onChange={handleChangeIP}
+          >
+            <MenuItem value=''>
+              <em>None</em>
+            </MenuItem>
+            {ipList.map((str) => (
+              <MenuItem key={str} value={str}>
+                {str}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <div>
           <IconButton
             color={!!ipFilter ? 'error' : 'default'}

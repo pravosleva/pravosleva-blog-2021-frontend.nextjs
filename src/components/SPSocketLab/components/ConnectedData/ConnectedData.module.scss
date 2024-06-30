@@ -108,6 +108,21 @@
   display: flex;
   flex-direction: column;
 }
+.stickyBottomHeader {
+  position: sticky;
+  bottom: 0;
+  // border-top: 1px solid lightgray;
+  box-shadow: 0 -10px 7px -8px #223c5033;
+  background-color: #fff;
+  // margin-bottom: 16px;
+  // font-weight: bold;
+  // font-family: system-ui;
+  // z-index: 1;
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+}
 
 .pre {
   // background-color: rgba(0,0,0,0.5);

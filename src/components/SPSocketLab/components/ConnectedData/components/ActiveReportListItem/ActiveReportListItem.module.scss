@@ -23,9 +23,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  & > *:last-child {
-    margin-bottom: 16px;
-  }
+  // & > *:last-child {
+  //   margin-bottom: 16px;
+  // }
 }
 .commonInfo {
   padding-top: 8px;
