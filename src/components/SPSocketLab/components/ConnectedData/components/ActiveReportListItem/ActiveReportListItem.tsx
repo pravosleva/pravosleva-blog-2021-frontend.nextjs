@@ -1,4 +1,4 @@
-import { useCallback, memo } from 'react'
+import { useCallback, memo, useMemo } from 'react'
 import { CollapsibleBox, Fab } from '~/ui-kit.team-scoring-2019'
 import clsx from 'clsx'
 import classes from '~/components/SPSocketLab/components/ConnectedData/ConnectedData.module.scss'
@@ -11,7 +11,9 @@ import collapsibleBoxClasses from '~/ui-kit.sp-tradein2024-devtools/CollapsibleB
 import baseClasses from '~/ui-kit.sp-tradein2024-devtools/Base.module.scss'
 import { XHRReport } from '~/components/SPSocketLab/components/ConnectedData/components/XHRReport'
 import CloseIcon from '@mui/icons-material/Close'
+import { capitalCase } from 'change-case'
 import acticeReportClasses from './ActiveReportListItem.module.scss'
+import { replaceWords } from '~/utils/string-tools/replaceWords'
 
 export const ActiveReportListItem = memo(() => {
   const viState = useSnapshot(vi.FOR_EXAMPLE)
@@ -22,6 +24,12 @@ export const ActiveReportListItem = memo(() => {
   const handleResetActiveReport = useCallback(() => {
     viProxy.activeReport = null
   }, [])
+  const header = useMemo(
+    () => !!viProxy.activeReport
+      ? replaceWords({ cfg: { imei: 'IMEI', tradein: 'Trade-In' }, input: capitalCase(viProxy.activeReport.stateValue.replace(/sm:/g, '')) })
+      : null,
+    [viProxy.activeReport],
+  )
 
   if (!viState.activeReport) return null
   return (
@@ -40,7 +48,7 @@ export const ActiveReportListItem = memo(() => {
             }}
             className={clsx(acticeReportClasses.commonInfo)}
           >
-            <b>{viState.activeReport.stateValue}</b>
+            <b>{header}</b>
             <div
               style={{
                 display: 'flex',

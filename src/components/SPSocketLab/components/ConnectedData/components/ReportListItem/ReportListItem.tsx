@@ -15,6 +15,8 @@ import { OverridableStringUnion } from '@mui/types'
 import WarningIcon from '@mui/icons-material/Warning'
 import ErrorIcon from '@mui/icons-material/Error'
 import { TimeAgoLabel } from '~/components/SPSocketLab/components/ConnectedData/components'
+import { capitalCase } from 'change-case'
+import { replaceWords } from '~/utils/string-tools/replaceWords'
 
 type TProps = {
   report: NEvent.TReport;
@@ -62,7 +64,11 @@ export const ReportListItem = memo((ps: TProps) => {
       ...restReportProps
     },
   } = ps
-  const uiDate = new Date(ps.report.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })
+  const uiDate = useMemo(() => new Date(ps.report.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }), [ps.report.ts])
+  const header = useMemo(
+    () => `${ps.report._ip || 'No IP'} // ${replaceWords({ cfg: { imei: 'IMEI', tradein: 'Trade-In' }, input: capitalCase(ps.report.stateValue) })}`,
+    [ps.report],
+  )
 
   return (
     <div
@@ -103,7 +109,7 @@ export const ReportListItem = memo((ps: TProps) => {
           style={{ fontFamily: 'system-ui', textDecoration: isOpened ? 'none' : 'underline', fontWeight: 'bold' }}
           className='truncate'
         >
-          {ps.report._ip || 'No IP'} // {ps.report.stateValue.replace(/sm:/g, '')}
+          {header}
         </div>
         <div style={{ fontFamily: 'system-ui', marginLeft: 'auto', wordBreak: 'keep-all', whiteSpace: 'nowrap' }}>
           <Chip label={<TimeAgoLabel ts={ps.report.ts} />} />

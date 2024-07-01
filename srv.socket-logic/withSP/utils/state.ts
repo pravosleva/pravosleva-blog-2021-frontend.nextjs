@@ -16,7 +16,7 @@ type TOperationResult = Promise<{
   instance: Singleton;
 }>
 
-const roomItemsLimit = 250
+const roomItemsLimit = 300
 
 export class Singleton {
   private static instance: Singleton
