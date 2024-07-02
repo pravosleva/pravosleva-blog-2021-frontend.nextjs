@@ -1,21 +1,23 @@
 import { Socket } from 'socket.io'
 // import { universalHttpClient } from '~/srv.utils/universalHttpClient'
-import { NEvent } from './types'
+import { NEvent, TGeoIpInfo } from './types'
 import {
   // getChannelName, getIsCorrectFormat, mws,
+  geoHelper,
   state,
 } from './utils'
 import { historyReportService, standartReportService } from './services'
 
 export const withSP = (io: Socket) => {
-  io.on('connection', function (socket: Socket) {
+  io.on('connection', async function (socket: Socket) {
     let ip: string | undefined
+    let geoip: TGeoIpInfo | null | undefined
     let userAgent: string | undefined
     let clientReferer: string | undefined
 
-    console.log('- EV LOG: socket connection: socket.handshake.headers')
-    console.log(socket.handshake.headers)
-    console.log('- /EV')
+    // console.log('- EV LOG: socket connection: socket.handshake.headers')
+    // console.log(socket.handshake.headers)
+    // console.log('- /EV')
     
     // -- MOTE: 1. Get IP adress exp
     // const ip = socket.handshake.address // NOTE: Doesnt work
@@ -38,7 +40,10 @@ export const withSP = (io: Socket) => {
           && typeof socket.handshake.headers?.[header] === 'string'
         ) {
           ip = possibleHeadersForHaveIP[header].converter({ val: socket.handshake.headers?.[header] })
-          if (!!ip) break
+          if (!!ip) {
+            geoip = await geoHelper.getGeoip(ip)
+            break
+          }
         }
       }
 
@@ -97,6 +102,7 @@ export const withSP = (io: Socket) => {
 
     socket.on(NEvent.ServerIncoming.SP_MX_EV, standartReportService({
       ip,
+      geoip,
       io,
       socket,
       clientUserAgent: userAgent,
@@ -105,6 +111,7 @@ export const withSP = (io: Socket) => {
 
     socket.on(NEvent.ServerIncoming._SP_HISTORY_REPORT_EV_DEPRECATED, historyReportService({
       ip,
+      geoip,
       io,
       socket,
       clientUserAgent: userAgent,
@@ -113,6 +120,7 @@ export const withSP = (io: Socket) => {
 
     socket.on(NEvent.ServerIncoming.SP_HISTORY_REPORT_EV, historyReportService({
       ip,
+      geoip,
       io,
       socket,
       clientUserAgent: userAgent,

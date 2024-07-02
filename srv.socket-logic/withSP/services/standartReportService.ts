@@ -1,16 +1,18 @@
-import { NEvent } from '~/srv.socket-logic/withSP/types'
+import { NEvent, TGeoIpInfo } from '~/srv.socket-logic/withSP/types'
 import { getChannelName, getIsCorrectFormat, mws, state } from '~/srv.socket-logic/withSP/utils'
 import { Socket } from 'socket.io'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 
 export const standartReportService = ({
   ip,
+  geoip,
   io,
   socket,
   clientUserAgent: userAgent,
   clientReferer,
 }: {
   ip?: string;
+  geoip?: TGeoIpInfo | null;
   io: Socket;
   socket: Socket;
   clientUserAgent?: string;
@@ -22,12 +24,17 @@ export const standartReportService = ({
   mws.checkAppVersion({ data: incData })
     .then((e) => {
       if (e.ok) {
-        state.addReportToReestr({ roomId: incData.room, report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer } })
+        const modifiedReport = { ...incData }
+        if (!!ip) modifiedReport._ip = ip
+        if (!!geoip) modifiedReport._geoip = geoip
+        if (!!userAgent) modifiedReport._userAgent = userAgent
+        if (!!clientReferer) modifiedReport._clientReferer = clientReferer
+        state.addReportToReestr({ roomId: incData.room, report: modifiedReport })
         io
           .in(getChannelName(incData.room))
           .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPORT_EV, {
             message: 'New report',
-            report: { ...incData, _ip: ip, _userAgent: userAgent, _clientReferer: clientReferer },
+            report: modifiedReport,
           })
         // -- NOTE: Report to Google Sheets
         try {
@@ -54,6 +61,7 @@ export const standartReportService = ({
                 userAgent,
                 clientReferer,
                 isObviouslyBig: bigReportStateValues.includes(incData.stateValue),
+                geoip,
               },
             )
             if (typeof cb === 'function') cb({ message: 'Ok: Отправлено. Результат не проверял', ok: true })

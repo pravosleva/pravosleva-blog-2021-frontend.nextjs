@@ -6,7 +6,7 @@
         "styled-jsx": {
           "plugins": ["styled-jsx-plugin-sass"]
         }
-      },
+      }
     ]
   ],
   "plugins": [

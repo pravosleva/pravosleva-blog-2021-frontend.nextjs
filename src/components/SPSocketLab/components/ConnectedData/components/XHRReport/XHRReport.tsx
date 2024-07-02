@@ -2,8 +2,10 @@ import { memo, useCallback } from 'react'
 import { CollapsibleBox } from '~/ui-kit.sp-tradein2024-devtools'
 import { NViDevtools } from './types'
 import { getNormalizedDateTime4 } from '~/utils/time-tools/timeConverter'
-import HighlightOffIcon from '@mui/icons-material/HighlightOff'
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
+// import HighlightOffIcon from '@mui/icons-material/HighlightOff'
+// import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
+import TaskAltIcon from '@mui/icons-material/TaskAlt'
+import DoDisturbIcon from '@mui/icons-material/DoDisturb'
 import TimelapseIcon from '@mui/icons-material/Timelapse'
 import WarningIcon from '@mui/icons-material/Warning'
 // import CloseIcon from '@mui/icons-material/Close'
@@ -90,10 +92,10 @@ export const XHRReport = memo(({ xhr, level }: TProps) => {
                 hasPending
                 ? <TimelapseIcon fontSize='small' />
                 : hasLastErrored
-                  ? <HighlightOffIcon color='error' fontSize='small' />
+                  ? <DoDisturbIcon color='error' fontSize='small' />
                   : hasErrored
                     ? <WarningIcon color='warning' fontSize='small' />
-                    : <CheckCircleOutlineIcon />
+                    : <TaskAltIcon fontSize='small' />
                 // : !isOk
                 //   ? <IoIosCloseCircleOutline color='red' />
                 //   : <IoIosCheckmarkCircleOutline />
@@ -110,8 +112,8 @@ export const XHRReport = memo(({ xhr, level }: TProps) => {
                         xhr.state[url]?.[tsstr]?.code === 'pending'
                         ? <TimelapseIcon fontSize='small' />
                         : xhr.state[url]?.[tsstr]?.__resDetails?.res?.ok === true
-                          ? <CheckCircleOutlineIcon />
-                          : <HighlightOffIcon color='error' fontSize='small' />
+                          ? <TaskAltIcon fontSize='small' />
+                          : <DoDisturbIcon color='error' fontSize='small' />
                       }
                     >
                       <div className={classes.relativeBox}>

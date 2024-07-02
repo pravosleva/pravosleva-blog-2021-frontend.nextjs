@@ -58,3 +58,12 @@
     max-width: 500px;
   }
 }
+
+.leafletMapContainer {
+  // border-radius: 16px;
+  height: 250px;
+  // width: 100%;
+  width: calc(100% + 16px + 16px);
+  transform: translateX(-16px);
+  // border: 1px solid red;
+}

@@ -188,6 +188,15 @@ function AppWithRedux(props: MyAppProps) {
           fetchpriority="high"
         />
         <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
+
+        <link
+          href="/static/css/min/mapbox-gl@2.6.1.min.css"
+          rel="preload"
+          as="style"
+          // @ts-ignore
+          fetchpriority="high"
+        />
+        <link href="/static/css/min/mapbox-gl@2.6.1.min.css" rel="stylesheet" />
         
         {/* <link
           href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"

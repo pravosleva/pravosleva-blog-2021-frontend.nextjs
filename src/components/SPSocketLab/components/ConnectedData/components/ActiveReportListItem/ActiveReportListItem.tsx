@@ -1,4 +1,4 @@
-import { useCallback, memo, useMemo } from 'react'
+import { useCallback, memo, useMemo, useState } from 'react'
 import { CollapsibleBox, Fab } from '~/ui-kit.team-scoring-2019'
 import clsx from 'clsx'
 import classes from '~/components/SPSocketLab/components/ConnectedData/ConnectedData.module.scss'
@@ -14,6 +14,9 @@ import CloseIcon from '@mui/icons-material/Close'
 import { capitalCase } from 'change-case'
 import acticeReportClasses from './ActiveReportListItem.module.scss'
 import { replaceWords } from '~/utils/string-tools/replaceWords'
+import { GeoSection } from '~/components/SPSocketLab/components/ConnectedData/components/GeoSection'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export const ActiveReportListItem = memo(() => {
   const viState = useSnapshot(vi.FOR_EXAMPLE)
@@ -30,6 +33,17 @@ export const ActiveReportListItem = memo(() => {
       : null,
     [viProxy.activeReport],
   )
+  const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
+
+  const [isHeadInfoOpened, setIsHeadInfoOpened] = useState(false)
+  const toggleHeadInfo = useCallback(() => {
+    setIsHeadInfoOpened((s) => !s)
+  }, [setIsHeadInfoOpened])
+
+  const [isFooterInfoOpened, setIsFooterInfoOpened] = useState(false)
+  const toggleFooterInfo = useCallback(() => {
+    setIsFooterInfoOpened((s) => !s)
+  }, [setIsFooterInfoOpened])
 
   if (!viState.activeReport) return null
   return (
@@ -48,41 +62,76 @@ export const ActiveReportListItem = memo(() => {
             }}
             className={clsx(acticeReportClasses.commonInfo)}
           >
-            <b>{header}</b>
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'flex-start',
+                // alignItems: 'center',
                 gap: '8px',
               }}
             >
-              <div
+              <button
                 style={{
+                  backgroundColor: 'rgb(1, 98, 200)',
+                  color: '#FFF',
                   display: 'flex',
-                  flexDirection: 'column',
-                  // alignItems: 'flex-start',
-                  gap: '0px',
-                  // minWidth: '120px',
-                  fontFamily: 'system-ui, monospace',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  
+                  width: '20px',
+                  height: '20px',
+                  border: '2px solid #fff',
+                  // boxShadow: 'rgba(7,7,7,.3) 0 0 10px',
+                  outline: isHeadInfoOpened ? '2px solid rgb(1, 98, 200)' : 'none',
+                  borderRadius: '50%',
                 }}
+                onClick={toggleHeadInfo}
               >
-                <div style={{ display: 'inline-flex', gap: '8px' }}><span>IMEI</span><b>{viState.activeReport.imei || 'No'}</b></div>
-                {!!viState.activeReport._ip && <div style={{ display: 'inline-flex', gap: '8px' }}><span>IP</span><b>{viState.activeReport._ip}</b></div>}
-                <div style={{ display: 'inline-flex', gap: '8px' }}>{viState.activeReport.appVersion}</div>
-              </div>
-              {
-                !!viState.activeReport._userAgent && (
-                  <>
-                    <div
-                      style={{ borderRight: '1px solid black', minHeight: '100%', alignSelf: 'normal' }}
-                    />
-                    <div>{viState.activeReport._userAgent}</div>
-                  </>
-                )
-              }
+                {isHeadInfoOpened ? <ExpandLessIcon style={{ fontSize: '18px' }} /> : <ExpandMoreIcon style={{ fontSize: '18px' }} />}
+              </button>
+              <span>{new Date(viState.activeReport.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}</span>
+              <b>{header}</b>
             </div>
-            {!!viState.activeReport._clientReferer && <div style={{ display: 'inline-flex', gap: '8px' }}><span>{viState.activeReport._clientReferer}</span></div>}
+
+            {
+              isHeadInfoOpened && (
+                <>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'flex-start',
+                      gap: '8px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        // alignItems: 'flex-start',
+                        gap: '0px',
+                        // minWidth: '120px',
+                        fontFamily: 'system-ui, monospace',
+                      }}
+                    >
+                      <div style={{ display: 'inline-flex', gap: '8px' }}><span>IMEI</span><b>{viState.activeReport.imei || 'No'}</b></div>
+                      {!!viState.activeReport._ip && <div style={{ display: 'inline-flex', gap: '8px' }}><span>IP</span><b>{viState.activeReport._ip}</b></div>}
+                      <div style={{ display: 'inline-flex', gap: '8px' }}>{viState.activeReport.appVersion}</div>
+                    </div>
+                    {
+                      !!viState.activeReport._userAgent && (
+                        <>
+                          <div style={{ borderRight: '1px solid black', minHeight: '100%', alignSelf: 'normal' }} />
+                          <div>{viState.activeReport._userAgent}</div>
+                        </>
+                      )
+                    }
+                  </div>
+                  {!!viState.activeReport._clientReferer && <div style={{ display: 'inline-flex', gap: '8px' }}><span>{viState.activeReport._clientReferer}</span></div>}
+                </>
+              )
+            }
           </div>
         </div>
         
@@ -269,6 +318,7 @@ export const ActiveReportListItem = memo(() => {
             </div>
           )
         }
+
         <div className={clsx(classes.stickyBottomHeader)}>
           <div
             style={{
@@ -278,11 +328,60 @@ export const ActiveReportListItem = memo(() => {
               gap: '8px',
               width: '100%',
               fontSize: 'small',
+
+              // paddingTop: '0px',
+              paddingBottom: isFooterInfoOpened ? '0px' : '8px',
             }}
             className={clsx(acticeReportClasses.commonInfo)}
           >
-            <div>{new Date(viState.activeReport.ts).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}</div>
-          </div>
+            {
+              isBrowser && !!viState.activeReport._geoip && !!viState.activeReport._geoip?.ll && Array.isArray(viState.activeReport._geoip.ll) ? (
+                <>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <button
+                      style={{
+                        backgroundColor: 'rgb(1, 98, 200)',
+                        color: '#FFF',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        
+                        width: '20px',
+                        height: '20px',
+                        border: '2px solid #fff',
+                        // boxShadow: 'rgba(7,7,7,.3) 0 0 10px',
+                        outline: isFooterInfoOpened ? '2px solid rgb(1, 98, 200)' : 'none',
+                        borderRadius: '50%',
+                      }}
+                      onClick={toggleFooterInfo}
+                    >
+                      {isFooterInfoOpened ? <ExpandLessIcon style={{ fontSize: '18px' }} /> : <ExpandMoreIcon style={{ fontSize: '18px' }} />}
+                    </button>
+                    <b>Geo</b>
+                    <div>{clsx([viState.activeReport._geoip.country, viState.activeReport._geoip.region, viState.activeReport._geoip.city]) || '(no data)'}</div>
+                  </div>
+                  {
+                    isFooterInfoOpened && (
+                      <div className={acticeReportClasses.leafletMapContainer}>
+                        {/* @ts-ignore */}
+                        <GeoSection report={viState.activeReport} />
+                      </div>
+                    )
+                  }
+                  </>
+                ) : (
+                  <div>No Geo data</div>
+                )
+              }
+            </div>
         </div>
       </div>
       <Fab

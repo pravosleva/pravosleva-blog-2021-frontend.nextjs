@@ -17,6 +17,7 @@ import ErrorIcon from '@mui/icons-material/Error'
 import { TimeAgoLabel } from '~/components/SPSocketLab/components/ConnectedData/components'
 import { capitalCase } from 'change-case'
 import { replaceWords } from '~/utils/string-tools/replaceWords'
+// import { LeafletSection } from '~/components/SPSocketLab/components/ConnectedData/components/LeafletSection'
 
 type TProps = {
   report: NEvent.TReport;
@@ -127,6 +128,20 @@ export const ReportListItem = memo((ps: TProps) => {
           gap: '16px',
         }}
       >
+        {/*
+          !!ps.report._geoip && !!ps.report._geoip?.ll && Array.isArray(ps.report._geoip.ll) && (
+            <div
+              // className={acticeReportClasses.leafletMapContainer}
+              style={{
+                borderRadius: '16px',
+                width: '100%',
+                height: '250px',
+              }}
+            >
+              <LeafletSection report={ps.report} />
+            </div>
+          )
+        */}
         {
           isOpened &&
             (!!ps.report._wService

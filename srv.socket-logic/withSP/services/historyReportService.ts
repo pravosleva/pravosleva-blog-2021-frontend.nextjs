@@ -1,5 +1,5 @@
 import { NEvent, TGeoIpInfo } from '~/srv.socket-logic/withSP/types'
-import { getChannelName, getIsCorrectFormat, Logger, mws, state } from '~/srv.socket-logic/withSP/utils'
+import { getChannelName, getIsCorrectFormat, Logger, mws, state, geoHelper } from '~/srv.socket-logic/withSP/utils'
 import { Socket } from 'socket.io'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 
@@ -7,12 +7,14 @@ const logger = new Logger({ counterLimit: 999 })
 
 export const historyReportService = ({
   ip,
+  geoip,
   io,
   socket,
   clientUserAgent: userAgent,
   clientReferer,
 }: {
   ip?: string;
+  geoip?: TGeoIpInfo | null;
   io: Socket;
   socket: Socket;
   clientUserAgent?: string;
@@ -25,12 +27,9 @@ export const historyReportService = ({
       // console.log(e)
       // console.log(incData)
       // console.log('-- /EV')
-      let geoip: TGeoIpInfo | null | undefined
 
-      if (!!ip) {
-        geoip = await logger.getGeoip(ip)
-        logger.add({ message: `[Geo] geoip: ${!!geoip ? logger.getGeoipText(geoip) : `No data (${typeof geoip})`}` })
-      }
+      if (!!ip) logger.add({ message: `[IP] ${ip}` })
+      if (!!geoip) logger.add({ message: `[geoip] ${geoHelper.getGeoipText(geoip)}` })
 
       if (!!e.reason) logger.add({ message: `[Version validation result] ok: ${String(e.ok)}${!!e.reason ? `; ${e.reason}` : ''}` })
       

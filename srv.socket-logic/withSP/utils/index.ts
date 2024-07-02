@@ -1,3 +1,4 @@
+export * from './geoHelper'
 export * from './getChannelName'
 export * from './getIsCorrectFormat'
 export * from './logger'
