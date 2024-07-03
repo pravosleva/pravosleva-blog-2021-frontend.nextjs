@@ -20,6 +20,8 @@ export const standartReportService = ({
 }) => (incData: NEvent.TReport, cb?: ({ message, ok }: { message: string, ok: boolean }) => void) => {
   const bigReportStateValues = [
     'tradein-final',
+    'act-print', // DEPRECATED
+    'subs-final',
   ]
   mws.checkAppVersion({ data: incData })
     .then((e) => {
