@@ -35,7 +35,7 @@ export const ActiveReportListItem = memo(() => {
   )
   const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
 
-  const [isHeadInfoOpened, setIsHeadInfoOpened] = useState(false)
+  const [isHeadInfoOpened, setIsHeadInfoOpened] = useState(true)
   const toggleHeadInfo = useCallback(() => {
     setIsHeadInfoOpened((s) => !s)
   }, [setIsHeadInfoOpened])
@@ -63,10 +63,12 @@ export const ActiveReportListItem = memo(() => {
             className={clsx(acticeReportClasses.commonInfo)}
           >
             <div
+              className={clsx(acticeReportClasses.commonInfo)}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                // alignItems: 'center',
+                flexWrap: 'wrap',
+                alignItems: 'center',
                 gap: '8px',
               }}
             >
@@ -79,8 +81,8 @@ export const ActiveReportListItem = memo(() => {
                   alignItems: 'center',
                   cursor: 'pointer',
                   
-                  width: '20px',
-                  height: '20px',
+                  width: '25px',
+                  height: '25px',
                   border: '2px solid #fff',
                   // boxShadow: 'rgba(7,7,7,.3) 0 0 10px',
                   outline: isHeadInfoOpened ? '2px solid rgb(1, 98, 200)' : 'none',
@@ -321,6 +323,7 @@ export const ActiveReportListItem = memo(() => {
 
         <div className={clsx(classes.stickyBottomHeader)}>
           <div
+            className={clsx(acticeReportClasses.commonInfo)}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -332,12 +335,12 @@ export const ActiveReportListItem = memo(() => {
               // paddingTop: '0px',
               paddingBottom: isFooterInfoOpened ? '0px' : '8px',
             }}
-            className={clsx(acticeReportClasses.commonInfo)}
           >
             {
               isBrowser && !!viState.activeReport._geoip && !!viState.activeReport._geoip?.ll && Array.isArray(viState.activeReport._geoip.ll) ? (
                 <>
                   <div
+                    className={clsx(acticeReportClasses.commonInfo)}
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -354,8 +357,8 @@ export const ActiveReportListItem = memo(() => {
                         alignItems: 'center',
                         cursor: 'pointer',
                         
-                        width: '20px',
-                        height: '20px',
+                        width: '25px',
+                        height: '25px',
                         border: '2px solid #fff',
                         // boxShadow: 'rgba(7,7,7,.3) 0 0 10px',
                         outline: isFooterInfoOpened ? '2px solid rgb(1, 98, 200)' : 'none',

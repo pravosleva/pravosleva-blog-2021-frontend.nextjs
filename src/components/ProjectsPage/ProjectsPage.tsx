@@ -94,7 +94,7 @@ const projects: TProject[] = [
     title: 'FamilyTree exp',
     description: 'PROJECT_DESCR@FAMILY_TREE',
     img: {
-      src: '/static/img/projects/family-tree.webp',
+      src: '/static/img/projects/family-tree-2.webp',
       alt: 'loading...',
       color: {
         average: '#e3e0e9',
@@ -102,8 +102,8 @@ const projects: TProject[] = [
     },
     links: [
       {
-        href: 'https://pravosleva.pro/dist.family-tree-2023/#/?debug=1',
-        as: 'https://pravosleva.pro/dist.family-tree-2023/#/?debug=1',
+        href: 'https://pravosleva.pro/dist.family-tree-2023/#/?debug=1&rd=1',
+        as: 'https://pravosleva.pro/dist.family-tree-2023/#/?debug=1&rd=1',
         text: 'DEMO',
         color: ELinkColor.YELLOW,
         icon: ELinkIcon.ARROW,
