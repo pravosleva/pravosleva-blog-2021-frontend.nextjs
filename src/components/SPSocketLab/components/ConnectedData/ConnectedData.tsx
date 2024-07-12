@@ -34,6 +34,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone'
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
 import { ActiveReportListItem, ReportListItem } from './components'
+// import { SankeysChart } from '~/components/SPSocketLab/components/ConnectedData/components/SankeysChart'
 
 // const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
@@ -76,7 +77,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
     appVersionFilter,
     ipFilter,
   ])
-  const filteredReports = useMemo(() => {
+  // @ts-ignore
+  const filteredReports = useMemo<NEvent.TReport[]>(() => {
     if (hasAnyFilter) {
       return viState.items
         .filter(({ imei, _ip, appVersion }) => {
@@ -187,6 +189,11 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
               gap: '16px',
             }}
           >
+            {/*
+              filteredReports.length > 1 && (
+                <SankeysChart reports={filteredReports} />
+              )
+            */}
             {filteredReports.map((ps) => (
               <ReportListItem
                 key={`${ps.ts}-${ps.room}-${ps.appVersion}-${ps.stateValue}`}

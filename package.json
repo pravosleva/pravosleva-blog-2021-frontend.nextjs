@@ -87,7 +87,7 @@
     "react-day-picker": "7.2.4",
     "react-dom": "17.x",
     "react-gist": "^1.2.4",
-    "react-google-charts": "3.0.10",
+    "react-google-charts": "^4.0.1",
     "react-grid-gallery": "^1.0.1-alpha.0",
     "react-headroom": "^3.2.1",
     "react-hook-form": "^7.45.4",

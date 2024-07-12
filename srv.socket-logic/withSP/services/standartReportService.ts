@@ -22,6 +22,9 @@ export const standartReportService = ({
     'tradein-final',
     'act-print', // DEPRECATED
     'subs-final',
+    'upload-photo:result-is-not-ok',
+    'final-price-table',
+    'contract-err',
   ]
   mws.checkAppVersion({ data: incData })
     .then((e) => {

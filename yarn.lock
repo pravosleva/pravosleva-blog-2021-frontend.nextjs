@@ -8512,12 +8512,10 @@ react-gist@^1.2.4:
   resolved "https://registry.yarnpkg.com/react-gist/-/react-gist-1.2.4.tgz#4ee71f24cc6f60836354e2ad6e30f6d24e06e0f7"
   integrity sha512-uDgPJ08IJsl/7auK3CS53JKGC1P/X7tNCzo9k0r6D/5l+ilsxE1+SAaylJCh0aeyZoJOoxQikKU+MHsAvA9iFw==
 
-react-google-charts@3.0.10:
-  version "3.0.10"
-  resolved "https://registry.yarnpkg.com/react-google-charts/-/react-google-charts-3.0.10.tgz#295217895c456b98b2f291322af3e77303cd245e"
-  integrity sha512-4ECk/Fua1G3tOQuDdMaKrA8QFO/meRihDjNeniPQD2ApwHBJQg6S2cWdovGMcnq6LxEG5Ol3gm7xNE8WXm+r2w==
-  dependencies:
-    react-load-script "^0.0.6"
+react-google-charts@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/react-google-charts/-/react-google-charts-4.0.1.tgz#b7713856a48009b77318f8951ddf2c3ba39f991b"
+  integrity sha512-V/hcMcNuBgD5w49BYTUDye+bUKaPmsU5vy/9W/Nj2xEeGn+6/AuH9IvBkbDcNBsY00cV9OeexdmgfI5RFHgsXQ==
 
 react-grid-gallery@^1.0.1-alpha.0:
   version "1.0.1-alpha.0"
@@ -8631,11 +8629,6 @@ react-lifecycles-compat@^3.0.0, react-lifecycles-compat@^3.0.2:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
-
-react-load-script@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/react-load-script/-/react-load-script-0.0.6.tgz#db6851236aaa25bb622677a2eb51dad4f8d2c258"
-  integrity sha512-aRGxDGP9VoLxcsaYvKWIW+LRrMOzz2eEcubTS4NvQPPugjk2VvMhow0wWTkSl7RxookomD1MwcP4l5UStg5ShQ==
 
 react-map-gl@^7.1.7:
   version "7.1.7"

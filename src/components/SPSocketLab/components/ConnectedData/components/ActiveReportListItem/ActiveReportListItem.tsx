@@ -9,7 +9,10 @@ import { getTimeDiff } from '~/utils/time-tools/getTimeDiff'
 import { CollapsibleBox as NewCollapsibleBox } from '~/ui-kit.sp-tradein2024-devtools'
 import collapsibleBoxClasses from '~/ui-kit.sp-tradein2024-devtools/CollapsibleBox/CollapsibleBox.module.scss'
 import baseClasses from '~/ui-kit.sp-tradein2024-devtools/Base.module.scss'
-import { XHRReport } from '~/components/SPSocketLab/components/ConnectedData/components/XHRReport'
+import {
+  // TimingChart,
+  XHRReport,
+} from '~/components/SPSocketLab/components/ConnectedData/components'
 import CloseIcon from '@mui/icons-material/Close'
 import { capitalCase } from 'change-case'
 import acticeReportClasses from './ActiveReportListItem.module.scss'
@@ -50,7 +53,7 @@ export const ActiveReportListItem = memo(() => {
     <>
       <div className={clsx(acticeReportClasses.fixedTop, acticeReportClasses.fixedTopActiveReport, 'backdrop-blur', 'fade-in-speed-2')}>
         
-        <div className={clsx(classes.stickyTopHeader)}>
+        <div className={clsx(classes.stickyTopHeader, 'white-bg')}>
           <div
             style={{
               display: 'flex',
@@ -286,14 +289,14 @@ export const ActiveReportListItem = memo(() => {
           !!viState.activeReport._wService
             ? viState.activeReport._wService?._perfInfo.tsList.length > 0 && (
               <>
+                {/* @ts-ignore */}
+                {/* <TimingChart report={viState.activeReport} /> */}
                 {
                   viState.activeReport._wService?._perfInfo.tsList.map((item, i, a) => {
                     const isFirst = i === 0
                     const details = isFirst ? `${(item.p / 1000).toFixed(1)} s` : `+${((item.p - a[i - 1].p) / 1000).toFixed(1)} s`
                     return (
-                      <div
-                        key={`${item.ts}-${i}`}
-                      >
+                      <div key={`${item.ts}-${i}`}>
                         <CollapsibleBox
                           label={`${details}: ${item.name || item.descr}`}
                           descritpion={
@@ -311,17 +314,14 @@ export const ActiveReportListItem = memo(() => {
               </>
           ) : (
             <div>
-              <pre
-                style={{ fontFamily: 'system-ui' }}
-                className={classes.pre}
-              >
+              <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
                 {JSON.stringify(viState.activeReport, null, 4)}
               </pre>
             </div>
           )
         }
 
-        <div className={clsx(classes.stickyBottomHeader)}>
+        <div className={clsx(classes.stickyBottomHeader, 'white-bg')}>
           <div
             className={clsx(acticeReportClasses.commonInfo)}
             style={{
