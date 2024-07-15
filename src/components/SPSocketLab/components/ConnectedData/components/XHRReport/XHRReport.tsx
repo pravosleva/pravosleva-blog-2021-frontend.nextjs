@@ -22,6 +22,9 @@ import {
 } from 'notistack'
 import { IconButton, Button } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
+import TimerIcon from '@mui/icons-material/Timer'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import classes from './XHRReport.module.scss'
 
 /*
@@ -109,11 +112,19 @@ export const XHRReport = memo(({ xhr, level }: TProps) => {
                       // @ts-ignore
                       level={level + 2}
                       StartIcon={
-                        xhr.state[url]?.[tsstr]?.code === 'pending'
-                        ? <TimelapseIcon fontSize='small' />
-                        : xhr.state[url]?.[tsstr]?.__resDetails?.res?.ok === true
-                          ? <TaskAltIcon fontSize='small' />
-                          : <DoDisturbIcon color='error' fontSize='small' />
+                        url === '/partner_api/photo/status'
+                          ? xhr.state[url]?.[tsstr]?.__resDetails?.res?.status === 'not_checked'
+                            ? xhr.state[url]?.[tsstr]?.__resDetails?.res?.started
+                              ? <TimerIcon fontSize='small' />
+                              : <AccessTimeIcon fontSize='small' />
+                            : xhr.state[url]?.[tsstr]?.__resDetails?.res?.status === 'ok'
+                              ? <TaskAltIcon fontSize='small' color='success' />
+                              : <HelpOutlineIcon fontSize='small' />
+                          : xhr.state[url]?.[tsstr]?.code === 'pending'
+                            ? <TimelapseIcon fontSize='small' />
+                            : xhr.state[url]?.[tsstr]?.__resDetails?.res?.ok === true
+                              ? <TaskAltIcon fontSize='small' />
+                              : <DoDisturbIcon color='error' fontSize='small' />
                       }
                     >
                       <div className={classes.relativeBox}>
