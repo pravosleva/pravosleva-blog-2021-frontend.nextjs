@@ -29,9 +29,9 @@ export const historyReportService = ({
       // console.log('-- /EV')
 
       if (!!ip) logger.add({ message: `[IP] ${ip}` })
-      if (!!geoip) logger.add({ message: `[geoip] ${geoHelper.getGeoipText(geoip)}` })
+      if (!!geoip) logger.add({ message: `[geoip exp] ${geoHelper.getGeoipText(geoip)}` })
 
-      if (!!e.reason) logger.add({ message: `[Version validation result] ok: ${String(e.ok)}${!!e.reason ? `; ${e.reason}` : ''}` })
+      if (!!e.reason) logger.add({ message: `[Client app version validation result] ok: ${String(e.ok)}${!!e.reason ? `; ${e.reason}` : ''}` })
       
       if (e.ok) {
         const validated = getIsCorrectFormat(incData)
@@ -88,7 +88,7 @@ export const historyReportService = ({
             })
 
             if (!result?.isOk) {
-              logger.add({ message: '[Cur result] Cant save data to Google Sheets (cache only)' })
+              logger.add({ message: '[Result] Cant save data to Google Sheets (server cache only)' })
               const ts = new Date().getTime()
               const tgNotifResult = await universalHttpClient.post(
                 'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
@@ -105,7 +105,8 @@ export const historyReportService = ({
 
                   ts,
                   eventCode: 'aux_service',
-                  about: `⛔ ${incData.appVersion} (rep) -> withSP -> historyReportService -> e-helper: API ERR`,
+                  header: 'SP | History report WARN',
+                  about: `🚫 ${incData.appVersion} report -> withSP mw -> historyReportService -> e-helper: API ERR`,
                   targetMD: [
                     'Cant send to Google Sheets:',
                     `${result.message || 'No message'}`,
@@ -119,17 +120,18 @@ export const historyReportService = ({
                   ].join('\n'),
                 },
               )
-              logger.add({ message: `[Send err tg notif] isOk: ${String(tgNotifResult?.isOk)}${!!tgNotifResult?.message ? `; ${tgNotifResult.message}` : ''}` })
+              logger.add({ message: `[Send err TG notif] isOk: ${String(tgNotifResult?.isOk)}${!!tgNotifResult?.message ? `; ${tgNotifResult.message}` : ''}` })
+              const msgForClient = 'Сомнительно, но Ok'
               io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR, {
                 _message: logger.logsAsSingleLineText,
-                message: 'Сомнительно, но Ok',
+                message: msgForClient,
                 result,
                 yourData: incData,
               })
-              logger.add({ message: '[Final msg for client] Сомнительно, но Ok' })
+              logger.add({ message: `[Final msg for client] ${msgForClient}` })
             } else {
               if (!!result?.response?.id) googleSheetRowNumber = result.response.id
-              logger.add({ message: `[Cur result] Data saved to Google Sheets (${result.response?.id || 'No response.id'})` })
+              logger.add({ message: `[Result] Data saved to Google Sheets (${result.response?.id || 'No response.id'})` })
               const uiMsg = result.response?.id ? `Ok #${result.response.id}` : 'Ok'
               if (typeof cb === 'function') cb({ message: uiMsg, ok: true })
               io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_OK, {
@@ -163,7 +165,8 @@ export const historyReportService = ({
 
               ts,
               eventCode: 'aux_service',
-              about: `⛔ ${incData.appVersion} -> withSP: ERR`,
+              header: 'SP | History report ERR',
+              about: `⛔ ${incData.appVersion} report -> withSP mw -> historyReportService ERR`,
               targetMD: [
                 message,
                 'Не все пошло по плану. Скорее всего, решение вопроса все еще в кэше сервера',
@@ -190,7 +193,8 @@ export const historyReportService = ({
 
                   ts,
                   eventCode: 'aux_service',
-                  about: !!googleSheetRowNumber ? `#report${googleSheetRowNumber} Details` : 'Experience',
+                  header: `SP | ${!!googleSheetRowNumber ? `#report${googleSheetRowNumber} log details` : 'Report log details'}`,
+                  about: 'Additional debug',
                   targetMD: [
                     'Last report log:',
                     `\`\`\`\n${logger.logsAsMultilineText}\`\`\``,
