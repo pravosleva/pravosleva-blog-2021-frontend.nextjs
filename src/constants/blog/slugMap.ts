@@ -3,12 +3,14 @@ import { list as articlesListAboutBash } from './bash'
 import { list as articlesListAboutJSVanilla, bg as bgJSVanilla } from './js-vanilla'
 import { list as articlesListAboutNginx } from './nginx'
 import { list as articlesListAboutRedShark } from './red-shark'
+import { list as articlesListAboutNodeJs } from './node-js'
 
 export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
   ...articlesListAboutNginx,
   ...articlesListAboutJSVanilla,
   ...articlesListAboutRedShark,
+  ...articlesListAboutNodeJs,
   'team-scoring': {
     id: '653053616917cd0d733cddb9',
     brief: 'По мотивам статьи Joel Spolsky',
