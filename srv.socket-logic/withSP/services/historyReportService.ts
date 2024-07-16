@@ -194,7 +194,7 @@ export const historyReportService = ({
                   ts,
                   eventCode: 'aux_service',
                   header: `SP | ${!!googleSheetRowNumber ? `#report${googleSheetRowNumber} log details` : 'Report log details'}`,
-                  about: 'Additional debug',
+                  // about: 'Additional debug',
                   targetMD: [
                     'Last report log:',
                     `\`\`\`\n${logger.logsAsMultilineText}\`\`\``,
