@@ -41,7 +41,12 @@ export const ReportListItem = memo((ps: TProps) => {
   }, [setIsOpened])
   useEffect(() => {
     if (isOpened) {
-      if (!!ps.report._wService) ps.onSetActiveReport(ps.report)
+      // NOTE: v1
+      // if (!!ps.report._wService) ps.onSetActiveReport(ps.report)
+      // else ps.onSetActiveReport(null)
+
+      // NOTE: v2
+      if (!!ps.report.stepDetails || !!ps.report._wService) ps.onSetActiveReport(ps.report)
       else ps.onSetActiveReport(null)
     }
   }, [isOpened])

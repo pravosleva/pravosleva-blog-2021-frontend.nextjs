@@ -158,14 +158,6 @@ export const ActiveReportListItem = memo(() => {
                     gap: '16px',
                   }}
                 >
-                  
-                  {/* <pre
-                    style={{ fontFamily: 'system-ui' }}
-                    className={classes.pre}
-                  >
-                    {JSON.stringify(viState.activeReport.stepDetails, null, 4)}
-                  </pre> */}
-
                   <div
                     className={clsx(
                       // classes.wrapper,

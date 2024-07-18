@@ -133,6 +133,7 @@ export const historyReportService = ({
               if (!!result?.response?.id) googleSheetRowNumber = result.response.id
               logger.add({ message: `[Result] Data saved to Google Sheets (${result.response?.id || 'No response.id'})` })
               const uiMsg = result.response?.id ? `Ok #${result.response.id}` : 'Ok'
+              logger.add({ message: `[Final msg for client] ${uiMsg}` })
               if (typeof cb === 'function') cb({ message: uiMsg, ok: true })
               io.to(socket.id).emit(NEvent.ServerOutgoing.SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_OK, {
                 _message: logger.logsAsSingleLineText,
@@ -169,7 +170,7 @@ export const historyReportService = ({
               about: `⛔ ${incData.appVersion} report -> withSP mw -> historyReportService ERR`,
               targetMD: [
                 message,
-                'Не все пошло по плану. Скорее всего, решение вопроса все еще в кэше сервера',
+                'Не все пошло по плану. Но решение вопроса, скорее всего, все еще в кэше сервера',
                 '',
                 `\`\`\`\nIP: ${ip || 'No'}\nIMEI: ${incData.imei || 'No'}\nClient referer: ${clientReferer || 'No'}\`\`\``,
               ].join('\n'),
@@ -193,7 +194,7 @@ export const historyReportService = ({
 
                   ts,
                   eventCode: 'aux_service',
-                  header: `SP | ${!!googleSheetRowNumber ? `#report${googleSheetRowNumber} log details` : 'Report log details'}`,
+                  header: `SP | ${!!googleSheetRowNumber ? `#report${googleSheetRowNumber} log` : 'Report log'}`,
                   // about: 'Additional debug',
                   targetMD: [
                     'Last report log:',

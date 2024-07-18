@@ -84,8 +84,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
         .filter(({ imei, _ip, appVersion }) => {
           const results = []
 
-          if (!!imei && !!imeiFilter)
-            results.push(testTextByAnyWord({ text: imei, words: getNormalizedWordsArr(imeiFilter.split(' ').filter(str => !!str)) }))
+          if (!!imeiFilter)
+            results.push(testTextByAnyWord({ text: imei || '', words: getNormalizedWordsArr(imeiFilter.split(' ').filter(str => !!str)) }))
 
           // if (!!appVersion && !!appVersionFilter) 
           //   results.push(testTextByAnyWord({ text: appVersion, words: [appVersionFilter] }))
@@ -166,8 +166,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
             <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>SP exp</span>
             <Brightness1Icon color={isConnected ? 'success' : 'error'} />
           </Typography>
-          <div>Cache size <b>{datasizeInfo}</b> | <span>Displayed <b>{hasAnyFilter ? filteredReports.length : 'all'}</b> of <b>{viState.items.length}</b></span>
-          </div>
+          <div>Cache size <b>{datasizeInfo}</b> | <span>Displayed <b>{hasAnyFilter ? filteredReports.length : 'all'}</b> of <b>{viState.items.length}</b></span></div>
         </ResponsiveBlock>
       </div>
       <ResponsiveBlock
@@ -204,11 +203,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
             ))}
             {
               filteredReports.length === 0 && (
-                <Alert
-                  // sx={{ mb: 2 }}
-                  variant="standard"
-                  severity="info"
-                >
+                <Alert variant="standard" severity="info">
                   Список пуст
                 </Alert>
               )
@@ -249,9 +244,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
         ></iframe>
 
         {
-          !!viState.activeReport && (
-            <ActiveReportListItem />
-          )
+          !!viState.activeReport && <ActiveReportListItem />
         }
       </ResponsiveBlock>
       {
