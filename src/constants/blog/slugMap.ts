@@ -4,6 +4,7 @@ import { list as articlesListAboutJSVanilla, bg as bgJSVanilla } from './js-vani
 import { list as articlesListAboutNginx } from './nginx'
 import { list as articlesListAboutRedShark } from './red-shark'
 import { list as articlesListAboutNodeJs } from './node-js'
+import { list as articlesListAboutUx } from './ux'
 
 export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
@@ -11,6 +12,7 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutJSVanilla,
   ...articlesListAboutRedShark,
   ...articlesListAboutNodeJs,
+  ...articlesListAboutUx,
   'team-scoring': {
     id: '653053616917cd0d733cddb9',
     brief: 'По мотивам статьи Joel Spolsky',
