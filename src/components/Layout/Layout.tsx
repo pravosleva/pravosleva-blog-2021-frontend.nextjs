@@ -7,6 +7,7 @@ import { useStyles } from './useStyles'
 import classes from './Layout.module.scss'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { CookiePolicyOffer } from '~/components'
+import { ScrollTopBtn } from './components/ScrollTopBtn'
 
 type TProps = {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
         {children}
       </main>
       <CookiePolicyOffer />
+      <ScrollTopBtn />
 
       {
         !noFooter && (
@@ -46,9 +48,6 @@ export const Layout = ({ children, noFooter }: TProps) => {
                 </div>
               </ResponsiveBlock>
             </footer>
-            {/* <ScrollTopBtn onClick={scrollTop} isShowed={showScroll} themeName={currentTheme}>
-              <i className="fas fa-arrow-up"></i>
-            </ScrollTopBtn> */}
           </>
         )
       }

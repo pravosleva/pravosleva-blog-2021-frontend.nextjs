@@ -15,8 +15,8 @@ export const GoHomeSection = ({
   const sqtState = useSelector((state: IRootState) => state.siteSearch.sqt)
 
   const defaultBtns = [{
-    href: '/',
-    as: '/',
+    href: '/blog',
+    as: '/blog',
     Component: (
       <a
         className='link-as-rippled-btn truncate'
@@ -28,7 +28,7 @@ export const GoHomeSection = ({
       >
         {/* <i className="fas fa-arrow-left"></i> */}
         <KeyboardArrowLeftIcon />
-        <span style={{ marginLeft: '10px', whiteSpace: 'pre' }} className='truncate'>{t('GO_BACK_TO_THE_HOMEPAGE')}</span>
+        <span style={{ marginLeft: '10px', whiteSpace: 'pre' }} className='truncate'>{t('BLOG')}</span>
       </a>
     ),
   }]

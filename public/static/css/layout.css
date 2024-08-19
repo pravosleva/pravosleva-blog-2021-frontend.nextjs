@@ -1022,7 +1022,7 @@ div.article-body > blockquote {
     padding: 0 20px 0 20px;
     margin: 0 auto;
     max-width: calc(
-      960px + 40px + 4px
+      900px + 40px + 4px
     ); /* max width of grid item (320) x max grids amount in row (3) - container paddings (20+20) - grid-gap between tiles (2 x2pcs) */
     min-height: calc(100vh - 50px);
   }

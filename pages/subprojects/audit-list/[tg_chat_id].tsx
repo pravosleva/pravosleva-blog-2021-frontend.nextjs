@@ -47,7 +47,11 @@ const TodoOnline = ({
           >
             <Todo2023Online room={chat_id} />
           </ResponsiveBlock>
-        ) : <ErrorPage message={_pageService.message || 'ERR: No _pageService.message'} />
+        ) : (
+          <ErrorPage
+            message={_pageService.message || 'ERR: No _pageService.message'}
+          />
+        )
       }
     </>
   );

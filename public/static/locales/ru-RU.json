@@ -23,13 +23,13 @@
 
   "PROJECT_DESCR@SEO_EXP": "Заметки начинающего разраба",
   "PROJECT_DESCR@TRADEIN": "Онлайн логгер внутри отдельного потока SharedWorker",
-  "PROJECT_DESCR@CARGO_2016": "Оценка заполненности фуры",
+  "PROJECT_DESCR@CARGO_2016": "Задача оптимальной погрузки фуры",
   "PROJECT_DESCR@FAMILY_TREE": "Генеалогическое дерево",
 
   "AUDIT_LIST_PROJECT_DESCR": "Мы сделаем это лучше!",
   "AUTO_PARK_PROJECT_DESCR": "Сервисная книжка",
-  "TEAM_SCORING_PROJECT_DESCR": "Оценка правдивости прогноза",
-  "RED_SHARK_PROJECT_DESCR": "2002",
+  "TEAM_SCORING_PROJECT_DESCR": "Корректировка прогноза лжеца",
+  "RED_SHARK_PROJECT_DESCR": "VW Golf. Легенда немецкого автопрома",
 
   "SOCKET_LAB/HEADER": "Сокеты",
   "SOCKET_LAB/CONTENT/isConnected": "Соединение",

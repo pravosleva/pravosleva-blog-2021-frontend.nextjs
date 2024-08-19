@@ -217,7 +217,7 @@ rippledButtons.forEach(btn => {
 })
 }
 
-setTimeout(detectBtnsAndSetHandlers, 3000);`,
+setTimeout(detectBtnsAndSetHandlers, 0);`,
           }}
         />
       </>

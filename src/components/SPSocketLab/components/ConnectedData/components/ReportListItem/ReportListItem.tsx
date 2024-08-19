@@ -3,20 +3,21 @@ import { useCallback, useMemo, useState, memo, useEffect } from "react"
 import { NEvent } from '../../withSocketContext'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 // import BookmarkIcon from '@mui/icons-material/Bookmark';
-import { CollapsibleBox } from '~/ui-kit.team-scoring-2019';
+// import { CollapsibleBox } from '~/ui-kit.team-scoring-2019';
 import classes from './ReportListItem.module.scss'
 import clsx from 'clsx'
 import InfoIcon from '@mui/icons-material/Info';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { useSnapshot } from 'valtio'
 import { vi } from '../../vi'
-import { getTimeDiff } from '~/utils/time-tools/getTimeDiff'
+// import { getTimeDiff } from '~/utils/time-tools/getTimeDiff'
 import { OverridableStringUnion } from '@mui/types'
 import WarningIcon from '@mui/icons-material/Warning'
 import ErrorIcon from '@mui/icons-material/Error'
 import { TimeAgoLabel } from '~/components/SPSocketLab/components/ConnectedData/components'
 import { capitalCase } from 'change-case'
 import { replaceWords } from '~/utils/string-tools/replaceWords'
+import { useGlobalTheming } from '~/hooks/useGlobalTheming';
 // import { LeafletSection } from '~/components/SPSocketLab/components/ConnectedData/components/LeafletSection'
 
 type TProps = {
@@ -46,21 +47,26 @@ export const ReportListItem = memo((ps: TProps) => {
       // else ps.onSetActiveReport(null)
 
       // NOTE: v2
-      if (!!ps.report.stepDetails || !!ps.report._wService) ps.onSetActiveReport(ps.report)
-      else ps.onSetActiveReport(null)
+      // if (!!ps.report.stepDetails || !!ps.report._wService) ps.onSetActiveReport(ps.report)
+      // else ps.onSetActiveReport(null)
+
+      // NOTE: v3 (set as active anyway)
+      ps.onSetActiveReport(ps.report)
     }
+    else ps.onSetActiveReport(null)
   }, [isOpened])
+  const { currentTheme } = useGlobalTheming()
 
   const Icon = useMemo(() => {
     switch (ps.report.reportType) {
-      case NEvent.EReportType.DEFAULT: return <BookmarkBorderIcon color='disabled' />
+      case NEvent.EReportType.DEFAULT: return <BookmarkBorderIcon color={currentTheme === 'dark' ? 'inherit' : 'disabled'} />
       case NEvent.EReportType.INFO: return <InfoIcon color='primary' />
       case NEvent.EReportType.SUCCESS: return <TaskAltIcon color='success' />
       case NEvent.EReportType.ERROR: return <ErrorIcon color='error' />
       case NEvent.EReportType.WARNING: return <WarningIcon color='warning' />
-      default: return <BookmarkBorderIcon color='disabled' />
+      default: return <BookmarkBorderIcon color={currentTheme === 'dark' ? 'inherit' : 'disabled'} />
     }
-  }, [ps.report.reportType])
+  }, [ps.report.reportType, currentTheme])
 
   const viSnap = useSnapshot(vi.FOR_EXAMPLE)
   const {
@@ -103,7 +109,15 @@ export const ReportListItem = memo((ps: TProps) => {
         }}
         // className='desktop-sticky-top-job-header'
         onClick={handleOpenToggle}
-        className={clsx(classes.mainHeader, { [classes.isActive]: viSnap.activeReport?.ts === ps.report.ts })}
+        className={clsx(
+          'fadeIn',
+          {
+            'backdrop-blur--lite': currentTheme !== 'dark',
+            'backdrop-blur--dark': currentTheme === 'dark',
+            [classes.isActive]: viSnap.activeReport?.ts === ps.report.ts,
+          },
+          classes.mainHeader,
+        )}
       >
         <Badge
           color={_badgeColorMap[ps.report.reportType]}
@@ -112,7 +126,12 @@ export const ReportListItem = memo((ps: TProps) => {
           {Icon}
         </Badge>
         <div
-          style={{ fontFamily: 'system-ui', textDecoration: isOpened ? 'none' : 'underline', fontWeight: 'bold' }}
+          style={{
+            fontFamily: 'system-ui',
+            textDecoration: isOpened ? 'none' : 'underline',
+            fontWeight: 'bold',
+            color: currentTheme === 'dark' ? '#FF9000' : 'inherit',
+          }}
           className='truncate'
         >
           {header}
@@ -156,7 +175,7 @@ export const ReportListItem = memo((ps: TProps) => {
                 <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
                   {JSON.stringify(restReportProps, null, 4)}
                 </pre>
-                {
+                {/*
                   ps.report.stepDetails && (
                     <CollapsibleBox
                       label={`Step details${ps.report._wService?._perfInfo.tsList.length > 2 ? ` (${getTimeDiff({ startDate: new Date(ps.report._wService._perfInfo.tsList[1].ts), finishDate: new Date(ps.report._wService._perfInfo.tsList[ps.report._wService._perfInfo.tsList.length - 1].ts) }).message})` : ''}`}
@@ -167,7 +186,7 @@ export const ReportListItem = memo((ps: TProps) => {
                       }
                     />
                   )
-                }
+                */}
                 {/*
                   ps.report._wService?._perfInfo.tsList.map((item, i, a) => {
                     const isFirst = i === 0
@@ -194,12 +213,12 @@ export const ReportListItem = memo((ps: TProps) => {
           ) : (
             <>
               {uiDate}
-              <pre
+              {/* <pre
                 style={{ fontFamily: 'system-ui' }}
                 className={classes.pre}
               >
                 {JSON.stringify(ps.report, null, 4)}
-              </pre>
+              </pre> */}
             </>
           ))
         }

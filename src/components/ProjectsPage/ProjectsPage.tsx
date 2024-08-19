@@ -60,7 +60,7 @@ const projects: TProject[] = [
   },
   {
     id: 2,
-    title: 'Trade-In exp',
+    title: 'Log exp',
     description: 'PROJECT_DESCR@TRADEIN',
     img: {
       src: '/static/img/projects/tradein.webp',
@@ -143,7 +143,7 @@ const projects: TProject[] = [
     ],
     uiDate: '2022',
     brief: 'PROJECT_BRIEF@CAR_SERVICE_BOOK',
-    tags: ['autoPark2022', 'telegram'],
+    tags: ['autoPark', 'telegram'],
   },
   {
     id: 5,
@@ -255,7 +255,7 @@ export const ProjectsPage = withTranslator(({ t }) => {
   const [headerText, setHeaderText] = useState<string>('🐱 🥤')
   useEffect(() => {
     setHeaderText(`${getRandomValue({
-      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳', '⛄', '☃️'],
+      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳', '☃️'],
     })} ${getRandomValue({
       items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'],
     })}`)

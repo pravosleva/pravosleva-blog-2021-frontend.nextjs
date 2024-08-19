@@ -17,7 +17,7 @@
 }
 @media(min-width: calc(#{$sm}px + 1px)){
   .isLimitedForDesktop {
-    max-width: calc(960px + 40px + 4px);
+    max-width: calc(900px + 40px + 4px);
     // border: 2px solid red;
 
     // padding: 0px 16px 0px 16px;
@@ -54,7 +54,7 @@
 @media(min-width: calc(#{$sm}px + 1px)){
   .isLimited {
     max-width: calc(
-      960px + 40px + 4px
+      900px + 40px + 4px
     );
   }
 }
@@ -67,7 +67,7 @@
 @media(min-width: calc(#{$sm}px + 1px)){
   .isLimited {
     max-width: calc(
-      960px + 40px + 4px
+      900px + 40px + 4px
     );
   }
 }
@@ -78,5 +78,5 @@
 }
 
 .limitedWidth {
-  max-width: 960px;
+  max-width: 900px;
 }

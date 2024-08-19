@@ -4,6 +4,8 @@ import Cookie from 'js-cookie'
 import { setTheme, resetTheme } from '~/store/reducers/globalTheme'
 import { IRootState } from '~/store/IRootState'
 
+export type TThemeName = "gray" | "hard-gray" | "light" | "dark" | "dark-gray"
+
 const themeCookieExpiresDays = process.env.REACT_APP_THEME_COOKIE_EXPIRES_IN_DAYS
   ? Number(process.env.REACT_APP_THEME_COOKIE_EXPIRES_IN_DAYS)
   : 0

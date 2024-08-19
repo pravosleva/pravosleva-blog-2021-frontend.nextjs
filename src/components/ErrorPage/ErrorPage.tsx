@@ -1,15 +1,24 @@
-import { Alert, Box, Container, Typography } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
+import { ResponsiveBlock } from '~/mui/ResponsiveBlock';
 
 type TProps = {
   message: string;
+  children?: React.ReactNode;
 }
 
-export const ErrorPage = ({ message }: TProps) => {
+export const ErrorPage = ({ message, children }: TProps) => {
   return (
-    <Container maxWidth="xs">
+    <ResponsiveBlock
+      isLimited
+      isPaddedMobile
+      style={{
+        paddingBottom: '30px',
+        // maxWidth: '100%'
+      }}
+    >
       <Box
         sx={{
-          py: 2,
+          py: 6,
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
@@ -18,12 +27,13 @@ export const ErrorPage = ({ message }: TProps) => {
         <Typography variant="h4" component="h1" gutterBottom>
           Oops...
         </Typography>
-        <Alert sx={{ mb: 2 }} variant="filled" severity="error">
+        <Alert variant="filled" severity="error">
           <Typography variant="body2" component="h2" gutterBottom>
             {message}
           </Typography>
         </Alert>
+        {children}
       </Box>
-    </Container>
+    </ResponsiveBlock>
   )
 }

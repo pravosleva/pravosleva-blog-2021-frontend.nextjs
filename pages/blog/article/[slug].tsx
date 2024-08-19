@@ -13,8 +13,9 @@ import { setTitle } from '~/store/reducers/pageMeta'
 const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService, article: TArticle }) => {
   if (!_pageService?.isOk) return (
     <Layout>
-      <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'} />
-      <pre>{JSON.stringify({ _pageService, article }, null, 2)}</pre>
+      <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'}>
+        <pre>{JSON.stringify({ _pageService, article }, null, 2)}</pre>
+      </ErrorPage>
     </Layout>
   )
 
@@ -70,7 +71,8 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
 
         {/* <!-- Twitter Meta Tags --> */}
         <meta property="twitter:domain" content="pravosleva.pro" />
-        <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
+        {/* <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" /> */}
+        <meta property="twitter:url" content={thisPageUrl} />
         <meta name="twitter:title" content={article.original.title} />
         <meta name="twitter:description" content={article.brief} />
         {
@@ -143,7 +145,7 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
       break
       default:
         _pageService.isOk = false
-        _pageService.message = 'Кажется, нет такой заметки, но она скоро обязательно появится...'
+        _pageService.message = 'Кажется, нет такой заметки, возможно появится позже'
         break
     }
 

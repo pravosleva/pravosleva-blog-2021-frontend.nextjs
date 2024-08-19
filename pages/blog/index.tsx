@@ -71,7 +71,7 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         {/* <!-- Twitter Meta Tags --> */}
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="twitter:domain" content="pravosleva.pro" />
-        <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
+        <meta property="twitter:url" content="https://pravosleva.pro/blog" />
         <meta name="twitter:title" content="Blog" />
         <meta name="twitter:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />

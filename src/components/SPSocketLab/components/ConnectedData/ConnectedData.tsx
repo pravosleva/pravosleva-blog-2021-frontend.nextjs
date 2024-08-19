@@ -34,6 +34,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone'
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
 import { ActiveReportListItem, ReportListItem } from './components'
+import { useGlobalTheming } from '~/hooks/useGlobalTheming'
 // import { SankeysChart } from '~/components/SPSocketLab/components/ConnectedData/components/SankeysChart'
 
 // const isDev = process.env.NODE_ENV === 'development'
@@ -134,6 +135,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
   // const handleCopy = useCallback((_text: string) => {
   //   showNotif('Copied', { variant: 'error', autoHideDuration: 5000 })
   // }, [])
+  const { currentTheme } = useGlobalTheming()
 
   return (
     <>
@@ -146,6 +148,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           position: 'sticky',
           top: 0,
           zIndex: 2,
+          color: currentTheme === 'dark' ? 'black' : 'inherit',
         }}
       >
         <ResponsiveBlock

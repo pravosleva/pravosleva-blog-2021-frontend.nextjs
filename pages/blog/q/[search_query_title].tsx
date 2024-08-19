@@ -25,8 +25,11 @@ type TPageProps = {
 const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
   if (!_pageService?.isOk) return (
     <Layout>
-      <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'} />
-      <pre>{JSON.stringify({ _pageService, list }, null, 2)}</pre>
+      <ErrorPage
+        message={_pageService?.message || 'ERR: No _pageService.message'}
+      >
+        <pre>{JSON.stringify({ _pageService, list }, null, 2)}</pre>
+      </ErrorPage>
     </Layout>
   )
 
@@ -97,9 +100,9 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
         .join(', ')
       : ''
 
-    console.log(`withoutSpaces -> ${withoutSpaces}`)
-    console.log(`normalized -> ${normalized}`)
-    console.log(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
+    // console.log(`withoutSpaces -> ${withoutSpaces}`)
+    // console.log(`normalized -> ${normalized}`)
+    // console.log(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
 
     switch (true) {
       case !!withoutSpaces: {
