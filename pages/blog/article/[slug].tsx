@@ -91,7 +91,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
         
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
-        <link href="/static/css/article.css" rel="stylesheet" />
+        <link href="/static/css/min/article.css" rel="stylesheet" />
 
         {/* <meta property="og:image:width" content="1200"/>
         <meta property="og:image:height" content="630"/> */}
