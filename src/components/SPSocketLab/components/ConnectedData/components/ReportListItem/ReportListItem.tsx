@@ -137,7 +137,7 @@ export const ReportListItem = memo((ps: TProps) => {
           {header}
         </div>
         <div style={{ fontFamily: 'system-ui', marginLeft: 'auto', wordBreak: 'keep-all', whiteSpace: 'nowrap' }}>
-          <Chip label={<TimeAgoLabel ts={ps.report.ts} />} />
+          <Chip color={currentTheme === 'dark' ? 'secondary' : 'default'} label={<TimeAgoLabel ts={ps.report.ts} />} />
         </div>
       </div>
 

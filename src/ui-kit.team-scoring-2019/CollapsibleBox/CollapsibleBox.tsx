@@ -56,7 +56,7 @@ export const CollapsibleBox = ({
       </div>
       {
         isOpened && (
-          <div style={{ marginTop: '1rem' }} className={classes.descriptionWrapper}>
+          <div style={{ marginTop: '1rem', color: '#000' }} className={classes.descriptionWrapper}>
             {typeof descritpion === 'string' ? descritpion : descritpion}
           </div>
         )

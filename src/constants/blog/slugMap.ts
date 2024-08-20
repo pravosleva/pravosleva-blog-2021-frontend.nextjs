@@ -80,7 +80,7 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   },
   'web-api-memory-stat': {
     id: '63ea0aef5ce46c7f363d448e',
-    brief: 'Get page memory stat',
+    brief: 'How to got page memory stat in Chrome',
     bg: bgJSVanilla,
   },
   'telegram-bot-detect-members': {

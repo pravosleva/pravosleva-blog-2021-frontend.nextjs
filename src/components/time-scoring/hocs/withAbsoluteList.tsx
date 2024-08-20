@@ -20,12 +20,13 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 
 const Wrapper = styled("div")`
   width: 100%;
-  height: 100vh;
   @media (max-width: 767px) {
     top: 0;
     bottom: 0; /* tst */
+    height: 100dvh;
   }
   @media (min-width: 768px) {
+    height: 100vh;
   }
   position: relative;
   box-sizing: border-box;

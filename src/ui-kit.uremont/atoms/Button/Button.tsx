@@ -31,6 +31,7 @@ const types = {
     }
   `,
   orange: css`
+    color: #000;
     background-color: ${themeColor('Accent Orange')};
     &:hover {
       background-color: ${themeColor('Accent Orange Hover')};

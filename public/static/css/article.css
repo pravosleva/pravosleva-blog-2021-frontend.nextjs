@@ -48,7 +48,7 @@
   border-radius: 4px;
 }
 .description-markdown img.small {
-  max-width: 350px;
+  max-width: 550px;
 }
 .description-markdown img.large {
   max-width: 100%;
@@ -167,7 +167,7 @@
   .description-markdown img.small {
     width: 100%;
     min-width: 350px;
-    max-width: 350px;
+    max-width: 550px;
   }
 }
 

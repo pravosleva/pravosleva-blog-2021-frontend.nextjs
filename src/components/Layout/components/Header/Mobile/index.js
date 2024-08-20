@@ -167,7 +167,7 @@ const MobileHeader = ({
               onClick={() => sidebarToggler(false)}
             >
               <Link href="/" as="/">
-                <a style={{ lineHeight: '40px' }}>Pravosleva</a>
+                <a style={{ lineHeight: '40px' }}>WebExp</a>
               </Link>
             </li>
 

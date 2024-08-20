@@ -168,7 +168,7 @@ const _DesktopHeader = ({
                         textDecoration: `none`,
                       }}
                     >
-                      Pravosleva
+                      WebExp
                     </a>
                   </Link>
                 </li>

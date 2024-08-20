@@ -33,7 +33,7 @@ export const useStyles = makeStyles((theme) => ({
       lineHeight: '18px',
       marginTop: 0,
     },
-    fontSize: '1em',
+    fontSize: '0.9em',
     maxWidth: '100%',
     borderRadius: '8px',
     margin: '0px auto 20px auto',

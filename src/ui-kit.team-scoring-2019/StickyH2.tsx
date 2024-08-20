@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 
-export const StickyH2Wrapper = styled('h2').attrs({
+export const StickyH2Wrapper = styled('div').attrs({
   className: 'backdrop-blur--lite'
 })`
   position: sticky;
@@ -14,6 +14,7 @@ export const StickyH2Wrapper = styled('h2').attrs({
   display: flex;
   flex-direction: column;
   gap: 8px;
+  color: #000;
 `
 
 type TStickyH2Props = {

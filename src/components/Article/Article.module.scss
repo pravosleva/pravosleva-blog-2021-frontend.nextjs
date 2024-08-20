@@ -58,7 +58,7 @@
   border-radius: 4px;
 }
 .description-markdown img.small {
-  max-width: 350px;
+  max-width: 550px;
 }
 .description-markdown img.large {
   max-width: 100%;
@@ -67,7 +67,7 @@
 /* BLOCKQUOTE */
 .description-markdown .otro-blockquote {
   /* font-size: 1.4em; */
-  font-size: 1em;
+  /* font-size: 1em; */
   /* max-width: 100%; */
   max-width: 550px;
   border-radius: 8px;
@@ -170,7 +170,7 @@
   .description-markdown img.small {
     width: 100%;
     min-width: 350px;
-    max-width: 350px;
+    max-width: 550px;
   }
 }
 

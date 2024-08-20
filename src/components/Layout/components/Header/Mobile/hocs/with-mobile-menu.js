@@ -56,7 +56,15 @@ const Sidebar = styled.div`
       letter-spacing: 0.1em;
     }
     > ul > li > a.active {
+      /* outline: 2px solid #fff;
+      padding: 4px;
+      border-radius: 8px; */
       color: #ff781e;
+      font-weight: bold;
+    }
+    > ul > li > a.active::before {
+      content: '👉';
+      margin-right: 10px;
     }
 
     ${(p) =>
@@ -93,12 +101,10 @@ export const withMobileMenu = (ComposedComponent) =>
       {
         sidebarToggler: ({ isSidebarOpened }, props) => (val) => {
           // Need to scroll top:
-          if (window) {
-            window.scrollTo({
-              top: 0,
-              behavior: 'smooth',
-            })
-          }
+          if (typeof window !== 'undefined') window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          })
 
           return {
             isSidebarOpened: val === true || val === false ? val : !isSidebarOpened,
@@ -150,11 +156,10 @@ export const withMobileMenu = (ComposedComponent) =>
       }, 500)
 
       useEffect(() => {
-        if (isSidebarOpened) {
+        if (isSidebarOpened)
           dispatch(add('Layout_Header_Mobile_hocs_with-mobile-menu'))
-        } else {
+        else
           dispatch(remove('Layout_Header_Mobile_hocs_with-mobile-menu'))
-        }
       }, [
         isSidebarOpened,
         // scrollToRef,

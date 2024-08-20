@@ -68,7 +68,7 @@ export const getCommonStyles = (p) => css`
   box-sizing: border-box;
   border-radius: 6px;
   text-decoration: none;
-  outline: 0;
+  // outline: 0;
   width: 100%;
   ${(p) => getHeightStyles(p.height)};
   color: ${themeColor('Dark Black')};

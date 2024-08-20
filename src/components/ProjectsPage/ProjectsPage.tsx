@@ -94,7 +94,8 @@ const projects: TProject[] = [
     title: 'FamilyTree exp',
     description: 'PROJECT_DESCR@FAMILY_TREE',
     img: {
-      src: '/static/img/projects/family-tree-2.webp',
+      // src: '/static/img/projects/family-tree-2.webp',
+      src: '/static/img/projects/family-tree-abstract.webp',
       alt: 'loading...',
       color: {
         average: '#e3e0e9',
@@ -255,7 +256,9 @@ export const ProjectsPage = withTranslator(({ t }) => {
   const [headerText, setHeaderText] = useState<string>('🐱 🥤')
   useEffect(() => {
     setHeaderText(`${getRandomValue({
-      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳', '☃️'],
+      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳',
+        // '☃️',
+      ],
     })} ${getRandomValue({
       items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'],
     })}`)

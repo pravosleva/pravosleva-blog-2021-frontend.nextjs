@@ -146,7 +146,7 @@ a {
   color: #0162c8;
   background-color: transparent;
   -webkit-text-decoration-skip: objects;
-  outline: none !important;
+  /* outline: none !important; */
 }
 /* a:hover {
   color: red;

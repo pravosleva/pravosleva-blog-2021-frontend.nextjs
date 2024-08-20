@@ -11,6 +11,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { useWindowSize } from '~/hooks/useWindowSize'
+import classes from './CookiePolicyOffer.module.scss'
 
 const confirmCookieExpiresDays = process.env.REACT_APP_CONFIRM_COOKIE_EXPIRES_IN_DAYS
   ? Number(process.env.REACT_APP_CONFIRM_COOKIE_EXPIRES_IN_DAYS)
@@ -31,10 +32,12 @@ const CookiePolicyOfferWrapper = styled('div').attrs({
   // background-color: rgba(0, 0, 0, 0.9);
 `
 
-const CookiePolicyOfferContent = styled('div')`
+const CookiePolicyOfferContent = styled('div').attrs({
+  className: classes.content,
+})`
   width: 100%;
-  max-width: 1000px;
-  padding: 10px 20px 10px 20px;
+  max-width: 900px;
+  // padding: 10px 20px 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;

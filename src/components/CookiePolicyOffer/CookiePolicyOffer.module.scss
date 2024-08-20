@@ -1,0 +1,12 @@
+@import '~/mui/scss-vars/monitors.scss';
+
+@media (max-width: #{$md}px) {
+  .content {
+    padding: 10px 20px 10px 20px;
+  }
+}
+@media (min-width: calc(#{$md}px + 1px)) {
+  .content {
+    padding: 10px 0px 10px 0px;
+  }
+}
