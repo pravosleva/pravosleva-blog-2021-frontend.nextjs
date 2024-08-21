@@ -56,7 +56,7 @@ export const ImagesGalleryBox = memo(({ itemsJson } : TProps) => {
   const prevIndex = (index + normalizedItems.length - 1) % normalizedItems.length;
   const prevImage = normalizedItems[prevIndex] || currentImage;
 
-  const handleClick = useCallback((index: number) => setIndex(index), [setIndex]);
+  const handleClick = useCallback((index: number) => () => setIndex(index), [setIndex]);
   const handleClose = () => setIndex(-1);
   const handleMovePrev = () => setIndex(prevIndex);
   const handleMoveNext = () => setIndex(nextIndex);
@@ -78,7 +78,7 @@ export const ImagesGalleryBox = memo(({ itemsJson } : TProps) => {
                 key={src}
                 src={src}
                 alt={caption || 'img'}
-                onClickHandler={() => handleClick(i)}
+                onClickHandler={handleClick(i)}
               />
             )
           })

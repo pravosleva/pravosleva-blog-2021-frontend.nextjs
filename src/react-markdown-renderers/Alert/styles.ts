@@ -41,7 +41,7 @@ export const useStyles = makeStyles((theme) => ({
     fontStyle: 'normal',
     color: '#555',
     /* padding: 1.2em 30px 1.2em 75px; */
-    padding: '1.2em 30px 1.2em 60px',
+    padding: '1.2em 30px 1.2em 50px',
     // borderLeft: '8px solid #78c0a8',
     // lineHeight: '1.6',
     position: 'relative',

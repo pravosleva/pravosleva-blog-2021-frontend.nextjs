@@ -1,7 +1,7 @@
 @media (max-width: 600px) {
   .article-page-title {
     text-transform: uppercase;
-    font-size: 2em;
+    font-size: 1.8em;
     font-weight: bold;
     letter-spacing: 0.1em;
     line-height: 1.2em;
@@ -57,7 +57,7 @@
 /* BLOCKQUOTE */
 .description-markdown .otro-blockquote {
   /* font-size: 1.4em; */
-  font-size: 0.75em;
+  font-size: 0.8em;
   /* max-width: 100%; */
   max-width: 550px;
   border-radius: 8px;
@@ -79,7 +79,7 @@
   font-family: Arial;
   content: '\201C';
   color: darkgray;
-  font-size: 4em;
+  font-size: 5em;
   position: absolute;
   left: 10px;
   top: -10px;
