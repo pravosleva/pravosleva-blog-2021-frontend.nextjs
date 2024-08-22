@@ -1,12 +1,12 @@
 import { useMemo, useState, memo, useCallback } from 'react'
-import { useStyles } from './styles'
+import { useStyles } from './useStyles'
 import { isValidJson } from '~/utils/isValidJson'
 // import { Gallery, Image } from 'react-grid-gallery'
 import Lightbox from 'react-image-lightbox'
 // import 'react-image-lightbox/style.css'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
-import { Image } from './components'
-import { TNormalizedItem, TProps } from './types'
+import { Image } from '../components'
+import { TNormalizedItem, TProps } from '../types'
 
 // interface ICustomImage extends Image {
 //   original: string;
@@ -28,7 +28,7 @@ const images: CustomImage[] = [
 ]
 */
 
-export const ImagesGalleryBox = memo(({ itemsJson } : TProps) => {
+export const ImagesGalleryBox2 = memo(({ itemsJson } : TProps) => {
   const styles = useStyles()
   const arePropsValid = useMemo(() => isValidJson(itemsJson), [itemsJson])
   if (!arePropsValid) return <div>INVALID PROPS!</div>

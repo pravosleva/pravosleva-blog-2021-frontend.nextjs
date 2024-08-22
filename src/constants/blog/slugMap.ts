@@ -5,6 +5,9 @@ import { list as articlesListAboutNginx } from './nginx'
 import { list as articlesListAboutRedShark } from './red-shark'
 import { list as articlesListAboutNodeJs } from './node-js'
 import { list as articlesListAboutUx } from './ux'
+import { list as articlesListAboutMongoDB } from './mongodb'
+// import { list as articlesListAboutManagement } from './management'
+import { list as articlesListFromTogglCom } from './toggl.com'
 
 export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
@@ -13,6 +16,9 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutRedShark,
   ...articlesListAboutNodeJs,
   ...articlesListAboutUx,
+  ...articlesListAboutMongoDB,
+  // ...articlesListAboutManagement,
+  ...articlesListFromTogglCom,
   'team-scoring': {
     id: '653053616917cd0d733cddb9',
     brief: 'По мотивам статьи Joel Spolsky',
@@ -143,24 +149,6 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/png',
     },
   },
-  'mongodb-notes-0': {
-    id: '5fcf89195c65457d85706310',
-    brief: 'Чтоб не забыть',
-    bg: {
-      // src: 'https://pravosleva.pro/static/img/blog/logo-mongodb-2.png',
-      // size: {
-      //   w: 360,
-      //   h: 360,
-      // },
-      // type: 'image/png',
-      src: 'https://pravosleva.pro/static/img/blog/mongodb.jpg',
-      size: {
-        w: 1200,
-        h: 601,
-      },
-      type: 'image/jpg',
-    },
-  },
   'autopark-beta': {
     id: '65f1b62b0ce21b2be9dc4973',
     brief: 'Пробую сделать удобный сервис, чтоб напоминал про расходники с настраиваемым интервалом пробега',
@@ -173,6 +161,19 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/png',
     },
   },
+  'dev': {
+    id: '66c6dac8ac4921798fee38ab',
+    brief: 'Dev exp',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/logo-autopark-no-slogan.big.png',
+      size: {
+        w: 869,
+        h: 869,
+      },
+      type: 'image/png',
+    },
+  },
+  
 }
 
 const _slugMap = new Map<string, TArticleTools & {
