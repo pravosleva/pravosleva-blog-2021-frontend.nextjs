@@ -10,9 +10,9 @@ export const bg = {
 }
 
 export const list: {[key: string]: TArticleTools} = {
-  'about-management': {
-    id: '66c702ba08a5177347693291',
-    brief: 'Interested about project management',
-    bg,
-  },
+  // 'about-management': {
+  //   id: '66c702ba08a5177347693291',
+  //   brief: 'Interested about project management',
+  //   bg,
+  // },
 }
