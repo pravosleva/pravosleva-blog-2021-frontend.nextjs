@@ -1,4 +1,4 @@
-// import { useMemo } from 'react'
+import { useMemo } from 'react'
 // import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
@@ -13,10 +13,13 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { convert } from 'html-to-text'
 import clsx from 'clsx'
 import { useBaseStyles } from '~/mui/useBaseStyles'
+import { getTagList } from '~/utils/string-tools/getTagList'
+import { IRootState } from '~/store/IRootState'
+import { useSelector } from 'react-redux'
 // import styles from './Article.module.scss'
 // import { breakpoints } from '~/mui/theme'
 
-export const Article = withTranslator<TArticleComponentProps>(({ t, article }) => {
+export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang, article }) => {
   // React.useEffect(() => {
   //   // You can call the Prism.js API here
   //   // Use setTimeout to push onto callback queue so it runs after the DOM is updated
@@ -25,7 +28,17 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
   // const convertedTitle = convert(article?.original.title)
 
   const baseClasses = useBaseStyles()
-
+  const tagList = useMemo(() => getTagList({ originalMsgList: [clsx(article.original.title, article.brief)] }).sortedList, [])
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  const linkColor = useMemo(() => {
+    return (
+      currentTheme === 'hard-gray'
+        ? '#fff'
+        : currentTheme === 'dark'
+          ? '#FF9000' : '#0162c8'
+    )
+  }, [currentTheme])
+  
   return (
     <>
       {!!article ? (
@@ -88,9 +101,9 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
           <ResponsiveBlock
             isLimited
             isPaddedMobile
-            style={{
-              paddingBottom: '30px',
-            }}
+            // style={{
+            //   paddingBottom: '30px',
+            // }}
           >
             <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
               {!!article.original.description ? (
@@ -108,12 +121,54 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, article }) =
               )}
             </div>
           </ResponsiveBlock>
+
+          {tagList.length > 0 && (
+            <ResponsiveBlock
+              isLimited
+              isPaddedMobile
+              style={{
+                // border: '1px solid red',
+                marginBottom: '30px',
+              }}
+            >
+              <div
+                // className="special-link-wrapper--tags fade-in-effect unselectable"
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '16px',
+                }}
+              >
+                {tagList.map((tag) => (
+                  <a
+                    className={clsx('truncate')}
+                    style={{
+                      whiteSpace: 'pre',
+                      color: linkColor,
+                    }}
+                    key={tag}
+                    href={`/blog/q/${tag.substring(1)}`}
+                  >
+                    {/* <i className="fas fa-tag"></i> */}
+                    <span
+                      style={{
+                        // marginLeft: '10px',
+                        whiteSpace: 'pre',
+                      }}
+                      className='truncate'
+                    >{tag}</span>
+                  </a>
+                ))}
+              </div>
+            </ResponsiveBlock>
+          )}
+          
           <ResponsiveBlock
             isLimited
             isLastSection
             isPaddedMobile
           >
-            <GoHomeSection t={t} />
+            <GoHomeSection t={t} currentLang={currentLang} />
           </ResponsiveBlock>
         </>
       ) : (

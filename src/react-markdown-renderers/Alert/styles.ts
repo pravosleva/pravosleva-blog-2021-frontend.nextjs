@@ -33,7 +33,7 @@ export const useStyles = makeStyles((theme) => ({
       lineHeight: '18px',
       marginTop: 0,
     },
-    fontSize: '0.9em',
+    // fontSize: '0.9em',
     maxWidth: '100%',
     borderRadius: '8px',
     margin: '0px auto 20px auto',
@@ -59,7 +59,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     boxShadow: '0 8px 6px -6px rgba(0,0,0,0.3)',
     '& a': {
-      color: '#FFF',
+      color: '#000',
       textDecoration: 'underline',
     },
     '& p': {
@@ -82,10 +82,13 @@ export const useStyles = makeStyles((theme) => ({
     borderLeft: '8px solid rgba(255,255,255,0.35)',
     // background: 'rgba(255,142,83,1)',
     background: 'linear-gradient(180deg, #ff6c52 15%, #f27900 90%)',
-    color: '#FFF',
+    color: '#000',
     '&::before': {
       content: 'open-quote',
       // textShadow: '0px 0px 8px rgba(255,255,255,0.65)',
+    },
+    '& a': {
+      color: '#000 !important',
     },
   },
   likeBlockuote_danger: {
@@ -104,18 +107,21 @@ export const useStyles = makeStyles((theme) => ({
     borderLeft: '8px solid rgba(255,255,255,0.35)',
     // borderLeft: '8px solid #3FAEFD',
     // background: 'rgba(56,130,196,1)',
-    background: 'linear-gradient(180deg, #0095fa 15%, #00d2e4 90%)',
+    background: 'linear-gradient(180deg, #0095fa 15%, #00b7ff 90%)',
     color: '#FFF',
     '&::before': {
       content: 'open-quote',
       // textShadow: '0px 0px 8px rgba(255,255,255,0.65)',
+    },
+    '& a': {
+      color: '#fff !important',
     },
   },
   likeBlockuote_default: {
     quotes: `"${getIconByType(EType.default)}" "”" "${getIconByType(EType.default)}" "’"`,
     borderLeft: '8px solid rgba(255,255,255,0.25)',
     background: 'rgba(222,222,222,1)',
-    color: 'inherit',
+    color: '#000',
     '&::before': {
       content: 'open-quote',
       // textShadow: '3px 3px rgba(222,222,222,0.4)',

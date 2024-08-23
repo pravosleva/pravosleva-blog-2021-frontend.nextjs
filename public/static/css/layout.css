@@ -765,7 +765,7 @@ code,
   margin: 0 1px;
   font-family: inherit;
   font-size: 0.9em;
-  font-weight: 500;
+  font-weight: bold;
   letter-spacing: 0.3px;
 }
 pre code {
@@ -1028,6 +1028,7 @@ div.article-body > blockquote {
   }
   .page-control-box-wrapper {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     gap: 16px;
   }
@@ -1042,6 +1043,7 @@ div.article-body > blockquote {
   .special-link-wrapper--tags {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: flex-start;
     align-items: center;
     gap: 16px;
@@ -1065,8 +1067,9 @@ div.article-body > blockquote {
   }
   .page-control-box-wrapper {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
-    gap: 16px;
+    gap: 24px;
   }
   .universal-container > main > * > .special-link-wrapper {
     width: 100%;
@@ -1080,6 +1083,7 @@ div.article-body > blockquote {
     width: 100%;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 16px;

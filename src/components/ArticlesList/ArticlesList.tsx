@@ -20,7 +20,7 @@ type TArticlesListComponentProps = {
   isBlogPage?: boolean;
 }
 
-export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, list, searchQueryTitle, isBlogPage }) => {
+export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, currentLang, list, searchQueryTitle, isBlogPage }) => {
   // const { state: _state, set, reset } = useSearch('blog.search')
   // useEffect(() => {
   //   if (isBlogPage) reset()
@@ -88,7 +88,7 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, li
         isLastSection
         isPaddedMobile
       >
-        <GoHomeSection t={t} />
+        <GoHomeSection t={t} currentLang={currentLang} />
       </ResponsiveBlock>
     </>
   )

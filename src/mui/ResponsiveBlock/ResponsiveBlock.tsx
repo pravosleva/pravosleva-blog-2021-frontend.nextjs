@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useBaseStyles } from '~/mui/useBaseStyles'
 import clsx from 'clsx'
 // import classes from './ResponsiveBlock.module.scss'
@@ -18,7 +19,7 @@ type TProps = {
   isLastSection?: boolean;
 }
 
-export const ResponsiveBlock = ({
+export const ResponsiveBlock = memo(({
   zeroPaddingMobile,
   children,
   isLimited,
@@ -142,4 +143,4 @@ export const ResponsiveBlock = ({
         </div>
       )
   }
-}
+})

@@ -21,6 +21,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutMongoDB,
   // ...articlesListAboutManagement,
   ...articlesListFromTogglCom,
+  'this-app-documentation-guide': {
+    id: '5fcaa0ac50f83839dfbcfc12',
+    brief: 'Чтоб не забыть',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/wrench-btn.png',
+      size: {
+        w: 497,
+        h: 260,
+      },
+      type: 'image/png',
+    },
+  },
   'team-scoring': {
     id: '653053616917cd0d733cddb9',
     brief: 'По мотивам статьи Joel Spolsky',
@@ -167,10 +179,10 @@ export const slugMapping: {[key: string]: TArticleTools} = {
     id: '66c6dac8ac4921798fee38ab',
     brief: 'Dev exp',
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/logo-autopark-no-slogan.big.png',
+      src: 'https://pravosleva.pro/static/img/blog/wrench-btn.png',
       size: {
-        w: 869,
-        h: 869,
+        w: 497,
+        h: 260,
       },
       type: 'image/png',
     },

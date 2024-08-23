@@ -35,37 +35,45 @@ export const list: {[key: string]: TArticleTools} = {
   'airport-hacks': {
     id: '66c707e908a5177347693293',
     brief: 'Interested by toggl.com',
-    // bg: {
-    //   src: 'https://pravosleva.pro/static/img/blog/brain.jpeg',
-    //   size: {
-    //     w: 297,
-    //     h: 170,
-    //   },
-    //   type: 'image/jpeg',
-    // },
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/plane-aeroplane.jpg',
+      size: {
+        w: 850,
+        h: 478,
+      },
+      type: 'image/jpg',
+    },
   },
   'save-princess-8-programming-languages': {
     id: '66c70a9608a5177347693294',
     brief: 'Interested by toggl.com',
+    // bg: {
+    //   src: 'https://pravosleva.pro/static/img/blog/best-programming-languages.webp',
+    //   size: {
+    //     w: 750,
+    //     h: 375,
+    //   },
+    //   type: 'image/webp',
+    // },
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/best-programming-languages.webp',
+      src: 'https://pravosleva.pro/static/img/blog/princess.jpg',
       size: {
-        w: 750,
-        h: 375,
+        w: 454,
+        h: 218,
       },
-      type: 'image/webp',
+      type: 'image/jpg',
     },
   },
   'hidden-dangers-refactoring': {
     id: '66c70d6908a5177347693295',
     brief: 'Interested by toggl.com',
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/wrench-btn.png',
+      src: 'https://pravosleva.pro/static/img/blog/dead-man.jpg',
       size: {
-        w: 497,
-        h: 260,
+        w: 476,
+        h: 214,
       },
-      type: 'image/png',
+      type: 'image/jpg',
     },
   },
   'programming-languages-games': {
