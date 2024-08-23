@@ -5,6 +5,7 @@ import { list as articlesListAboutNginx } from './nginx'
 import { list as articlesListAboutRedShark } from './red-shark'
 import { list as articlesListAboutNodeJs } from './node-js'
 import { list as articlesListAboutUx } from './ux'
+import { list as articlesListAboutDx } from './dx'
 import { list as articlesListAboutMongoDB } from './mongodb'
 // import { list as articlesListAboutManagement } from './management'
 import { list as articlesListFromTogglCom } from './toggl.com'
@@ -16,6 +17,7 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutRedShark,
   ...articlesListAboutNodeJs,
   ...articlesListAboutUx,
+  ...articlesListAboutDx,
   ...articlesListAboutMongoDB,
   // ...articlesListAboutManagement,
   ...articlesListFromTogglCom,

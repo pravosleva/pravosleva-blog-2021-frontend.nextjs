@@ -12,11 +12,6 @@ export const useStyles = makeStyles((theme) =>
     },
 
     srLWrapperLayout: {
-      // border: '1px solid red',
-      // display: 'flex',
-      // flexWrap: 'wrap',
-
-      // GRID:
       display: 'grid',
       columnGap: '16px',
       rowGap: '16px',
@@ -41,24 +36,10 @@ export const useStyles = makeStyles((theme) =>
       // gridAutoFlow: 'dense',
       WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
 
-      // // @ts-ignore
-      // [theme.breakpoints.down('sm')]: {
-      //   '& > img': {
-      //     height: '200px',
-      //     width: '100%',
-      //     objectFit: 'cover',
-
-      //     borderRadius: '0px',
-      //     WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
-      //     cursor: 'pointer',
-      //   },
-      // },
-      // // @ts-ignore
-      // [theme.breakpoints.up('md')]: {},
       '& > img': {
         // @ts-ignore
         [theme.breakpoints.down('md')]: {
-          height: '180px',
+          height: '200px',
           width: '100%',
           objectFit: 'cover',
 
@@ -69,7 +50,6 @@ export const useStyles = makeStyles((theme) =>
         
         // @ts-ignore
         [theme.breakpoints.up('md')]: {
-          // border: '1px dashed red',
           height: '200px',
           width: '100%',
           objectFit: 'cover',
