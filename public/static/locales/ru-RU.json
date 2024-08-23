@@ -138,5 +138,7 @@
 
   "AUDITLIST_OFFLINE": "Аудит Offline",
   "BLOG": "Блог",
-  "ALL": "Все и сразу"
+  "ALL": "Все и сразу",
+  "PREV": "Назад",
+  "NEXT": "Далее"
 }

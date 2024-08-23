@@ -36,7 +36,7 @@ export const useStyles = makeStyles((theme) => ({
     // fontSize: '0.9em',
     maxWidth: '100%',
     borderRadius: '8px',
-    margin: '0px auto 20px auto',
+    margin: '0px auto 16px auto',
     // fontFamily: 'Open Sans',
     fontStyle: 'normal',
     color: '#555',

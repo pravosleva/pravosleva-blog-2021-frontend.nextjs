@@ -22,6 +22,9 @@ export const useStyles = makeStyles((theme) => ({
   // '& a': {
   //   color: theme.palette.primary.main,
   // },
+  wrapper: {
+    fontSize: '0.9em',
+  },
 
   // @ts-ignore
   [theme.breakpoints.down('sm')]: {
@@ -35,42 +38,19 @@ export const useStyles = makeStyles((theme) => ({
       justifyContent: 'center',
       alignItems: 'center',
     },
-    code_center: {
-      alignItems: 'center',
-    },
-    code_right: {
-      alignItems: 'center',
-    },
-    code_left: {
-      alignItems: 'center',
-    },
-    code_spaceBetween: {
-      alignItems: 'center',
-    },
   },
   // @ts-ignore
   [theme.breakpoints.up('sm')]: {
     wrapper: {
-      // border: '1px dashed lightgray',
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: '16px',
-  
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    code_center: {
-      justifyContent: 'center',
-    },
-    code_right: {
-      justifyContent: 'flex-end',
-    },
-    code_left: {
-      justifyContent: 'flex-start',
-    },
-    code_spaceBetween: {
-      justifyContent: 'space-between',
+      // border: '1px dashed black',
+      display: 'grid',
+      columnGap: '16px',
+      rowGap: '16px',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+
+      // '& > *:not(:last-child)': {
+      //   borderRight: '1px solid rgba(0,0,0,0.5)',
+      // },
     },
   },
 }))

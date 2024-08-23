@@ -1069,7 +1069,7 @@ div.article-body > blockquote {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    gap: 24px;
+    gap: 30px;
   }
   .universal-container > main > * > .special-link-wrapper {
     width: 100%;

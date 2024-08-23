@@ -46,7 +46,7 @@ export const GoHomeSection = ({
             border: `2px solid ${linkColor}`,
           }}
         />
-        <span style={{ marginLeft: '10px', whiteSpace: 'pre' }} className='truncate'>{t('BLOG')}</span>
+        <span style={{ marginLeft: '10px', whiteSpace: 'pre', fontWeight: 'bold' }} className='truncate'>{t('BLOG')}</span>
       </a>
     ),
   }], [linkColor, currentTheme, currentLang])
