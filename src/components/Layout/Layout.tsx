@@ -8,6 +8,7 @@ import classes from './Layout.module.scss'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { CookiePolicyOffer } from '~/components'
 import { ScrollTopBtn } from './components/ScrollTopBtn'
+import TelegramIcon from '@mui/icons-material/Telegram'
 
 type TProps = {
   children: React.ReactNode;
@@ -37,14 +38,55 @@ export const Layout = ({ children, noFooter }: TProps) => {
           <>
             <footer
               style={{
-                minHeight: '70px',
+                // minHeight: '70px',
                 // border: '2px dashed red',
                 backgroundColor: 'rgba(0, 0, 0, 0.9)',
               }}
             >
               <ResponsiveBlock isLimited isPaddedMobile>
-                <div style={{ lineHeight: '70px' }}>
-                  <span>© 2018 – {fullYear}, Pravosleva, Inc. or its affiliates</span>
+                <div
+                  style={{
+                    // lineHeight: '70px',
+                    padding: '16px 0 16px 0',
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '16px',
+                  }}
+                >
+                  <div>© 2018 – {fullYear}, Pravosleva, Inc. or its affiliates</div>
+                  <div
+                    style={{
+                      // lineHeight: '70px',
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: '16px',
+                    }}
+                  >
+                    <a
+                      // className='link-as-rippled-btn truncate'
+                      style={{
+                        whiteSpace: 'pre',
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: '#fff',
+                      }}
+                      href='https://t.me/bash_exp_ru'
+                    >
+                      {/* <i className="fas fa-arrow-left"></i> */}
+                      <TelegramIcon
+                        // style={{
+                        //   borderRadius: '50%',
+                        //   border: `2px solid ${linkColor}`,
+                        // }}
+                      />
+                      {/* <span style={{ marginLeft: '10px', whiteSpace: 'pre', fontWeight: 'bold' }} className='truncate'>@pravosleva</span> */}
+                    </a>
+                  </div>
                 </div>
               </ResponsiveBlock>
             </footer>

@@ -140,5 +140,7 @@
   "BLOG": "Blog",
   "ALL": "All",
   "PREV": "Prev",
-  "NEXT": "Next"
+  "NEXT": "Next",
+  "MENU_MAIN": "Main",
+  "MENU_TAGS": "Tags"
 }

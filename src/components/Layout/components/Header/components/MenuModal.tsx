@@ -28,113 +28,118 @@ interface IProps {
 const Wrapper = styled('div')`
   display: flex;
   flex-direction: column;
+  gap: 8px;
 `
 
 const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) => (
   <Wrapper>
-    <h5 style={{ margin: '0 0 16px 0', fontFamily: 'Montserrat' }}>Main</h5>
-    {/* !isCurrentPathCb('/') && (
-      <Link href="/" as="/">
-        <a onClick={onHideModal}>{t('HOME')}</a>
-      </Link>
-    ) */}
-    {!isCurrentPathCb('/feedback') && (
-      <Link href="/feedback" as="/feedback">
-        <a onClick={onHideModal}>{t('FEEDBACK')} & reCAPTCHA v3</a>
-      </Link>
-    )}
+    <h5 style={{ margin: '0 0 16px 0', fontFamily: 'Montserrat' }}>{t('MENU_MAIN')}</h5>
+
     {!isCurrentPathCb('/subprojects/audit-list') && (
       <Link href="/subprojects/audit-list" as="/subprojects/audit-list">
         <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')}</a>
       </Link>
     )}
-    {!isCurrentPathCb('/blog') && (
-      <Link href="/blog" as="/blog">
-        <a onClick={onHideModal}>{t('BLOG')}</a>
-      </Link>
-    )}
-    {!isAuthenticated && !isCurrentPathCb('/auth/login') && (
-      <Link href="/auth/login" as="/auth/login">
-        <a onClick={onHideModal}>{t('LOGIN')}</a>
-      </Link>
-    )}
-
-    <h5 style={{ margin: '16px 0 16px 0', fontFamily: 'Montserrat' }}>Interested</h5>
-    
     {!isCurrentPathCb('/blog/article/team-scoring') && (
       <Link href="/blog/article/team-scoring" as="/blog/article/team-scoring">
         <a onClick={onHideModal}>About Team Scoring 2019</a>
       </Link>
     )}
-    {/* -- NOTE: Target Articles */}
-    {!isCurrentPathCb('/blog/article/tires-how-to-choose') && (
-      <Link href="/blog/article/tires-how-to-choose" as="/blog/article/tires-how-to-choose">
-        <a onClick={onHideModal}>Выбираем шины и диски</a>
-      </Link>
-    )}
-    {/* !isCurrentPathCb('/blog/article/nginx-logs') && (
-      <Link href="/blog/article/nginx-logs" as="/blog/article/nginx-logs">
-        <a onClick={onHideModal}>How to see NGINX logs</a>
+    {/* !isCurrentPathCb('/') && (
+      <Link href="/" as="/">
+        <a onClick={onHideModal}>{t('HOME')}</a>
       </Link>
     ) */}
-    {/* !isCurrentPathCb('/blog/article/limp-bizkit-video') && (
-      <Link href="/blog/article/limp-bizkit-video" as="/blog/article/limp-bizkit-video">
-        <a onClick={onHideModal}>Клипы Limp Bizkit</a>
+    {!isCurrentPathCb('/blog') && (
+      <Link href="/blog" as="/blog">
+        <a onClick={onHideModal}>{t('BLOG')}</a>
+      </Link>
+    )}
+    {!isCurrentPathCb('/feedback') && (
+      <Link href="/feedback" as="/feedback">
+        <a onClick={onHideModal}>{t('FEEDBACK')} & reCAPTCHA v3 testing</a>
+      </Link>
+    )}
+    {/* !isAuthenticated && !isCurrentPathCb('/auth/login') && (
+      <Link href="/auth/login" as="/auth/login">
+        <a onClick={onHideModal}>{t('LOGIN')}</a>
       </Link>
     ) */}
-    {/* -- */}
 
-    {/* -- NOTE: Target search by title */}
-    {!isCurrentPathCb('/blog/q/краснаяАкула') && (
-      <Link href="/blog/q/краснаяАкула" as="/blog/q/краснаяАкула">
-        <a onClick={onHideModal}>#краснаяАкула</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/blog/q/bash') && (
-      <Link href="/blog/q/bash" as="/blog/q/bash">
-        <a onClick={onHideModal}>#bash</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/blog/q/git') && (
-      <Link href="/blog/q/git" as="/blog/q/git">
-        <a onClick={onHideModal}>#git</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/blog/q/jsVanilla') && (
-      <Link href="/blog/q/jsVanilla" as="/blog/q/jsVanilla">
-        <a onClick={onHideModal}>#jsVanilla</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/blog/q/mongodb') && (
-      <Link href="/blog/q/mongodb" as="/blog/q/mongodb">
-        <a onClick={onHideModal}>#mongodb</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/blog/q/nginx') && (
-      <Link href="/blog/q/nginx" as="/blog/q/nginx">
-        <a onClick={onHideModal}>#nginx</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/blog/q/ssl') && (
-      <Link href="/blog/q/ssl" as="/blog/q/ssl">
-        <a onClick={onHideModal}>#ssl</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/blog/q/telegram') && (
-      <Link href="/blog/q/telegram" as="/blog/q/telegram">
-        <a onClick={onHideModal}>#telegram</a>
-      </Link>
-    )}
-    {/* -- */}
+    <h5 style={{ margin: '16px 0 16px 0', fontFamily: 'Montserrat' }}>{t('MENU_TAGS')}</h5>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '8px',
+        flexWrap: 'wrap',
+      }}
+    >
+      {/* -- NOTE: Target Articles */}
+      {/* !isCurrentPathCb('/blog/article/nginx-logs') && (
+        <Link href="/blog/article/nginx-logs" as="/blog/article/nginx-logs">
+          <a onClick={onHideModal}>How to see NGINX logs</a>
+        </Link>
+      ) */}
+      {/* !isCurrentPathCb('/blog/article/limp-bizkit-video') && (
+        <Link href="/blog/article/limp-bizkit-video" as="/blog/article/limp-bizkit-video">
+          <a onClick={onHideModal}>Клипы Limp Bizkit</a>
+        </Link>
+      ) */}
+      {/* -- */}
 
-    {isAuthenticated && !isCurrentPathCb('/profile') && (
-      <Link href="/profile" as="/profile">
-        <a>{t('PROFILE')}</a>
-      </Link>
-    )}
-    {/* <a href="http://pravosleva.ru/storybook/index.html" rel="noreferrer" target="_blank">
-      Storybook
-    </a> */}
+      {/* -- NOTE: Target search by title */}
+      {!isCurrentPathCb('/blog/q/краснаяАкула') && (
+        <Link href="/blog/q/краснаяАкула" as="/blog/q/краснаяАкула">
+          <a onClick={onHideModal}>#краснаяАкула</a>
+        </Link>
+      )}
+      {!isCurrentPathCb('/blog/q/bash') && (
+        <Link href="/blog/q/bash" as="/blog/q/bash">
+          <a onClick={onHideModal}>#bash</a>
+        </Link>
+      )}
+      {!isCurrentPathCb('/blog/q/git') && (
+        <Link href="/blog/q/git" as="/blog/q/git">
+          <a onClick={onHideModal}>#git</a>
+        </Link>
+      )}
+      {!isCurrentPathCb('/blog/q/jsVanilla') && (
+        <Link href="/blog/q/jsVanilla" as="/blog/q/jsVanilla">
+          <a onClick={onHideModal}>#jsVanilla</a>
+        </Link>
+      )}
+      {!isCurrentPathCb('/blog/q/mongodb') && (
+        <Link href="/blog/q/mongodb" as="/blog/q/mongodb">
+          <a onClick={onHideModal}>#mongodb</a>
+        </Link>
+      )}
+      {!isCurrentPathCb('/blog/q/nginx') && (
+        <Link href="/blog/q/nginx" as="/blog/q/nginx">
+          <a onClick={onHideModal}>#nginx</a>
+        </Link>
+      )}
+      {!isCurrentPathCb('/blog/q/ssl') && (
+        <Link href="/blog/q/ssl" as="/blog/q/ssl">
+          <a onClick={onHideModal}>#ssl</a>
+        </Link>
+      )}
+      {/* !isCurrentPathCb('/blog/q/telegram') && (
+        <Link href="/blog/q/telegram" as="/blog/q/telegram">
+          <a onClick={onHideModal}>#telegram</a>
+        </Link>
+      ) */}
+      {/* -- */}
+
+      {isAuthenticated && !isCurrentPathCb('/profile') && (
+        <Link href="/profile" as="/profile">
+          <a>{t('PROFILE')}</a>
+        </Link>
+      )}
+      {/* <a href="http://pravosleva.ru/storybook/index.html" rel="noreferrer" target="_blank">
+        Storybook
+      </a> */}
+    </div>
   </Wrapper>
 )
 

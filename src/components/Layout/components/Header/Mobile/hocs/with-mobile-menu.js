@@ -181,7 +181,7 @@ export const withMobileMenu = (ComposedComponent) =>
       return (
         <Wrapper opened={isSidebarOpened}>
           <Sidebar opened={isSidebarOpened}>
-            <ul className="bold">
+            <ul className="bold" style={{ marginTop: '30px' }}>
               {/*<li>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9em', fontWeight: '500' }}>
                   <span>{t('ONLINE')}</span>
@@ -190,13 +190,13 @@ export const withMobileMenu = (ComposedComponent) =>
                 </span>
               </li>
               */}
-              {!isAuthenticated && (
+              {/* !isAuthenticated && (
                 <li>
                   <Link href="/auth/login" as="/auth/login">
                     <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/auth/login') ? 'active' : ''}>{t('LOGIN')}</a>
                   </Link>
                 </li>
-              )}
+              ) */}
               {isAuthenticated && (
                 <li>
                   <Link href="/profile" as="/profile">
@@ -226,13 +226,13 @@ export const withMobileMenu = (ComposedComponent) =>
                 </Link>
               </li>
               <li>
-                <Link href="/blog">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog') ? 'active' : ''}>{t('BLOG')}</a>
+                <Link href="/blog/article/team-scoring">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
                 </Link>
               </li>
               <li>
-                <Link href="/blog/article/team-scoring">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
+                <Link href="/blog">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog') ? 'active' : ''}>{t('BLOG')}</a>
                 </Link>
               </li>
               {/* <li>
@@ -261,8 +261,13 @@ export const withMobileMenu = (ComposedComponent) =>
 
               {/* -- NOTE: Target search by title */}
               <li>
+                <Link href="/blog/q/toggl">
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/toggl') || isCurrentPathCb(router.asPath, '/blog/q/toggl') ? 'active' : ''}>#toggl.com</a>
+                </Link>
+              </li>
+              <li>
                 <Link href="/blog/q/краснаяАкула">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/краснаяАкула') || isCurrentPathCb(router.asPath, '/blog/q/краснаяАкула') ? 'active' : ''}>#краснаяАкула 🦈</a>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/краснаяАкула') || isCurrentPathCb(router.asPath, '/blog/q/краснаяАкула') ? 'active' : ''}>#краснаяАкула</a>
                 </Link>
               </li>
               <li>
@@ -296,12 +301,13 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/ssl') || isCurrentPathCb(router.asPath, '/blog/q/ssl') ? 'active' : ''}>#ssl</a>
                 </Link>
               </li>
+              {/*
               <li>
                 <Link href="/blog/q/telegram">
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/telegram') || isCurrentPathCb(router.asPath, '/blog/q/telegram') ? 'active' : ''}>#telegram</a>
                 </Link>
               </li>
-              {/* -- */}
+              */}
             </ul>
           </Sidebar>
           <ComposedComponent

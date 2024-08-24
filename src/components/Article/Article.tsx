@@ -80,14 +80,9 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
                   {article?.brief && (
                     <div
                       className='article-wrapper__big-image-as-container__brief'
-                      style={{
-                        fontSize: '0.8em',
-                        maxWidth: '550px',
-                      }}
+                      style={{ fontSize: '0.8em', maxWidth: '550px' }}
                     >
-                      <ReactMarkdown
-                        children={article.brief}
-                      />
+                      <ReactMarkdown children={article.brief} />
                     </div>
                   )}
                   <small className={clsx("inactive", 'article-wrapper__big-image-as-container__date')}>
