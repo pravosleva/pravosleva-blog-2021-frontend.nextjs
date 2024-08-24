@@ -121,7 +121,7 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
               <b>{t(title)}</b>
               {EndIcon}
             </span>
-            <span>{label}</span>
+            <span style={{ textAlign: isLast ? 'right' : 'left' }}>{label}</span>
           </a>
         ) : (
           <div key={String(i)}>ERR: Incorrect link</div>
