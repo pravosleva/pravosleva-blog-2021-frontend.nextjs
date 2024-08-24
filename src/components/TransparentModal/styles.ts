@@ -17,12 +17,15 @@ export const useStyles = makeStyles((_theme) => ({
     backgroundColor: 'transparent',
   },
   dialogTitle: {
+    // border: '1px solid red',
+    textAlign: 'right',
     '& > h2': {
       display: 'flex',
       width: '100%',
     },
   },
   closeIcon: {
-    marginLeft: 'auto',
+    // marginLeft: 'auto',
+    // border: '1px solid red',
   },
 }))

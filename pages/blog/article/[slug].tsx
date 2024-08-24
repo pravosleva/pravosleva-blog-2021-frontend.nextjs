@@ -67,7 +67,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
           )
         }
         
-        <meta property="og:site_name" content="Web exp // Blog" />
+        <meta property="og:site_name" content="WebExp // Blog" />
 
         {/* <!-- Twitter Meta Tags --> */}
         <meta property="twitter:domain" content="pravosleva.pro" />

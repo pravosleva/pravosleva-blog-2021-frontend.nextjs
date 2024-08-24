@@ -14,14 +14,14 @@ export const useStyles = makeStyles((theme) => ({
       border: '1px solid rgba(0,0,0,0.4)',
     },
 
-    borderRadius: '8px',
+    borderRadius: '16px',
     // @ts-ignore
     [theme.breakpoints.down('sm')]: {
-      marginBottom: '8px',
+      marginBottom: '16px',
     },
     // @ts-ignore
     [theme.breakpoints.up('md')]: {
-      marginBottom: '8px',
+      marginBottom: '16px',
     },
     cursor: 'pointer',
 

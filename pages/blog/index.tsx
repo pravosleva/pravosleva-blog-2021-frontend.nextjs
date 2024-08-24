@@ -66,7 +66,7 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         <meta property="og:title" content="Blog" />
         <meta property="og:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="og:site_name" content="Web exp" />
+        <meta property="og:site_name" content="WebExp" />
 
         {/* <!-- Twitter Meta Tags --> */}
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />

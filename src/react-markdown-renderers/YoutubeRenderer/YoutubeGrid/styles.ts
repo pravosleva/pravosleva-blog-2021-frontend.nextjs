@@ -5,8 +5,8 @@ export const useStyles = makeStyles((theme) => ({
     // border: '1px solid red',
 
     display: 'grid',
-    columnGap: '8px',
-    rowGap: '8px',
+    columnGap: '16px',
+    rowGap: '16px',
 
     // @ts-ignore
     [theme.breakpoints.down('sm')]: {
@@ -19,10 +19,10 @@ export const useStyles = makeStyles((theme) => ({
     gridAutoFlow: 'dense',
 
     '& > .grid-item': {
-      borderRadius: '8px',
+      borderRadius: '16px',
     },
 
-    marginBottom: '8px',
+    marginBottom: '16px',
   },
 
   reactYoutubeContainer: {
@@ -31,7 +31,7 @@ export const useStyles = makeStyles((theme) => ({
     height: '0',
     overflow: 'hidden',
     backgroundColor: '#000',
-    borderRadius: '8px',
+    borderRadius: '16px',
     // [theme.breakpoints.down('sm')]: {
     //   marginBottom: '25px',
     // },

@@ -29,17 +29,17 @@ export const useStyles = makeStyles((theme) => ({
   // @ts-ignore
   [theme.breakpoints.down('sm')]: {
     wrapper: {
-      // display: 'flex',
-      // flexDirection: 'column',
-      // flexWrap: 'wrap',
-      // gap: '16px',
-      // justifyContent: 'center',
-      // alignItems: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      flexWrap: 'wrap',
+      gap: '16px',
+      justifyContent: 'center',
+      alignItems: 'center',
 
-      display: 'grid',
-      columnGap: '16px',
-      rowGap: '16px',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+      // display: 'grid',
+      // columnGap: '16px',
+      // rowGap: '16px',
+      // gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
     },
   },
   // @ts-ignore

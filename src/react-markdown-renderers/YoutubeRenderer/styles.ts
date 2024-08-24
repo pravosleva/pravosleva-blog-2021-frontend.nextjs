@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     // @ts-ignore
     [theme.breakpoints.up('md')]: {
-      borderRadius: '8px',
+      borderRadius: '16px',
     },
     // border: '1px solid black',
   },
@@ -27,13 +27,21 @@ export const useStyles = makeStyles((theme) => ({
   },
 
   externalWrapper: {
-    width: '100%',
+    // @ts-ignore
+    [theme.breakpoints.down('md')]: {
+      width: 'calc(100% + 32px)',
+      transform: 'translateX(-16px)',
+    },
+    // @ts-ignore
+    [theme.breakpoints.up('md')]: {
+      width: '100%',
+    },
     margin: '0 auto',
     // @ts-ignore
     // [theme.breakpoints.up('md')]: {
     //   maxWidth: '850px',
     // },
-    marginBottom: '8px',
+    marginBottom: '16px',
     // border: '1px dashed red',
   },
 }))

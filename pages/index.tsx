@@ -75,7 +75,7 @@ const Index = () => {
   return (
     <>
       <Head>
-        <meta property="og:title" content="Web exp" />
+        <meta property="og:title" content="WebExp" />
 
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
@@ -101,7 +101,7 @@ const Index = () => {
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
-        <meta name="twitter:title" content="Web exp" />
+        <meta name="twitter:title" content="WebExp" />
         <meta name="twitter:description" content='Заметки начинающего разраба' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}

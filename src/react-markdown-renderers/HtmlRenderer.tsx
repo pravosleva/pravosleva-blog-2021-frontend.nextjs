@@ -14,7 +14,15 @@ const componentTransforms = {
   YoutubeGrid,
   YoutubeInModal,
   YoutubePlayer,
-  Gist: ({ gistId }: { gistId: string }) => <Gist id={gistId} />,
+  Gist: ({ gistId }: { gistId: string }) => (
+    <div
+      style={{
+        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 3px 7px -1px',
+        borderRadius: '8px',
+      }}
+    >
+      <Gist id={gistId} />
+    </div>),
   ImageInNewTab: (props: any) => <ImageInNewTab {...props} />,
   JSONComparison: (props: any) => <JSONComparison {...props} />,
   ImagesGalleryBox: (props: TImagesGalleryBoxProps) => <ImagesGalleryBox itemsJson={props?.itemsJson} />,

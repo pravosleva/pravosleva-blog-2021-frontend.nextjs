@@ -56,7 +56,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
         <meta property="og:title" content='🔎 Check it out' />
         <meta property="og:description" content={`What about ${searchQueryTitle.normalized}`} />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="og:site_name" content="Web exp // Search" />
+        <meta property="og:site_name" content="WebExp // Search" />
 
         {/* <!-- Twitter Meta Tags --> */}
         <meta name="twitter:card" content="summary" />

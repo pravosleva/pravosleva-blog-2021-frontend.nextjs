@@ -54,6 +54,7 @@ export const YoutubeInModal = ({ previewSrc, videoId }: TProps) => {
         <div
           style={{
             width: isDesktop ? '850px' : '100vw',
+            padding: isDesktop ? '0px' : '16px',
           }}
         >
           <YoutubePlayer
