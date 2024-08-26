@@ -132,13 +132,13 @@ function AppWithRedux(props: MyAppProps) {
         <link href="/static/css/min/audit-list.css" rel="stylesheet" />
         
         <link
-          href="/static/css/min/global-theming.css"
+          href="/static/css/global-theming.css"
           rel="preload"
           as="style"
           // @ts-ignore
           fetchpriority="high"
         />
-        <link href="/static/css/min/global-theming.css" rel="stylesheet" />
+        <link href="/static/css/global-theming.css" rel="stylesheet" />
         
         <link
           href="/static/css/min/standart-form.css"
@@ -159,13 +159,13 @@ function AppWithRedux(props: MyAppProps) {
         <link href="/static/css/min/rippled-btn.css" rel="stylesheet" />
 
         <link
-          href="/static/css/min/link-as-rippled-btn.css"
+          href="/static/css/link-as-rippled-btn.css"
           rel="preload"
           as="style"
           // @ts-ignore
           fetchpriority="high"
         />
-        <link href="/static/css/min/link-as-rippled-btn.css" rel="stylesheet" />
+        <link href="/static/css/link-as-rippled-btn.css" rel="stylesheet" />
 
         <link
           href="/static/css/min/custom-breadcrumbs.css"

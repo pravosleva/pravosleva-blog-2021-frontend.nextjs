@@ -24,12 +24,12 @@ const CookiePolicyOfferWrapper = styled('div').attrs({
   width: 100%;
   min-height: 70px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: fixed;
   bottom: 0;
   // background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 const CookiePolicyOfferContent = styled('div').attrs({
@@ -37,10 +37,8 @@ const CookiePolicyOfferContent = styled('div').attrs({
 })`
   width: 100%;
   max-width: 900px;
-  // padding: 10px 20px 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin: 0 auto;
+  
   color: #fff;
   > div:first-child {
     margin-right: 20px;
@@ -78,7 +76,7 @@ export const CookiePolicyOffer = withTranslator(({
     <>
       {isOfferEnabled && (
         <CookiePolicyOfferWrapper>
-          <CookiePolicyOfferContent>
+          <CookiePolicyOfferContent className={classes.contentWrapper}>
             <div>
               <span>{t('COOKIE_POLICY_TEXT')}.</span>{' '}
               <a

@@ -1,12 +1,28 @@
 @import '~/mui/scss-vars/monitors.scss';
 
 @media (max-width: #{$md}px) {
+  .contentWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
   .content {
     padding: 10px 20px 10px 20px;
+    text-align: center;
   }
 }
 @media (min-width: calc(#{$md}px + 1px)) {
+  .contentWrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
   .content {
-    padding: 10px 0px 10px 0px;
+    padding: 0px;
   }
 }

@@ -10,6 +10,7 @@ a.link-as-rippled-btn {
   text-decoration: none;
   text-transform: uppercase;
   font-size: 0.9em;
+  font-weight: bold;
   letter-spacing: 0.1em;
   border-radius: 40px;
   overflow: hidden;
@@ -20,15 +21,22 @@ a.link-as-rippled-btn {
 /* GLOBAL THEMING */
 
 /* 1. LIGHT */
-body.light a.link-as-rippled-btn:hover {
+body.light a.link-as-rippled-btn:hover,
+body.light a.link-as-rippled-btn:active {
   background: linear-gradient(90deg, #0162c8, #0162c8);
 }
 /* 2. GRAY */
-body.gray a.link-as-rippled-btn:hover {
+body.gray a.link-as-rippled-btn:hover,
+body.gray a.link-as-rippled-btn:active {
   background: linear-gradient(90deg, #0162c8, #0162c8);
 }
 /* 3. HARD-GRAY */
-body.hard-gray a.link-as-rippled-btn:hover {
+body.hard-gray a.link-as-rippled-btn {
+  /* box-shadow: 0 0 4px 0 rgba(255, 255, 255, 1); */
+  background: linear-gradient(90deg, gray, dimgray);
+}
+body.hard-gray a.link-as-rippled-btn:hover,
+body.hard-gray a.link-as-rippled-btn:active {
   /* box-shadow: 0 0 4px 0 rgba(255, 255, 255, 1); */
   background: linear-gradient(90deg, #0162c8, #0162c8);
 }
@@ -36,7 +44,8 @@ body.hard-gray a.link-as-rippled-btn:hover {
 body.dark a.link-as-rippled-btn {
   background: linear-gradient(90deg, #0162c8, #0162c8);
 }
-body.dark a.link-as-rippled-btn:hover {
+body.dark a.link-as-rippled-btn:hover,
+body.dark a.link-as-rippled-btn:active {
   background: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.2));
 }
 

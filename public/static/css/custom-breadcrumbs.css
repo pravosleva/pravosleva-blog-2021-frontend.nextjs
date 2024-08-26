@@ -18,6 +18,7 @@
 .bx_breadcrumbs > ul > li > a,
 .bx_breadcrumbs > ul > li > span {
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
   color: gray;
   white-space: nowrap;
   font-size: inherit;

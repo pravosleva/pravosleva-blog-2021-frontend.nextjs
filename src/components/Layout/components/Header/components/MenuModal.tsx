@@ -33,11 +33,15 @@ const Wrapper = styled('div')`
 
 const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) => (
   <Wrapper>
-    <h5 style={{ margin: '0 0 16px 0', fontFamily: 'Montserrat' }}>{t('MENU_MAIN')}</h5>
-
+    <h5 style={{ margin: '0 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_MAIN')}</h5>
+    {!isCurrentPathCb('/blog') && (
+      <Link href="/blog" as="/blog">
+        <a onClick={onHideModal}>{t('BLOG')}</a>
+      </Link>
+    )}
     {!isCurrentPathCb('/subprojects/audit-list') && (
       <Link href="/subprojects/audit-list" as="/subprojects/audit-list">
-        <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')}</a>
+        <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')} 2023</a>
       </Link>
     )}
     {!isCurrentPathCb('/blog/article/team-scoring') && (
@@ -50,11 +54,6 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>{t('HOME')}</a>
       </Link>
     ) */}
-    {!isCurrentPathCb('/blog') && (
-      <Link href="/blog" as="/blog">
-        <a onClick={onHideModal}>{t('BLOG')}</a>
-      </Link>
-    )}
     {!isCurrentPathCb('/feedback') && (
       <Link href="/feedback" as="/feedback">
         <a onClick={onHideModal}>{t('FEEDBACK')} & reCAPTCHA v3 testing</a>
@@ -66,7 +65,7 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
       </Link>
     ) */}
 
-    <h5 style={{ margin: '16px 0 16px 0', fontFamily: 'Montserrat' }}>{t('MENU_TAGS')}</h5>
+    <h5 style={{ margin: '8px 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_TAGS')}</h5>
     <div
       style={{
         display: 'flex',

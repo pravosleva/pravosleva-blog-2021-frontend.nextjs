@@ -20,6 +20,18 @@ export const list: {[key: string]: TArticleTools} = {
       type: 'image/jpg',
     },
   },
+  'if-a-startup-were-a-zoo': {
+    id: '66cc9637d9a7126af852ebf7',
+    brief: 'Interested by toggl.com',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/seo.jpg',
+      size: {
+        w: 1172,
+        h: 584,
+      },
+      type: 'image/jpg',
+    },
+  },
   'how-does-music-affect-work': {
     id: '66c705fe08a5177347693292',
     brief: 'Dev exp',
@@ -84,6 +96,18 @@ export const list: {[key: string]: TArticleTools} = {
       type: 'image/jpg',
     },
   },
+  'how-to-build-a-car-like-a-startup': {
+    id: '66cc9b2cd9a7126af852ebf8',
+    brief: 'Interested by toggl.com',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/startup-car.jpg',
+      size: {
+        w: 1172,
+        h: 584,
+      },
+      type: 'image/jpg',
+    },
+  },
   'programming-languages-games': {
     id: '66c70fbb08a5177347693296',
     brief: 'Interested by toggl.com',
@@ -116,6 +140,18 @@ export const list: {[key: string]: TArticleTools} = {
       size: {
         w: 562,
         h: 350,
+      },
+      type: 'image/jpg',
+    },
+  },
+  'terrible-clients': {
+    id: '66cc9d93d9a7126af852ebf9',
+    brief: 'Interested by toggl.com',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/terrible-clients.jpg',
+      size: {
+        w: 1172,
+        h: 584,
       },
       type: 'image/jpg',
     },

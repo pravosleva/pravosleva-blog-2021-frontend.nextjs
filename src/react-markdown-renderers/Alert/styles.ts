@@ -34,11 +34,13 @@ export const useStyles = makeStyles((theme) => ({
       marginTop: 0,
     },
     // fontSize: '0.9em',
-    maxWidth: '100%',
+    // maxWidth: '100%',
+    maxWidth: '550px',
     borderRadius: '8px',
     margin: '0px auto 16px auto',
     // fontFamily: 'Open Sans',
     fontStyle: 'normal',
+    fontSize: '0.9em',
     color: '#555',
     /* padding: 1.2em 30px 1.2em 75px; */
     padding: '1.2em 30px 1.2em 50px',
@@ -81,7 +83,7 @@ export const useStyles = makeStyles((theme) => ({
     quotes: `"${getIconByType(EType.warning)}" "”" "${getIconByType(EType.warning)}" "’"`,
     borderLeft: '8px solid rgba(255,255,255,0.35)',
     // background: 'rgba(255,142,83,1)',
-    background: 'linear-gradient(180deg, #ff6c52 15%, #f27900 90%)',
+    background: 'linear-gradient(180deg, #ff6c52 15%, #ff8a53 90%)',
     color: '#000',
     '&::before': {
       content: 'open-quote',

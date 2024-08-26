@@ -12,7 +12,7 @@ const madDeveloperBg = {
 export const list: {[key: string]: TArticleTools} = {
   'good-dx-exp-2024': {
     id: '66c756b908a5177347693298',
-    brief: 'Праила хорошего DX применительно к SP',
+    brief: 'Правила хорошего DX применительно к SP',
     bg: madDeveloperBg,
   },
 }
