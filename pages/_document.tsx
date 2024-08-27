@@ -187,12 +187,12 @@ gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
           dangerouslySetInnerHTML={{
             __html: `function detectBtnsAndSetHandlers () {
 const rippledButtons = document.querySelectorAll('.link-as-rippled-btn');
-console.log(rippledButtons);
+// console.log(rippledButtons);
 
 rippledButtons.forEach(btn => {
   btn.addEventListener('click', function(e) {
     // e.preventDefault();
-    console.log(e.clientX, e.target.offsetLeft)
+    // console.log(e.clientX, e.target.offsetLeft)
     // const x = e.clientX - e.target.offsetLeft;
     // const y = e.clientY - e.target.offsetTop;
     const x = e.clientX - e.target.offsetLeft;

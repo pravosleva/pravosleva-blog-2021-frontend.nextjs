@@ -1,3 +1,5 @@
+import { abSort } from './abSort'
+
 export const getTagList = ({
   originalMsgList,
 }: {
@@ -12,7 +14,6 @@ export const getTagList = ({
     };
   };
 } => {
-  const abSort = (a: string, b: string) => a.localeCompare(b)
   const extended: any = {}
   const uniqueTagsMap = originalMsgList.reduce((obj, msg) => {
     try {

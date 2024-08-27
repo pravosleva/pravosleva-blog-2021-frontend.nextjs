@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import { compose, withStateHandlers, withProps } from 'recompose'
@@ -13,6 +13,7 @@ import { useDebouncedCallback } from '@/hooks/useDebouncedCallback'
 import { withTranslator } from '@/hocs/withTranslator'
 import { breakpoints } from '~/mui/theme'
 // import { userInfoActions } from '@/store/reducers/user-info'
+import { abSort } from '~/utils/string-tools/abSort'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -174,7 +175,7 @@ export const withMobileMenu = (ComposedComponent) =>
       ])
 
       const router = useRouter()
-      const isCurrentPathCb = useCallback(isCurrentPath, [router.pathname, router.asPath])
+      const isCurrentPathCb = useCallback(isCurrentPath, [router.pathname, router.asPath, isCurrentPath])
 
       // useEffect(() => {
       //   console.log(router)
@@ -183,6 +184,25 @@ export const withMobileMenu = (ComposedComponent) =>
       const handleCloseSidebar = useCallback(() => {
         sidebarToggler(false)
       }, [])
+      const TagLinksListItems = useMemo(() => {
+        return [
+          'краснаяАкула',
+          'bash',
+          'git',
+          'jsVanilla',
+          'mongodb',
+          'nginx',
+          'ssl',
+        ]
+          .sort(abSort)
+          .map((tag, i) => (
+            <li key={tag}>
+              <Link href={`/blog/q/${tag}`}>
+                <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, `/blog/q/${tag}`) || isCurrentPathCb(router.asPath, `/blog/q/${tag}`) ? 'active' : ''}>#{tag}</a>
+              </Link>
+            </li>
+          ))
+      }, [router.pathname, isCurrentPathCb, router.asPath])
 
       return (
         <Wrapper opened={isSidebarOpened}>
@@ -242,7 +262,7 @@ export const withMobileMenu = (ComposedComponent) =>
               </li>
               <li>
                 <Link href="/blog/article/team-scoring">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
                 </Link>
               </li>
               {/* <li>
@@ -272,7 +292,7 @@ export const withMobileMenu = (ComposedComponent) =>
               {/* -- NOTE: Target search by title */}
               <li>
                 <Link href="/blog/q/MartVirkus">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/MartVirkus') || isCurrentPathCb(router.asPath, '/blog/q/MartVirkus') ? 'active' : ''}>Mart Virkus comic</a>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/MartVirkus') || isCurrentPathCb(router.asPath, '/blog/q/MartVirkus') ? 'active' : ''}>Comic by Mart Virkus</a>
                 </Link>
               </li>
               <li>
@@ -295,41 +315,7 @@ export const withMobileMenu = (ComposedComponent) =>
                 margin: '8px 0 8px 0',
               }}
             >
-              <li>
-                <Link href="/blog/q/краснаяАкула">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/краснаяАкула') || isCurrentPathCb(router.asPath, '/blog/q/краснаяАкула') ? 'active' : ''}>#краснаяАкула</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/q/bash">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/bash') || isCurrentPathCb(router.asPath, '/blog/q/bash') ? 'active' : ''}>#bash</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/q/git">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/git') || isCurrentPathCb(router.asPath, '/blog/q/git') ? 'active' : ''}>#git</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/q/jsVanilla">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/jsVanilla') || isCurrentPathCb(router.asPath, '/blog/q/jsVanilla') ? 'active' : ''}>#jsVanilla</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/q/mongodb">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/mongodb') || isCurrentPathCb(router.asPath, '/blog/q/mongodb') ? 'active' : ''}>#mongodb</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/q/nginx">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/nginx') || isCurrentPathCb(router.asPath, '/blog/q/nginx') ? 'active' : ''}>#nginx</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/q/ssl">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/ssl') || isCurrentPathCb(router.asPath, '/blog/q/ssl') ? 'active' : ''}>#ssl</a>
-                </Link>
-              </li>
+              {TagLinksListItems}
             </ul>
           </Sidebar>
           <ComposedComponent
