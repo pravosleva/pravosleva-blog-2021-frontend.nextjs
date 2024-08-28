@@ -71,6 +71,7 @@
   line-height: 1.6;
   position: relative;
   background: #ededed;
+  white-space: pre-wrap;
 }
 /* .description-markdown .otro-blockquote h2 {
   margin-top: 0;

@@ -78,19 +78,22 @@ export const useStyles = makeStyles((theme) => ({
       content: 'open-quote',
       // textShadow: '3px 3px rgba(120,192,168,0.4)',
     },
+    '& a': {
+      color: '#FFF !important',
+    },
   },
   likeBlockuote_warning: {
     quotes: `"${getIconByType(EType.warning)}" "”" "${getIconByType(EType.warning)}" "’"`,
     borderLeft: '8px solid rgba(255,255,255,0.35)',
     // background: 'rgba(255,142,83,1)',
     background: 'linear-gradient(180deg, #ff6c52 15%, #ff8a53 90%)',
-    color: '#000',
+    color: '#FFF',
     '&::before': {
       content: 'open-quote',
       // textShadow: '0px 0px 8px rgba(255,255,255,0.65)',
     },
     '& a': {
-      color: '#000 !important',
+      color: '#FFF !important',
     },
   },
   likeBlockuote_danger: {
@@ -102,6 +105,9 @@ export const useStyles = makeStyles((theme) => ({
     '&::before': {
       content: 'open-quote',
       // textShadow: '3px 3px rgba(250,114,104,0.4)',
+    },
+    '& a': {
+      color: '#FFF !important',
     },
   },
   likeBlockuote_info: {
