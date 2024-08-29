@@ -27,7 +27,7 @@ const getIconByType = (type: EType, icon?: string) => {
   }
 }
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((_theme) => ({
   likeBlockuote: {
     '& h2': {
       lineHeight: '18px',
@@ -137,7 +137,8 @@ export const useStyles = makeStyles((theme) => ({
     },
     '& a': {
       // @ts-ignore
-      color: theme.palette.primary.main,
+      // color: theme.palette.primary.main,
+      color: '#000 !important',
     },
   },
 }))

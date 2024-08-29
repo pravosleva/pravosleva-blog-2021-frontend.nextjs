@@ -133,10 +133,9 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
         clsx(
           classes.description,
           classes[`description_${currentTheme}`],
-          {
-            'backdrop-blur9--dark': currentTheme === 'dark',
-            // 'backdrop-blur9--dark': currentTheme === 'hard-gray',
-          },
+          // {
+          //   'backdrop-blur9--dark': currentTheme === 'dark',
+          // },
         )}>
         <h1>{title}</h1>
         {!!brief ? <h2>{brief || ''}</h2> : <div style={{ margin: '0px 0px 20px 0px' }} />}

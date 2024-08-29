@@ -9,10 +9,6 @@ $color_grey_dark: #a2a2a2;
   min-width: 100%;
   display: flex;
   flex-direction: column;
-  // margin: 1rem auto;
-  // box-shadow: 0 3px 7px -1px rgba(#000, .1);
-  // margin-bottom: 1.6%;
-  // background: $color_white;
   line-height: 1.4;
   font-family: Montserrat, system-ui;
   border-radius: 16px;
@@ -200,22 +196,17 @@ $color_grey_dark: #a2a2a2;
         color: #000;
         background: $color_white;
       }
-    }
-    .description {
       &_gray {
         color: #683434;
         background: #DCDCDC;
       }
-    }
-    .description {
       &_hard-gray {
         color: #fff;
         background: gray;
       }
-    }
-    .description {
       &_dark {
         color: #fff;
+        // background: rgba(255, 255, 255, 0.1);
         background: #000;
       }
     }
@@ -275,7 +266,8 @@ $color_grey_dark: #a2a2a2;
       }
       &_dark {
         // background: transparent;
-        background: rgba(255, 255, 255, 0.1);
+        // background: rgba(255, 255, 255, 0.1);
+        background: #000;
         color: #fff;
         &:before {
           background: transparent;

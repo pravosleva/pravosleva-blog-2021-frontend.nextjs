@@ -71,6 +71,7 @@ function AppWithRedux(props: MyAppProps) {
 
   const store = useStore()
   const isServer = useMemo<boolean>(() => typeof window === 'undefined', [typeof window])
+  const ts = new Date().getTime()
 
   return (
     <>
@@ -114,13 +115,13 @@ function AppWithRedux(props: MyAppProps) {
         {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}
 
         <link
-          href="/static/css/min/backdrop-blur.css"
+          href={`/static/css/min/backdrop-blur.css?ts=${ts}`}
           rel="preload"
           as="style"
           // @ts-ignore
           fetchpriority="high"
         />
-        <link href="/static/css/min/backdrop-blur.css" rel="stylesheet" />
+        <link href={`/static/css/min/backdrop-blur.css?ts=${ts}`} rel="stylesheet" />
 
         <link
           href="/static/css/min/audit-list.css"
@@ -132,13 +133,13 @@ function AppWithRedux(props: MyAppProps) {
         <link href="/static/css/min/audit-list.css" rel="stylesheet" />
         
         <link
-          href="/static/css/min/global-theming.css"
+          href={`/static/css/min/global-theming.css?ts=${ts}`}
           rel="preload"
           as="style"
           // @ts-ignore
           fetchpriority="high"
         />
-        <link href="/static/css/min/global-theming.css" rel="stylesheet" />
+        <link href={`/static/css/min/global-theming.css?ts=${ts}`} rel="stylesheet" />
         
         <link
           href="/static/css/min/standart-form.css"
