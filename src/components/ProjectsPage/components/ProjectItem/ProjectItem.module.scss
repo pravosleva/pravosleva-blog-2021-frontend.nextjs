@@ -1,3 +1,5 @@
+@import '~/mui/scss-vars/monitors.scss';
+
 $color_white: #fff;
 $color_prime: #5ad67d;
 $color_grey: #e2e2e2;
@@ -112,7 +114,6 @@ $color_grey_dark: #a2a2a2;
   .description {
     // max-width: 300px;
     padding: 1rem;
-    background: $color_white;
     position: relative;
     z-index: 1;
     
@@ -136,7 +137,6 @@ $color_grey_dark: #a2a2a2;
       font-size: 0.8rem;
       font-weight: 300;
       text-transform: uppercase;
-      color: $color_grey_dark;
       margin-top: 5px;
     }
     .readMore {
@@ -194,7 +194,9 @@ $color_grey_dark: #a2a2a2;
     }
   }
 
-  @media (min-width: 640px) {
+  // @media (max-width: #{$sm}px) {}
+
+  @media (min-width: calc(#{$sm}px + 1px)) {
     flex-direction: row;
     max-width: 700px;
     .meta {
@@ -203,17 +205,62 @@ $color_grey_dark: #a2a2a2;
       height: 100%;
     }
     .description {
+      
       flex-basis: 60%;
       &:before {
         transform: skewX(-3deg);
         content: "";
-        background: #fff;
+        
+        // background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 55%, transparent 100%);
         width: 30px;
         position: absolute;
         left: -10px;
         top: 0;
         bottom: 0;
         z-index: -1;
+      }
+      &_light {
+        color: #000;
+        background: $color_white;
+        &:before {
+          background: #fff;
+        }
+        h2 {
+          color: $color_grey_dark;
+        }
+      }
+      &_gray {
+        color: #000;
+        background: $color_white;
+        &:before {
+          background: #fff;
+        }
+        h2 {
+          color: $color_grey_dark;
+        }
+      }
+      &_hard-gray {
+        color: #000;
+        background: $color_white;
+        &:before {
+          background: #fff;
+        }
+        h2 {
+          color: $color_grey_dark;
+        }
+      }
+      &_dark {
+        background: transparent;
+        color: #fff;
+        &:before {
+          background: transparent;
+        }
+        h1 {
+          color: #fff;
+        }
+        h2 {
+          color: #fff;
+        }
       }
     }
     &.alt {

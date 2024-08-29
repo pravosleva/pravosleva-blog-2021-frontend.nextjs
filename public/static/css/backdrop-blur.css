@@ -23,11 +23,11 @@
   }
 }
 .backdrop-blur--white {
-  background-color: rgba(255, 255, 255, 1);
+  background-color: rgba(255, 255, 255, .95);
 }
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
   .backdrop-blur--white {
-    background-color: rgba(255, 255, 255, .9);
+    background-color: rgba(255, 255, 255, .95);
     -webkit-backdrop-filter: blur(.5em);
     backdrop-filter: blur(.5em);
   }
@@ -52,5 +52,16 @@
     background-color: rgba(0, 0, 0, .8);
     -webkit-backdrop-filter: blur(.5em);
     backdrop-filter: blur(.5em);
+  }
+}
+
+.backdrop-blur9--dark {
+  background-color: rgba(0, 0, 0, .9);
+}
+@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+  .backdrop-blur9--dark {
+    background-color: rgba(0, 0, 0, .9);
+    -webkit-backdrop-filter: blur(.9em);
+    backdrop-filter: blur(.9em);
   }
 }

@@ -11,6 +11,8 @@ import LinkIcon from '@mui/icons-material/Link'
 // import { useStyles } from '../ProjectItemSSR/useStyles'
 import { useInView } from 'react-intersection-observer'
 import { useStyles } from './styles'
+import { useSelector } from 'react-redux';
+import { IRootState } from '~/store/IRootState';
 
 type TProps = {
   title: string;
@@ -84,6 +86,7 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
     threshold: 0,
   })
   const styles = useStyles()
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 
   return (
     <div
@@ -126,9 +129,16 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
           }
         </ul>
       </div>
-      <div className={classes.description}>
+      <div className={
+        clsx(
+          classes.description,
+          classes[`description_${currentTheme}`],
+          {
+            'backdrop-blur9--dark': currentTheme === 'dark',
+          },
+        )}>
         <h1>{title}</h1>
-        <h2>{brief || ''}</h2>
+        {!!brief ? <h2>{brief || ''}</h2> : <div style={{ margin: '0px 0px 20px 0px' }} />}
         {!!descr && <p>{descr}</p>}
         <div className={classes.readMore}>
 

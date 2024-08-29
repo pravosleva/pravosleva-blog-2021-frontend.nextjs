@@ -207,11 +207,6 @@ body.hard-gray .bx_breadcrumbs ul > li > span {
   color: #fff;
 }
 
-body.hard-gray .projects-grid h1,
-body.hard-gray .projects-grid p {
-  color: #000;
-}
-
 body.hard-gray .big-text {
   text-shadow: none;
 }
@@ -297,11 +292,7 @@ body.dark .bx_breadcrumbs ul > li > span {
   color: #fff;
 }
 
-body.dark .projects-grid h1,
-body.dark .projects-grid p {
-  color: #000;
-}
-
+body.dark .projects-grid > div:hover,
 body.dark .projects-grid > div:focus,
 body.dark .projects-grid > div:active {
   outline: 4px solid #ff781e;
