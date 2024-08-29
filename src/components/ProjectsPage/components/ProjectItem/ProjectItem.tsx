@@ -135,6 +135,7 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
           classes[`description_${currentTheme}`],
           {
             'backdrop-blur9--dark': currentTheme === 'dark',
+            // 'backdrop-blur9--dark': currentTheme === 'hard-gray',
           },
         )}>
         <h1>{title}</h1>
