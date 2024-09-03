@@ -32,32 +32,32 @@ type TProject = {
 }
 
 const projects: TProject[] = [
-  {
-    id: 1,
-    title: 'AuditList 2023',
-    description: 'AUDIT_LIST_PROJECT_DESCR',
-    img: {
-      // NOTE: Converter online https://cloudconvert.com/
-      src: '/static/img/projects/audit-v2.webp',
-      alt: 'loading...',
-      color: {
-        // NOTE: Get average color online https://matkl.github.io/average-color/
-        average: '#d79695',
-      },
-    },
-    links: [
-      {
-        href: '/subprojects/audit-list',
-        as: '/subprojects/audit-list',
-        text: 'PROJECT_GO_BTN:LINK_GOTO',
-        color: ELinkColor.YELLOW,
-        icon: ELinkIcon.ARROW,
-      },
-    ],
-    uiDate: '2023',
-    brief: 'PROJECT_BRIEF@AUDITOR_HELPER',
-    tags: [],
-  },
+  // {
+  //   id: 1,
+  //   title: 'AuditList 2023',
+  //   description: 'AUDIT_LIST_PROJECT_DESCR',
+  //   img: {
+  //     // NOTE: Converter online https://cloudconvert.com/
+  //     src: '/static/img/projects/audit-v2.webp',
+  //     alt: 'loading...',
+  //     color: {
+  //       // NOTE: Get average color online https://matkl.github.io/average-color/
+  //       average: '#d79695',
+  //     },
+  //   },
+  //   links: [
+  //     {
+  //       href: '/subprojects/audit-list',
+  //       as: '/subprojects/audit-list',
+  //       text: 'PROJECT_GO_BTN:LINK_GOTO',
+  //       color: ELinkColor.YELLOW,
+  //       icon: ELinkIcon.ARROW,
+  //     },
+  //   ],
+  //   uiDate: '2023',
+  //   brief: 'PROJECT_BRIEF@AUDITOR_HELPER',
+  //   tags: [],
+  // },
   {
     id: 2,
     title: 'Log exp',

@@ -233,7 +233,8 @@ body.dark a.cookie-policy-offer:hover {
 }
 body.dark {
   background-color: #000;
-  color: #d0d0d0;
+  /* background-image: linear-gradient(to right top, #0162c8, #005aa4, #004f7e, #0f4159, #263238); */
+  color: #fff;
 }
 body.dark input,
 body.dark select,

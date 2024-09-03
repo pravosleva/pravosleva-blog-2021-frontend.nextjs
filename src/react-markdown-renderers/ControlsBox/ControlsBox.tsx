@@ -7,8 +7,10 @@ import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { withTranslator } from '~/hocs/withTranslator'
 // import { SelfLinkRenderer } from '~/react-markdown-renderers/LinkRenderer'
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+// import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+// import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
 enum EControlType {
   Link = 'link',
@@ -70,10 +72,10 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
         const isPrevBtn = title === 'PREV'
         const isNextBtn = title === 'NEXT'
         const StartIcon = isPrevBtn
-          ? <KeyboardArrowLeftIcon />
+          ? <ArrowBackIcon fontSize='small' />
           : null
         const EndIcon = isNextBtn
-          ? <KeyboardArrowRightIcon />
+          ? <ArrowForwardIcon fontSize='small' />
           : null
 
         return !!link ? (

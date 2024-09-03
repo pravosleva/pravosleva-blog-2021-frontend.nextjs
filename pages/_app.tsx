@@ -133,13 +133,13 @@ function AppWithRedux(props: MyAppProps) {
         <link href="/static/css/min/audit-list.css" rel="stylesheet" />
         
         <link
-          href={`/static/css/min/global-theming.css?ts=${ts}`}
+          href={`/static/css/global-theming.css?ts=${ts}`}
           rel="preload"
           as="style"
           // @ts-ignore
           fetchpriority="high"
         />
-        <link href={`/static/css/min/global-theming.css?ts=${ts}`} rel="stylesheet" />
+        <link href={`/static/css/global-theming.css?ts=${ts}`} rel="stylesheet" />
         
         <link
           href="/static/css/min/standart-form.css"

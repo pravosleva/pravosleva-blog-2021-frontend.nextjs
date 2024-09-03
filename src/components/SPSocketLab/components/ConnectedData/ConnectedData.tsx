@@ -196,14 +196,14 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
                 <SankeysChart reports={filteredReports} />
               )
             */}
-            {filteredReports.map((ps) => (
+            {filteredReports.length > 0 ? filteredReports.map((ps) => (
               <ReportListItem
                 key={`${ps.ts}-${ps.room}-${ps.appVersion}-${ps.stateValue}`}
                 // @ts-ignore
                 report={ps}
                 onSetActiveReport={handleSetActiveReport}
               />
-            ))}
+            )) : null}
             {
               filteredReports.length === 0 && (
                 <Alert variant="standard" severity="info">

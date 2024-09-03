@@ -53,7 +53,7 @@ export const ReportListItem = memo((ps: TProps) => {
       // NOTE: v3 (set as active anyway)
       ps.onSetActiveReport(ps.report)
     }
-    else ps.onSetActiveReport(null)
+    // else ps.onSetActiveReport(null)
   }, [isOpened])
   const { currentTheme } = useGlobalTheming()
 
