@@ -59,7 +59,7 @@ export default function MyProjects({
           }}
         /> */}
       </Head>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <Container maxWidth="xs">
           <Autopark2022 chat_id={chat_id} />
         </Container>

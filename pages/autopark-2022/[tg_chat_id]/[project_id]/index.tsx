@@ -72,7 +72,7 @@ export default function MyProjects({
           }}
         /> */}
       </Head>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
         <Container maxWidth="xs">
           {/* <Typography variant="h4" component="h1" gutterBottom>
             Project

@@ -85,7 +85,7 @@ export default function MyProjects({
           flexDirection: 'column',
           // justifyContent: 'center',
           // alignItems: 'center',
-          minHeight: '100svh',
+          minHeight: '100dvh',
           // border: '1px solid red',
           width: '100%',
         }}
