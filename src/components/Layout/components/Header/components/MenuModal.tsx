@@ -39,11 +39,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>{t('BLOG')}</a>
       </Link>
     )}
-    {!isCurrentPathCb('/subprojects/audit-list') && (
+    {/* !isCurrentPathCb('/subprojects/audit-list') && (
       <Link href="/subprojects/audit-list" as="/subprojects/audit-list">
         <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')} 2023</a>
       </Link>
-    )}
+    ) */}
     {!isCurrentPathCb('/blog/article/team-scoring') && (
       <Link href="/blog/article/team-scoring" as="/blog/article/team-scoring">
         <a onClick={onHideModal}>About Team Scoring 2019</a>

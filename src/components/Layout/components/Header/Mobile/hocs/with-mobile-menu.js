@@ -255,11 +255,13 @@ export const withMobileMenu = (ComposedComponent) =>
                   </a>
                 </li>
               )}
+              {/*
               <li>
                 <Link href="/subprojects/audit-list">
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/subprojects/audit-list') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')} 2023</a>
                 </Link>
               </li>
+              */}
               <li>
                 <Link href="/blog/article/team-scoring">
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
