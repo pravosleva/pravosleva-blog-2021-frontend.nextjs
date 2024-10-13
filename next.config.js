@@ -12,6 +12,12 @@ const isProduction = process.env.NODE_ENV === 'production'
 const envFileName = isProduction ? '.env.production' : '.env.dev'
 const env = dotenv.parse(fs.readFileSync(envFileName))
 
+const {
+  NEXT_APP_BUILD_DATE,
+  NEXT_APP_VERSION,
+  NEXT_APP_GIT_SHA1,
+} = process.env
+
 // const withCSS = require('@zeit/next-css')
 // const withSass = require('@zeit/next-sass')
 // const withBundleAnalyzer = require('@zeit/next-bundle-analyzer')
@@ -95,7 +101,12 @@ const nextConfig = {
 
     return config
   },
-  env,
+  env: {
+    NEXT_APP_BUILD_DATE,
+    NEXT_APP_VERSION,
+    NEXT_APP_GIT_SHA1,
+    ...env,
+  },
   // analyzeServer: ['server', 'both'].includes(process.env.BUNDLE_ANALYZE),
   // analyzeBrowser: ['browser', 'both'].includes(process.env.BUNDLE_ANALYZE),
   // bundleAnalyzerConfig: {

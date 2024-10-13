@@ -3,7 +3,7 @@
   "version": "5.0.2",
   "private": true,
   "engines": {
-    "node": ">=16.18.0 <=20.x.x",
+    "node": ">=16.18.0 <=18.x.x",
     "npm": ">=6.0.0",
     "yarn": ">=1.22.5"
   },
@@ -15,9 +15,9 @@
     "deploy:prod:build-send-restart-all": "deploy-app -d prod:build-send-restart-all",
     "deploy:prod:build-send-restart-front": "deploy-app -d prod:build-send-restart-front",
     "deploy:prod:send-restart-front": "deploy-app -d prod:send-restart-front",
-    "dev": "yarn build && NODE_ENV=development node server.dist/run.js",
-    "build": "yarn transpile-server && next build",
-    "start": "NODE_ENV=production node server.dist/run.js",
+    "dev": "yarn build && NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) NODE_ENV=development node server.dist/run.js",
+    "build": "yarn transpile-server && NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) next build",
+    "start": "NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) NODE_ENV=production node server.dist/run.js",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "transpile-server": "node_modules/.bin/tsc --downlevelIteration --project tsconfig.server.json",
     "test": "jest",

@@ -10,6 +10,10 @@ import { CookiePolicyOffer } from '~/components'
 import { ScrollTopBtn } from './components/ScrollTopBtn'
 import TelegramIcon from '@mui/icons-material/Telegram'
 
+const NEXT_APP_BUILD_DATE = process.env.NEXT_APP_BUILD_DATE || 'No env'
+const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'No env'
+const NEXT_APP_VERSION = process.env.NEXT_APP_VERSION || 'No env'
+
 type TProps = {
   children: React.ReactNode;
   noFooter?: boolean;
@@ -44,29 +48,14 @@ export const Layout = ({ children, noFooter }: TProps) => {
               }}
             >
               <ResponsiveBlock isLimited isPaddedMobile>
-                <div
-                  style={{
-                    // lineHeight: '70px',
-                    padding: '16px 0 16px 0',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '16px',
-                  }}
-                >
-                  <div>© 2018 – {fullYear}, Pravosleva, Inc. or its affiliates</div>
-                  <div
-                    style={{
-                      // lineHeight: '70px',
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '16px',
-                    }}
-                  >
+                <div className={classes.footerMainBox}>
+                  <div className={classes.footerSiteInfoBox}>
+                    <div>© 2018 – {fullYear}</div>
+                    <div>Pravosleva {NEXT_APP_VERSION}, Inc. or its affiliates</div>
+                    <div>Last build {NEXT_APP_BUILD_DATE}</div>
+                    <div>GIT SHA1 {NEXT_APP_GIT_SHA1}</div>
+                  </div>
+                  <div className={classes.footerSiteSocialBox}>
                     <a
                       // className='link-as-rippled-btn truncate'
                       style={{

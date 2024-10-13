@@ -3,13 +3,42 @@
 .limitedHeight {
   box-sizing: border-box;
 }
+.footerMainBox {
+  padding: 16px 0 16px 0;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
 @media (max-width: #{$sm}px) {
   .limitedHeight {
     min-height: calc(100svh - 40px);
+  }
+  .footerSiteInfoBox {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 4px;
   }
 }
 @media (min-width: calc(#{$sm}px + 1px)) {
   .limitedHeight {
     min-height: calc(100svh - 50px);
   }
+  .footerSiteInfoBox {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+.footerSiteSocialBox{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
 }
