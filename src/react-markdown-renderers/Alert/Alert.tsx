@@ -27,6 +27,7 @@ export const Alert = ({ type, text, header }: IProps) => {
           plugins={[gfm, { singleTilde: false }]}
           renderers={theNotePageRenderers}
           children={`## ${header}`}
+          // className={classes.header}
         />
       )}
       <ReactMarkdown

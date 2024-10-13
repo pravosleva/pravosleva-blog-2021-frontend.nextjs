@@ -30,14 +30,14 @@ const getIconByType = (type: EType, icon?: string) => {
 export const useStyles = makeStyles((_theme) => ({
   likeBlockuote: {
     '& h2': {
-      lineHeight: '18px',
+      lineHeight: '1em',
       marginTop: 0,
     },
     // fontSize: '0.9em',
-    // maxWidth: '100%',
-    maxWidth: '550px',
+    maxWidth: '100%',
+    // maxWidth: '550px',
     borderRadius: '8px',
-    margin: '0px auto 16px auto',
+    margin: '0px auto 1.45rem auto',
     // fontFamily: 'Open Sans',
     fontStyle: 'normal',
     fontSize: '0.9em',
@@ -56,7 +56,7 @@ export const useStyles = makeStyles((_theme) => ({
       fontSize: '2em',
       position: 'absolute',
       left: '8px',
-      top: '5px',
+      top: '8px',
       paddingRight: '',
     },
     boxShadow: '0 8px 6px -6px rgba(0,0,0,0.3)',

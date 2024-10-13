@@ -59,7 +59,7 @@
   /* font-size: 1.4em; */
   font-size: 0.8em;
   /* max-width: 100%; */
-  max-width: 550px;
+  /* max-width: 550px; */
   border-radius: 8px;
   margin: 10px auto 20px auto;
   font-family: Open Sans;
@@ -83,7 +83,7 @@
   font-size: 5em;
   position: absolute;
   left: 10px;
-  top: -10px;
+  top: -15px;
 }
 /* .description-markdown .otro-blockquote::after {
   content: '';
