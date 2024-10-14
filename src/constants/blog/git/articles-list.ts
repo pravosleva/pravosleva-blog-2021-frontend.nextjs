@@ -1,10 +1,15 @@
 import { TArticleTools } from '../types'
 
 const bg = {
-  src: 'https://pravosleva.pro/static/img/blog/git-transparent.png',
+  // src: 'https://pravosleva.pro/static/img/blog/git-transparent.png',
+  // size: {
+  //   w: 850,
+  //   h: 300,
+  // },
+  src: 'https://pravosleva.pro/static/img/blog/git-transparent-2.png',
   size: {
-    w: 850,
-    h: 300,
+    w: 512,
+    h: 512,
   },
   type: 'image/png',
 }
