@@ -30,4 +30,9 @@ export const list: {[key: string]: TArticleTools} = {
     //   type: 'image/jpg',
     // },
   },
+  'video-convertion-utility': {
+    id: '670ceb5ad9a7126af852ec0a',
+    brief: 'How to convert video file with custom settings',
+    bg,
+  },
 }

@@ -1,5 +1,6 @@
 import { TArticleTools } from './types'
 import { list as articlesListAboutBash } from './bash'
+import { list as articlesListAboutGit } from './git'
 import { list as articlesListAboutJSVanilla, bg as bgJSVanilla } from './js-vanilla'
 import { list as articlesListAboutNginx } from './nginx'
 import { list as articlesListAboutRedShark } from './red-shark'
@@ -13,6 +14,7 @@ import { list as articlesListAboutNetwork } from './network'
 
 export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
+  ...articlesListAboutGit,
   ...articlesListAboutNginx,
   ...articlesListAboutJSVanilla,
   ...articlesListAboutRedShark,
