@@ -44,6 +44,7 @@ export type LinkProps = {
   as?: NextLinkProps['as'];
   href: NextLinkProps['href'];
   noLinkStyle?: boolean;
+  isExternal?: boolean;
 } & Omit<NextLinkComposedProps, 'to' | 'linkAs' | 'href'> &
   Omit<MuiLinkProps, 'href'>;
 
@@ -57,6 +58,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
     href,
     noLinkStyle,
     role, // Link don't have roles.
+    isExternal: _isExternal,
     ...other
   } = props;
 
@@ -66,14 +68,16 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
     [activeClassName]: router.pathname === pathname && activeClassName,
   });
 
-  const isExternal =
-    typeof href === 'string' && (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0);
+  const isExternal = _isExternal
+    || (typeof href === 'string' && (href.indexOf('http') === 0 || href.indexOf('mailto:') === 0))
 
   if (isExternal) {
     if (noLinkStyle) {
+      // @ts-ignore
       return <Anchor className={className} href={href} ref={ref} {...other} />;
     }
 
+    // @ts-ignore
     return <MuiLink className={className} href={href} ref={ref} {...other} />;
   }
 
@@ -91,6 +95,32 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props,
       {...other}
     />
   );
+});
+
+export const ExternalLink  = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props, ref) {
+  const {
+    activeClassName = 'active',
+    as: linkAs,
+    className: classNameProps,
+    href,
+    noLinkStyle,
+    role, // Link don't have roles.
+    ...other
+  } = props;
+
+  const router = useRouter();
+  const pathname = typeof href === 'string' ? href : href.pathname;
+  const className = clsx(classNameProps, {
+    [activeClassName]: router.pathname === pathname && activeClassName,
+  });
+
+  if (noLinkStyle) {
+    // @ts-ignore
+    return <Anchor className={className} href={href} ref={ref} {...other} />;
+  }
+
+  // @ts-ignore
+  return <MuiLink className={className} href={href} ref={ref} {...other} />;
 });
 
 export default Link;

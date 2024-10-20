@@ -25,6 +25,7 @@ type TProject = {
     text: string;
     color: ELinkColor;
     icon: ELinkIcon;
+    isExternal?: boolean;
   }[];
   uiDate: string;
   brief?: string;
@@ -188,6 +189,7 @@ const projects: TProject[] = [
         text: 'PROJECT_GO_BTN:LINK_GOTO',
         color: ELinkColor.YELLOW,
         icon: ELinkIcon.ARROW,
+        isExternal: true,
       },
     ],
     uiDate: '2019',

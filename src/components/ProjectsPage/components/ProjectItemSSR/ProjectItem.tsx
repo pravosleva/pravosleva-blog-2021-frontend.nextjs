@@ -22,6 +22,7 @@ type TProps = {
     text: string;
     color: ELinkColor;
     icon: ELinkIcon;
+    isExternal?: boolean;
   }[];
   img: {
     src: string;

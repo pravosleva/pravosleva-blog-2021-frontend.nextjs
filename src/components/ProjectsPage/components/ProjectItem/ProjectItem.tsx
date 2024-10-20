@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import classes from './ProjectItem.module.scss'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 // import Link from 'next/link'
-import Link from '~/components/Link'
+import Link, { ExternalLink } from '~/components/Link'
 import { Button } from '@mui/material'
 import { ELinkColor, ELinkIcon } from './types'
 import TelegramIcon from '@mui/icons-material/Telegram'
@@ -27,6 +27,7 @@ type TProps = {
     text: string;
     color: ELinkColor;
     icon: ELinkIcon;
+    isExternal?: boolean;
   }[];
   img: {
     src: string;
@@ -149,14 +150,14 @@ export const ProjectItem = ({ uiDate, title, brief, descr, tags, author, img, li
           {/* <a href={link.href}></a> */}
 
           {
-            links.map(({ text, as, color, icon }, i) => {
+            links.map(({ text, as, color, icon, isExternal }, i) => {
               return (
                 <Button
                   key={`${i}-${as}`}
                   // fullWidth
                   variant='contained'
                   color='primary'
-                  component={Link}
+                  component={isExternal ? ExternalLink : Link}
                   noLinkStyle
                   // href={`/blog/article/${slugMap.get(_id)?.slug}`}
                   href={as}
