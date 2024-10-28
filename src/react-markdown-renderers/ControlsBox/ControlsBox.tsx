@@ -11,6 +11,11 @@ import { withTranslator } from '~/hocs/withTranslator'
 // import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
+import TelegramIcon from '@mui/icons-material/Telegram'
+import TabIcon from '@mui/icons-material/Tab'
+import DriveEtaIcon from '@mui/icons-material/DriveEta'
 
 enum EControlType {
   Link = 'link',
@@ -69,14 +74,55 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
         const isFirst = i === 0
         const isLast = i === a.length - 1
 
-        const isPrevBtn = title === 'PREV'
-        const isNextBtn = title === 'NEXT'
-        const StartIcon = isPrevBtn
-          ? <ArrowBackIcon fontSize='small' />
-          : null
-        const EndIcon = isNextBtn
-          ? <ArrowForwardIcon fontSize='small' />
-          : null
+        let StartIcon = null
+        switch (true) {
+          case title === 'PREV':
+            StartIcon = <ArrowBackIcon fontSize='small' />
+            break
+          case title === 'START_PLAY':
+          case title === 'START_DEMO':
+            StartIcon = <PlayArrowIcon fontSize='small' />
+            break
+          case title === 'START_CHAT':
+            StartIcon = <ChatBubbleIcon fontSize='small' />
+            break
+          case title === 'START_TELEGRAM':
+            StartIcon = <TelegramIcon fontSize='small' />
+            break
+          case title === 'START_NEW_TAB':
+            StartIcon = <TabIcon fontSize='small' />
+            break
+          case title === 'START_DRIVE2':
+            StartIcon = <DriveEtaIcon fontSize='small' />
+            break
+          default:
+            break
+        }
+
+        let EndIcon = null
+        switch (true) {
+          case title === 'NEXT':
+            EndIcon = <ArrowForwardIcon fontSize='small' />
+            break
+          case title === 'END_PLAY':
+          case title === 'END_DEMO':
+            EndIcon = <PlayArrowIcon fontSize='small' />
+            break
+          case title === 'END_CHAT':
+            EndIcon = <ChatBubbleIcon fontSize='small' />
+            break
+          case title === 'END_TELEGRAM':
+            EndIcon = <TelegramIcon fontSize='small' />
+            break
+          case title === 'END_NEW_TAB':
+            EndIcon = <TabIcon fontSize='small' />
+            break
+          case title === 'END_DRIVE2':
+            EndIcon = <DriveEtaIcon fontSize='small' />
+            break
+          default:
+            break
+        }
 
         return !!link ? (
           // <SelfLinkRenderer

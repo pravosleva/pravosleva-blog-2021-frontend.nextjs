@@ -29,7 +29,7 @@
   "AUDIT_LIST_PROJECT_DESCR": "Мы сделаем это лучше!",
   "AUTO_PARK_PROJECT_DESCR": "Сервисная книжка",
   "TEAM_SCORING_PROJECT_DESCR": "Корректировка прогноза лжеца",
-  "RED_SHARK_PROJECT_DESCR": "VW Golf // Легенда немецкого автопрома",
+  "RED_SHARK_PROJECT_DESCR": "Легенда немецкого автопрома",
 
   "SOCKET_LAB/HEADER": "Сокеты",
   "SOCKET_LAB/CONTENT/isConnected": "Соединение",
@@ -141,6 +141,19 @@
   "ALL": "Все и сразу",
   "PREV": "Назад",
   "NEXT": "Далее",
+  "START_PLAY": "Демо",
+  "START_DEMO": "Демо",
+  "START_CHAT": "Перейти к обсуждению",
+  "START_TELEGRAM": "Перейти в Телеграм",
+  "START_NEW_TAB": "Открыть в новой вкладке",
+  "START_DRIVE2": "Перейти в Drive2",
+  "END_PLAY": "Демо",
+  "END_DEMO": "Демо",
+  "END_CHAT": "Перейти к обсуждению",
+  "END_TELEGRAM": "Перейти в Телеграм",
+  "END_NEW_TAB": "Открыть в новой вкладке",
+  "END_DRIVE2": "Перейти в Drive2",
+
   "MENU_MAIN": "Основное",
   "MENU_TAGS": "Тэги"
 }

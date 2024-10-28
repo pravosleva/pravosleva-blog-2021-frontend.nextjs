@@ -29,7 +29,7 @@
   "AUDIT_LIST_PROJECT_DESCR": "We can do it better!",
   "AUTO_PARK_PROJECT_DESCR": "Hello world",
   "TEAM_SCORING_PROJECT_DESCR": "How much is your forecast, liar?",
-  "RED_SHARK_PROJECT_DESCR": "VW Golf // Legend of the German car industry",
+  "RED_SHARK_PROJECT_DESCR": "Legend of the German car industry",
 
   "SOCKET_LAB/HEADER": "SocketLab exp",
   "SOCKET_LAB/CONTENT/isConnected": "Connect",
@@ -141,6 +141,19 @@
   "ALL": "All",
   "PREV": "Prev",
   "NEXT": "Next",
+  "START_PLAY": "Demo",
+  "START_DEMO": "Demo",
+  "START_CHAT": "Open chat",
+  "START_TELEGRAM": "Open Telegram",
+  "START_NEW_TAB": "Open in new tab",
+  "START_DRIVE2": "Go to Drive2",
+  "END_PLAY": "Demo",
+  "END_DEMO": "Demo",
+  "END_CHAT": "Open chat",
+  "END_TELEGRAM": "Open Telegram",
+  "END_NEW_TAB": "Open in new tab",
+  "END_DRIVE2": "Go to Drive2",
+
   "MENU_MAIN": "Main",
   "MENU_TAGS": "Tags"
 }
