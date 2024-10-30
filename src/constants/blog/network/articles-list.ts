@@ -15,4 +15,9 @@ export const list: {[key: string]: TArticleTools} = {
     brief: 'Заметки про сети',
     bg,
   },
+  'protocols-http': {
+    id: '67207e3dd9a7126af852ec11',
+    brief: 'Заметки про сети',
+    bg,
+  },
 }

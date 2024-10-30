@@ -8,6 +8,7 @@ export enum EType {
   info = 'info',
   default = 'default',
   custom = 'custom',
+  draft = 'draft',
 }
 const getIconByType = (type: EType, icon?: string) => {
   switch (true) {
@@ -21,6 +22,9 @@ const getIconByType = (type: EType, icon?: string) => {
       return 'ℹ️'
     case type === EType.custom && !!icon:
       return '👌'
+    case type === EType.draft:
+      // return '🖆'
+      return '✒️'
     case type === EType.default:
     default:
       return '💡'
@@ -127,8 +131,24 @@ export const useStyles = makeStyles((_theme) => ({
   },
   likeBlockuote_default: {
     quotes: `"${getIconByType(EType.default)}" "”" "${getIconByType(EType.default)}" "’"`,
-    borderLeft: '8px solid rgba(255,255,255,0.25)',
+    borderLeft: '8px solid rgba(255,255,255,0.4)',
     background: 'rgba(222,222,222,1)',
+    color: '#000',
+    '&::before': {
+      content: 'open-quote',
+      // textShadow: '3px 3px rgba(222,222,222,0.4)',
+      textShadow: '0px 0px 7px #FFF',
+    },
+    '& a': {
+      // @ts-ignore
+      // color: theme.palette.primary.main,
+      color: '#000 !important',
+    },
+  },
+  likeBlockuote_draft: {
+    quotes: `"${getIconByType(EType.draft)}" "”" "${getIconByType(EType.draft)}" "’"`,
+    borderLeft: '8px solid rgba(255,255,255,0.5)',
+    background: '#00e6b8',
     color: '#000',
     '&::before': {
       content: 'open-quote',
