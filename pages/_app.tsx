@@ -169,13 +169,13 @@ function AppWithRedux(props: MyAppProps) {
         <link href="/static/css/min/link-as-rippled-btn.css" rel="stylesheet" />
 
         <link
-          href="/static/css/min/custom-breadcrumbs.css"
+          href="/static/css/custom-breadcrumbs.css"
           rel="preload"
           as="style"
           // @ts-ignore
           fetchpriority="high"
         />
-        <link href="/static/css/min/custom-breadcrumbs.css" rel="stylesheet" />
+        <link href="/static/css/custom-breadcrumbs.css" rel="stylesheet" />
 
         {/* <link href="/static/css/min/block-quotes.css" rel="stylesheet" /> */}
 
@@ -224,7 +224,7 @@ function AppWithRedux(props: MyAppProps) {
         />
         <link href="/static/css/variant.react-image-ligthbox.css" rel="stylesheet" />
 
-        <script type="text/javascript" defer src='/static/common/eruda.custom.js' />
+        {/* <script type="text/javascript" defer src='/static/common/eruda.custom.js' /> */}
       </Head>
       {
         isServer ? (

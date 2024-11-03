@@ -1,14 +1,15 @@
 import { Article, TArticle, TPageService } from '~/components/Article'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 import Head from 'next/head'
-// import { convertToPlainText } from '~/utils/markdown/convertToPlainText';
-import { ErrorPage } from '~/components/ErrorPage';
-import { Layout } from '~/components/Layout';
+// import { convertToPlainText } from '~/utils/markdown/convertToPlainText'
+import { ErrorPage } from '~/components/ErrorPage'
+import { Layout } from '~/components/Layout'
 import { wrapper } from '~/store'
 import { slugMapping } from '~/constants/blog/slugMap'
-import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { setTitle } from '~/store/reducers/pageMeta'
+import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 
 const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService, article: TArticle }) => {
   if (!_pageService?.isOk) return (
@@ -91,7 +92,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
         
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
-        <link href="/static/css/min/article.css" rel="stylesheet" />
+        <link href="/static/css/article.css" rel="stylesheet" />
 
         {/* <meta property="og:image:width" content="1200"/>
         <meta property="og:image:height" content="630"/> */}
@@ -139,10 +140,13 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
         } else {
           _pageService.isOk = false
           _pageService.response = noteResult?.response || null
-          _pageService.message = noteResult?.response?.message || 'No noteResult?.response?.message'
+          _pageService.message = [
+            'Скорее всего, автор закрыл статью на редактирование',
+            noteResult?.response?.message || 'No noteResult?.response?.message',
+          ].join(' / ')
         }
+        break
       }
-      break
       default:
         _pageService.isOk = false
         _pageService.message = 'Кажется, нет такой заметки, возможно появится позже'
@@ -152,6 +156,10 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     // console.log('-- 0. before makeStore on server')
     // console.log(`_pageService.isOk= ${_pageService.isOk}`)
     // console.log('--')
+
+    const baseProps = await getInitialPropsBase(ctx)
+
+    setCommonStore({ store, baseProps })
 
     return {
       _pageService,

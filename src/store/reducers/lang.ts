@@ -24,6 +24,7 @@ export const SUPPOER_LOCALES = [
   },
   // Others...
 ]
+export const hasInSuppoerLocales = (value: string): boolean => SUPPOER_LOCALES.some((l) => l.value === value)
 
 const translateFnInit = (lang?: string) => {
   intl
@@ -47,7 +48,7 @@ const translateFnInit = (lang?: string) => {
 translateFnInit(getDeafultLangFromCookieOrNavigator(SUPPOER_LOCALES, 'ru-RU')) // First init
 
 export const initialState = {
-  current: 'ru-RU',
+  current: getDeafultLangFromCookieOrNavigator(SUPPOER_LOCALES, 'ru-RU'),
   suppoerLocales: SUPPOER_LOCALES,
 }
 

@@ -8,7 +8,7 @@ import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { enableBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
-import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
+import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 
 // const isDev = process.env.NODE_ENV === 'development'
 // const baseURL = isDev
@@ -97,6 +97,8 @@ const getInitialPropsWithStore = async ({
     default:
       break
   }
+
+  setCommonStore({ store, baseProps })
 
   return {
     ...baseProps,

@@ -1,7 +1,7 @@
 @media (max-width: 600px) {
   .article-page-title {
     text-transform: uppercase;
-    font-size: 1.8em;
+    font-size: 1.7em;
     font-weight: bold;
     letter-spacing: 0.1em;
     line-height: 1.2em;
@@ -288,29 +288,6 @@ code,
 }
 
 /* --- MOVED FROM CSS-IN-JS --- */
-
-.article-wrapper {
-  width: 100%;
-  background: linear-gradient(rgba(255, 255, 255, 1), transparent);
-  display: block;
-  position: relative;
-}
-.article-wrapper::after {
-  content: '';
-
-  /* background: url(${article.bgSrc}); */
-
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  filter: grayscale(1);
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  position: absolute;
-  z-index: -1;
-}
 
 .article-wrapper__big-image-as-container {
   border-radius: 0;

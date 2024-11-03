@@ -16,7 +16,7 @@ import { useBaseStyles } from '~/mui/useBaseStyles'
 import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
-// import styles from './Article.module.scss'
+import styles from './Article.module.scss'
 // import { breakpoints } from '~/mui/theme'
 
 export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang, article }) => {
@@ -38,6 +38,14 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
           ? '#FF9000' : '#0162c8'
     )
   }, [currentTheme])
+  // const briefGradientLayout = useMemo(() => {
+  //   switch (true) {
+  //     case currentTheme === 'light':
+  //       return 'linear-gradient(rgba(1, 98, 200, 1) 35%, transparent 100%)'
+  //     default:
+  //       return 'linear-gradient(rgba(0, 0, 0, 1), transparent)'
+  //   }
+  // }, [currentTheme])
   
   return (
     <>
@@ -57,8 +65,8 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
                   noTranslate: false
                 },
                 {
-                  labelCode: 'BLOG',
                   link: '/blog',
+                  labelCode: 'BLOG',
                 },
                 {
                   labelCode: article?.original.title,
@@ -69,27 +77,53 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
           </ResponsiveBlock>
 
           {!!article?.bg && (
-            <ResponsiveBlock
-              isLimitedForDesktop
-            >
-              <article className="article-wrapper">
-                <div className={clsx('tiles-grid-item-in-article', 'white', 'article-wrapper__big-image-as-container')}>
-                  <h1 className='article-page-title'>
-                    {article?.original.title}
-                  </h1>
-                  {article?.brief && (
-                    <div
-                      className='article-wrapper__big-image-as-container__brief'
-                      style={{ fontSize: '0.8em', maxWidth: '550px' }}
-                    >
-                      <ReactMarkdown children={article.brief} />
-                    </div>
-                  )}
-                  <small className={clsx("inactive", 'article-wrapper__big-image-as-container__date')}>
-                    {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
-                  </small>
-                </div>
-              </article>
+            <ResponsiveBlock isLimitedForDesktop>
+              <div
+                style={{
+                  // border: '1px solid red',
+                  // background: briefGradientLayout,
+                }}
+                className={styles['external-article-wrapper']}
+              >
+                <article
+                  className='article-wrapper'
+                  
+                  style={{
+                    content: '',
+                    background: `url(${!!article.bg ? article.bg?.src : '/static/img/blog/coming-soon-v3.jpg'})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    // filter: 'grayscale(1)',
+                    // borderRadius: '16px',
+                  }}
+                >
+                  <div
+                    className={
+                      clsx(
+                        'tiles-grid-item-in-article',
+                        'white',
+                        'article-wrapper__big-image-as-container'
+                      )
+                    }
+                  >
+                    <h1 className='article-page-title'>
+                      {article?.original.title}
+                    </h1>
+                    {article?.brief && (
+                      <div
+                        className='article-wrapper__big-image-as-container__brief'
+                        style={{ fontSize: '0.8em', maxWidth: '550px' }}
+                      >
+                        <ReactMarkdown children={article.brief} />
+                      </div>
+                    )}
+                    <small className={clsx("inactive", 'article-wrapper__big-image-as-container__date')}>
+                      {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
+                    </small>
+                  </div>
+                </article>
+              </div>
             </ResponsiveBlock>
           )}
 
@@ -140,6 +174,7 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
                     style={{
                       whiteSpace: 'pre',
                       color: linkColor,
+                      WebkitTapHighlightColor: 'transparent',
                     }}
                     key={tag}
                     href={`/blog/q/${tag.substring(1)}`}
@@ -174,16 +209,6 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
           </div>
         </>
       )}
-      
-      <style jsx>{`
-        .article-wrapper::after {
-          content: '';
-          background: url(${!!article.bg ? article.bg.src : '/static/img/blog/coming-soon-v3.jpg'});
-          background-repeat: no-repeat;
-          background-size: cover;
-          background-position: center;
-        }
-      `}</style>
     </>
   )
 })

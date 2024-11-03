@@ -8,6 +8,7 @@ import { TState as TPageMetaState } from './reducers/pageMeta'
 import { NSiteSearchState } from './reducers/siteSearch'
 import { TState as TCustomDevToolsState } from './reducers/customDevTools'
 import { TState as TAutoparkState } from './reducers/autopark'
+import { TBaseProps } from '~/utils/next'
 
 export interface IRootState extends Store {
   [x: string]: any;
@@ -22,4 +23,5 @@ export interface IRootState extends Store {
   pageMeta: TPageMetaState;
   siteSearch: NSiteSearchState.TState;
   customDevTools: TCustomDevToolsState;
+  baseProps: TBaseProps;
 }

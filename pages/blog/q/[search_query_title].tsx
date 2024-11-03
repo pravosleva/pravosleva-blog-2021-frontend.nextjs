@@ -9,6 +9,7 @@ import { ArticlesList } from '~/components/ArticlesList'
 import { slugMap } from '~/constants/blog/slugMap'
 import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
+import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 
 // const isProd = process.env.NODE_ENV === 'production'
 
@@ -136,6 +137,10 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
         _pageService.message = 'Кажется, нет такой заметки, но она скоро обязательно появится...'
         break
     }
+
+    const baseProps = await getInitialPropsBase(ctx)
+
+    setCommonStore({ store, baseProps })
 
     return {
       _pageService,

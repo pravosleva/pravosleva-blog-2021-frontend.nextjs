@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+// import { useEffect, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Cookie from 'js-cookie'
 import { setTheme, resetTheme } from '~/store/reducers/globalTheme'
@@ -28,22 +28,22 @@ const getNextTheme = (currentTheme: string) => {
 export const useGlobalTheming = () => {
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const dispatch = useDispatch()
-  const init = useCallback(() => {
-    if (!!window?.document) {
-      const theme = Cookie.get('theme')
+  // const init = useCallback(() => {
+  //   if (!!window?.document) {
+  //     const theme = Cookie.get('theme')
 
-      if (!!theme) {
-        document.body.classList.add(theme)
-        dispatch(setTheme(theme))
-      } else {
-        document.body.classList.add(currentTheme)
-      }
-    }
-  }, [])
+  //     if (!!theme) {
+  //       document.body.classList.add(theme)
+  //       dispatch(setTheme(theme))
+  //     } else {
+  //       document.body.classList.add(currentTheme)
+  //     }
+  //   }
+  // }, [])
 
-  useEffect(() => {
-    init()
-  }, [])
+  // useEffect(() => {
+  //   init()
+  // }, [])
 
   return {
     currentTheme,

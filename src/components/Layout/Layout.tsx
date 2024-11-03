@@ -9,6 +9,8 @@ import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { CookiePolicyOffer } from '~/components'
 import { ScrollTopBtn } from './components/ScrollTopBtn'
 import TelegramIcon from '@mui/icons-material/Telegram'
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
 
 const NEXT_APP_BUILD_DATE = process.env.NEXT_APP_BUILD_DATE || 'No env'
 const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'No env'
@@ -22,6 +24,9 @@ type TProps = {
 export const Layout = ({ children, noFooter }: TProps) => {
   const fullYear = useMemo(() => new Date().getFullYear(), [])
   const styles = useStyles()
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  // const basePropsErrors = useSelector((state: IRootState) => state.baseProps.errors)
+  const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
 
   return (
     <>
@@ -30,10 +35,17 @@ export const Layout = ({ children, noFooter }: TProps) => {
       <NextNProgress color="#FFF" startPosition={0.3} stopDelayMs={200} height={2} options={{ showSpinner: false }} />
       <main
         // className="universal-container"
-        className={clsx(styles.content, classes.limitedHeight)}
+        className={clsx(styles.content, classes.limitedHeight, currentTheme)}
       >
         {children}
       </main>
+
+      {/* basePropsErrors.length > 0 && (
+        <ResponsiveBlock isLimited isPaddedMobile>
+          <pre>{JSON.stringify(basePropsErrors, null, 2)}</pre>
+        </ResponsiveBlock>
+      ) */}
+
       <CookiePolicyOffer />
       <ScrollTopBtn />
 
@@ -45,6 +57,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
                 // minHeight: '70px',
                 // border: '2px dashed red',
                 backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                padding: isServer ? '16px 0px 16px 0px' : '0',
               }}
             >
               <ResponsiveBlock isLimited isPaddedMobile>

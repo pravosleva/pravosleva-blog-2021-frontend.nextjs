@@ -17,7 +17,7 @@ export const getTagList = ({
   const extended: any = {}
   const uniqueTagsMap = originalMsgList.reduce((obj, msg) => {
     try {
-      for (const tag of msg.match(/#[a-zA-Zа-яА-Я0-9]+/g) || []) {
+      for (const tag of msg.match(/#[(a-zA-Zа-яА-Я0-9)|(_)]+/g) || []) {
         // @ts-ignore
         if (!!tag && !obj[tag]) obj[tag] = true
 

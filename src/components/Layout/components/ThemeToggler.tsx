@@ -32,7 +32,7 @@ export const ThemeToggler = withTranslator(({ t, type }: any) => {
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   // const themeIcon = useMemo(() => getThemeIcon(currentTheme), [currentTheme])
   // @ts-ignore
-  const ThemeIcon = useMemo(() => themeIcons[currentTheme], [currentTheme])
+  const ThemeIcon = useMemo(() => themeIcons[currentTheme] || <span>NO</span>, [currentTheme])
 
   return (
     <>

@@ -199,28 +199,6 @@
   padding-bottom: 0px;
 }
 
-/* --- MOVED FROM CSS-IN-JS --- */
-
-.article-wrapper {
-  width: 100%;
-  background: linear-gradient(rgba(255, 255, 255, 1), transparent);
-  display: block;
-  position: relative;
-}
-.article-wrapper::after {
-  content: '';
-  /* background: url(${article.bgSrc}); */
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  filter: grayscale(1);
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  position: absolute;
-  z-index: -1;
-}
 .articleWrapperBigImageAsConteiner {
   border-radius: 0;
   width: 100%;
@@ -232,9 +210,8 @@
   flex-direction: column;
   justify-content: space-between;
 }
-@media (min-width: calc(#{$sm}px + 1px )) {
-  .article-wrapper,
-  .article-wrapper::after {
+@media (min-width: calc(#{$md}px + 1px )) {
+  .external-article-wrapper {
     border-radius: 10px;
   }
   .articleWrapperBigImageAsConteiner {
@@ -267,9 +244,8 @@
   flex-direction: column;
   justify-content: space-between;
 }
-@media (min-width: calc(#{$sm}px + 1px )) {
-  .article-wrapper,
-  .article-wrapper::after {
+@media (min-width: calc(#{$md}px + 1px )) {
+  .external-article-wrapper {
     border-radius: 10px;
   }
   .article-wrapper__big-image-as-container {

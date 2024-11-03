@@ -1,4 +1,5 @@
 import Cookie from 'js-cookie'
+import { hasInSuppoerLocales } from '~/store/reducers/lang'
 
 type TLang = {
   label: string;
@@ -8,11 +9,9 @@ type TLang = {
   svgSrc: string;
 }
 
-export const getDeafultLangFromCookieOrNavigator = (SUPPOER_LOCALES: TLang[], defaultLang?: string | undefined) => {
-  let _defaultLang = defaultLang
-  if (!defaultLang) _defaultLang = 'ru-RU'
+export const getDeafultLangFromCookieOrNavigator = (_SUPPOER_LOCALES: TLang[], defaultLang?: string | undefined) => {
+  let _defaultLang = defaultLang || 'ru-RU'
   let detectedLang: string | undefined
-  const hasInSuppoerLocales = (value: string): boolean => SUPPOER_LOCALES.some((l) => l.value === value)
 
   if (typeof window !== 'undefined') {
     detectedLang = Cookie.get('lang')

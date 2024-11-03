@@ -28,6 +28,8 @@ import { ErrorPage } from '~/components/ErrorPage'
 import { slugMap } from '~/constants/blog/slugMap'
 import { TArticle } from '~/components/Article'
 import Head from 'next/head'
+import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
+import { setCommonStore } from '~/utils/next'
 
 // const isProd = process.env.NODE_ENV === 'production'
 
@@ -98,6 +100,7 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
 BlogIndex.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => async (ctx: any) => {
+    const baseProps = await getInitialPropsBase(ctx)
     // const { query: { tg_chat_id } } = ctx
     // let errorMsg = null
     const _pageService: TPageService = {
@@ -135,6 +138,8 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
         _pageService.message = `Ошибка при получении списка заметок: ${notesResult.message || 'No notesResult.msg'}`
         break
     }
+
+    setCommonStore({ store, baseProps })
 
     return {
       _pageService,

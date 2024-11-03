@@ -88,6 +88,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
       {/* -- */}
 
       {/* -- NOTE: Target search by title */}
+      {!isCurrentPathCb('/blog/q/сетевые_протоколы') && (
+        <Link href="/blog/q/сетевые_протоколы" as="/blog/q/сетевые_протоколы">
+          <a onClick={onHideModal}>#сетевые_протоколы</a>
+        </Link>
+      )}
       {!isCurrentPathCb('/blog/q/краснаяАкула') && (
         <Link href="/blog/q/краснаяАкула" as="/blog/q/краснаяАкула">
           <a onClick={onHideModal}>#краснаяАкула</a>

@@ -186,6 +186,7 @@ export const withMobileMenu = (ComposedComponent) =>
       }, [])
       const TagLinksListItems = useMemo(() => {
         return [
+          'сетевые_протоколы',
           'краснаяАкула',
           'bash',
           'git',
@@ -198,7 +199,12 @@ export const withMobileMenu = (ComposedComponent) =>
           .map((tag, i) => (
             <li key={tag}>
               <Link href={`/blog/q/${tag}`}>
-                <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, `/blog/q/${tag}`) || isCurrentPathCb(router.asPath, `/blog/q/${tag}`) ? 'active' : ''}>#{tag}</a>
+                <a
+                  onClick={handleCloseSidebar}
+                  className={isCurrentPathCb(router.pathname, `/blog/q/${tag}`) || isCurrentPathCb(decodeURIComponent(router.asPath), `/blog/q/${tag}`) ? 'active' : ''}
+                >
+                  #{tag}
+                </a>
               </Link>
             </li>
           ))

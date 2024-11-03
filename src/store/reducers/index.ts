@@ -18,6 +18,7 @@ import { reducer as scrollDisablingComponentsReducer } from './scrollDisablingCo
 import { reducer as pageMetaReducer } from './pageMeta'
 import { reducer as siteSearchReducer } from './siteSearch'
 import { reducer as customDevToolsReducer } from './customDevTools'
+import { reducer as basePropsReducer } from './baseProps'
 
 export const rootReducer = combineReducers({
   // counter,
@@ -36,7 +37,8 @@ export const rootReducer = combineReducers({
   pageMeta: pageMetaReducer,
   siteSearch: siteSearchReducer,
   customDevTools: customDevToolsReducer,
+  baseProps: basePropsReducer,
   // Others...
 })
 
-// export type TRootState = ReturnType<typeof reducer>
+// export type TRootState = ReturnType<typeof rootReducer>

@@ -212,7 +212,7 @@ export const ReportListItem = memo((ps: TProps) => {
               </>
           ) : (
             <>
-              {uiDate}
+              {uiDate} (No special service info)
               {/* <pre
                 style={{ fontFamily: 'system-ui' }}
                 className={classes.pre}

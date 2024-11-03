@@ -28,6 +28,8 @@ import { vi } from './vi'
 const CustomizedTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
     borderRadius: '8px',
+  },
+  '& .MuiInputBase-input': {
     color: '#000',
   },
 })

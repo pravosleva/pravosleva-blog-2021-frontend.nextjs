@@ -8,14 +8,9 @@ import { Layout } from '~/components/Layout'
 import Head from 'next/head'
 import { ProjectsPage } from '~/components/ProjectsPage'
 // import { SocketLab } from '~/components/SocketLab'
-import { NextPageContext as INextPageContext } from 'next'
-import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
-import { enableBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
-import { wrapper } from '~/store'
+import { getInitialPropsBase, IPageContext, setCommonStore } from '~/utils/next'
 
-interface IPageContext extends INextPageContext {
-  req: any;
-}
+import { wrapper } from '~/store'
 
 // type TLink = {
 //   name: string;
@@ -159,8 +154,7 @@ const getInitialPropsWithStore = async ({
 }) => {
   const baseProps = await getInitialPropsBase(ctx)
 
-  if (baseProps.devTools.isClientPerfWidgetOpened)
-    store.dispatch(enableBrowserMemoryMonitor())
+  setCommonStore({ store, baseProps })
 
   return {
     ...baseProps,
