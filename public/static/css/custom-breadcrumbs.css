@@ -27,7 +27,8 @@
   white-space: nowrap;
   font-size: inherit;
 }
-.bx_breadcrumbs > ul > li > a {
+.bx_breadcrumbs > ul > li > a:hover,
+.bx_breadcrumbs > ul > li > a:active {
   text-decoration: underline;
 }
 /* .bx_breadcrumbs > ul > li > a::after {

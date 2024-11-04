@@ -39,6 +39,10 @@
   margin-top: 10px;
 }
 
+.description-markdown {
+  transition: ease 0.5s all;
+}
+
 /* NEW 2020.12 */
 .description-markdown img {
   transition: max-width 0.3s;
@@ -290,19 +294,20 @@ code,
 /* --- MOVED FROM CSS-IN-JS --- */
 
 .article-wrapper__big-image-as-container {
+  transition: ease 0.5s all;
   border-radius: 0;
   width: 100%;
   min-height: 250px;
   /* margin: 10px 0 50px 0; */
   margin-bottom: 50px;
+  backdrop-filter: grayscale(1);
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 @media (min-width: 961px) {
-  .article-wrapper,
-  .article-wrapper::after {
+  .article-wrapper {
     border-radius: 8px;
   }
   .article-wrapper__big-image-as-container {

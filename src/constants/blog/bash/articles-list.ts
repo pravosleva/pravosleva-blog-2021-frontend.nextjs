@@ -8,6 +8,14 @@ const bg = {
   },
   type: 'image/png',
 }
+const bgHard = {
+  src: 'https://pravosleva.pro/static/img/blog/logo-bash-matrix.gif',
+  size: {
+    w: 1024,
+    h: 512,
+  },
+  type: 'image/gif',
+}
 
 export const list: {[key: string]: TArticleTools} = {
   'bash-quaint-files-copy': {
@@ -23,7 +31,7 @@ export const list: {[key: string]: TArticleTools} = {
   'bash-search-remove-files-and-dirs': {
     id: '5fd270747d536a022794e442',
     brief: 'Чтобы найти иголку в стоге сена, достаточно сжечь сено и провести магнитом над пеплом',
-    bg,
+    bg: bgHard,
     // bg: {
     //   src: 'https://pravosleva.pro/static/img/blog/logo-bash-900x600.jpg',
     //   size: { w: 900, h: 600 },

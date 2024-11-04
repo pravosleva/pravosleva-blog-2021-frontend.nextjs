@@ -106,6 +106,9 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
                         'article-wrapper__big-image-as-container'
                       )
                     }
+                    style={{
+                      backdropFilter: 'grayscale(1)',
+                    }}
                   >
                     <h1 className='article-page-title'>
                       {article?.original.title}

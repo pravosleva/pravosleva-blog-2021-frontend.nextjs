@@ -20,4 +20,14 @@ export const list: {[key: string]: TArticleTools} = {
     brief: 'Заметки про сети',
     bg,
   },
+  'protocols-ssl-tls': {
+    id: '672269dad9a7126af852ec14',
+    brief: 'Заметки про сети',
+    bg,
+  },
+  'protocols-tcp': {
+    id: '67226b52d9a7126af852ec15',
+    brief: 'Заметки про сети',
+    bg,
+  },
 }
