@@ -123,6 +123,12 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
           default:
             break
         }
+        const isExternalLink = [
+          'START_NEW_TAB',
+          'START_DRIVE2',
+          'END_NEW_TAB',
+          'END_DRIVE2',
+        ].some((value) => value === title)
 
         return !!link ? (
           // <SelfLinkRenderer
@@ -155,6 +161,7 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
               boxShadow: '0 3px 7px -1px rgba(0, 0, 0, .1)',
             }}
             href={link}
+            target={isExternalLink ? '_blank' : '_self'}
           >
             <span
               style={{
