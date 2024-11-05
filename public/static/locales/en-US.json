@@ -155,5 +155,7 @@
   "END_DRIVE2": "Go to Drive2",
 
   "MENU_MAIN": "Main",
-  "MENU_TAGS": "Tags"
+  "MENU_TAGS": "Tags",
+
+  "LOCAL_LINK": "Go"
 }

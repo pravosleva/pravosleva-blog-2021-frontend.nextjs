@@ -30,12 +30,12 @@ export const BreadCrumbs = ({
               case !link:
                 return (
                   <>
-                    <li className={clsx('truncate', 'target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={link}>
+                    <li className={clsx('truncate', 'target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${i}`}>
                       <span style={{ fontWeight: 'bold', fontFamily: 'Montserrat' }}>{noTranslate ? labelCode : t(labelCode)}</span>
                     </li>
                     {
                       !isLast && (
-                        <li className={clsx('target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={link}>
+                        <li className={clsx('target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${i}`}>
                           <span style={{ fontWeight: 'bold' }}>•</span>
                         </li>
                       )
@@ -45,7 +45,7 @@ export const BreadCrumbs = ({
               default:
                 return (
                   <>
-                    <li itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={link}>
+                    <li itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${link}-${i}`}>
                       {/* @ts-ignore */}
                       <Link href={link} as={link}>
                         <a itemProp="item">
@@ -55,7 +55,7 @@ export const BreadCrumbs = ({
                     </li>
                     {
                       !isLast && (
-                        <li className={clsx('target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={link}>
+                        <li className={clsx('target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${link}-${i}`}>
                           <span style={{ fontWeight: 'bold' }}>•</span>
                         </li>
                       )

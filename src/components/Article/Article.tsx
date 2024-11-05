@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 // import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
 // import { breakpoints } from '~/mui/theme'
 
-export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang, article }) => {
+export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   // React.useEffect(() => {
   //   // You can call the Prism.js API here
   //   // Use setTimeout to push onto callback queue so it runs after the DOM is updated
@@ -46,6 +46,34 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
   //       return 'linear-gradient(rgba(0, 0, 0, 1), transparent)'
   //   }
   // }, [currentTheme])
+
+  const MemoizedArticleBody = useMemo(() => {
+    return (
+      <ResponsiveBlock
+        isLimited
+        isPaddedMobile
+        // style={{
+        //   paddingBottom: '30px',
+        // }}
+      >
+        <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
+          {!!article.original.description ? (
+            <div className="description-markdown">
+              <ReactMarkdown
+                // key={Math.random()}
+                renderers={baseRenderers}
+                // @ts-ignore
+                plugins={[gfm, { singleTilde: false }]}
+                children={article.original.description}
+              />
+            </div>
+          ) : (
+            'No body'
+          )}
+        </div>
+      </ResponsiveBlock>
+    )
+  }, [article.original.description])
   
   return (
     <>
@@ -130,29 +158,7 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
             </ResponsiveBlock>
           )}
 
-          <ResponsiveBlock
-            isLimited
-            isPaddedMobile
-            // style={{
-            //   paddingBottom: '30px',
-            // }}
-          >
-            <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
-              {!!article.original.description ? (
-                <div className="description-markdown">
-                  <ReactMarkdown
-                    // key={Math.random()}
-                    renderers={baseRenderers}
-                    // @ts-ignore
-                    plugins={[gfm, { singleTilde: false }]}
-                    children={article.original.description}
-                  />
-                </div>
-              ) : (
-                'No body'
-              )}
-            </div>
-          </ResponsiveBlock>
+          {MemoizedArticleBody}
 
           {tagList.length > 0 && (
             <ResponsiveBlock
@@ -214,4 +220,4 @@ export const Article = withTranslator<TArticleComponentProps>(({ t, currentLang,
       )}
     </>
   )
-})
+}))

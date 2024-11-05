@@ -1,0 +1,5 @@
+.noMarginBottomForLastChild {
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
