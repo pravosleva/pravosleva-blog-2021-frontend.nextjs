@@ -9,6 +9,7 @@ import { theNotePageRenderers } from '~/react-markdown-renderers'
 import classes from './CollapsibleBox.module.scss'
 import { isValidJson } from '~/utils/isValidJson'
 import { withTranslator } from '~/hocs/withTranslator'
+import clsx from 'clsx'
 
 type TProps = {
   header: string;
@@ -166,7 +167,7 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
                 return (
                   <a
                     key={`${link}-${i}`}
-                    className='link-as-rippled-btn'
+                    className={clsx('link-as-rippled-btn', 'truncate')}
                     href={link}
                     onClick={handleClickLink({ link, label })}
                     style={{
