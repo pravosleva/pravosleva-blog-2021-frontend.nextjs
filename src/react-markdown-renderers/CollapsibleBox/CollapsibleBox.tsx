@@ -10,6 +10,7 @@ import classes from './CollapsibleBox.module.scss'
 import { isValidJson } from '~/utils/isValidJson'
 import { withTranslator } from '~/hocs/withTranslator'
 import clsx from 'clsx'
+// import slugify from 'slugify'
 
 type TProps = {
   header: string;
@@ -88,6 +89,7 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
         break
     }
   }, [])
+  // const togglerSlug = slugify(header).toLowerCase() 
 
   return (
     <div
@@ -116,7 +118,10 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
           flexWrap: 'nowrap',
           gap: '16px',
         }}
+        className={classes.collapsible}
       >
+        {/* <input id={togglerSlug} type='checkbox' style={{ border: '1px solid red' }} />
+        <label style={{ fontWeight: 'bold' }} htmlFor={togglerSlug}>{header}</label> */}
         <div style={{ fontWeight: 'bold' }}>{header}</div>
         <div
           style={{
@@ -137,21 +142,21 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
           }
         </div>
       </div>
-      {
-        isOpened && (
-          <div
-            style={{ fontSize: '0.8em' }}
-            className={classes.noMarginBottomForLastChild}
-          >
-            <ReactMarkdown
-              // @ts-ignore
-              plugins={[gfm, { singleTilde: false }]}
-              renderers={theNotePageRenderers}
-              children={text}
-            />
-          </div>
-        )
-      }
+      
+      {isOpened && (
+        <div
+          style={{ fontSize: '0.8em' }}
+          className={clsx(classes.noMarginBottomForLastChild, classes.content)}
+        >
+          <ReactMarkdown
+            // @ts-ignore
+            plugins={[gfm, { singleTilde: false }]}
+            renderers={theNotePageRenderers}
+            children={text}
+          />
+        </div>
+      )}
+
       {
         isOpened && !!parsedActions && (
           <div
