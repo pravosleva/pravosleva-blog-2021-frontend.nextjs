@@ -35,10 +35,10 @@ export const indexRules = {
 
 const getNotes = async (req: IRequest, res: IResponse) => {
   const { q_title_all_words } = req.query 
-  let url = 'http://code-samples.space/api/notes?limit=60'
+  let url = 'http://code-samples.space/api/notes?limit=60&sort_by_create_date=1'
   if (!!q_title_all_words && typeof q_title_all_words === 'string') { 
     const modifiedQueryTitleAllWords = q_title_all_words.replace(/\s/g, '')
-    url = `http://code-samples.space/api/notes?limit=60&q_title_all_words=${encodeURIComponent(modifiedQueryTitleAllWords)}`
+    url = `http://code-samples.space/api/notes?limit=60&q_title_all_words=${encodeURIComponent(modifiedQueryTitleAllWords)}&sort_by_create_date=1`
   }
 
   const notesResult = await universalHttpClient.get(url)

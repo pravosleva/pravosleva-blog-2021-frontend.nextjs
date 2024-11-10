@@ -12,6 +12,7 @@ import { list as articlesListAboutMongoDB } from './mongodb'
 import { list as articlesListFromTogglCom } from './toggl.com'
 import { list as articlesListAboutNetwork } from './network'
 import { list as articlesListAboutProgramming } from './programming'
+import { list as articlesListAboutDocker } from './docker'
 
 export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutBash,
@@ -27,6 +28,7 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListFromTogglCom,
   ...articlesListAboutNetwork,
   ...articlesListAboutProgramming,
+  ...articlesListAboutDocker,
   'this-app-documentation-guide': {
     id: '5fcaa0ac50f83839dfbcfc12',
     brief: 'Чтоб не забыть',
