@@ -29,14 +29,14 @@ type TMainStackItem = {
   totalJSHeapSize: number;
   usedJSHeapSize: number;
 }
-const mainStackLimit = 50
+const mainStackLimit = 1000
 // const getMB = (b: number): number => b / (1024 * 1024)
 // const getGB = (b: number): number => b / (1024 * 1024 * 1024)
 const canvasCfg = {
   width: 200,
   height: 15,
 }
-const interval = 1 * 1000
+const interval = 1 * 100
 
 const getOffsetY = ({ data, fullPx, targetField }: {
   data: TMainStackItem;
@@ -116,17 +116,18 @@ export const ClientPerfWidget = (ps: TProps) => {
           // @ts-ignore
           ctx.reset()
           mainStackRef.current.forEach((data) => {
-            const c1 = getOffsetY({ data, fullPx: cfg.height, targetField: 'total' })
+            const c1 = getOffsetY({ data, fullPx: cfg.height, targetField: 'used' })
             // NOTE: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect
             ctx.rect(x, c1.strartY, stepX, c1.hPx)
-            ctx.fill()
+            // ctx.fill()
             x += stepX
 
-            const c2 = getOffsetY({ data, fullPx: cfg.height, targetField: 'used' })
+            const c2 = getOffsetY({ data, fullPx: cfg.height, targetField: 'total' })
             ctx.rect(x, c2.strartY, stepX, c2.hPx)
-            ctx.fill()
+            // ctx.fill()
             x += stepX
           })
+          ctx.fill()
         }, 0)
       }
     }
