@@ -34,6 +34,10 @@ export class ApiError extends UniversalError {
     // return normalizedName.concat(': ', errorsStr.slice(2))
 
     // NOTE: v2
-    return normalizedName.concat(': ', this.error)
+    // return normalizedName.concat(': ', this.error)
+    const msgs = [normalizedName]
+
+    if (!!this.message) msgs.push(this.message)
+    return msgs.join(' • ')
   }
 }
