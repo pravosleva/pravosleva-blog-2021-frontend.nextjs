@@ -3,6 +3,8 @@ import { Request as IRequest } from 'express'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 import { TEnhancedResponse } from '~/srv.utils/types'
 
+const NOTES_BASE_API_URL = 'http://62.109.21.103' // http://code-samples.space
+
 export const rules = {
   params: {
     params: {
@@ -23,7 +25,7 @@ export const getNote = async (req: IRequest, res: TEnhancedResponse) => {
   const { id } = req.params
   res.startTime('css_get_note', `code-samples.space: Get remote note ${id}`)
 
-  let url = `http://code-samples.space/api/notes/${id}`
+  const url = `${NOTES_BASE_API_URL}/api/notes/${id}`
 
   const noteResult = await universalHttpClient.get(url)
   res.endTime('css_get_note')
