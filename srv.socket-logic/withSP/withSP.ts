@@ -93,12 +93,12 @@ export const withSP = (io: Socket) => {
         })
     }
 
-    socket.prependAny((eventName, ...args) => {
-      console.log('-- prependAny LOG')
-      console.log(eventName)
-      console.log(args)
-      console.log('-- /prependAny LOG')
-    })
+    // socket.prependAny((eventName, ...args) => {
+    //   console.log('-- prependAny LOG')
+    //   console.log(eventName)
+    //   console.log(args)
+    //   console.log('-- /prependAny LOG')
+    // })
 
     socket.on(NEvent.ServerIncoming.SP_MX_EV, standartReportService({
       ip,
@@ -127,12 +127,12 @@ export const withSP = (io: Socket) => {
       clientReferer,
     }))
 
-    socket.onAny((eventName, ...args) => {
-      console.log('-- onAny LOG')
-      console.log(eventName)
-      console.log(args)
-      console.log('-- /onAny LOG')
-    })
+    // socket.onAny((eventName, ...args) => {
+    //   console.log('-- onAny LOG')
+    //   console.log(eventName)
+    //   console.log(args)
+    //   console.log('-- /onAny LOG')
+    // })
 
     // socket.on('disconnect', (reason: TDisconnectReason) => {})
   })

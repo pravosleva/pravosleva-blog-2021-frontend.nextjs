@@ -1,0 +1,68 @@
+.wrapper {
+  // border: 1px dashed red;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0px;
+
+  border-radius: 16px;
+  padding: 3px;
+  // background-color: #A64A4A;
+  
+  // background-color: #BFB1B1;
+  // color: #A64A4A;
+  font-size: 15px;
+  font-weight: bold;
+
+  & code {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+  cursor: pointer;
+
+  &.danger {
+    // background-color: #FF0032;
+    background-color: rgb(255, 82, 82);
+    color: #fff;
+  }
+  &.success {
+    background-color: #71bc81;
+    color: #fff;
+  }
+}
+.targetText {
+  letter-spacing: 0.15em;
+  line-height: 10px;
+  font-size: 9px;
+  margin: 0 !important;
+}
+
+.copyIcon {
+  // border: 1px solid red;
+  height: 10px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  // color: #FFF;
+
+  & > svg {
+    font-size: 12px;
+  }
+}
+.copyInfo {
+  padding: 0 8px 0.1em 8px;
+}
+
+// NOTE: baseClasses
+.inlineCode {
+  font-family: system-ui; // monospace;
+  font-weight: bold;
+  padding: 2px 5px;
+  /* background: rgb(180, 204, 56); */
+  background: #262626;
+  color: #FFF;
+  border-radius: 10px;
+  /* box-shadow: 0 0 3px rgba(0,0,0,.2); */
+}

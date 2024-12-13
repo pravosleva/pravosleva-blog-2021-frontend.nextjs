@@ -19,7 +19,11 @@ import acticeReportClasses from './ActiveReportListItem.module.scss'
 import { replaceWords } from '~/utils/string-tools/replaceWords'
 import { GeoSection } from '~/components/SPSocketLab/components/ConnectedData/components/GeoSection'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { InlineActionTagWrapper } from '~/components'
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff'
+import { TSocketMicroStore, useStore } from '~/components/SPSocketLab/components/ConnectedData/withSocketContext'
 
 export const ActiveReportListItem = memo(() => {
   const viState = useSnapshot(vi.FOR_EXAMPLE)
@@ -47,6 +51,26 @@ export const ActiveReportListItem = memo(() => {
   const toggleFooterInfo = useCallback(() => {
     setIsFooterInfoOpened((s) => !s)
   }, [setIsFooterInfoOpened])
+
+  const [ipFilter, setStore] = useStore((store: TSocketMicroStore) => store.ipFilter)
+  const hasIpInFilter = useMemo(() => !!ipFilter && !!viState.activeReport?._ip && ipFilter.includes(viState.activeReport._ip), [
+    ipFilter,
+    viState.activeReport?._ip,
+  ])
+  const handleClickOnIp = useCallback(() => {
+    if (hasIpInFilter) setStore({ ipFilter: null})
+    else if (!!viState.activeReport?._ip) setStore({ ipFilter: viState.activeReport._ip })
+  }, [hasIpInFilter, viState.activeReport?._ip])
+
+  const [imeiFilter] = useStore((store: TSocketMicroStore) => store.imeiFilter)
+  const hasImeiInFilter = useMemo(() => !!imeiFilter && !!viState.activeReport?.imei && imeiFilter.includes(viState.activeReport.imei), [
+    imeiFilter,
+    viState.activeReport?.imei,
+  ])
+  const handleClickOnImei = useCallback(() => {
+    if (hasImeiInFilter) setStore({ imeiFilter: null})
+    else if (!!viState.activeReport?.imei) setStore({ imeiFilter: viState.activeReport.imei })
+  }, [hasImeiInFilter, viState.activeReport?.imei])
 
   if (!viState.activeReport) return null
   return (
@@ -120,9 +144,39 @@ export const ActiveReportListItem = memo(() => {
                         fontFamily: 'system-ui, monospace',
                       }}
                     >
-                      <div style={{ display: 'inline-flex', gap: '8px' }}><span>IMEI</span><b>{viState.activeReport.imei || 'No'}</b></div>
-                      {!!viState.activeReport._ip && <div style={{ display: 'inline-flex', gap: '8px' }}><span>IP</span><b>{viState.activeReport._ip}</b></div>}
+                      {
+                        !!viState.activeReport.imei && (
+                          <div style={{ display: 'inline-flex', gap: '8px' }}>
+                            <span>IMEI</span>
+                            {/* <b>{viState.activeReport.imei || 'No'}</b> */}
+                            <InlineActionTagWrapper
+                              isActive={hasImeiInFilter}
+                              text={viState.activeReport.imei}
+                              endIcon={{
+                                Inactive: <FilterAltIcon htmlColor='#FFF' />,
+                                Active: <FilterAltOffIcon htmlColor='#FFF' />,
+                              }}
+                              onClick={handleClickOnImei}
+                            />
+                          </div> 
+                        )
+                      }
                       <div style={{ display: 'inline-flex', gap: '8px' }}>{viState.activeReport.appVersion}</div>
+                      {!!viState.activeReport._ip && (
+                        <div style={{ display: 'inline-flex', gap: '8px' }}>
+                          <span>IP</span>
+                          {/* <b>{viState.activeReport._ip}</b> */}
+                          <InlineActionTagWrapper
+                            isActive={hasIpInFilter}
+                            text={viState.activeReport._ip}
+                            endIcon={{
+                              Inactive: <FilterAltIcon htmlColor='#FFF' />,
+                              Active: <FilterAltOffIcon htmlColor='#FFF' />,
+                            }}
+                            onClick={handleClickOnIp}
+                          />
+                        </div>
+                      )}
                     </div>
                     {
                       !!viState.activeReport._userAgent && (

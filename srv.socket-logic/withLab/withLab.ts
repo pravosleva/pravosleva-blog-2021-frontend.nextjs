@@ -101,7 +101,7 @@ export const withLab = (io: Socket) => {
             const connsCounter = instance.getConnectionsCounterByChannelName({ channelName })
             socket.broadcast.to(channelName).emit(NEvent.ServerOutgoing.SOMEBODY_CONNECTED_TO_ROOM, {
               clientId: socket.handshake.query.uniqueClientKey,
-              message: `Somebody connected to private channel / conns: ${connsCounter}`,
+              message: `Somebody connected to private channel // conns: ${connsCounter}`,
               notistackProps: {
                 anchorOrigin: {
                   vertical: 'bottom',
@@ -159,7 +159,7 @@ export const withLab = (io: Socket) => {
 
             cb({
               ok: true,
-              message: `Added to reestr / ${msgList.join(' / ')}`,
+              message: `Added to reestr // ${msgList.join(' • ')}`,
               notistackProps: {
                 variant: 'success',
                 autoHideDuration: 35 * 1000,
@@ -175,7 +175,7 @@ export const withLab = (io: Socket) => {
           const message = err?.message
           if (!!cb) cb({
             ok: false,
-            message: `Add to reestr ERR / ${message || 'No err.message'}`,
+            message: `Add to reestr ERR // ${message || 'No err.message'}`,
             notistackProps: {
               anchorOrigin: {
                 vertical: 'bottom',
@@ -207,7 +207,7 @@ export const withLab = (io: Socket) => {
 
           if (!!cb) cb({
             ok: isOk,
-            message: `Disconnect from private room${!!message ? ` / ${message}` : ''}`,
+            message: `Disconnect from private room${!!message ? ` // ${message}` : ''}`,
             notistackProps: {
               anchorOrigin: {
                 vertical: 'bottom',
@@ -218,7 +218,7 @@ export const withLab = (io: Socket) => {
         })
         .catch((err) => {
           const message = err?.message
-          if (!!cb) cb({ ok: false, message: `Disconnect from private room ERR${!!message ? ` / ${message}` : 'No err.message'}` })
+          if (!!cb) cb({ ok: false, message: `Disconnect from private room ERR${!!message ? ` // ${message}` : 'No err.message'}` })
         })
     })
 

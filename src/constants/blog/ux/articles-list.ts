@@ -7,6 +7,7 @@ import { TArticleTools } from '../types'
 //     h: 898,
 //   },
 // }
+// @ts-ignore
 const deadProductBg = {
   src: 'https://pravosleva.pro/static/img/blog/dead-product.webp',
   size: {
@@ -17,9 +18,9 @@ const deadProductBg = {
 }
 
 export const list: {[key: string]: TArticleTools} = {
-  'broken-ux-exp-2024': {
-    id: '66b72ed3bde98b4a61a17fc5',
-    brief: 'Анализ ошибок маркетинга на примере опытного образца',
-    bg: deadProductBg,
-  },
+  // 'broken-ux-exp-2024': {
+  //   id: '66b72ed3bde98b4a61a17fc5',
+  //   brief: 'Анализ ошибок маркетинга на примере опытного образца',
+  //   bg: deadProductBg,
+  // },
 }

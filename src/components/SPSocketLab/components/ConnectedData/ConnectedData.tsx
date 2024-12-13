@@ -1,6 +1,6 @@
 import classes from './ConnectedData.module.scss'
 import { WithSocketContext } from './withSocketContext'
-import { useCallback, useEffect, useRef, memo, useMemo, useState } from 'react'
+import { useCallback, useEffect, useRef, memo, useMemo, useState, useLayoutEffect } from 'react'
 import { groupLog } from '~/utils/groupLog'
 import { NEvent, useStore, TSocketMicroStore, initialState } from './withSocketContext'
 import {
@@ -51,6 +51,46 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
   const [isConnectedToPrivateRoom] = useStore((store: TSocketMicroStore) => store.isConnectedToPrivateRoom)
   const connectBtnRef = useRef<HTMLButtonElement>(null)
   const disconnectBtnRef = useRef<HTMLButtonElement>(null)
+
+  const autoconnectEnabledRef = useRef(true)
+  useLayoutEffect(() => {
+    switch (true) {
+      case (autoconnectEnabledRef.current && isConnected && !isConnectedToPrivateRoom):
+        switch (true) {
+          case !connectBtnRef.current?.disabled:
+            setTimeout(() => {
+              // connectBtnRef.current?.click()
+
+              // NOTE: Disable for predictable UI
+              autoconnectEnabledRef.current = false
+              
+              onConnClick(disconnectBtnRef)
+            }, 0)
+            break
+          default:
+            groupLog({
+              spaceName: 'autoconnect: already disabled?',
+              items: [
+                `isConnected: ${isConnected}`,
+                `isConnectedToPrivateRoom: ${isConnectedToPrivateRoom}`,
+                connectBtnRef.current,
+              ],
+            })
+            break
+        }
+        break
+      default:
+        groupLog({
+          spaceName: 'autoconnect: check params',
+          items: [
+            `isConnected: ${isConnected}`,
+            `isConnectedToPrivateRoom: ${isConnectedToPrivateRoom}`,
+            autoconnectEnabledRef.current,
+          ],
+        })
+        break
+    }
+  }, [isConnected, isConnectedToPrivateRoom])
 
   const viState = useSnapshot(vi.FOR_EXAMPLE)
   const viProxy = useProxy(vi.FOR_EXAMPLE)
@@ -468,12 +508,14 @@ const Logic = memo(() => {
       groupLog({ spaceName: '⛔ FRONT: Socket was not connected yet?', items: ['socketRef.current', socketRef.current] })
     }
   }, [])
+
   // useLayoutEffect(() => {
   //   if (autoconnectCustomDisabledRef.current)
   //     return
   //   else if (_isConnected && !isConnectedToPrivateRoom)
   //     setTimeout(handleWannaBeConnected, 500)
   // }, [_isConnected, isConnectedToPrivateRoom])
+
   const handleWannaBeDisonnected = useCallback((connectBtnRef: React.RefObject<HTMLButtonElement>) => {
     autoconnectCustomDisabledRef.current = true
     if (!!socketRef.current) {
