@@ -87,6 +87,7 @@
     "react-datepicker": "^4.20.0",
     "react-day-picker": "7.2.4",
     "react-dom": "17.x",
+    "react-error-boundary": "^4.1.2",
     "react-gist": "^1.2.4",
     "react-google-charts": "^4.0.1",
     "react-grid-gallery": "^1.0.1-alpha.0",

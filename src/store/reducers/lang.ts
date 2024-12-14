@@ -40,8 +40,8 @@ const translateFnInit = (lang?: string) => {
       // Default example comment: After loading CLDR locale data, start to render
       // For example: initDone -> true
     })
-    .catch((err) => {
-      console.log(err)
+    .catch((_err) => {
+      // console.log(err)
     })
   return (str: string) => intl.get(str)
 }

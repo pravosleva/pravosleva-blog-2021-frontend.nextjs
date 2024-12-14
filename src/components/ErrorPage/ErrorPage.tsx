@@ -1,4 +1,4 @@
-import { Alert, Box, Typography } from "@mui/material";
+import { Alert, Box, Typography } from '@mui/material';
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock';
 
 type TProps = {
