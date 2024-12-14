@@ -1,6 +1,8 @@
 import { YoutubePlayer, YoutubeGrid, YoutubeInModal } from './YoutubeRenderer'
 import JsxParser from 'react-jsx-parser'
 import Gist from 'react-gist'
+import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorFallback } from '~/mui/ErrorFallback'
 import { Alert } from './Alert'
 import { ControlsBox } from './ControlsBox'
 import { ImageInNewTab } from './ImageRenderer'
@@ -26,8 +28,22 @@ const componentTransforms = {
     </div>),
   ImageInNewTab: (props: any) => <ImageInNewTab {...props} />,
   JSONComparison: (props: any) => <JSONComparison {...props} />,
-  ImagesGalleryBox: (props: TImagesGalleryBoxProps) => <ImagesGalleryBox itemsJson={props?.itemsJson} />,
-  ImagesGalleryBox2: (props: TImagesGalleryBoxProps) => <ImagesGalleryBox2 itemsJson={props?.itemsJson} />,
+  ImagesGalleryBox: (props: TImagesGalleryBoxProps) => (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      // onReset={handleClearText}
+    >
+      <ImagesGalleryBox itemsJson={props?.itemsJson} />
+    </ErrorBoundary>
+  ),
+  ImagesGalleryBox2: (props: TImagesGalleryBoxProps) => (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      // onReset={handleClearText}
+    >
+      <ImagesGalleryBox2 itemsJson={props?.itemsJson} />
+    </ErrorBoundary>
+  ),
   CollapsibleBox: (props: any) => <CollapsibleBox {...props} />,
 }
 

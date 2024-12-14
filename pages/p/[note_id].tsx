@@ -11,6 +11,15 @@ import { IRootState } from '~/store/IRootState'
 import { setTitle } from '~/store/reducers/pageMeta'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 
+const defaultBg = {
+  src: 'https://pravosleva.pro/static/img/blog/best-programming-languages.webp',
+  size: {
+    w: 750,
+    h: 375,
+  },
+  type: 'image/webp',
+}
+
 const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService, article: TArticle }) => {
   if (!_pageService?.isOk) return (
     <Layout>
@@ -111,7 +120,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
 BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
   (store) => async (ctx: any) => {
-    const { query: { slug } } = ctx
+    const { query: { note_id } } = ctx
     // let errorMsg = null
     const _pageService: TPageService = {
       isOk: false,
@@ -120,8 +129,8 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     let article = null
 
     switch (true) {
-      case !!slugMapping[slug]: {
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${slugMapping[slug].id}`)
+      case !!slugMapping[note_id]: {
+        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${slugMapping[note_id].id}`)
         // console.log(`-- ${slug}`)
         // console.log(noteResult)
         // console.log('--')
@@ -133,9 +142,9 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
           article = {
             original: { ...noteResult.response.data },
 
-            slug,
-            brief: slugMapping[slug].brief,
-            bg: slugMapping[slug].bg,
+            slug: note_id,
+            brief: slugMapping[note_id].brief,
+            bg: slugMapping[note_id].bg,
           }
         } else {
           _pageService.isOk = false
@@ -147,10 +156,49 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
         }
         break
       }
-      default:
-        _pageService.isOk = false
-        _pageService.message = 'Кажется, нет такой заметки, возможно появится позже'
+      default: {
+        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
+        // console.log(`-- ${slug}`)
+        // console.log(noteResult)
+        // console.log('--')
+        try {
+          switch (true) {
+            case !noteResult.ok:
+              throw new Error([
+                'Не удалось получить статью. Возможно, автор закрыл ее на редактрование, либо ее не существует',
+                // noteResult?.response?.message,
+              ].join(' // '))
+            case noteResult.ok && !!noteResult.response:
+              switch (true) {
+                case !noteResult.response.isPrivate:
+                  store.dispatch(setTitle(noteResult.response.data.title))
+  
+                  _pageService.isOk = true
+                  _pageService.response = noteResult.response
+                  article = {
+                    original: { ...noteResult.response.data },
+                    slug: note_id,
+                    brief: '[DRAFT]',
+                    bg: defaultBg,
+                  }
+                  break
+                default:
+                  throw new Error(`Неизвестный нейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.isPrivate)})`)
+              }
+              break
+            default:
+              throw new Error('Неизвестный нейс (ответ получен, но невалидный)')
+          }
+        } catch (err: any) {
+          _pageService.isOk = false
+          _pageService.response = noteResult?.response || null
+          _pageService.message = [
+            err?.message || 'No err?.message',
+            // noteResult?.response?.message || 'No noteResult?.response?.message',
+          ].join(' / ')
+        }
         break
+      }
     }
 
     // console.log('-- 0. before makeStore on server')
