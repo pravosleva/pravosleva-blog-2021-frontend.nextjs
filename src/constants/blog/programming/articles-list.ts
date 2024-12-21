@@ -16,6 +16,14 @@ const bgCoding = {
   },
   type: 'image/jpg',
 }
+const bgHackerNews = {
+  src: 'https://pravosleva.pro/static/img/projects/hacker-news-logo.jpeg',
+  size: {
+    w: 1200,
+    h: 710,
+  },
+  type: 'image/jpeg',
+}
 
 export const list: {[key: string]: TArticleTools} = {
   'programming-solid': {
@@ -27,5 +35,10 @@ export const list: {[key: string]: TArticleTools} = {
     id: '67289180d9a7126af852ec17',
     brief: 'Принципы ООП позволяют разработчикам создавать гибкие и масштабируемые системы, которые легко адаптируются к изменениям требований // ООП также способствует повторному использованию кода и улучшает его читаемость',
     bg: bgCoding,
+  },
+  'hacker-news-client-2024': {
+    id: '6766beed8c79264aa7fd53aa',
+    brief: 'Тестовое задание для ООО Рога и Копыта',
+    bg: bgHackerNews,
   },
 }
