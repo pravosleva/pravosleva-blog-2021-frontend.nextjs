@@ -309,7 +309,7 @@ export const withMobileMenu = (ComposedComponent) =>
                 </Link>
               </li>
               <li>
-                <a href='/dist.hacker-news-2024' target='_self'>Hacker News Client</a>
+                <a target='_self' href='/dist.hacker-news-2024'>Hacker News Client</a>
               </li>
             </ul>
             <div

@@ -64,7 +64,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>{t('LOGIN')}</a>
       </Link>
     ) */}
-    <a href='/dist.hacker-news-2024' target='_self'>Hacker News Client</a>
+    {!isCurrentPathCb('/blog/article/hacker-news-client-2024') && (
+      <Link href="/blog/article/hacker-news-client-2024" as="/blog/article/hacker-news-client-2024">
+        <a onClick={onHideModal}>Hacker News Client</a>
+      </Link>
+    )}
 
     <h5 style={{ margin: '8px 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_TAGS')}</h5>
     <div
