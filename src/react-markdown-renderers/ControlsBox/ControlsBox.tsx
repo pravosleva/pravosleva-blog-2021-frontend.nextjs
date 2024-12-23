@@ -16,6 +16,7 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import TabIcon from '@mui/icons-material/Tab'
 import DriveEtaIcon from '@mui/icons-material/DriveEta'
+import GitHubIcon from '@mui/icons-material/GitHub'
 
 enum EControlType {
   Link = 'link',
@@ -95,6 +96,9 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
           case title === 'START_DRIVE2':
             StartIcon = <DriveEtaIcon fontSize='small' />
             break
+          case title === 'START_GITHUB':
+            StartIcon = <GitHubIcon fontSize='small' />
+            break
           default:
             break
         }
@@ -120,6 +124,9 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
           case title === 'END_DRIVE2':
             EndIcon = <DriveEtaIcon fontSize='small' />
             break
+          case title === 'END_GITHUB':
+            EndIcon = <GitHubIcon fontSize='small' />
+            break
           default:
             break
         }
@@ -128,6 +135,8 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
           'START_DRIVE2',
           'END_NEW_TAB',
           'END_DRIVE2',
+          'START_GITHUB',
+          'END_GITHUB',
         ].some((value) => value === title)
 
         return !!link ? (
