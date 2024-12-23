@@ -153,6 +153,8 @@
   "END_TELEGRAM": "Open Telegram",
   "END_NEW_TAB": "Open in new tab",
   "END_DRIVE2": "Go to Drive2",
+  "START_GITHUB": "GitHub",
+  "END_GITHUB": "GitHub",
 
   "MENU_MAIN": "Main",
   "MENU_TAGS": "Tags",

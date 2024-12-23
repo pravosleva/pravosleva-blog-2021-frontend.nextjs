@@ -308,6 +308,9 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/feedback') ? 'active' : ''}>{t('FEEDBACK')}</a>
                 </Link>
               </li>
+              <li>
+                <a href='/dist.hacker-news-2024' target='_self'>Hacker News Client</a>
+              </li>
             </ul>
             <div
               style={{
