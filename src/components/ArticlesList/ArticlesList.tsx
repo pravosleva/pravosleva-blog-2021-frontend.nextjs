@@ -85,7 +85,11 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
 
       <ResponsiveBlock
         isLimited
-        isLastSection
+        // isLastSection
+        style={{
+          paddingTop: '50px',
+          marginBottom: '50px',
+        }}
         isPaddedMobile
       >
         <GoHomeSection t={t} currentLang={currentLang} />

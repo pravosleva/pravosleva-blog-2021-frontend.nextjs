@@ -16,7 +16,7 @@ type TProps = {
   children: React.ReactNode;
   zeroPaddingMobile?: boolean;
   isLimitedForDesktop?: boolean;
-  isLastSection?: boolean;
+  // isLastSection?: boolean;
 }
 
 export const ResponsiveBlock = memo(({
@@ -28,7 +28,7 @@ export const ResponsiveBlock = memo(({
   className,
   hasDesktopFrame,
   isLimitedForDesktop,
-  isLastSection
+  // isLastSection
 }: TProps) => {
   const baseStyles = useBaseStyles()
   const styles = useStyles()
@@ -42,13 +42,15 @@ export const ResponsiveBlock = memo(({
             classes.limitedWidth,
             classes.centered,
           )}
-          // style={{ border: '1px dashed red' }}
+          style={{
+            ...style,
+            // border: '1px dashed red',
+            }}
         >
           <Container
-            style={style}
             maxWidth='md'
             isPaddedMobile={isPaddedMobile}
-            isLastSection={isLastSection}
+            // isLastSection={isLastSection}
             className={clsx(
               styles.responsiveBlock,
               classes.centered,
@@ -67,13 +69,15 @@ export const ResponsiveBlock = memo(({
             classes.centered,
           )}
           // className={clsx({ [classes.isLastSection]: isLastSection })}
-          // style={{ border: '1px dashed red' }}
+          style={{
+            ...style,
+            // border: '1px dashed red',
+          }}
         >
           <Container
-            style={style}
             maxWidth='md'
             isPaddedMobile={isPaddedMobile}
-            isLastSection={isLastSection}
+            // isLastSection={isLastSection}
             className={clsx(
               styles.responsiveBlock,
               classes.centered,
@@ -85,6 +89,7 @@ export const ResponsiveBlock = memo(({
     case isLimited && hasDesktopFrame:
       return (
         <div
+          style={style}
           className={
             clsx(
               // { [classes.isLastSection]: isLastSection },
@@ -95,10 +100,9 @@ export const ResponsiveBlock = memo(({
           // style={{ border: '1px dashed black' }}
         >
           <Container
-            style={style}
             maxWidth='md'
             isPaddedMobile={isPaddedMobile}
-            isLastSection={isLastSection}
+            // isLastSection={isLastSection}
             className={clsx(
               styles.responsiveBlock,
               classes.centered,
@@ -125,7 +129,8 @@ export const ResponsiveBlock = memo(({
           <Container
             maxWidth='md'
             isPaddedMobile={isPaddedMobile}
-            isLastSection={isLastSection}
+            // isLastSection={isLastSection}
+            // style={style}
             className={
               clsx(
                 styles.responsiveBlock,
@@ -134,7 +139,7 @@ export const ResponsiveBlock = memo(({
                 {
                   [classes.isPaddedMobile]: isPaddedMobile,
                   'zero-pad-mob': zeroPaddingMobile,
-                  [classes.isLastSection]: isLastSection
+                  // [classes.isLastSection]: isLastSection
                 },
               )
             }

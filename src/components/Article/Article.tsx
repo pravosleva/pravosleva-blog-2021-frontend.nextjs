@@ -167,7 +167,8 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               style={{
                 // border: '1px solid red',
                 // marginBottom: '30px',
-                padding: '16px 0px 0px 0px',
+                paddingTop: '16px',
+                // paddingBottom: '16px',
               }}
             >
               <div
@@ -205,7 +206,11 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
           
           <ResponsiveBlock
             isLimited
-            isLastSection
+            // isLastSection
+            style={{
+              paddingTop: '50px',
+              marginBottom: '50px',
+            }}
             isPaddedMobile
           >
             <GoHomeSection t={t} currentLang={currentLang} />

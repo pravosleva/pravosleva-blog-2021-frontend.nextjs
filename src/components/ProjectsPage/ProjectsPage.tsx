@@ -314,7 +314,7 @@ export const ProjectsPage = withTranslator(({ t }) => {
           <div
             style={{
               width: '100%',
-              paddingBottom: '50px',
+              // paddingBottom: '50px',
             }}
             className='projects-grid'
           >

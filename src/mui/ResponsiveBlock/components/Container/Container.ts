@@ -25,12 +25,12 @@ export const Container = styled('div')<TProps>`
     }
   `}
 
-  ${({ isLastSection }) => !!isLastSection && `
-    @media(max-width: ${breakpoints.md}px) {
-      padding-bottom: 30px;
-    }
-    @media(min-width: ${breakpoints.md + 1}px) {
-      padding-bottom: 50px;
-    }
-  `}
+  // ${({ isLastSection }) => !!isLastSection && `
+  //   @media(max-width: ${breakpoints.md}px) {
+  //     padding-bottom: 50px;
+  //   }
+  //   @media(min-width: ${breakpoints.md + 1}px) {
+  //     padding-bottom: 50px;
+  //   }
+  // `}
 `

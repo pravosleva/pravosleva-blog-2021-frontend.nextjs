@@ -35,18 +35,18 @@
   }
 }
 
-@media(max-width: #{$sm}px) {
-  .isLastSection {
-    padding-top: 50px;
-    padding-bottom: 50px;
-  }
-}
-@media(min-width: calc(#{$sm}px + 1px)){
-  .isLastSection {
-    padding-top: 50px;
-    padding-bottom: 50px;
-  }
-}
+// @media(max-width: #{$sm}px) {
+//   .isLastSection {
+//     padding-top: 50px;
+//     padding-bottom: 50px;
+//   }
+// }
+// @media(min-width: calc(#{$sm}px + 1px)){
+//   .isLastSection {
+//     padding-top: 50px;
+//     padding-bottom: 50px;
+//   }
+// }
 
 @media(max-width: #{$sm}px) {
   .isLimited {
