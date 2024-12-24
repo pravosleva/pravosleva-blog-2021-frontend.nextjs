@@ -88,7 +88,7 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
         // isLastSection
         style={{
           paddingTop: '50px',
-          marginBottom: '50px',
+          paddingBottom: '50px',
         }}
         isPaddedMobile
       >

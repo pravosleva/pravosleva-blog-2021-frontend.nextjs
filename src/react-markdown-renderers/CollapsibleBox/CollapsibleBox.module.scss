@@ -1,7 +1,11 @@
+.content {
+  font-size: 0.8em;
+  white-space: pre-wrap;
+}
+
 .collapsible > input[type=checkbox]:not(:checked) ~ .content {
   max-height: 0;
   visibility: hidden;
-  white-space: pre-wrap;
 }
 
 .noMarginBottomForLastChild {

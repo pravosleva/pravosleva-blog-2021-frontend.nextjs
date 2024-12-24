@@ -145,7 +145,6 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
       
       {isOpened && (
         <div
-          style={{ fontSize: '0.8em' }}
           className={clsx(classes.noMarginBottomForLastChild, classes.content)}
         >
           <ReactMarkdown

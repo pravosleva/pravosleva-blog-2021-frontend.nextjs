@@ -209,7 +209,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
             // isLastSection
             style={{
               paddingTop: '50px',
-              marginBottom: '50px',
+              paddingBottom: '50px',
             }}
             isPaddedMobile
           >
