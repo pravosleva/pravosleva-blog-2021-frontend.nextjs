@@ -17,12 +17,12 @@ const bgCoding = {
   type: 'image/jpg',
 }
 const bgHackerNews = {
-  src: 'https://pravosleva.pro/static/img/projects/hacker-news-logo.jpeg',
+  src: 'https://pravosleva.pro/static/img/projects/hacker-news-bg.png',
   size: {
     w: 1200,
     h: 710,
   },
-  type: 'image/jpeg',
+  type: 'image/png',
 }
 
 export const list: {[key: string]: TArticleTools} = {
@@ -38,7 +38,7 @@ export const list: {[key: string]: TArticleTools} = {
   },
   'hacker-news-client-2024': {
     id: '6766beed8c79264aa7fd53aa',
-    brief: 'Тестовое задание для ООО Рога и Копыта',
+    brief: 'App for open API',
     bg: bgHackerNews,
   },
 }

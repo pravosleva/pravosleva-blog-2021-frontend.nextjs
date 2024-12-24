@@ -320,11 +320,15 @@ code,
   padding: 16px;
 }
 .article-wrapper__big-image-as-container__brief {
-  margin-bottom: 30px;
+  margin-top: auto;
   line-height: 1em;
   font-family: Montserrat;
   font-style: italic;
 }
 .article-wrapper__big-image-as-container__date {
   text-align: right;
+}
+
+.description-markdown > :last-child {
+  margin-bottom: 0;
 }

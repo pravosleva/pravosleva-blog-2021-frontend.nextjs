@@ -166,7 +166,8 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               isPaddedMobile
               style={{
                 // border: '1px solid red',
-                marginBottom: '30px',
+                // marginBottom: '30px',
+                padding: '16px 0px 0px 0px',
               }}
             >
               <div
