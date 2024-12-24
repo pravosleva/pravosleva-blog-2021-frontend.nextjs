@@ -62,9 +62,9 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
       <ResponsiveBlock
         isLimited
         isPaddedMobile
-        style={{
-          paddingBottom: '50px',
-        }}
+        // style={{
+        //   paddingBottom: '50px',
+        // }}
       >
         <div
           // className="article-body"
