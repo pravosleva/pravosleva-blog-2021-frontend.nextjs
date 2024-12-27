@@ -246,6 +246,9 @@ const projects: TProject[] = [
     tags: ['threejs', 's4t'],
   },
 ]
+// const pack1 = ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳']
+const pack2 = ['🃏', '♠️', '♥️', '♦️', '♣️']
+// const pack3 = ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷', '🃏']
 
 export const ProjectsPage = withTranslator(({ t }) => {
   const getRandomValue = ({ items }: { items: any[] }) => {
@@ -255,15 +258,15 @@ export const ProjectsPage = withTranslator(({ t }) => {
     return items[randomIndex]
   }
   
-  const [headerText, setHeaderText] = useState<string>('🐱 🥤')
+  const [headerText, setHeaderText] = useState<string>('🎲 🎲 🎲 🎲')
   useEffect(() => {
-    setHeaderText(`${getRandomValue({
-      items: ['🐱', '😺', '😸', '😼', '🙀', '🐾', '🤨', '🥳',
-        // '☃️',
-      ],
-    })} ${getRandomValue({
-      items: ['🥤', '🍺', '🍹', '🍸', '🥃', '🍷'],
-    })}`)
+    const randomEmojies = [
+      getRandomValue({ items: pack2 }),
+      getRandomValue({ items: pack2 }),
+      getRandomValue({ items: pack2 }),
+      getRandomValue({ items: pack2 })
+    ].join(' ')
+    setHeaderText(randomEmojies)
   }, [])
 
   const isSSR = useMemo(() => typeof window === 'undefined', [typeof window])
@@ -302,7 +305,7 @@ export const ProjectsPage = withTranslator(({ t }) => {
           sx={{ pt: 0, pb: 0 }}
         >
           <Typography
-            variant="h1"
+            variant="h2"
             display="block"
             // gutterBottom
             sx={{ pb: 2 }}
