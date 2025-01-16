@@ -194,6 +194,7 @@ export const withMobileMenu = (ComposedComponent) =>
           'mongodb',
           'nginx',
           'ssl',
+          'рабочие_моменты',
         ]
           .sort(abSort)
           .map((tag, i) => (
@@ -244,7 +245,7 @@ export const withMobileMenu = (ComposedComponent) =>
               ) */}
               {isAuthenticated && (
                 <li>
-                  <Link href="/profile" as="/profile">
+                  <Link href='/profile' as='/profile'>
                     <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/profile') ? 'active' : ''}>{t('PROFILE')}</a>
                   </Link>
                 </li>
@@ -273,9 +274,15 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
                 </Link>
               </li> */}
+
               <li>
-                <Link href='/blog/q/сетевые_протоколы'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/blog/q/сетевые_протоколы') ? 'active' : ''}>{t('NETWORK_PROTOCOLS')}</a>
+                <Link href='/p/estimate-corrector-2024'>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/estimate-corrector-2024') ? 'active' : ''}>About Estimate Corrector 2024</a>
+                </Link>
+              </li>
+              <li>
+                <Link href='/p/protocols'>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/protocols') ? 'active' : ''}>{t('NETWORK_PROTOCOLS')}</a>
                 </Link>
               </li>
 
@@ -305,12 +312,12 @@ export const withMobileMenu = (ComposedComponent) =>
 
               {/* -- NOTE: Target search by title */}
               <li>
-                <Link href="/blog/q/MartVirkus">
+                <Link href='/blog/q/MartVirkus'>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/MartVirkus') || isCurrentPathCb(router.asPath, '/blog/q/MartVirkus') ? 'active' : ''}>Comic by Mart Virkus</a>
                 </Link>
               </li>
               <li>
-                <Link href="/feedback">
+                <Link href='/feedback'>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/feedback') ? 'active' : ''}>{t('FEEDBACK')}</a>
                 </Link>
               </li>
