@@ -53,6 +53,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/jpg',
     },
   },
+  'estimate-corrector-2024': {
+    id: '67723f368c79264aa7fd53b1',
+    brief: 'Based on the methodology by Joel Spolsky',
+    bg: {
+      size: {
+        w: 1200,
+        h: 630,
+      },
+      src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
+      type: 'image/jpg',
+    },
+  },
   'google-sheets-api-quota': {
     id: '64c8d7dbdb108f2f99272e0c',
     brief: 'Чтоб не забыть',

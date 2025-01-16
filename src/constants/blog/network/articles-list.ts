@@ -30,4 +30,9 @@ export const list: {[key: string]: TArticleTools} = {
     brief: 'Заметки про сети',
     bg,
   },
+  'how-browsers-work': {
+    id: '675949438c79264aa7fd53a8',
+    brief: 'Заметки про сети',
+    bg,
+  },
 }
