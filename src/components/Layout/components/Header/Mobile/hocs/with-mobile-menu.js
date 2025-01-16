@@ -268,11 +268,17 @@ export const withMobileMenu = (ComposedComponent) =>
                 </Link>
               </li>
               */}
-              <li>
+              {/* <li>
                 <Link href="/blog/article/team-scoring">
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
                 </Link>
+              </li> */}
+              <li>
+                <Link href='/q/сетевые_протоколы'>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/q/сетевые_протоколы') ? 'active' : ''}>{t('NETWORK_PROTOCOLS')}</a>
+                </Link>
               </li>
+
               {/* <li>
                 <Link href="/blog/article/ubuntu-first-steps">
                   <a className={isCurrentPathCb(router.pathname, '/blog/article/[slug]') ? 'active' : ''}>Ubuntu first steps</a>
@@ -308,9 +314,9 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/feedback') ? 'active' : ''}>{t('FEEDBACK')}</a>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <a target='_self' href='/dist.hacker-news-2024'>Hacker News Client</a>
-              </li>
+              </li> */}
             </ul>
             <div
               style={{

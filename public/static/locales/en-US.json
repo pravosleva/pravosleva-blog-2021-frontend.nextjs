@@ -159,5 +159,6 @@
   "MENU_MAIN": "Main",
   "MENU_TAGS": "Tags",
 
-  "LOCAL_LINK": "Go"
+  "LOCAL_LINK": "Go",
+  "NETWORK_PROTOCOLS": "Network Protocols"
 }

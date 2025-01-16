@@ -45,12 +45,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
     id: '653053616917cd0d733cddb9',
     brief: 'По мотивам статьи Joel Spolsky',
     bg: {
+      // size: {
+      //   w: 1200,
+      //   h: 630,
+      // },
+      // src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
+      // type: 'image/jpg',
       size: {
-        w: 1200,
-        h: 630,
+        w: 309,
+        h: 270,
       },
-      src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
-      type: 'image/jpg',
+      src: '/static/img/projects/math-preview.gif',
+      type: 'image/gif',
     },
   },
   'estimate-corrector-2024': {

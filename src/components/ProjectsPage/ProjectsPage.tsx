@@ -173,26 +173,35 @@ const projects: TProject[] = [
   },
   {
     id: 6,
-    title: 'TeamScoring',
+    title: 'EstimateCorrector',
     description: 'TEAM_SCORING_PROJECT_DESCR',
+    // img: {
+    //   src: '/static/img/projects/scoring.webp',
+    //   alt: 'loading...',
+    //   color: {
+    //     average: '#bcc3a5',
+    //   },
+    // },
     img: {
-      src: '/static/img/projects/scoring.webp',
+      src: '/static/img/projects/math-preview.gif',
       alt: 'loading...',
       color: {
-        average: '#bcc3a5',
+        average: 'dimgray',
       },
     },
     links: [
       {
-        href: '/team-scoring/legacy',
-        as: '/team-scoring/legacy',
+        // href: '/team-scoring/legacy',
+        // as: '/team-scoring/legacy',
+        href: '/dist.estimate-corrector-2024',
+        as: '/dist.estimate-corrector-2024',
         text: 'PROJECT_GO_BTN:LINK_GOTO',
         color: ELinkColor.YELLOW,
         icon: ELinkIcon.ARROW,
         isExternal: true,
       },
     ],
-    uiDate: '2019',
+    uiDate: '2019 — 2025',
     brief: 'PROJECT_BRIEF@PROBABILITY_THEORY',
     tags: [],
   },

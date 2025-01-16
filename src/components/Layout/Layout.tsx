@@ -63,10 +63,9 @@ export const Layout = ({ children, noFooter }: TProps) => {
               <ResponsiveBlock isLimited isPaddedMobile>
                 <div className={classes.footerMainBox}>
                   <div className={classes.footerSiteInfoBox}>
-                    <div>Pravosleva {NEXT_APP_VERSION}, Inc. or its affiliates</div>
+                    <div>© Pravosleva {NEXT_APP_VERSION}, Inc. or its affiliates, 2018 – {fullYear}</div>
                     <div>Last build {NEXT_APP_BUILD_DATE}</div>
                     <div>GIT SHA1 {NEXT_APP_GIT_SHA1}</div>
-                    <div>© 2018 – {fullYear}</div>
                   </div>
                   <div className={classes.footerSiteSocialBox}>
                     <a

@@ -159,5 +159,6 @@
   "MENU_MAIN": "Основное",
   "MENU_TAGS": "Тэги",
 
-  "LOCAL_LINK": "Перемотать"
+  "LOCAL_LINK": "Перемотать",
+  "NETWORK_PROTOCOLS": "Network Protocols"
 }

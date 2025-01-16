@@ -44,9 +44,14 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')} 2023</a>
       </Link>
     ) */}
-    {!isCurrentPathCb('/blog/article/team-scoring') && (
+    {/* !isCurrentPathCb('/blog/article/team-scoring') && (
       <Link href="/blog/article/team-scoring" as="/blog/article/team-scoring">
         <a onClick={onHideModal}>About Team Scoring 2019</a>
+      </Link>
+    ) */}
+    {!isCurrentPathCb('/q/сетевые_протоколы') && (
+      <Link href='/q/сетевые_протоколы' as='/q/сетевые_протоколы'>
+        <a onClick={onHideModal}>{t('NETWORK_PROTOCOLS')}</a>
       </Link>
     )}
     {/* !isCurrentPathCb('/') && (
@@ -55,7 +60,7 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
       </Link>
     ) */}
     {!isCurrentPathCb('/feedback') && (
-      <Link href="/feedback" as="/feedback">
+      <Link href='/feedback' as='/feedback'>
         <a onClick={onHideModal}>{t('FEEDBACK')} & reCAPTCHA v3 testing</a>
       </Link>
     )}
@@ -64,8 +69,8 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>{t('LOGIN')}</a>
       </Link>
     ) */}
-    {!isCurrentPathCb('/blog/article/hacker-news-client-2024') && (
-      <Link href="/blog/article/hacker-news-client-2024" as="/blog/article/hacker-news-client-2024">
+    {!isCurrentPathCb('/p/hacker-news-client-2024') && (
+      <Link href='/p/hacker-news-client-2024' as='/p/hacker-news-client-2024'>
         <a onClick={onHideModal}>Hacker News Client</a>
       </Link>
     )}
