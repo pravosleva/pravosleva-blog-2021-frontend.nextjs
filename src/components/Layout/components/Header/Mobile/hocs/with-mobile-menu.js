@@ -274,8 +274,8 @@ export const withMobileMenu = (ComposedComponent) =>
                 </Link>
               </li> */}
               <li>
-                <Link href='/q/сетевые_протоколы'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/q/сетевые_протоколы') ? 'active' : ''}>{t('NETWORK_PROTOCOLS')}</a>
+                <Link href='/blog/q/сетевые_протоколы'>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/blog/q/сетевые_протоколы') ? 'active' : ''}>{t('NETWORK_PROTOCOLS')}</a>
                 </Link>
               </li>
 

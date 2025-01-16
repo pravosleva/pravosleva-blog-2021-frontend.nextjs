@@ -49,8 +49,8 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>About Team Scoring 2019</a>
       </Link>
     ) */}
-    {!isCurrentPathCb('/q/сетевые_протоколы') && (
-      <Link href='/q/сетевые_протоколы' as='/q/сетевые_протоколы'>
+    {!isCurrentPathCb('/blog/q/сетевые_протоколы') && (
+      <Link href='/blog/q/сетевые_протоколы' as='/blog/q/сетевые_протоколы'>
         <a onClick={onHideModal}>{t('NETWORK_PROTOCOLS')}</a>
       </Link>
     )}
@@ -98,8 +98,8 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
       {/* -- */}
 
       {/* -- NOTE: Target search by title */}
-      {!isCurrentPathCb('/blog/q/сетевые_протоколы') && (
-        <Link href="/blog/q/сетевые_протоколы" as="/blog/q/сетевые_протоколы">
+      {!isCurrentPathCb('/blog/blog/q/сетевые_протоколы') && (
+        <Link href="/blog/blog/q/сетевые_протоколы" as="/blog/blog/q/сетевые_протоколы">
           <a onClick={onHideModal}>#сетевые_протоколы</a>
         </Link>
       )}
