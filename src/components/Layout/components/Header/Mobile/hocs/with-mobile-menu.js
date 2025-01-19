@@ -324,6 +324,11 @@ export const withMobileMenu = (ComposedComponent) =>
               {/* <li>
                 <a target='_self' href='/dist.hacker-news-2024'>Hacker News Client</a>
               </li> */}
+              <li>
+                <Link href='/p/what_where_when'>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/what-where-when') ? 'active' : ''}>{t('WHAT_WHERE_WHEN_EXTERNAL_LINK')}</a>
+                </Link>
+              </li>
             </ul>
             <div
               style={{

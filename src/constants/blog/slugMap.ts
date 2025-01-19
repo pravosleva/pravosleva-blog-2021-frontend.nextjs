@@ -213,7 +213,18 @@ export const slugMapping: {[key: string]: TArticleTools} = {
       type: 'image/png',
     },
   },
-  
+  'what-where-when': {
+    id: '678bcbf18c79264aa7fd53b6',
+    brief: 'Музыка из шоу',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/what-where-when.jpg',
+      size: {
+        w: 860,
+        h: 576,
+      },
+      type: 'image/jpg',
+    },
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {
