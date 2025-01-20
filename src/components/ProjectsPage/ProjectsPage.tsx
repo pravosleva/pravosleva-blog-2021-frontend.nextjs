@@ -173,7 +173,7 @@ const projects: TProject[] = [
   },
   {
     id: 6,
-    title: 'EstimateCorrector',
+    title: 'Estimate Corrector app',
     description: 'TEAM_SCORING_PROJECT_DESCR',
     // img: {
     //   src: '/static/img/projects/scoring.webp',
