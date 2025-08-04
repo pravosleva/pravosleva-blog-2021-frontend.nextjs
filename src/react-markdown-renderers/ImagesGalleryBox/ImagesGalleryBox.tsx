@@ -95,7 +95,7 @@ export const ImagesGalleryBox = memo(({ itemsJson }: TProps) => {
           normalizedItems.map(({ src, caption }, i) => {
             return (
               <Image
-                key={src}
+                key={`${i}-${src}`}
                 src={src}
                 alt={caption || 'img'}
                 onClickHandler={handleClick(i)}
@@ -128,8 +128,8 @@ export const ImagesGalleryBox = memo(({ itemsJson }: TProps) => {
           onCloseRequest={handleClose}
           onMovePrevRequest={handleMovePrev}
           onMoveNextRequest={handleMoveNext}
-          // enableZoom={false}
-          // closeLabel='Закрыть'
+        // enableZoom={false}
+        // closeLabel='Закрыть'
         />
       )}
     </div>

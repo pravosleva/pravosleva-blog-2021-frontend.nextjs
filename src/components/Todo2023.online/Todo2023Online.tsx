@@ -120,7 +120,7 @@ const Logic = ({ room }: TLogicProps) => {
         </IconButton>
       ),
     })
-    
+
     if (!!cb) cb()
   }, [enqueueSnackbar])
 
@@ -128,7 +128,7 @@ const Logic = ({ room }: TLogicProps) => {
     // -- NOTE: Disable anyway!
     dispatch(autoSyncDisable())
     // --
-  
+
     const socket: Socket = io(NEXT_APP_SOCKET_API_ENDPOINT, {
       reconnection: true,
       transports: ['websocket', 'polling'],
@@ -185,7 +185,7 @@ const Logic = ({ room }: TLogicProps) => {
       if (!!document.hidden) enqueueSnackbar('Connect error', { variant: 'error', autoHideDuration: 3000 })
     }
     socket.on('connect_error', onConnectErrorListener)
-    
+
     const onReconnectListener = (arg: any) => {
       groupLog({ spaceName: '-- reconnect', items: [arg] })
       if (!!document.hidden) enqueueSnackbar('Reconnect', { variant: 'success', autoHideDuration: 3000 })
@@ -248,7 +248,7 @@ const Logic = ({ room }: TLogicProps) => {
                 ),
               })
             }
-            
+
             break
           }
           case !!data?._specialReport?.fixResponse && !data._specialReport.fixResponse?.isOk: {
@@ -423,7 +423,7 @@ const Logic = ({ room }: TLogicProps) => {
       room: roomRef.current,
       auditId,
       comment
-    }, (ps : NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB_ARG) => {
+    }, (ps: NEventData.NServerIncoming.TAUDIT_UPDATE_COMMENT_CB_ARG) => {
       const { data } = ps
       // setStore({ audits: data.audits })
       groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_UPDATE_COMMENT}`, items: [data] })
@@ -448,7 +448,7 @@ const Logic = ({ room }: TLogicProps) => {
       room: roomRef.current,
       auditId,
       newAuditData,
-    }, (ps : NEventData.NServerIncoming.TAUDIT_UPDATE_CB_ARG) => {
+    }, (ps: NEventData.NServerIncoming.TAUDIT_UPDATE_CB_ARG) => {
       const { data } = ps
       // setStore({ audits: data.audits })
       groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_UPDATE}`, items: [data] })
@@ -463,7 +463,7 @@ const Logic = ({ room }: TLogicProps) => {
       socketRef.current.emit(NEvent.EServerIncoming.AUDIT_REMOVE, {
         room: roomRef.current,
         auditId,
-      }, (_ps : NEventData.NServerIncoming.TAUDIT_REMOVE_CB_ARG) => {
+      }, (_ps: NEventData.NServerIncoming.TAUDIT_REMOVE_CB_ARG) => {
         // const { data } = ps
         // setStore({ audits: data.audits })
         // groupLog({ spaceName: `-- ${NEvent.EServerIncoming.AUDIT_REMOVE} SKIP: Wait fot emit from server...`, items: [data] })
@@ -615,7 +615,7 @@ const Logic = ({ room }: TLogicProps) => {
     })
       .then((res: any) => {
         dispatch(setIsOneTimePasswordCorrect(res?.ok === true))
-        
+
         if (!res?.ok && !!res?.message) enqueueSnackbar(res.message, { variant: 'error', autoHideDuration: 7000 })
       })
       .catch((err) => {
@@ -637,13 +637,14 @@ const Logic = ({ room }: TLogicProps) => {
   // const isEmpryRemoteListUpdatedInThisSessionRef = useRef<boolean>(false)
   const syncToolTimeoutRef = useRef<NodeJS.Timeout>()
   const lastLocalBackupTime = useSelector((store: IRootState) => store.todo2023.backupInfo?.ts)
-  
+
   useEffect(() => {
     if (isConnected && remoteAudits.length === 0) { // && !isEmpryRemoteListUpdatedInThisSessionRef.current
+      const timeoutForRestoreInSeconds = 60
       const doIt = () => {
         if (isOneTimePasswordCorrect) {
           if (localAudits.length > 0) {
-            const isConfirmed = window.confirm(`🌐 Похоже, удаленный список пуст.\nХотите восстановить его тем что у вас есть${!!lastLocalBackupTime ? ` c ${getNormalizedDateTime(lastLocalBackupTime)}` : ''}?`)
+            const isConfirmed = window.confirm(`🌐 Время ожидания ${timeoutForRestoreInSeconds}s истекло. Похоже, удаленный список пуст.\nХотите восстановить его тем что у вас есть${!!lastLocalBackupTime ? ` c ${getNormalizedDateTime(lastLocalBackupTime)}` : ''}?\n\n⚡ Будьте осторожны, если не уверены - лучше отказаться и перезагрузить страницу`)
 
             if (isConfirmed) {
               handlePush({ noConfirmMessage: true })()
@@ -652,13 +653,13 @@ const Logic = ({ room }: TLogicProps) => {
           }
         }
       }
-      syncToolTimeoutRef.current = setTimeout(doIt, 10000)
+      syncToolTimeoutRef.current = setTimeout(doIt, timeoutForRestoreInSeconds * 1000)
 
       return () => {
         if (!!syncToolTimeoutRef.current) clearTimeout(syncToolTimeoutRef.current)
       }
     }
-    return 
+    return
   }, [
     isOneTimePasswordCorrect,
     remoteAudits.length,
@@ -1154,7 +1155,7 @@ const Logic = ({ room }: TLogicProps) => {
               </div>
             </div>
           </ResponsiveBlock>
-          
+
           <AuditGrid
             onAddNewAudit={handleAddNewAudit}
             audits={remoteAudits}
@@ -1207,7 +1208,7 @@ const Logic = ({ room }: TLogicProps) => {
               },
             }}
           />
-          
+
           {
             isConnected && isBrowser && !isOneTimePasswordCorrect && (
               <div

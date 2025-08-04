@@ -46,12 +46,24 @@ export const BreadCrumbs = ({
                 return (
                   <>
                     <li itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${link}-${i}`}>
-                      {/* @ts-ignore */}
-                      <Link href={link} as={link}>
-                        <a itemProp="item">
-                          {noTranslate ? labelCode : t(labelCode)}
-                        </a>
-                      </Link>
+                      {
+                        link === '/'
+                        ? (
+                          <a itemProp="item" href={link} target='_self'>
+                            {noTranslate ? labelCode : t(labelCode)}
+                          </a>
+                        ) : (
+                          <>
+                            {/* @ts-ignore */}
+                            <Link href={link} as={link}>
+                              <a itemProp="item">
+                                {noTranslate ? labelCode : t(labelCode)}
+                              </a>
+                            </Link>
+                          </>
+                        )
+                      }
+                      
                     </li>
                     {
                       !isLast && (

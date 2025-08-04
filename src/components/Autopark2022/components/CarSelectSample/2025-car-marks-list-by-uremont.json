@@ -1,0 +1,432 @@
+{
+  "success": 1,
+  "marks": [
+    {
+      "id": 4,
+      "name": "Audi",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/audi.png",
+      "sort_id": 1
+    },
+    {
+      "id": 5,
+      "name": "Belgee",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/belgee.png",
+      "sort_id": 1
+    },
+    {
+      "id": 3,
+      "name": "BMW",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/bmw.png",
+      "sort_id": 1
+    },
+    {
+      "id": 6,
+      "name": "BYD",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/byd.png",
+      "sort_id": 1
+    },
+    {
+      "id": 7,
+      "name": "Cadillac",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/cadillac.png",
+      "sort_id": 1
+    },
+    {
+      "id": 8,
+      "name": "Chery",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/chery.png",
+      "sort_id": 1
+    },
+    {
+      "id": 9,
+      "name": "Chevrolet",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/chevrolet.png",
+      "sort_id": 1
+    },
+    {
+      "id": 11,
+      "name": "Citroen",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/citroen.png",
+      "sort_id": 1
+    },
+    {
+      "id": 13,
+      "name": "Datsun",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/datsun.png",
+      "sort_id": 1
+    },
+    {
+      "id": 14,
+      "name": "Dodge",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/dodge.png",
+      "sort_id": 1
+    },
+    {
+      "id": 15,
+      "name": "Dongfeng",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/dongfeng.png",
+      "sort_id": 1
+    },
+    {
+      "id": 16,
+      "name": "Exeed",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/exeed.png",
+      "sort_id": 1
+    },
+    {
+      "id": 18,
+      "name": "Ford",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/ford.png",
+      "sort_id": 1
+    },
+    {
+      "id": 19,
+      "name": "GAC",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/gac.png",
+      "sort_id": 1
+    },
+    {
+      "id": 20,
+      "name": "Geely",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/geely.png",
+      "sort_id": 1
+    },
+    {
+      "id": 22,
+      "name": "Genesis",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/genesis.png",
+      "sort_id": 1
+    },
+    {
+      "id": 26,
+      "name": "Great Wall",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/great-wall.png",
+      "sort_id": 1
+    },
+    {
+      "id": 28,
+      "name": "Haval",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/haval.png",
+      "sort_id": 1
+    },
+    {
+      "id": 27,
+      "name": "Haval Pro",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/haval-pro.png",
+      "sort_id": 1
+    },
+    {
+      "id": 29,
+      "name": "Honda",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/honda.png",
+      "sort_id": 1
+    },
+    {
+      "id": 30,
+      "name": "Hyundai",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/hyundai.png",
+      "sort_id": 1
+    },
+    {
+      "id": 31,
+      "name": "Infiniti",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/infiniti.png",
+      "sort_id": 1
+    },
+    {
+      "id": 33,
+      "name": "Isuzu",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/isuzu.png",
+      "sort_id": 1
+    },
+    {
+      "id": 34,
+      "name": "Jac",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/jac.png",
+      "sort_id": 1
+    },
+    {
+      "id": 35,
+      "name": "Jaecoo",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/jaecoo.png",
+      "sort_id": 1
+    },
+    {
+      "id": 37,
+      "name": "Jaguar",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/jaguar.png",
+      "sort_id": 1
+    },
+    {
+      "id": 36,
+      "name": "TANK",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/tank.png",
+      "sort_id": 1
+    },
+    {
+      "id": 2,
+      "name": "Toyota",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/toyota.png",
+      "sort_id": 1
+    },
+    {
+      "id": 21,
+      "name": "Volkswagen",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/volkswagen.png",
+      "sort_id": 1
+    },
+    {
+      "id": 12,
+      "name": "Volvo",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/volvo.png",
+      "sort_id": 1
+    },
+    {
+      "id": 10,
+      "name": "Zotye",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/zotye.png",
+      "sort_id": 1
+    },
+    {
+      "id": 74,
+      "name": "ГАЗ",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/gaz.png",
+      "sort_id": 1
+    },
+    {
+      "id": 71,
+      "name": "Changan",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/changan.png",
+      "sort_id": 0
+    },
+    {
+      "id": 17,
+      "name": "Fiat",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/fiat.png",
+      "sort_id": 0
+    },
+    {
+      "id": 38,
+      "name": "Jeep",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/jeep.png",
+      "sort_id": 0
+    },
+    {
+      "id": 40,
+      "name": "Kaiyi",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/kaiyi.png",
+      "sort_id": 0
+    },
+    {
+      "id": 41,
+      "name": "KIA",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/kia.png",
+      "sort_id": 0
+    },
+    {
+      "id": 43,
+      "name": "Lada",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/lada.png",
+      "sort_id": 0
+    },
+    {
+      "id": 44,
+      "name": "Land Rover",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/land-rover.png",
+      "sort_id": 0
+    },
+    {
+      "id": 46,
+      "name": "Lexus",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/lexus.png",
+      "sort_id": 0
+    },
+    {
+      "id": 47,
+      "name": "Lifan",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/lifan.png",
+      "sort_id": 0
+    },
+    {
+      "id": 49,
+      "name": "Livan",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/livan.png",
+      "sort_id": 0
+    },
+    {
+      "id": 50,
+      "name": "Mazda",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/mazda.png",
+      "sort_id": 0
+    },
+    {
+      "id": 52,
+      "name": "Mercedes-Benz",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/mercedes-benz.png",
+      "sort_id": 0
+    },
+    {
+      "id": 53,
+      "name": "Mini",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/mini.png",
+      "sort_id": 0
+    },
+    {
+      "id": 55,
+      "name": "Mitsubishi",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/mitsubishi.png",
+      "sort_id": 0
+    },
+    {
+      "id": 58,
+      "name": "Moskvich",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/moskvich.png",
+      "sort_id": 0
+    },
+    {
+      "id": 59,
+      "name": "Nissan",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/nissan.png",
+      "sort_id": 0
+    },
+    {
+      "id": 60,
+      "name": "Omoda",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/omoda.png",
+      "sort_id": 0
+    },
+    {
+      "id": 61,
+      "name": "Opel",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/opel.png",
+      "sort_id": 0
+    },
+    {
+      "id": 62,
+      "name": "Peugeot",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/peugeot.png",
+      "sort_id": 0
+    },
+    {
+      "id": 63,
+      "name": "Porsche",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/porsche.png",
+      "sort_id": 0
+    },
+    {
+      "id": 56,
+      "name": "Renault",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/renault.png",
+      "sort_id": 0
+    },
+    {
+      "id": 54,
+      "name": "Seat",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/seat.png",
+      "sort_id": 0
+    },
+    {
+      "id": 48,
+      "name": "Skoda",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/skoda.png",
+      "sort_id": 0
+    },
+    {
+      "id": 51,
+      "name": "Solaris",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/solaris.png",
+      "sort_id": 0
+    },
+    {
+      "id": 45,
+      "name": "Sollers",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/sollers.png",
+      "sort_id": 0
+    },
+    {
+      "id": 42,
+      "name": "Subaru",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/subaru.png",
+      "sort_id": 0
+    },
+    {
+      "id": 39,
+      "name": "Suzuki",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/suzuki.png",
+      "sort_id": 0
+    },
+    {
+      "id": 72,
+      "name": "Москвич",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/moskvic.png",
+      "sort_id": 0
+    },
+    {
+      "id": 73,
+      "name": "УАЗ",
+      "type_id": 1,
+      "image": "https://uservice.io/static/img/brands/uaz.png",
+      "sort_id": 0
+    }
+  ]
+}

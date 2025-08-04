@@ -1,12 +1,12 @@
 import {
   Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,
   Autocomplete,
+  Rating,
 } from "@mui/material"
 import { useForm, RegisterOptions as TRegisterOptions } from 'react-hook-form'
 import { useCallback, useState, Fragment, useLayoutEffect, useMemo } from 'react'
 import { FieldAsMenuBtn } from './components'
 import { useCompare } from '~/hooks/useDeepEffect'
-import Rating from '@mui/material/Rating'
 import { CreatableAutocomplete } from '~/mui/CreatableAutocomplete'
 
 type TProps = {
@@ -68,7 +68,6 @@ export const AddAnythingNewDialog = ({
   const resetAuxState = useCallback(() => {
     setAuxState(initialAuxState)
   }, [initialAuxState, setAuxState])
-
 
   const handleSuccess = useCallback((vals: any) => {
     cb.onSuccess(vals)

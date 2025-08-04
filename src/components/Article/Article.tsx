@@ -7,8 +7,7 @@ import { withTranslator } from '~/hocs/withTranslator'
 import { baseRenderers } from '~/react-markdown-renderers'
 import { TArticleComponentProps } from './types'
 import gfm from 'remark-gfm'
-import { BreadCrumbs } from '~/components/BreadCrumbs'
-import { GoHomeSection } from '~/components/GoHomeSection'
+import { GoHomeSection, BreadCrumbs, WebShareBtn } from '~/components'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { convert } from 'html-to-text'
 import clsx from 'clsx'
@@ -52,9 +51,9 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       <ResponsiveBlock
         isLimited
         isPaddedMobile
-        // style={{
-        //   paddingBottom: '30px',
-        // }}
+      // style={{
+      //   paddingBottom: '30px',
+      // }}
       >
         <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
           {!!article.original.description ? (
@@ -74,7 +73,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       </ResponsiveBlock>
     )
   }, [article.original.description])
-  
+
   return (
     <>
       {!!article ? (
@@ -88,7 +87,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               // lastLabel={article?.original.title}
               legend={[
                 {
-                  link:'/',
+                  link: '/',
                   labelCode: 'HOME',
                   noTranslate: false
                 },
@@ -115,7 +114,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               >
                 <article
                   className='article-wrapper'
-                  
+
                   style={{
                     content: '',
                     background: `url(${!!article.bg ? article.bg?.src : '/static/img/blog/coming-soon-v3.jpg'})`,
@@ -203,7 +202,43 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               </div>
             </ResponsiveBlock>
           )}
-          
+
+          {/* NOTE: Shared section */}
+          {
+            !!article?.slug && (
+              <ResponsiveBlock
+                isLimited
+                isPaddedMobile
+                style={{
+                  marginTop: '16px',
+                  // border: '1px dashed red',
+                  position: 'sticky',
+                  bottom: '16px',
+                }}
+              >
+                <div
+                  style={{
+                    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 3px 7px -1px',
+                    // border: '2px solid lightgray',
+                    padding: '8px',
+                    borderRadius: '16px',
+                  }}
+                  className={clsx({
+                    'backdrop-blur--subdark': currentTheme !== 'dark',
+                    'backdrop-blur--lite': currentTheme === 'dark',
+                  })}
+                >
+                  <WebShareBtn
+                    // url={itemData.url || `${PUBLIC_URL}/#/news/${id}`}
+                    url={`https://pravosleva.pro/p/${article.slug}`}
+                    title={article.original.title}
+                    text={clsx('WebExp', '|', article?.brief)}
+                  />
+                </div>
+              </ResponsiveBlock>
+            )
+          }
+
           <ResponsiveBlock
             isLimited
             // isLastSection
@@ -223,7 +258,8 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
             Hey, where is the f*ckn <code>id</code> in query params?
           </div>
         </>
-      )}
+      )
+      }
     </>
   )
 }))

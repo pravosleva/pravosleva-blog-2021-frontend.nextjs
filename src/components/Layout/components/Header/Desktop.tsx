@@ -161,16 +161,16 @@ const _DesktopHeader = ({
                     margin: '0 auto 0 0'
                   }}
                 >
-                  <Link href="/" as="/">
-                    <a
-                      style={{
-                        color: '#fff',
-                        textDecoration: `none`,
-                      }}
-                    >
-                      WebExp
-                    </a>
-                  </Link>
+                  <a
+                    href='/'
+                    target='_self' 
+                    style={{
+                      color: '#fff',
+                      textDecoration: `none`,
+                    }}
+                  >
+                    WebExp
+                  </a>
                 </li>
                 {/*<li style={{ margin: '0 auto 0 0' }} className="muted">
                   usersConnected.length > 0 && (

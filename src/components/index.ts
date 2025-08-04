@@ -1,4 +1,7 @@
+export * from './BreadCrumbs'
 export * from './BtnsBottomStickyBox'
 export * from './ClientPerfWidget'
 export * from './CookiePolicyOffer'
+export * from './GoHomeSection'
 export * from './InlineActionTagWrapper'
+export * from './WebShareBtn'

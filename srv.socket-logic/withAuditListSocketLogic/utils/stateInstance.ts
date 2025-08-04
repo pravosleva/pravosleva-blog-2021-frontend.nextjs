@@ -75,7 +75,7 @@ class Singleton {
     return Object.fromEntries(this._state)
   }
 
-  public addAudit ({ room, name, description, jobs }: { room: number; name: string; description: string; jobs: { name: string; subjobs: { name: string }[] }[] }): Promise<{ isOk: boolean; message?: string; audits: TAudit[]; newAudit: TAudit; }> {
+  public addAudit({ room, name, description, jobs }: { room: number; name: string; description: string; jobs: { name: string; subjobs: { name: string }[] }[] }): Promise<{ isOk: boolean; message?: string; audits: TAudit[]; newAudit: TAudit; }> {
     try {
       const targetAudits = this._state.get(room) || []
       if (!targetAudits) throw new Error(`Room ${room} not found`)
@@ -92,11 +92,11 @@ class Singleton {
           const jobId = getRandomString(5)
           return {
             ...job,
-  
+
             tsCreate,
             tsUpdate: tsCreate,
             status: EJobStatus.IN_PROGRESS,
-  
+
             id: jobId,
             subjobs: job.subjobs?.map((sj) => {
               const sjId = getRandomString(5)
@@ -106,15 +106,16 @@ class Singleton {
                 status: ESubjobStatus.IN_PROGRESS,
                 tsCreate,
                 tsUpdate: tsCreate,
-              }}) || [],
+              }
+            }) || [],
           }
         })],
-  
+
         tsCreate,
         tsUpdate: tsCreate,
       }
 
-      targetAudits.push(newAudit)
+      targetAudits.unshift(newAudit)
 
       this._state.set(room, targetAudits)
       return Promise.resolve({ isOk: true, audits: targetAudits, newAudit })
@@ -190,7 +191,8 @@ class Singleton {
           status: ESubjobStatus.IN_PROGRESS,
           tsCreate,
           tsUpdate: tsCreate,
-        }}) || [],
+        }
+      }) || [],
       tsCreate,
       tsUpdate: tsCreate,
     }]
@@ -235,7 +237,7 @@ class Singleton {
     this._state.set(room, targetAudits)
     return Promise.resolve({ isOk: true, audits: targetAudits })
   }
-  public removeJob ({ room, auditId, jobId }: { room: number; auditId: string; jobId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
+  public removeJob({ room, auditId, jobId }: { room: number; auditId: string; jobId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     const targetAudits = this._state.get(room)
     if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })
 
@@ -257,7 +259,7 @@ class Singleton {
     this._state.set(room, targetAudits)
     return Promise.resolve({ isOk: true, audits: targetAudits })
   }
-  public addSubjob({ room, auditId, name, jobId }: { room: number; auditId: string; name: string; jobId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }>  {
+  public addSubjob({ room, auditId, name, jobId }: { room: number; auditId: string; name: string; jobId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     const targetAudits = this._state.get(room)
     if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })
 
@@ -296,11 +298,11 @@ class Singleton {
     return Promise.resolve({ isOk: true, audits: targetAudits })
   }
   // public removeSubjob (): Promise<{ isOk: boolean; message?: string; audits: TAudit[] } {}
-  public toggleSubjobDone ({ room, auditId, jobId, subjobId }: { room: number; auditId: string; jobId: string; subjobId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
+  public toggleSubjobDone({ room, auditId, jobId, subjobId }: { room: number; auditId: string; jobId: string; subjobId: string; }): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     try {
       // const targetAuditIndex = state.localAudits.findIndex(({ id }) => id === auditId)
       // if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
-  
+
       // const targetAuditJobs = state.localAudits[targetAuditIndex].jobs
       // const targetAuditJobIndex = targetAuditJobs.findIndex(({ id }) => id === jobId)
       // if (targetAuditJobIndex === -1) throw new Error('Oops... Audit exists. But job not found!')
@@ -321,11 +323,11 @@ class Singleton {
       const targetAuditSubjob = targetAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs[targetAuditSubjobIndex]
       const nextStatus = _getNextSubjobStatus(targetAuditSubjob.status)
       const tsUpdate = new Date().getTime()
-  
+
       targetAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs[targetAuditSubjobIndex].tsUpdate = tsUpdate
       targetAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs[targetAuditSubjobIndex].status = nextStatus
       targetAudits[targetAuditIndex].jobs[targetAuditJobIndex].tsUpdate = tsUpdate
-  
+
       if (targetAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs.every(({ status }) => status === ESubjobStatus.IS_DONE)) {
         targetAudits[targetAuditIndex].jobs[targetAuditJobIndex].status = EJobStatus.IS_DONE
       } else {
@@ -346,7 +348,7 @@ class Singleton {
   //   try {
   //     // NOTE: 1.1 Есть ли комната для пользователя?
   //     let targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
-      
+
   //     if (!targetNamespacesOfRoom) {
   //       // throw new Error(`Room ${room} not found!`)
   //       const tsCreate = new Date().getTime()
@@ -382,7 +384,7 @@ class Singleton {
   //   try {
   //     // NOTE: 1.1 Есть ли комната для пользователя?
   //     const targetNamespacesOfRoom: { [key: string]: { state: NTodo.TTodo[]; tsCreate: number; tsUpdate: number; } } | never | undefined = this._todo.get(room)
-      
+
   //     if (!targetNamespacesOfRoom) throw new Error(`Room ${room} not found!`)
   //     else {
   //       // NOTE: 1.2 Есть ли такой неймспейс?
@@ -398,7 +400,7 @@ class Singleton {
   //     return Promise.reject({ isOk: false, message: err?.message || 'No err.message', roomState: this._todo.get(room) })
   //   }
   // }
-  public async addTodo ({ room, todoItem, namespace }: {
+  public async addTodo({ room, todoItem, namespace }: {
     room: number;
     todoItem: NTodo.TItem;
     namespace: string;
@@ -483,7 +485,7 @@ class Singleton {
       return Promise.reject({ isOk: false, message: err?.message || 'No err.message' })
     }
   }
-  public async removeTodo ({ todoId }: {
+  public async removeTodo({ todoId }: {
     todoId: number;
   }): Promise<{
     isOk: boolean;

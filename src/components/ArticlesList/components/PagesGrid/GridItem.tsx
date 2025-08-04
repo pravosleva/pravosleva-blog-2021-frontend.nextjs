@@ -1,6 +1,5 @@
 // import { TCRMPage } from '~/store/reducers/crmPages'
 // import { useStyles } from './styles'
-// import { Button } from '@material-ui/core'
 // import {
 //   setIsModalOpened,
 //   loadPageData,
@@ -47,8 +46,8 @@ export const GridItem = ({ article }: TProps) => {
       className='gridItemBg'
       style={{
         backgroundImage: `url(${url})`,
-        filter: !!bg?.src? 'none' : 'grayscale(100%)',
-        opacity: !!bg?.src? 1 : 0.5,
+        filter: !!bg?.src ? 'none' : 'grayscale(100%)',
+        opacity: !!bg?.src ? 1 : 0.5,
         fontFamily: 'Montserrat, system-ui',
       }}
     >
@@ -73,7 +72,7 @@ export const GridItem = ({ article }: TProps) => {
                   // NOTE: v1
                   href={`https://pravosleva.pro/blog/article/${slugMap.get(_id)?.slug || ''}`}
                   target='_self'
-                  
+
                   // NOTE: v2
                   // href='/blog/article/[slug]'
                   // as={`/blog/article/${slugMap.get(_id)?.slug || ''}`}

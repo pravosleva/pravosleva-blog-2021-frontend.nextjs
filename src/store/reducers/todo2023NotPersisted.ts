@@ -18,7 +18,7 @@ export const todo2023NotPersistedSlice: any = createSlice({
     // NOTE: v2 (todo strapi)
     addStrapiTodo: (state: TState, action: { payload: NTodo.TTodo; }) => {
       try {
-        state.strapiTodos.push(action.payload)
+        state.strapiTodos.unshift(action.payload)
       } catch (err) {
         state.strapiTodos = [action.payload]
       }
@@ -36,7 +36,7 @@ export const todo2023NotPersistedSlice: any = createSlice({
 
         if (targetIndex === -1) {
           // throw new Error(`Нет такого id: ${action.payload.id}`)
-          state.strapiTodos.push(action.payload)
+          state.strapiTodos.unshift(action.payload)
         } else {
           state.strapiTodos[targetIndex] = action.payload
         }

@@ -52,6 +52,12 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
   const connectBtnRef = useRef<HTMLButtonElement>(null)
   const disconnectBtnRef = useRef<HTMLButtonElement>(null)
 
+  const [isIFrameVisible, setIsIFrameVisible] = useState(false)
+  useEffect(() => {
+    // NOTE: Установить только один раз (при первом успешном соединении)
+    if (isConnected) setIsIFrameVisible(true)
+  }, [isConnected])
+
   const autoconnectEnabledRef = useRef(true)
   useLayoutEffect(() => {
     switch (true) {
@@ -63,7 +69,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
 
               // NOTE: Disable for predictable UI
               autoconnectEnabledRef.current = false
-              
+
               onConnClick(disconnectBtnRef)
             }, 0)
             break
@@ -131,12 +137,12 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           // if (!!appVersion && !!appVersionFilter) 
           //   results.push(testTextByAnyWord({ text: appVersion, words: [appVersionFilter] }))
 
-          if (!!appVersion && !!appVersionFilter) 
+          if (!!appVersion && !!appVersionFilter)
             results.push(appVersion === appVersionFilter)
 
           if (!!_ip && !!ipFilter)
             results.push(testTextByAnyWord({ text: _ip, words: [ipFilter] }))
-          
+
           return results.every((val) => val === true)
         })
     } else return viState.items
@@ -281,9 +287,17 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
         }
         <iframe
           src='https://pravosleva.pro/dist.sp-tradein-2023/#/?debug=1'
+          loading='lazy'
           // height='500px'
           // width='500px'
-          className={clsx(classes.fixedTop, classes.fixedTopSPClientFrame, { [classes.isOpened]: isTestedIFrameOpened })}
+          style={{ display: isIFrameVisible ? 'block' : 'none' }}
+          className={clsx(
+            classes.fixedTop,
+            classes.fixedTopSPClientFrame,
+            {
+              [classes.isOpened]: isTestedIFrameOpened,
+            }
+          )}
         ></iframe>
 
         {
@@ -454,7 +468,7 @@ type TStandartCommonEvent = {
 const Logic = memo(() => {
   const [_isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
   // const [isConnectedToPrivateRoom] = useStore((store: TSocketMicroStore) => store.isConnectedToPrivateRoom)
-  
+
   const viState = useProxy(vi)
   const addReportItem = useCallback((report: NEvent.TReport) => {
     if (!!report) viState.FOR_EXAMPLE.items = [report, ...viState.FOR_EXAMPLE.items]
@@ -477,7 +491,7 @@ const Logic = memo(() => {
       ),
     })
   }, [])
-  
+
   const disableDelayToggler = useCallback(({ elm, ms }: { elm: HTMLButtonElement | null; ms: number }) => {
     if (!!elm) {
       elm.disabled = true
@@ -662,7 +676,7 @@ export const ConnectedData = memo(() => {
   return (
     <WithSocketContext>
       <div
-        // className={classes.wrapper}
+      // className={classes.wrapper}
       >
         <Logic />
       </div>

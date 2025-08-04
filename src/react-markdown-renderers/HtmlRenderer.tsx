@@ -9,6 +9,7 @@ import { ImageInNewTab } from './ImageRenderer'
 import { ImagesGalleryBox, ImagesGalleryBox2, TProps as TImagesGalleryBoxProps } from './ImagesGalleryBox'
 import { JSONComparison } from './JSONComparison'
 import { CollapsibleBox } from './CollapsibleBox'
+import { CardsExample } from './CardsExample'
 
 const componentTransforms = {
   Alert: (props: any) => <Alert text={props.value} {...props} />,
@@ -31,7 +32,7 @@ const componentTransforms = {
   ImagesGalleryBox: (props: TImagesGalleryBoxProps) => (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
-      // onReset={handleClearText}
+    // onReset={handleClearText}
     >
       <ImagesGalleryBox itemsJson={props?.itemsJson} />
     </ErrorBoundary>
@@ -39,12 +40,20 @@ const componentTransforms = {
   ImagesGalleryBox2: (props: TImagesGalleryBoxProps) => (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
-      // onReset={handleClearText}
+    // onReset={handleClearText}
     >
       <ImagesGalleryBox2 itemsJson={props?.itemsJson} />
     </ErrorBoundary>
   ),
   CollapsibleBox: (props: any) => <CollapsibleBox {...props} />,
+  CardsExample: (props: any) => (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+    // onReset={handleClearText}
+    >
+      <CardsExample {...props} />
+    </ErrorBoundary>
+  ),
 }
 
 // @ts-ignore

@@ -6,29 +6,32 @@
   position: fixed;
   top: 16px;
 }
+
 .fixedTopActiveReport {
   right: 16px;
   max-height: calc(100svh - 16px - 16px);
-  
+
   overflow-y: auto;
   // background-color: #fff;
   z-index: 6;
   // padding: 16px;
   border-radius: 24px;
   // box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 10px 4px;
-  box-shadow: 0 14px 30px -8px rgba(0,0,0,.2);
+  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, .2);
 
-  & > div {
+  &>div {
     padding: 0 16px 0 16px;
   }
-  
+
   display: flex;
   flex-direction: column;
   gap: 16px;
-  & > *:last-child {
+
+  &>*:last-child {
     margin-bottom: 16px;
   }
 }
+
 .commonInfo {
   padding-top: 8px;
   padding-bottom: 8px;
@@ -36,24 +39,28 @@
   font-weight: 400;
   font-style: normal;
 }
+
 @media(max-width: #{$sm}px) {
   .fixedTopActiveReport {
     min-width: 300px;
     max-width: calc(100vw - 16px - 16px);
   }
 }
+
 @media(min-width: calc(#{$sm + 1}px + 1px)) and (max-width: #{$md}px) {
   .fixedTopActiveReport {
     min-width: 400px;
     max-width: 400px;
   }
 }
+
 @media(min-width: calc(#{$md + 1}px + 1px)) and (max-width: #{$lg}px) {
   .fixedTopActiveReport {
     min-width: 500px;
     max-width: 500px;
   }
 }
+
 @media(min-width: calc(#{$lg + 1}px + 1px)) {
   .fixedTopActiveReport {
     min-width: 500px;
@@ -68,36 +75,54 @@
   min-width: 300px;
   // height: calc(100svh - 16px - 16px - 125px);
   height: calc(100svh - 16px - 16px);
-  
+
   overflow-y: auto;
+  overscroll-behavior: none;
   background-color: #fff;
   z-index: 5;
   border-radius: 24px;
   // box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 10px 4px;
-  box-shadow: 0 14px 30px -8px rgba(0,0,0,.2);
+  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, .2);
   transform: translateX(calc(-100% - 16px));
 }
+
 .isOpened {
   transform: translateX(0);
 }
+
 @media(max-width: #{$sm}px) {
-  .fixedTopSPClientFrame { width: calc(100vw - 16px - 16px); }
+  .fixedTopSPClientFrame {
+    width: calc(100vw - 16px - 16px);
+  }
 }
+
 @media(min-width: calc(#{$sm + 1}px + 1px)) and (max-width: #{$md}px) {
-  .fixedTopSPClientFrame { min-width: 400px; max-width: 400px; }
+  .fixedTopSPClientFrame {
+    min-width: 400px;
+    max-width: 400px;
+  }
 }
+
 @media(min-width: calc(#{$md + 1}px + 1px)) and (max-width: #{$lg}px) {
-  .fixedTopSPClientFrame { min-width: 400px; max-width: 600px; }
+  .fixedTopSPClientFrame {
+    min-width: 400px;
+    max-width: 600px;
+  }
 }
+
 @media(min-width: calc(#{$lg + 1}px + 1px)) {
-  .fixedTopSPClientFrame { min-width: 400px; max-width: 800px; }
+  .fixedTopSPClientFrame {
+    min-width: 400px;
+    max-width: 800px;
+  }
 }
 
 .stickyTopHeader {
   position: sticky;
   top: 0;
   // border-bottom: 1px solid lightgray;
-  box-shadow: 0 10px 7px -8px #223c5033; /* See also TOP: 0 -10px 7px -8px #223c5033 */
+  box-shadow: 0 10px 7px -8px #223c5033;
+  /* See also TOP: 0 -10px 7px -8px #223c5033 */
   background-color: #fff;
   // margin-bottom: 16px;
   font-weight: bold;
@@ -108,6 +133,7 @@
   display: flex;
   flex-direction: column;
 }
+
 .stickyBottomHeader {
   position: sticky;
   bottom: 0;
@@ -126,7 +152,7 @@
 
 .pre {
   // background-color: rgba(0,0,0,0.5);
-  background-color: rgba(165,175,186,1);
+  background-color: rgba(165, 175, 186, 1);
   color: #fff;
   font-weight: bold;
   margin-bottom: 0px;
@@ -135,6 +161,7 @@
   overflow-wrap: break-word;
   letter-spacing: 0.05em;
 }
+
 @media(max-width: #{$sm}px) {
   .pre {
     transform: translateX(-16px);

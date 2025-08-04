@@ -1,6 +1,6 @@
 // import { useEffect, useState } from 'react'
 // import axios, { AxiosResponse } from 'axios'
-import json from './car-marks-list-by-uremont.json'
+import json from './2022-car-marks-list-by-uremont.json'
 
 const { marks } = json
 /*

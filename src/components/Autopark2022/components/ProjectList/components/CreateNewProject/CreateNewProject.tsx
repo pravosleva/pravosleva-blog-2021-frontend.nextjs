@@ -11,7 +11,8 @@ import { updateProjects } from '~/store/reducers/autopark'
 import AddIcon from '@mui/icons-material/Add'
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 import CloseIcon from '@mui/icons-material/Close'
-import { marks } from '~/components/Autopark2022/components/CarSelectSample/car-marks-list-by-uremont.json'
+// import { marks } from '~/components/Autopark2022/components/CarSelectSample/2022-car-marks-list-by-uremont.json'
+import { marks } from '~/components/Autopark2022/components/CarSelectSample/2025-car-marks-list-by-uremont.json'
 // import { ContentCut } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import axiosRetry from 'axios-retry'
@@ -31,7 +32,11 @@ const baseURL = isDev
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
 // Exponential back-off retry delay between requests
 axiosRetry(api, { retries: 10, retryDelay: axiosRetry.exponentialDelay })
-const fetchCreateProject = async ({ chat_id, name, description }: { chat_id: string, name: string, description: string }) => {
+const fetchCreateProject = async ({ chat_id, name, description }: {
+  chat_id: string;
+  name: string;
+  description: string;
+}) => {
   const result = await api
     .post('/project/create', {
       chat_id,
@@ -409,11 +414,15 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
               )
             }
 
+            <Box sx={{ mb: 2 }}>
+              <pre>{JSON.stringify({ selectedBrand, selectedModel, selectedTransmission, selectedGeneration, selectedYear }, null, 2)}</pre>
+            </Box>
+
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <Button
                   fullWidth
-                  disabled={isLoading || !selectedBrand || !selectedModel || !selectedTransmission || (hasGenerationsByUremont && !selectedGeneration) || !selectedYear}
+                  disabled={isLoading || !selectedBrand || !selectedModel || !selectedTransmission || !selectedGeneration || !selectedYear}
                   variant='contained'
                   onClick={handleSubmit}
                   color='primary'

@@ -1,5 +1,7 @@
 import { TArticleTools } from './types'
 import { list as articlesListAboutBash } from './bash'
+import { list as articlesListAboutCss } from './css'
+import { list as articlesListAboutCv } from './cv'
 import { list as articlesListAboutGit } from './git'
 import { list as articlesListAboutJSVanilla, bg as bgJSVanilla } from './js-vanilla'
 import { list as articlesListAboutNginx } from './nginx'
@@ -8,14 +10,16 @@ import { list as articlesListAboutNodeJs } from './node-js'
 import { list as articlesListAboutUx } from './ux'
 import { list as articlesListAboutDx } from './dx'
 import { list as articlesListAboutMongoDB } from './mongodb'
-// import { list as articlesListAboutManagement } from './management'
+import { list as articlesListAboutManagement } from './management'
 import { list as articlesListFromTogglCom } from './toggl.com'
 import { list as articlesListAboutNetwork } from './network'
 import { list as articlesListAboutProgramming } from './programming'
 import { list as articlesListAboutDocker } from './docker'
 
-export const slugMapping: {[key: string]: TArticleTools} = {
+export const slugMapping: { [key: string]: TArticleTools } = {
   ...articlesListAboutBash,
+  ...articlesListAboutCss,
+  ...articlesListAboutCv,
   ...articlesListAboutGit,
   ...articlesListAboutNginx,
   ...articlesListAboutJSVanilla,
@@ -24,7 +28,7 @@ export const slugMapping: {[key: string]: TArticleTools} = {
   ...articlesListAboutUx,
   ...articlesListAboutDx,
   ...articlesListAboutMongoDB,
-  // ...articlesListAboutManagement,
+  ...articlesListAboutManagement,
   ...articlesListFromTogglCom,
   ...articlesListAboutNetwork,
   ...articlesListAboutProgramming,

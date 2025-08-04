@@ -15,4 +15,16 @@ export const list: {[key: string]: TArticleTools} = {
   //   brief: 'Interested about project management',
   //   bg,
   // },
+  'remote-and-hybrid-work-format': {
+    id: '685acd3010f7b720079c8bd3',
+    brief: 'Про "гибрид" и "удаленку" без лишней "воды"',
+    bg: {
+      src: 'https://pravosleva.pro/static/img/blog/ofice-hibryd.jpg',
+      size: {
+        w: 900,
+        h: 514,
+      },
+      type: 'image/jpg',
+    },
+  },
 }

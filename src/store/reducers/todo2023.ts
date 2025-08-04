@@ -80,7 +80,7 @@ export const todo2023Slice: any = createSlice({
       }
 
       const isAlreadyExists = state.online.lastVisitedPages?.findIndex(({ tg_chat_id }) => tg_chat_id === action.payload.tg_chat_id) !== -1
-      
+
       const newArr = state.online.lastVisitedPages?.filter(({ tg_chat_id }) => tg_chat_id !== action.payload.tg_chat_id) || []
 
       if (isAlreadyExists) {
@@ -101,7 +101,7 @@ export const todo2023Slice: any = createSlice({
     },
     updateAuditComment: (state: TState, action: { payload: { auditId: string; comment: string } }) => {
       const {
-        payload : {
+        payload: {
           auditId,
           comment,
         }
@@ -110,13 +110,13 @@ export const todo2023Slice: any = createSlice({
       console.groupCollapsed(`UPDATE AUDIT COMMENT: ${auditId}, ${comment}`)
       try {
         const targetAuditIndex = state.localAudits.findIndex(({ id }) => id === auditId)
-    
+
         console.log(`targetAuditIndex ${targetAuditIndex}`)
-    
+
         if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
-    
+
         const tsUpdate = new Date().getTime()
-    
+
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
         state.localAudits[targetAuditIndex].comment = comment
         state.backupInfo = {
@@ -129,7 +129,7 @@ export const todo2023Slice: any = createSlice({
     },
     toggleJobDone: (state: TState, action: { payload: { auditId: string; jobId: string } }) => {
       const {
-        payload : {
+        payload: {
           auditId,
           jobId,
         }
@@ -137,25 +137,25 @@ export const todo2023Slice: any = createSlice({
       console.groupCollapsed(`TGL JOB: ${auditId}, ${jobId}`)
       try {
         const targetAuditIndex = state.localAudits.findIndex(({ id }) => id === auditId)
-    
+
         console.log(`targetAuditIndex ${targetAuditIndex}`)
-    
+
         if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
-    
+
         const targetAuditJobs: IJob[] = state.localAudits[targetAuditIndex].jobs
         const targetAuditJobIndex = targetAuditJobs.findIndex(({ id }) => id === jobId)
         const targetAuditJob = targetAuditJobs.find(({ id }) => id === jobId)
-    
+
         console.log(`targetAuditJobIndex ${targetAuditJobIndex}`)
-    
+
         if (targetAuditJobIndex === -1 || !targetAuditJob) throw new Error('Oops... Audit exists. But job not found!')
-    
+
         const nextStatus = targetAuditJob.status === EJobStatus.IS_DONE ? EJobStatus.IN_PROGRESS : EJobStatus.IS_DONE
         const tsUpdate = new Date().getTime()
-    
+
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].tsUpdate = tsUpdate
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].status = nextStatus
-    
+
         if (nextStatus === EJobStatus.IS_DONE) {
           state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs = state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs.map((sj) => ({ ...sj, status: ESubjobStatus.IS_DONE }))
         } else {
@@ -165,7 +165,7 @@ export const todo2023Slice: any = createSlice({
         state.backupInfo = {
           ts: tsUpdate,
         }
-    
+
         console.log(`tsUpdate ${tsUpdate}`)
         console.log(`nextStatus ${nextStatus}`)
       } catch (err) {
@@ -173,11 +173,13 @@ export const todo2023Slice: any = createSlice({
       }
       console.groupEnd()
     },
-    toggleSubJobDone: (state: TState, action: { payload: {
-      auditId: string;
-      jobId: string;
-      subjobId: string;
-    } }) => {
+    toggleSubJobDone: (state: TState, action: {
+      payload: {
+        auditId: string;
+        jobId: string;
+        subjobId: string;
+      }
+    }) => {
       const {
         payload: {
           auditId,
@@ -188,22 +190,22 @@ export const todo2023Slice: any = createSlice({
       try {
         const targetAuditIndex = state.localAudits.findIndex(({ id }) => id === auditId)
         if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
-    
+
         const targetAuditJobs = state.localAudits[targetAuditIndex].jobs
         const targetAuditJobIndex = targetAuditJobs.findIndex(({ id }) => id === jobId)
         if (targetAuditJobIndex === -1) throw new Error('Oops... Audit exists. But job not found!')
-    
+
         const targetSubjobs = state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs
         const targetAuditSubjobIndex = targetSubjobs.findIndex(({ id }) => id === subjobId)
         if (targetAuditSubjobIndex === -1) throw new Error('Oops... Audit & job exists. But subjob not found!')
         const targetAuditSubjob = state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs[targetAuditSubjobIndex]
         const nextStatus = _getNextSubjobStatus(targetAuditSubjob.status)
         const tsUpdate = new Date().getTime()
-    
+
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs[targetAuditSubjobIndex].tsUpdate = tsUpdate
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs[targetAuditSubjobIndex].status = nextStatus
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].tsUpdate = tsUpdate
-    
+
         if (state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs.every(({ status }) => status === ESubjobStatus.IS_DONE)) {
           state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].status = EJobStatus.IS_DONE
         } else {
@@ -217,9 +219,11 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
-    removeAudit: (state: TState, action: { payload: {
-      auditId: string;
-    } }) => {
+    removeAudit: (state: TState, action: {
+      payload: {
+        auditId: string;
+      }
+    }) => {
       const {
         payload: {
           auditId,
@@ -239,11 +243,13 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
-    addAudit: (state: TState, action: { payload: {
-      name: string;
-      description: string;
-      jobs: IJob[];
-    } }) => {
+    addAudit: (state: TState, action: {
+      payload: {
+        name: string;
+        description: string;
+        jobs: IJob[];
+      }
+    }) => {
       const {
         payload: {
           name,
@@ -257,8 +263,8 @@ export const todo2023Slice: any = createSlice({
 
         const id = getRandomString(7)
         const tsCreate = new Date().getTime()
-        
-        state.localAudits.push({
+
+        state.localAudits.unshift({
           id,
           name,
           description: description || '',
@@ -266,11 +272,11 @@ export const todo2023Slice: any = createSlice({
             const jobId = getRandomString(5)
             return {
               ...job,
-    
+
               tsCreate,
               tsUpdate: tsCreate,
               status: EJobStatus.IN_PROGRESS,
-    
+
               id: jobId,
               subjobs: job.subjobs?.map((sj) => {
                 const sjId = getRandomString(5)
@@ -280,10 +286,11 @@ export const todo2023Slice: any = createSlice({
                   status: ESubjobStatus.IN_PROGRESS,
                   tsCreate,
                   tsUpdate: tsCreate,
-                }}) || [],
+                }
+              }) || [],
             }
           })],
-    
+
           tsCreate,
           tsUpdate: tsCreate,
         })
@@ -295,11 +302,13 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
-    addJob: (state: TState, action: { payload: {
-      name: string;
-      auditId: string;
-      subjobs: { name: string; }[];
-    } }) => {
+    addJob: (state: TState, action: {
+      payload: {
+        name: string;
+        auditId: string;
+        subjobs: { name: string; }[];
+      }
+    }) => {
       const {
         payload: {
           name,
@@ -313,7 +322,7 @@ export const todo2023Slice: any = createSlice({
 
         if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
         const tsCreate = new Date().getTime()
-    
+
         state.localAudits[targetAuditIndex].jobs.push({
           id: getRandomString(5),
           name,
@@ -326,8 +335,9 @@ export const todo2023Slice: any = createSlice({
               status: ESubjobStatus.IN_PROGRESS,
               tsCreate,
               tsUpdate: tsCreate,
-            }}) || [],
-    
+            }
+          }) || [],
+
           tsCreate,
           tsUpdate: tsCreate,
         })
@@ -339,10 +349,12 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
-    removeJob: (state: TState, action: { payload: {
-      auditId: string;
-      jobId: string;
-    } }) => {
+    removeJob: (state: TState, action: {
+      payload: {
+        auditId: string;
+        jobId: string;
+      }
+    }) => {
       const {
         payload: {
           auditId,
@@ -357,7 +369,7 @@ export const todo2023Slice: any = createSlice({
 
         const targetAuditJobs = state.localAudits[targetAuditIndex].jobs
         const targetAuditJobIndex = targetAuditJobs.findIndex(({ id }) => id === jobId)
-        
+
         if (targetAuditJobIndex === -1) throw new Error('Oops... Audit exists. But job not found!')
 
         state.localAudits[targetAuditIndex].jobs = state.localAudits[targetAuditIndex].jobs.filter(({ id }) => id !== jobId)
@@ -374,11 +386,13 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
-    addSubjob: (state: TState, action: { payload: {
-      name: string;
-      auditId: string;
-      jobId: string;
-    } }) => {
+    addSubjob: (state: TState, action: {
+      payload: {
+        name: string;
+        auditId: string;
+        jobId: string;
+      }
+    }) => {
       const {
         payload: {
           name,
@@ -415,11 +429,13 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
-    removeSubjob: (state: TState, action: { payload: {
-      auditId: string;
-      jobId: string;
-      subjobId: string;
-    } }) => {
+    removeSubjob: (state: TState, action: {
+      payload: {
+        auditId: string;
+        jobId: string;
+        subjobId: string;
+      }
+    }) => {
       const {
         payload: {
           auditId,
@@ -427,20 +443,20 @@ export const todo2023Slice: any = createSlice({
           subjobId,
         }
       } = action
-  
+
       try {
         const targetAuditIndex = state.localAudits.findIndex(({ id }) => id === auditId)
         if (targetAuditIndex === -1) throw new Error('Oops... Audit not found!')
-  
+
         const targetAuditJobs = state.localAudits[targetAuditIndex].jobs
         const targetAuditJobIndex = targetAuditJobs.findIndex(({ id }) => id === jobId)
         if (targetAuditJobIndex === -1) throw new Error('Oops... Audit exists. But job not found!')
-  
+
         const targetAuditSubjobIndex = targetAuditJobs[targetAuditJobIndex].subjobs.findIndex(({ id }) => id === jobId)
         if (targetAuditSubjobIndex === -1) throw new Error('Oops... Audit exists. Job exists. But subjob not found!')
-  
+
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs = state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs.filter(({ id }) => id !== subjobId)
-  
+
         // NOTE: Если все jubjobs are completed, job is done
         const isAllSubjobsCompleted = state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].subjobs.every(({ status }) => status === ESubjobStatus.IS_DONE)
         if (isAllSubjobsCompleted) {
@@ -448,9 +464,9 @@ export const todo2023Slice: any = createSlice({
         } else {
           state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].status = EJobStatus.IN_PROGRESS
         }
-  
+
         const tsUpdate = new Date().getTime()
-  
+
         state.localAudits[targetAuditIndex].jobs[targetAuditJobIndex].tsUpdate = tsUpdate
         state.localAudits[targetAuditIndex].tsUpdate = tsUpdate
         state.backupInfo = { ts: tsUpdate }
@@ -458,9 +474,11 @@ export const todo2023Slice: any = createSlice({
         console.warn(err)
       }
     },
-    replaceAudits: (state: TState, action: { payload: {
-      audits: TAudit[];
-    } }) => {
+    replaceAudits: (state: TState, action: {
+      payload: {
+        audits: TAudit[];
+      }
+    }) => {
       const {
         payload: {
           audits,
@@ -491,7 +509,7 @@ export const todo2023Slice: any = createSlice({
     // NOTE: v2 (todo strapi)
     addStrapiTodo: (state: TState, action: { payload: NTodo.TTodo; }) => {
       try {
-        state.strapiTodos.push(action.payload)
+        state.strapiTodos.unshift(action.payload)
       } catch (err) {
         state.strapiTodos = [action.payload]
       }
@@ -509,7 +527,7 @@ export const todo2023Slice: any = createSlice({
 
         if (targetIndex === -1) {
           // throw new Error(`Нет такого id: ${action.payload.id}`)
-          state.strapiTodos.push(action.payload)
+          state.strapiTodos.unshift(action.payload)
         } else {
           state.strapiTodos[targetIndex] = action.payload
         }

@@ -10,7 +10,7 @@ export const useStyles = makeStyles((theme) => ({
 
     // NOTE: Exp
     // paddingLeft: '16px',
-    
+
     // paddingRight: '10px',
     // borderLeft: '4px solid lightgray',
     borderLeft: '4px solid rgba(203,213,225,1)',
@@ -19,6 +19,11 @@ export const useStyles = makeStyles((theme) => ({
       // border: '1px solid red',
       // @ts-ignore
       paddingTop: theme.spacing(1),
+    },
+    '& > div:last-child': {
+      // border: '1px solid red',
+      // @ts-ignore
+      paddingBottom: theme.spacing(2),
     },
   },
 

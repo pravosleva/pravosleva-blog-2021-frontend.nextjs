@@ -71,7 +71,7 @@ export const CustomPinInput = ({
     setSuccessMsg(null)
     fetchSendCode({ chat_id })
       .then((res) => {
-        if (res.ok) setSuccessMsg('Пароль отправлен в Telegram (Вы его можете получить только от @pravosleva_bot)')
+        if (res.ok) setSuccessMsg('Пароль отправлен в Telegram (Вы его можете получить от телеграм бота @pravosleva_bot - для этого нужно его найти в поиске и установить)')
         else setErrMsg(res.message || 'No res.message')
       })
       .catch((err) => {
