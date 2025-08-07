@@ -79,6 +79,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
         <a onClick={onHideModal}>Estimate Corrector 2024</a>
       </Link>
     )}
+    {!isCurrentPathCb('/p/cv-ru') && (
+      <Link href='/p/cv-ru' as='/p/cv-ru'>
+        <a onClick={onHideModal}>{t('CV')}</a>
+      </Link>
+    )}
 
     <h5 style={{ margin: '8px 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_TAGS')}</h5>
     <div
@@ -198,13 +203,16 @@ export const MenuModal = withTranslator<IProps>(({
   }, 500)
   const { onReset: resetTheme } = useGlobalTheming()
   const removeAllCookie = useCallback(() => {
-    Cookie.remove('lang')
-    resetLang()
-    resetTheme()
-    Cookie.remove('cookie-confirmed')
-    dispatch(enable())
-    if (isAuthenticated) handleLogout()
-    onHideModal()
+    const isConfirmed = window.confirm(`⚡ ${t('QN_SURE')}`)
+    if (isConfirmed) {
+      Cookie.remove('lang')
+      resetLang()
+      resetTheme()
+      Cookie.remove('cookie-confirmed')
+      dispatch(enable())
+      if (isAuthenticated) handleLogout()
+      onHideModal()
+    }
   }, [])
 
   return (
@@ -218,7 +226,7 @@ export const MenuModal = withTranslator<IProps>(({
           renderBodyContent={() => menuItems({ isCurrentPathCb, isAuthenticated, t, onHideModal })}
           renderFooterContent={() => (
             <FooterRow>
-              <Button typeName="orange" size="small" width="responsive" onClick={removeAllCookie}>
+              <Button typeName='secondary' size="small" width="responsive" onClick={removeAllCookie}>
                 {t('REMOVE_ALL_COOKIE_AND_CLOSE')}
               </Button>
             </FooterRow>

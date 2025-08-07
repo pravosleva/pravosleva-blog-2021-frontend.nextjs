@@ -11,18 +11,25 @@ export const mws = {
     _info?: any;
   }> {
     if (
-      !data?.appVersion
+      !data?.app?.version
+      || !data?.app?.name
       // || !clientAppVersionlistSupport.includes(data.appVersion)
-      || !testTextByAnyWord({ text: data.appVersion, words: clientAppVersionlistSupport })
+      || !testTextByAnyWord({
+        text: `${data.app.name}@${data.app.version}`,
+        words: clientAppVersionlistSupport,
+      })
     )
       return Promise.reject({
         ok: false,
-        reason: 'Your appVersion not supported',
+        reason: [
+          `Your app name@version`,
+          `[${data?.app?.name || typeof data?.app?.name}@${data?.app?.version || typeof data?.app?.version}]`,
+          'not supported',
+        ].join(' '),
         _info: {
           supportedVersions: clientAppVersionlistSupport
         },
       })
-
     return Promise.resolve({ ok: true })
   }
 }

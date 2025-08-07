@@ -23,16 +23,11 @@ export const historyReportService = ({
   let googleSheetRowNumber: number | undefined
   mws.checkAppVersion({ data: incData })
     .then(async (e) => {
-      // console.log('-- EV LOG:historyReportService')
-      // console.log(e)
-      // console.log(incData)
-      // console.log('-- /EV')
-
       if (!!ip) logger.add({ message: `[IP] ${ip}` })
       if (!!geoip) logger.add({ message: `[geoip exp] ${geoHelper.getGeoipText(geoip)}` })
 
       if (!!e.reason) logger.add({ message: `[Client app version validation result] ok: ${String(e.ok)}${!!e.reason ? `; ${e.reason}` : ''}` })
-      
+
       if (e.ok) {
         const validated = getIsCorrectFormat(incData)
         logger.add({ message: `[Inc data validation result] ok: ${String(validated.ok)}${!!validated.reason ? `; ${validated.reason}` : ''}` })
@@ -48,7 +43,7 @@ export const historyReportService = ({
 
           const addToReestrResult = await state.addReportToReestr({ roomId: incData.room, report: modifiedReport })
           logger.add({ message: `[Add data to reestr result] isOk: ${String(addToReestrResult.isOk)}${!!addToReestrResult.message ? `; ${addToReestrResult.message}` : ''}` })
-          
+
           if (addToReestrResult.isOk) io
             .in(getChannelName(incData.room))
             .emit(NEvent.ServerOutgoing.SP_TRADEIN_REPORT_EV, {
@@ -56,13 +51,13 @@ export const historyReportService = ({
               report: modifiedReport,
             })
           else throw new Error(addToReestrResult.message || 'No message')
-          
+
           if (validated.ok) {
             const result = await universalHttpClient.post(
               '/express-helper/sp/report/v2/offline-tradein/mtsmain2024/send',
               {
                 eventCode: 'report-by-user:history',
-                appVersion: incData.appVersion,
+                appVersion: `${incData.app.name}@${incData.app.version}`,
                 room: incData.room,
                 metrixEventType: incData.metrixEventType,
                 stateValue: incData.stateValue,
@@ -106,7 +101,7 @@ export const historyReportService = ({
                   ts,
                   eventCode: 'aux_service',
                   header: 'SP | History report WARN',
-                  about: `🚫 ${incData.appVersion} report -> withSP mw -> historyReportService -> e-helper: API ERR`,
+                  about: `🚫 ${incData.app.name}@${incData.app.version} report -> withSP mw -> historyReportService -> e-helper: API ERR`,
                   targetMD: [
                     'Cant send to Google Sheets:',
                     `${result.message || 'No message'}`,
@@ -155,7 +150,7 @@ export const historyReportService = ({
             'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
             {
               resultId: ts,
-              
+
               // NOTE: Den Pol
               // chat_id: 432590698,
 
@@ -167,7 +162,7 @@ export const historyReportService = ({
               ts,
               eventCode: 'aux_service',
               header: 'SP | History report ERR',
-              about: `⛔ ${incData.appVersion} report -> withSP mw -> historyReportService ERR`,
+              about: `⛔ ${incData.app.name}@${incData.app.version} report -> withSP mw -> historyReportService ERR`,
               targetMD: [
                 message,
                 'Не все пошло по плану. Но решение вопроса, скорее всего, все еще в кэше сервера',
@@ -183,7 +178,7 @@ export const historyReportService = ({
                 'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
                 {
                   resultId: ts,
-                  
+
                   // NOTE: Den Pol
                   // chat_id: 432590698,
 
@@ -209,7 +204,7 @@ export const historyReportService = ({
               ).finally(() => {
                 logger.clear()
               })
-            }, 1000)
+          }, 1000)
         }
         // --
       }

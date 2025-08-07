@@ -16,6 +16,7 @@ import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
+// import { useWindowSize } from '~/hooks/useWindowSize'
 // import { breakpoints } from '~/mui/theme'
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
@@ -45,6 +46,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
   //       return 'linear-gradient(rgba(0, 0, 0, 1), transparent)'
   //   }
   // }, [currentTheme])
+  // const { isDesktop } = useWindowSize()
 
   const MemoizedArticleBody = useMemo(() => {
     return (
@@ -218,14 +220,17 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               >
                 <div
                   style={{
-                    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 3px 7px -1px',
+                    boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 7px -1px',
                     // border: '2px solid lightgray',
                     padding: '8px',
                     borderRadius: '16px',
+                    // width: isDesktop ? 'fit-content' : '100%',
+                    width: 'fit-content',
                   }}
                   className={clsx({
-                    'backdrop-blur--subdark': currentTheme !== 'dark',
-                    'backdrop-blur--lite': currentTheme === 'dark',
+                    // 'backdrop-blur--subdark': currentTheme !== 'dark',
+                    // 'backdrop-blur--lite': currentTheme === 'dark',
+                    'backdrop-blur--lite': true,
                   })}
                 >
                   <WebShareBtn

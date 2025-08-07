@@ -1,4 +1,6 @@
 {
+  "QN_SURE": "Уверены?",
+  "CV": "Резюме",
   "BRANDS": "Бренды",
   "CLEAR": "Очистить",
   "CLOSE": "Закрыть",
@@ -8,35 +10,29 @@
   "COMMENT": "Комментарий",
   "HOME": "Главная",
   "DEMO": "Демо",
-
   "PROJECT_BRIEF@AUDITOR_HELPER": "Планировщик аудитора",
   "PROJECT_BRIEF@SEO_EXP": "",
   "PROJECT_BRIEF@CAR_SERVICE_BOOK": "Сервис авто (по пробегу)",
-  "PROJECT_BRIEF@PROBABILITY_THEORY": "Теория вероятностей в действии",
+  "PROJECT_BRIEF@PROBABILITY_THEORY": "",
   "PROJECT_BRIEF@SP_TRADEIN": "",
   "PROJECT_BRIEF@CARGO_2016": "Опыт с Three.js",
   "PROJECT_BRIEF@RED_SHARK": "Volkswagen Golf 4",
-
   "PROJECT_GO_BTN:LINK": "Читать",
   "PROJECT_GO_BTN:LINK_GOTO": "Перейти",
   "PROJECT_GO_BTN:LINK_TG": "Телеграм",
-
   "PROJECT_DESCR@SEO_EXP": "Заметки начинающего разраба",
   "PROJECT_DESCR@TRADEIN": "Онлайн логгер внутри отдельного потока SharedWorker",
   "PROJECT_DESCR@CARGO_2016": "Задача оптимальной погрузки фуры",
   "PROJECT_DESCR@FAMILY_TREE": "Генеалогическое дерево",
-
   "AUDIT_LIST_PROJECT_DESCR": "Мы сделаем это лучше!",
   "AUTO_PARK_PROJECT_DESCR": "Сервисная книжка",
-  "TEAM_SCORING_PROJECT_DESCR": "Корректировка прогноза лжеца",
-  "RED_SHARK_PROJECT_DESCR": "Легенда немецкого автопрома",
-
+  "TEAM_SCORING_PROJECT_DESCR": "Теория вероятностей в действии",
+  "RED_SHARK_PROJECT_DESCR": "Живая легенда немецкого автопрома",
   "SOCKET_LAB/HEADER": "Сокеты",
   "SOCKET_LAB/CONTENT/isConnected": "Соединение",
   "SOCKET_LAB/CONTENT/isConnectedToPrivateRoom": "Приватная комната",
   "SOCKET_LAB/BTN_CONN": "Подключиться к приватной комнате",
   "SOCKET_LAB/BTN_DISCONN": "Отключиться от приватной комнаты",
-
   "HVAC_1": "Частичный подбор",
   "HVAC_1.1": "Компрессорная станция",
   "HVAC_1.1_DESCRIPTION": "Часть фреонового контура для сжатия хладагента без конденсатора и испарителя",
@@ -46,7 +42,6 @@
   "HVAC_1.2_DESCRIPTION": "Теплообмен между двумя жидкостями",
   "HVAC_1.2_BRANDS": "[{ \"name\": \"Thermokey\" }]",
   "HVAC_1.2_PARAMS": "[{ \"name\": \"Жидкость 1 (для примера) ВОДА 14/7 C (Максимальное падение напора= 16 кПа) Расход= _ м3/ч\" }, { \"name\": \"Жидкость 2 (для примера) Пропилен гликоль 40 % 5/10 C (Макс. потеря напора= 40 kPa) Расход= _ m3/h\" }, { \"name\": \"Требуемый теплосъем Q= 230 кВт (может быть неизвестно, если известен напор каждой из жидкостей\" }]",
-  
   "HVAC_1.3": "Гидромодуль",
   "HVAC_1.3_DESCRIPTION": "Используется для создания напора жидкости",
   "HVAC_1.3_BRANDS": "[{ \"name\": \"Fiorini\" }]",
@@ -86,7 +81,6 @@
   "HVAC_4.1_DESCRIPTION": "Точный контроль темперауры и влажности",
   "HVAC_4.1_BRANDS": "[{ \"name\": \"BlueBox\" }, { \"name\": \"Clima Processor (CMC)\" }]",
   "HVAC_4.1_PARAMS": "[{ \"name\": \"Требуемая холодопроизводительность Q, кВт\" }, { \"name\": \"Work Stuff \", \"sublist\": [{ \"name\": \"Если жидкость - Тип & Температурный режим\" }, { \"name\": \"Если фреон- Тип & t кипения & t конденсации\" }] }, { \"name\": \"Требуемые подддерживаемые параметры (t, fi)\", \"sublist\": [{ \"name\": \"Air tempearture\" }, { \"name\": \"Поддерживаемая относительная влажность\" }] }]",
-
   "LOGIN": "Вход",
   "PASSWORD": "Пароль",
   "LOGOUT": "Выход",
@@ -129,13 +123,11 @@
   "I_AGREE": "Я в курсе",
   "GO_BACK_TO_THE_HOMEPAGE": "Вернуться на главную",
   "YOUR_NAME": "Ваше имя",
-
   "COVID-TRASH_GREEN-CARD-TEXT": "Сертификат о вакцинации COVID-19",
   "COVID-TRASH_TARGET-TEXT": "Действителен",
   "COVID-TRASH_PASSPORT": "Паспорт",
   "COVID-TRASH_INTL-PASSPORT-ID": "",
   "COVID-TRASH_DATE-OF-BIRTH": "Дата рождения",
-
   "AUDITLIST_OFFLINE": "Аудит Offline",
   "BLOG": "Блог",
   "ALL": "Все и сразу",
@@ -155,10 +147,8 @@
   "END_DRIVE2": "Перейти в Drive2",
   "START_GITHUB": "GitHub",
   "END_GITHUB": "GitHub",
-
   "MENU_MAIN": "Основное",
   "MENU_TAGS": "Тэги",
-
   "LOCAL_LINK": "Перемотать",
   "NETWORK_PROTOCOLS": "Сетевые протоколы",
   "WHAT_WHERE_WHEN_EXTERNAL_LINK": "Что? Где? Когда? (Музыка из шоу)"

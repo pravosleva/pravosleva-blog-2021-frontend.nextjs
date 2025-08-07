@@ -173,7 +173,7 @@ const projects: TProject[] = [
   },
   {
     id: 6,
-    title: 'Estimate Corrector app',
+    title: 'Estimate Corrector',
     description: 'TEAM_SCORING_PROJECT_DESCR',
     // img: {
     //   src: '/static/img/projects/scoring.webp',
@@ -202,7 +202,7 @@ const projects: TProject[] = [
       },
     ],
     uiDate: '2019 — 2025',
-    brief: 'PROJECT_BRIEF@PROBABILITY_THEORY',
+    // brief: 'PROJECT_BRIEF@PROBABILITY_THEORY',
     tags: [],
   },
   {
@@ -263,10 +263,10 @@ export const ProjectsPage = withTranslator(({ t }) => {
   const getRandomValue = ({ items }: { items: any[] }) => {
     if (!Array.isArray(items)) return 'getRandomValue ERR: Incorrect arg'
     const randomIndex = Math.floor(Math.random() * items.length)
-  
+
     return items[randomIndex]
   }
-  
+
   const [headerText, setHeaderText] = useState<string>('🎲 🎲 🎲 🎲')
   useEffect(() => {
     const randomEmojies = [
@@ -279,15 +279,15 @@ export const ProjectsPage = withTranslator(({ t }) => {
   }, [])
 
   const isSSR = useMemo(() => typeof window === 'undefined', [typeof window])
-  
+
   return (
     <>
       <ResponsiveBlock
         isPaddedMobile
         isLimited
-        // style={{
-        //   paddingBottom: '30px',
-        // }}
+      // style={{
+      //   paddingBottom: '30px',
+      // }}
       >
         <BreadCrumbs
           t={t}
@@ -299,13 +299,13 @@ export const ProjectsPage = withTranslator(({ t }) => {
           ]}
         />
       </ResponsiveBlock>
-    
+
       <ResponsiveBlock
         isPaddedMobile
         // className={classes.tmpHighlight}
 
         isLimited
-        // hasDesktopFrame
+      // hasDesktopFrame
       >
         <Stack
           direction='column'

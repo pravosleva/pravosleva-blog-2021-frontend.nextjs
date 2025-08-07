@@ -58,7 +58,7 @@ export const ActiveReportListItem = memo(() => {
     viState.activeReport?._ip,
   ])
   const handleClickOnIp = useCallback(() => {
-    if (hasIpInFilter) setStore({ ipFilter: null})
+    if (hasIpInFilter) setStore({ ipFilter: null })
     else if (!!viState.activeReport?._ip) setStore({ ipFilter: viState.activeReport._ip })
   }, [hasIpInFilter, viState.activeReport?._ip])
 
@@ -68,7 +68,7 @@ export const ActiveReportListItem = memo(() => {
     viState.activeReport?.imei,
   ])
   const handleClickOnImei = useCallback(() => {
-    if (hasImeiInFilter) setStore({ imeiFilter: null})
+    if (hasImeiInFilter) setStore({ imeiFilter: null })
     else if (!!viState.activeReport?.imei) setStore({ imeiFilter: viState.activeReport.imei })
   }, [hasImeiInFilter, viState.activeReport?.imei])
 
@@ -76,7 +76,7 @@ export const ActiveReportListItem = memo(() => {
   return (
     <>
       <div className={clsx(acticeReportClasses.fixedTop, acticeReportClasses.fixedTopActiveReport, 'backdrop-blur', 'fade-in-speed-2')}>
-        
+
         <div className={clsx(classes.stickyTopHeader, 'white-bg')}>
           <div
             style={{
@@ -107,7 +107,7 @@ export const ActiveReportListItem = memo(() => {
                   justifyContent: 'center',
                   alignItems: 'center',
                   cursor: 'pointer',
-                  
+
                   width: '25px',
                   height: '25px',
                   border: '2px solid #fff',
@@ -158,10 +158,12 @@ export const ActiveReportListItem = memo(() => {
                               }}
                               onClick={handleClickOnImei}
                             />
-                          </div> 
+                          </div>
                         )
                       }
-                      <div style={{ display: 'inline-flex', gap: '8px' }}>{viState.activeReport.appVersion}</div>
+                      <div style={{ display: 'inline-flex', gap: '8px' }}>
+                        {viState.activeReport.app.name}@{viState.activeReport.app.version}
+                      </div>
                       {!!viState.activeReport._ip && (
                         <div style={{ display: 'inline-flex', gap: '8px' }}>
                           <span>IP</span>
@@ -193,12 +195,11 @@ export const ActiveReportListItem = memo(() => {
             }
           </div>
         </div>
-        
+
         {
           !!viState.activeReport.stepDetails && (
             <CollapsibleBox
-              label={`Step details${
-                !!viState.activeReport._wService
+              label={`Step details${!!viState.activeReport._wService
                 ? viState.activeReport._wService?._perfInfo.tsList.length > 2
                   ? ` (${getTimeDiff({ startDate: new Date(viState.activeReport._wService._perfInfo.tsList[1].ts), finishDate: new Date(viState.activeReport._wService._perfInfo.tsList[viState.activeReport._wService._perfInfo.tsList.length - 1].ts) }).message})`
                   : ''
@@ -355,16 +356,17 @@ export const ActiveReportListItem = memo(() => {
                           }
                         />
                       </div>
-                  )})
+                    )
+                  })
                 }
               </>
-          ) : (
-            <div>
-              <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
-                {JSON.stringify(viState.activeReport, null, 4)}
-              </pre>
-            </div>
-          )
+            ) : (
+              <div>
+                <pre style={{ fontFamily: 'system-ui' }} className={classes.pre}>
+                  {JSON.stringify(viState.activeReport, null, 4)}
+                </pre>
+              </div>
+            )
         }
 
         <div className={clsx(classes.stickyBottomHeader, 'white-bg')}>
@@ -402,7 +404,7 @@ export const ActiveReportListItem = memo(() => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         cursor: 'pointer',
-                        
+
                         width: '25px',
                         height: '25px',
                         border: '2px solid #fff',
@@ -425,12 +427,12 @@ export const ActiveReportListItem = memo(() => {
                       </div>
                     )
                   }
-                  </>
-                ) : (
-                  <div>No Geo data</div>
-                )
-              }
-            </div>
+                </>
+              ) : (
+                <div>No Geo data</div>
+              )
+            }
+          </div>
         </div>
       </div>
       <Fab

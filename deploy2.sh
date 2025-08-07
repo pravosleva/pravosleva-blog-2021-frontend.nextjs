@@ -1,10 +1,10 @@
-# NOTE: Way 1
-
+# NOTE: Old site
 # deploy_path_build_dir=root@pravosleva.ru:/home/projects/pravosleva-blog/frontend.nextjs/.next
 # deploy_path_public_dir=root@pravosleva.ru:/home/projects/pravosleva-blog/frontend.nextjs/public
 # deploy_path_server_dist_dir=root@pravosleva.ru:/home/projects/pravosleva-blog/frontend.nextjs/server.dist
 # deploy_path_node_modules_dir=root@pravosleva.ru:/home/projects/pravosleva-blog/frontend.nextjs/node_modules
 
+# NOTE: New site
 deploy_path_build_dir=root@83.220.170.212:/root/projects/pravosleva-blog/frontend.nextjs/.next
 deploy_path_public_dir=root@83.220.170.212:/root/projects/pravosleva-blog/frontend.nextjs/public
 deploy_path_server_dist_dir=root@83.220.170.212:/root/projects/pravosleva-blog/frontend.nextjs/server.dist

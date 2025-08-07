@@ -119,11 +119,11 @@ export const useStyles = makeStyles((theme) => ({
     background: '#fff',
     position: 'relative',
     zIndex: 1,
-    
+
     // & > * {
     //   border: 1px solid red;
     // }
-    
+
     display: 'flex',
     flexDirection: 'column',
     gap: '4px',
@@ -133,7 +133,7 @@ export const useStyles = makeStyles((theme) => ({
     '& h1': {
       lineHeight: 1,
       margin: 0,
-      fontSize: '1.7rem',
+      fontSize: '1.3rem',
     },
     '& h2': {
       fontSize: '0.8rem',
@@ -146,7 +146,7 @@ export const useStyles = makeStyles((theme) => ({
       marginTop: 'auto',
       // border: 1px solid red;
       textAlign: 'right',
-      
+
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'flex-end',
@@ -196,16 +196,16 @@ export const useStyles = makeStyles((theme) => ({
     position: 'relative',
     // margin: 1rem 0 0;
     // '&:first-of-type': {
-      // margin-top: 1.25rem;
-      '&:before': {
-        content: '',
-        position: 'absolute',
-        height: '5px',
-        background: $color_prime,
-        width: '35px',
-        top: '-0.75rem',
-        borderRadius: '3px',
-      },
+    // margin-top: 1.25rem;
+    '&:before': {
+      content: '',
+      position: 'absolute',
+      height: '5px',
+      background: $color_prime,
+      width: '35px',
+      top: '-0.75rem',
+      borderRadius: '3px',
+    },
     // },
   },
   '&:hover': {

@@ -75,8 +75,8 @@ const Sidebar = styled.div`
     }
 
     ${(p) =>
-      !p.opened &&
-      css`
+    !p.opened &&
+    css`
         transform: translateX(-100%);
         opacity: 0;
       `}
@@ -250,7 +250,7 @@ export const withMobileMenu = (ComposedComponent) =>
                   </Link>
                 </li>
               )}
-              
+
               {isAuthenticated && (
                 <li onClick={handleLogout}>
                   <a
@@ -321,6 +321,11 @@ export const withMobileMenu = (ComposedComponent) =>
                   <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/feedback') ? 'active' : ''}>{t('FEEDBACK')}</a>
                 </Link>
               </li>
+              <li>
+                <Link href='/p/cv-ru'>
+                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/cv-ru') ? 'active' : ''}>{t('CV')}</a>
+                </Link>
+              </li>
               {/* <li>
                 <a target='_self' href='/dist.hacker-news-2024'>Hacker News Client</a>
               </li> */}
@@ -351,7 +356,7 @@ export const withMobileMenu = (ComposedComponent) =>
             {...props}
             isSidebarOpened={isSidebarOpened}
             sidebarToggler={sidebarToggler}
-            // scrollToRef={scrollToRef}
+          // scrollToRef={scrollToRef}
           />
         </Wrapper>
       )

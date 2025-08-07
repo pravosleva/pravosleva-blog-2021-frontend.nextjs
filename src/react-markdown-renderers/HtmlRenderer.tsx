@@ -10,6 +10,7 @@ import { ImagesGalleryBox, ImagesGalleryBox2, TProps as TImagesGalleryBoxProps }
 import { JSONComparison } from './JSONComparison'
 import { CollapsibleBox } from './CollapsibleBox'
 import { CardsExample } from './CardsExample'
+// import { StickyHeader } from './StickyHeader'
 
 const componentTransforms = {
   Alert: (props: any) => <Alert text={props.value} {...props} />,
@@ -54,6 +55,14 @@ const componentTransforms = {
       <CardsExample {...props} />
     </ErrorBoundary>
   ),
+  // StickyHeader: (props: any) => (
+  //   <ErrorBoundary
+  //     FallbackComponent={ErrorFallback}
+  //   // onReset={handleClearText}
+  //   >
+  //     <StickyHeader {...props} />
+  //   </ErrorBoundary>
+  // ),
 }
 
 // @ts-ignore

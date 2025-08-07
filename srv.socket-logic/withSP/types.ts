@@ -21,7 +21,7 @@ export namespace NEvent {
     SP_MX_EV = 'sp-mx:offline-tradein:s:event',
     SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_OK = 'sp-mx:history-report:s:ok',
     SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR = 'sp-mx:history-report:s:err',
-    
+
     DONT_RECONNECT = 'custom:dont-reconnect',
     SP_TRADEIN_REPORT_EV = 'sp-tradein-report:s:event',
     SP_TRADEIN_REPLACE_REPORTS = 'sp-tradein-report:s:replace-reports',
@@ -40,7 +40,10 @@ export namespace NEvent {
         // ts: string;
         room: string;
         // reportType: EReportType;
-        appVersion: string;
+        app: {
+          name: string;
+          version: string;
+        };
         metrixEventType: string;
         stateValue: string;
         // imei: string;
@@ -60,7 +63,10 @@ export namespace NEvent {
   export type TReport = {
     ts: string;
     room: string;
-    appVersion: string;
+    app: {
+      name: string;
+      version: string;
+    };
     metrixEventType: string;
     reportType: EReportType;
     stateValue: string;

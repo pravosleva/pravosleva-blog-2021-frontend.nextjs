@@ -8,7 +8,7 @@ export type TSocketMicroStore = {
   isConnected: boolean;
   isConnectedToPrivateRoom: boolean;
   reportItems: any[];
-  
+
   imeiFilter: string | null;
   clientAppVersionFilter: string | null;
   ipFilter: string | null;
@@ -57,7 +57,10 @@ export namespace NEvent {
       // name: string;
       input: {
         room: string;
-        appVersion: string;
+        app: {
+          name: string;
+          version: string;
+        };
         metrixEventType: string;
         stateValue: string;
       };
@@ -86,7 +89,10 @@ export namespace NEvent {
     imei?: string;
     ts: number;
     room: number;
-    appVersion: string;
+    app: {
+      name: string;
+      version: string;
+    };
     metrixEventType: string;
     reportType: EReportType;
     stateValue: string;

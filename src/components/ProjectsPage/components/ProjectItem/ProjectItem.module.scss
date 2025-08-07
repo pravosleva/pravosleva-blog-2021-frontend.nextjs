@@ -14,6 +14,7 @@ $color_grey_dark: #a2a2a2;
   border-radius: 16px;
   overflow: hidden;
   z-index: 0;
+
   // a { color: inherit; }
   &:hover {
     .photo {
@@ -22,11 +23,13 @@ $color_grey_dark: #a2a2a2;
       filter: blur(2px);
     }
   }
+
   .meta {
     position: relative;
     z-index: 0;
     height: 200px;
   }
+
   .photo {
     position: absolute;
     top: 0;
@@ -37,6 +40,7 @@ $color_grey_dark: #a2a2a2;
     background-position: center;
     transition: all 1s;
   }
+
   .details,
   .details ul {
     margin: auto;
@@ -57,17 +61,21 @@ $color_grey_dark: #a2a2a2;
     padding: 10px 16px;
     width: 100%;
     font-size: .9rem;
+
     a {
       text-decoration: underline;
       color: #FFC800;
       font-weight: bold;
+
       &:hover {
         color: $color_prime;
       }
     }
+
     ul {
       list-style-type: none;
     }
+
     ul li {
       display: inline-block;
     }
@@ -75,6 +83,7 @@ $color_grey_dark: #a2a2a2;
     .author {
       font-weight: bold;
     }
+
     .author::before {
       // font-family: FontAwesome;
       margin-right: 16px;
@@ -99,47 +108,54 @@ $color_grey_dark: #a2a2a2;
         margin-right: 16px;
         // font-weight: 400;
       }
+
       li {
         margin-right: 4px;
+
         &:first-child {
           margin-left: 0px;
         }
       }
     }
   }
+
   .description {
     // max-width: 300px;
     padding: 1rem;
     position: relative;
     z-index: 1;
-    
+
     // & > * {
     //   border: 1px solid red;
     // }
-    
+
     display: flex;
     flex-direction: column;
     gap: 4px;
+
     h1,
     h2 {
       font-family: Montserrat, sans-serif;
     }
+
     h1 {
       line-height: 1;
       margin: 0;
-      font-size: 1.7rem;
+      font-size: 1.3rem;
     }
+
     h2 {
       font-size: 0.8rem;
       font-weight: 300;
       text-transform: uppercase;
       margin-top: 5px;
     }
+
     .readMore {
       margin-top: auto;
       // border: 1px solid red;
       text-align: right;
-      
+
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
@@ -150,7 +166,8 @@ $color_grey_dark: #a2a2a2;
         // color: $color_prime;
         // display: inline-block;
         position: relative;
-        text-decoration: none;;
+        text-decoration: none;
+        ;
         // &:after {
         //   content: "\f061";
         //   font-family: FontAwesome;
@@ -167,11 +184,14 @@ $color_grey_dark: #a2a2a2;
       }
     }
   }
+
   p {
     font-size: 13px;
     position: relative;
+
     // margin: 1rem 0 0;
     &:first-of-type {
+
       // margin-top: 1.25rem;
       &:before {
         content: "";
@@ -184,6 +204,7 @@ $color_grey_dark: #a2a2a2;
       }
     }
   }
+
   &:hover {
     .details {
       left: 0%;
@@ -195,15 +216,22 @@ $color_grey_dark: #a2a2a2;
       &_light {
         color: #000;
         background: $color_white;
+
+        h2 {
+          color: $color_grey_dark;
+        }
       }
+
       &_gray {
         color: #683434;
         background: #DCDCDC;
       }
+
       &_hard-gray {
         color: #fff;
         background: gray;
       }
+
       &_dark {
         color: #fff;
         // background: rgba(255, 255, 255, 0.1);
@@ -215,17 +243,20 @@ $color_grey_dark: #a2a2a2;
   @media (min-width: calc(#{$sm}px + 1px)) {
     flex-direction: row;
     max-width: 700px;
+
     .meta {
       flex-basis: 40%;
       // height: auto;
       height: 100%;
     }
+
     .description {
       flex-basis: 60%;
+
       &:before {
         transform: skewX(-3deg);
         content: "";
-        
+
         // background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 55%, transparent 100%);
         width: 30px;
         position: absolute;
@@ -234,54 +265,69 @@ $color_grey_dark: #a2a2a2;
         bottom: 0;
         z-index: -1;
       }
+
       &_light {
         color: #000;
         background: $color_white;
+
         &:before {
           background: #fff;
         }
+
         h2 {
           color: $color_grey_dark;
         }
       }
+
       &_gray {
         color: #683434;
         background: $color_white;
+
         &:before {
           background: #fff;
         }
+
         h2 {
           color: #683434;
         }
       }
+
       &_hard-gray {
         color: #fff;
         background: gray;
+
         &:before {
           background: gray;
         }
+
         h2 {
           color: #fff;
         }
       }
+
       &_dark {
         // background: transparent;
         // background: rgba(255, 255, 255, 0.1);
         background: #000;
         color: #fff;
+
         &:before {
           background: transparent;
         }
+
         h1 {
           color: #fff;
         }
+
         h2 {
           color: #fff;
         }
       }
     }
+
     &.alt {
       flex-direction: row-reverse;
+
       .description {
         &:before {
           left: inherit;
@@ -289,6 +335,7 @@ $color_grey_dark: #a2a2a2;
           transform: skew(3deg)
         }
       }
+
       .details {
         padding-left: 25px;
       }

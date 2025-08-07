@@ -49,9 +49,8 @@ export const FiltersContent = memo(() => {
 
   const [appVersionFilter] = useStore((store: TSocketMicroStore) => store.clientAppVersionFilter)
   const appVersionList = useMemo(() => {
-    return viState.items.reduce((acc, cur) => {
-      // @ts-ignore
-      if (!acc.includes(cur.appVersion)) acc.push(cur.appVersion)
+    return viState.items.reduce((acc: string[], cur) => {
+      if (!acc.includes(`${cur.app.name}@${cur.app.version}`)) acc.push(`${cur.app.name}@${cur.app.version}`)
       return acc;
     }, []).sort()
   }, [viState.items])
@@ -90,7 +89,7 @@ export const FiltersContent = memo(() => {
         gap: '16px',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>  
+      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
         {/* <Autocomplete
           onChange={(event, item) => {
             groupLog({ spaceName: 'onChange', items: [event, item] })
@@ -177,8 +176,8 @@ export const FiltersContent = memo(() => {
           label='IMEI'
           type='text'
           onChange={handleChangeImei}
-          // multiline
-          // maxRows={4}
+        // multiline
+        // maxRows={4}
         />
         <div>
           <IconButton
@@ -188,7 +187,7 @@ export const FiltersContent = memo(() => {
             // startIcon={<CloseIcon />}
             // fullWidth
             // variant='outlined'
-            
+
             onClick={handleClearImeiFilter}
             // endIcon={<b style={{ fontSize: 'smaller' }}><code>{spReportRoomId}</code></b>}
             disabled={!isConnected || !imeiFilter}
@@ -198,7 +197,7 @@ export const FiltersContent = memo(() => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>  
+      <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
         {/* <CustomizedTextField
           size='small'
           disabled={!isConnected}

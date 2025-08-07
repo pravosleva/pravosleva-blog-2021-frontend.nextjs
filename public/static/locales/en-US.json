@@ -1,4 +1,6 @@
 {
+  "QN_SURE": "Sure?",
+  "CV": "CV",
   "BRANDS": "Brands",
   "CLEAR": "Clear",
   "CLOSE": "Close",
@@ -8,35 +10,29 @@
   "COMMENT": "Comment",
   "HOME": "Home",
   "DEMO": "Demo",
-
   "PROJECT_BRIEF@AUDITOR_HELPER": "Auditor helper",
   "PROJECT_BRIEF@SEO_EXP": "",
   "PROJECT_BRIEF@CAR_SERVICE_BOOK": "Car service book",
-  "PROJECT_BRIEF@PROBABILITY_THEORY": "Probabillity theory in action",
+  "PROJECT_BRIEF@PROBABILITY_THEORY": "",
   "PROJECT_BRIEF@SP_TRADEIN": "",
   "PROJECT_BRIEF@CARGO_2016": "Three.js exp",
   "PROJECT_BRIEF@RED_SHARK": "Volkswagen Golf 4",
-
   "PROJECT_GO_BTN:LINK": "Read more",
   "PROJECT_GO_BTN:LINK_GOTO": "Go",
   "PROJECT_GO_BTN:LINK_TG": "Telegram",
-
   "PROJECT_DESCR@SEO_EXP": "Dev experience notes",
   "PROJECT_DESCR@TRADEIN": "Online logger in SharedWorker demonstration",
   "PROJECT_DESCR@CARGO_2016": "Truck occupancy estimation",
   "PROJECT_DESCR@FAMILY_TREE": "Genealogical tree",
-
   "AUDIT_LIST_PROJECT_DESCR": "We can do it better!",
   "AUTO_PARK_PROJECT_DESCR": "Hello world",
-  "TEAM_SCORING_PROJECT_DESCR": "How much is your forecast, liar?",
+  "TEAM_SCORING_PROJECT_DESCR": "Probabillity theory in action",
   "RED_SHARK_PROJECT_DESCR": "Legend of the German car industry",
-
   "SOCKET_LAB/HEADER": "SocketLab exp",
   "SOCKET_LAB/CONTENT/isConnected": "Connect",
   "SOCKET_LAB/CONTENT/isConnectedToPrivateRoom": "Connect to private room",
   "SOCKET_LAB/BTN_CONN": "Wanna be connected to private room",
   "SOCKET_LAB/BTN_DISCONN": "Wanna be disconnected from private room",
-
   "HVAC_1": "Additional equipment",
   "HVAC_1.1": "Compressor station",
   "HVAC_1.1_DESCRIPTION": "Part of freon cycle without evap (and conderser)",
@@ -46,7 +42,6 @@
   "HVAC_1.2_DESCRIPTION": "Heat transfer between cooling and chilled stuffs",
   "HVAC_1.2_BRANDS": "[{ \"name\": \"Thermokey\" }]",
   "HVAC_1.2_PARAMS": "[{ \"name\": \"Liquid 1 (for example) WATER 14/7 C (pressure drop max= 16 kPa) FLOW= _ m3/h\" }, { \"name\": \"Liquid 2 (for example) MPG 40 % 5/10 C (pressure drop max= 40 kPa) FLOW= _ m3/h\" }, { \"name\": \"Total Q= 230 kW (may be undefined, when FLOW for each liquid is defined)\" }]",
-  
   "HVAC_1.3": "Hydro Module",
   "HVAC_1.3_DESCRIPTION": "Could be used for liquid transfer",
   "HVAC_1.3_BRANDS": "[{ \"name\": \"Fiorini\" }]",
@@ -86,7 +81,6 @@
   "HVAC_4.1_DESCRIPTION": "Advanced temperature and humidity control for special needs",
   "HVAC_4.1_BRANDS": "[{ \"name\": \"BlueBox\" }, { \"name\": \"Clima Processor (CMC)\" }]",
   "HVAC_4.1_PARAMS": "[{ \"name\": \"Q= _ kW (Required Cooling Capacity)\" }, { \"name\": \"Work Stuff \", \"sublist\": [{ \"name\": \"In Liquid case - Type & Percentage & Operating mode temperatures\" }, { \"name\": \"In Freon case - Type & Operating mode temperatures (evaporation & condensation temperatures)\" }] }, { \"name\": \"Required operating parameters in the Room\", \"sublist\": [{ \"name\": \"Air tempearture\" }, { \"name\": \"Relative humidity\" }] }]",
-
   "LOGIN": "Login",
   "PASSWORD": "Password",
   "LOGOUT": "Logout",
@@ -129,13 +123,11 @@
   "I_AGREE": "I agree",
   "GO_BACK_TO_THE_HOMEPAGE": "Homepage",
   "YOUR_NAME": "Your name",
-
   "COVID-TRASH_GREEN-CARD-TEXT": "Certificate of COVID-19 Vaccination",
   "COVID-TRASH_TARGET-TEXT": "Valid",
   "COVID-TRASH_PASSPORT": "Рassport (ID number)",
   "COVID-TRASH_INTL-PASSPORT-ID": "International passport (ID number)",
   "COVID-TRASH_DATE-OF-BIRTH": "Date of birth",
-
   "AUDITLIST_OFFLINE": "AuditList Offline",
   "BLOG": "Blog",
   "ALL": "All",
@@ -155,10 +147,8 @@
   "END_DRIVE2": "Go to Drive2",
   "START_GITHUB": "GitHub",
   "END_GITHUB": "GitHub",
-
   "MENU_MAIN": "Main",
   "MENU_TAGS": "Tags",
-
   "LOCAL_LINK": "Go",
   "NETWORK_PROTOCOLS": "Network Protocols",
   "WHAT_WHERE_WHEN_EXTERNAL_LINK": "What? Where? When? (Music from show)"

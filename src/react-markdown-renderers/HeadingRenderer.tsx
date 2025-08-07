@@ -17,6 +17,25 @@ export function HeadingRenderer(props: any) {
 
   var slug = slugify(`${props.level}-${text}`).toLowerCase() // .replace(/\W/g, '-')
 
-  if (props.level === 1) return React.createElement('h1', { id: slug, className: 'big-text' }, props.children)
-  return React.createElement('h' + props.level, { id: slug }, props.children)
+  if (props.level === 1)
+    return React.createElement(
+      'h1',
+      {
+        id: slug,
+        className: 'big-text',
+        // style: {
+        //   position: 'sticky',
+        //   top: '64px',
+        //   border: '1px solid red',
+        //   zIndex: 1,
+        //   padding: '8px',
+        //   borderRadius: '8px',
+        //   fontWeight: 'bold',
+        //   fontSize: '2.25rem',
+        //   width: 'fit-content',
+        // },
+      },
+      props.children
+    )
+  return React.createElement(`h${props.level}`, { id: slug }, props.children)
 }

@@ -49,7 +49,7 @@ export const standartReportService = ({
               '/express-helper/sp/report/v2/offline-tradein/mtsmain2024/send',
               {
                 eventCode: 'common',
-                appVersion: incData.appVersion,
+                appVersion: `${incData.app.name}@${incData.app.version}`,
                 room: incData.room,
                 metrixEventType: incData.metrixEventType,
                 stateValue: incData.stateValue,
@@ -82,7 +82,7 @@ export const standartReportService = ({
               ts,
               eventCode: 'aux_service',
               header: 'SP | Standart report ERR',
-              about: `⛔ ${incData.appVersion} mx report -> withSP mw -> standartReportService ERR`,
+              about: `⛔ ${incData.app.name}@${incData.app.version} mx report -> withSP mw -> standartReportService ERR`,
               targetMD: [
                 `Не удалось отправить event: ${err.message || 'NO ERR'}`,
                 'Должно все еще быть в кэше сервера',

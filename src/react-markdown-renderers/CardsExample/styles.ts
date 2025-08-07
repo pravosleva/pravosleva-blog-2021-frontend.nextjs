@@ -35,7 +35,7 @@ export const useStyles = makeStyles(() =>
       padding: '16px 16px 16px 16px',
       display: 'flex',
       flexDirection: 'column',
-      gap: '16px',
+      gap: '24px',
       borderRadius: 'inherit',
     },
   })

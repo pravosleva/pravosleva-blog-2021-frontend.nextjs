@@ -128,7 +128,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
   const filteredReports = useMemo<NEvent.TReport[]>(() => {
     if (hasAnyFilter) {
       return viState.items
-        .filter(({ imei, _ip, appVersion }) => {
+        .filter(({ imei, _ip, app }) => {
           const results = []
 
           if (!!imeiFilter)
@@ -137,8 +137,8 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           // if (!!appVersion && !!appVersionFilter) 
           //   results.push(testTextByAnyWord({ text: appVersion, words: [appVersionFilter] }))
 
-          if (!!appVersion && !!appVersionFilter)
-            results.push(appVersion === appVersionFilter)
+          if (!!app.name && !!app.version && !!appVersionFilter)
+            results.push(`${app.name}@${app.version}` === appVersionFilter)
 
           if (!!_ip && !!ipFilter)
             results.push(testTextByAnyWord({ text: _ip, words: [ipFilter] }))
@@ -244,7 +244,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
             */}
             {filteredReports.length > 0 ? filteredReports.map((ps) => (
               <ReportListItem
-                key={`${ps.ts}-${ps.room}-${ps.appVersion}-${ps.stateValue}`}
+                key={`${ps.ts}-${ps.room}-${ps.app.name}-${ps.app.version}-${ps.stateValue}`}
                 // @ts-ignore
                 report={ps}
                 onSetActiveReport={handleSetActiveReport}
