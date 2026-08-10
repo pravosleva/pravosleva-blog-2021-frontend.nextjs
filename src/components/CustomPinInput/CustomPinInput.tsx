@@ -30,7 +30,7 @@ const baseURL = isDev
   : 'http://pravosleva.pro/tg-bot-2021'
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
 // NOTE: See also about axios interceptors https://axios-http.com/docs/interceptors
-api.interceptors.response.use(function(config) {
+api.interceptors.response.use(function (config) {
   let count = 0
   count += 1
 
@@ -92,13 +92,13 @@ export const CustomPinInput = ({
             Пароль можно получить через Telegram bot
           </Typography> */}
           <Box sx={{ mb: 1 }}>
-            <PinInput 
-              length={4} 
+            <PinInput
+              length={4}
               initialValue=""
-              secret 
+              secret
               // onChange={(value, index) => {}} 
-              type="numeric" 
-              inputMode="number"
+              type="number"
+              inputMode="numeric"
               inputStyle={{ borderColor: '#ff715c', borderRadius: '50%', borderWidth: '2px' }}
               inputFocusStyle={{ borderColor: '#03A9F4' }}
               onComplete={handlePinInputComplete}
@@ -122,6 +122,22 @@ export const CustomPinInput = ({
           {!!successMsg && (
             <Alert variant="filled" severity="success">
               {successMsg}
+            </Alert>
+          )}
+          <Alert variant='standard' severity="info">
+            <Typography variant="body2" component="h3" gutterBottom>
+              Функция временно заблокирована в связи с нестабильной работой Telegram
+            </Typography>
+          </Alert>
+          {!!apiErr && (
+            <Alert
+              // sx={{ mb: 2 }}
+              variant="filled"
+              severity="error"
+            >
+              <Typography variant="body2" component="h3" gutterBottom>
+                {apiErr}
+              </Typography>
             </Alert>
           )}
         </CardContent>
@@ -148,14 +164,15 @@ export const CustomPinInput = ({
           </LoadingButton>
           */}
           <Button
-            disabled={isLoading}
+            // disabled={isLoading}
+            disabled={true}
             endIcon={<ArrowForwardIcon />}
             variant="contained"
             color='primary'
             onClick={handleSendPasswordToUser}
-            // noLinkStyle
-            // href='https://t.me/pravosleva_bot?start=autopark'
-            // target='_blank'
+          // noLinkStyle
+          // href='https://t.me/pravosleva_bot?start=autopark'
+          // target='_blank'
           >
             Send Password
           </Button>
@@ -164,17 +181,6 @@ export const CustomPinInput = ({
           </Button>
         </CardActions>
       </Card>
-      {!!apiErr && (
-        <Alert
-          sx={{ mb: 2 }}
-          variant="filled"
-          severity="error"
-        >
-          <Typography variant="body2" component="h3" gutterBottom>
-            {apiErr}
-          </Typography>
-        </Alert>
-      )}
     </>
   )
 }

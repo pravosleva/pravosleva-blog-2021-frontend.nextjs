@@ -55,9 +55,9 @@ export const TodoListItem = ({
         baseClasses.stack0,
         classes.wrapper,
       )}
-      // style={{ border: '1px solid red' }}
+    // style={{ border: '1px solid red' }}
     >
-      
+
       <div className={classes.ratingAndControlsExternalWrapper}>
 
         <div className={classes.rating}>
@@ -82,7 +82,7 @@ export const TodoListItem = ({
             color='default'
           />
         </div>
-        
+
         <div
           className={
             classes.controlsWrapper
@@ -141,7 +141,7 @@ export const TodoListItem = ({
           />
         </div>
       </div>
-      
+
       <div
         className={clsx(
           classes.bodyWrapper,
@@ -168,25 +168,25 @@ export const TodoListItem = ({
             <CustomAlert
               header={label}
               controls={isEditable ? controls : undefined}
-              alert={{ variant: 'filled', severity: 'error', sx: { borderRadius: '8px' } }}
+              alert={{ variant: 'filled', severity: 'error', sx: { borderRadius: '8px', wordBreak: 'break-word', fontSize: 'small' } }}
             />
           ) : status === NTodo.EStatus.SUCCESS ? (
             <CustomAlert
               header={label}
               controls={isEditable ? controls : undefined}
-              alert={{ variant: 'filled', severity: 'success', sx: { borderRadius: '8px' } }}
+              alert={{ variant: 'filled', severity: 'success', sx: { borderRadius: '8px', wordBreak: 'break-word', fontSize: 'small' } }}
             />
           ) : status === NTodo.EStatus.INFO ? (
             <CustomAlert
               header={label}
               controls={isEditable ? controls : undefined}
-              alert={{ variant: 'filled', severity: 'info', sx: { borderRadius: '8px' } }}
+              alert={{ variant: 'filled', severity: 'info', sx: { borderRadius: '8px', wordBreak: 'break-word', fontSize: 'small' } }}
             />
           ) : status === NTodo.EStatus.WARNING ? (
             <CustomAlert
               header={label}
               controls={isEditable ? controls : undefined}
-              alert={{ variant: 'filled', severity: 'warning', sx: { borderRadius: '8px' } }}
+              alert={{ variant: 'filled', severity: 'warning', sx: { borderRadius: '8px', wordBreak: 'break-word', fontSize: 'small' } }}
             />
           ) : status === NTodo.EStatus.IS_DONE ? (
             <CustomAlert
@@ -197,6 +197,7 @@ export const TodoListItem = ({
                 sx: {
                   backgroundColor: 'lightgray',
                   borderRadius: '8px',
+                  wordBreak: 'break-word', fontSize: 'small'
                 },
               }}
             />
@@ -215,6 +216,7 @@ export const TodoListItem = ({
                   borderRadius: '8px',
                   backgroundColor: 'rgba(255,255,255,0.5)',
                   fontWeight: 'bold',
+                  wordBreak: 'break-word', fontSize: 'small'
                 }
               }}
             />
@@ -222,7 +224,7 @@ export const TodoListItem = ({
         }
 
         {!!description && <div className={classes.descriptionWrapper}>{description}</div>}
-        
+
         {/* <div style={{ marginLeft: 'auto' }} className='truncate'>
           <Chip className='truncate' size="small" avatar={<Avatar>{namespace[0].toUpperCase()}</Avatar>} label={namespace} />
         </div> */}

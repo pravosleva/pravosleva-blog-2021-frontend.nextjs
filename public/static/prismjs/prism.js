@@ -6,8 +6,8 @@ var _self =
   typeof window !== 'undefined'
     ? window // if in browser
     : typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope
-    ? self // if in worker
-    : {} // if in node js
+      ? self // if in worker
+      : {} // if in node js
 
 /**
  * Prism: Lightweight, robust, elegant syntax highlighting
@@ -250,7 +250,7 @@ var Prism = (function (_self) {
 
       _.hooks.run('before-all-elements-highlight', env)
 
-      for (var i = 0, element; (element = env.elements[i++]); ) {
+      for (var i = 0, element; (element = env.elements[i++]);) {
         _.highlightElement(element, async === true, env.callback)
       }
     },
@@ -372,7 +372,7 @@ var Prism = (function (_self) {
           return
         }
 
-        for (var i = 0, callback; (callback = callbacks[i++]); ) {
+        for (var i = 0, callback; (callback = callbacks[i++]);) {
           callback(env)
         }
       },
@@ -870,75 +870,75 @@ Prism.languages.ssml = Prism.languages.xml
 Prism.languages.atom = Prism.languages.xml
 Prism.languages.rss = Prism.languages.xml
 
-/* **********************************************
-     Begin prism-css.js
-********************************************** */
-;(function (Prism) {
-  var string = /("|')(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/
+  /* **********************************************
+       Begin prism-css.js
+  ********************************************** */
+  ; (function (Prism) {
+    var string = /("|')(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/
 
-  Prism.languages.css = {
-    comment: /\/\*[\s\S]*?\*\//,
-    atrule: {
-      pattern: /@[\w-]+[\s\S]*?(?:;|(?=\s*\{))/,
-      inside: {
-        rule: /^@[\w-]+/,
-        'selector-function-argument': {
-          pattern: /(\bselector\s*\((?!\s*\))\s*)(?:[^()]|\((?:[^()]|\([^()]*\))*\))+?(?=\s*\))/,
-          lookbehind: true,
-          alias: 'selector',
-        },
-        // See rest below
-      },
-    },
-    url: {
-      pattern: RegExp('url\\((?:' + string.source + '|[^\n\r()]*)\\)', 'i'),
-      greedy: true,
-      inside: {
-        function: /^url/i,
-        punctuation: /^\(|\)$/,
-      },
-    },
-    selector: RegExp('[^{}\\s](?:[^{};"\']|' + string.source + ')*?(?=\\s*\\{)'),
-    string: {
-      pattern: string,
-      greedy: true,
-    },
-    property: /[-_a-z\xA0-\uFFFF][-\w\xA0-\uFFFF]*(?=\s*:)/i,
-    important: /!important\b/i,
-    function: /[-a-z0-9]+(?=\()/i,
-    punctuation: /[(){};:,]/,
-  }
-
-  Prism.languages.css['atrule'].inside.rest = Prism.languages.css
-
-  var markup = Prism.languages.markup
-  if (markup) {
-    markup.tag.addInlined('style', 'css')
-
-    Prism.languages.insertBefore(
-      'inside',
-      'attr-value',
-      {
-        'style-attr': {
-          pattern: /\s*style=("|')(?:\\[\s\S]|(?!\1)[^\\])*\1/i,
-          inside: {
-            'attr-name': {
-              pattern: /^\s*style/i,
-              inside: markup.tag.inside,
-            },
-            punctuation: /^\s*=\s*['"]|['"]\s*$/,
-            'attr-value': {
-              pattern: /.+/i,
-              inside: Prism.languages.css,
-            },
+    Prism.languages.css = {
+      comment: /\/\*[\s\S]*?\*\//,
+      atrule: {
+        pattern: /@[\w-]+[\s\S]*?(?:;|(?=\s*\{))/,
+        inside: {
+          rule: /^@[\w-]+/,
+          'selector-function-argument': {
+            pattern: /(\bselector\s*\((?!\s*\))\s*)(?:[^()]|\((?:[^()]|\([^()]*\))*\))+?(?=\s*\))/,
+            lookbehind: true,
+            alias: 'selector',
           },
-          alias: 'language-css',
+          // See rest below
         },
       },
-      markup.tag
-    )
-  }
-})(Prism)
+      url: {
+        pattern: RegExp('url\\((?:' + string.source + '|[^\n\r()]*)\\)', 'i'),
+        greedy: true,
+        inside: {
+          function: /^url/i,
+          punctuation: /^\(|\)$/,
+        },
+      },
+      selector: RegExp('[^{}\\s](?:[^{};"\']|' + string.source + ')*?(?=\\s*\\{)'),
+      string: {
+        pattern: string,
+        greedy: true,
+      },
+      property: /[-_a-z\xA0-\uFFFF][-\w\xA0-\uFFFF]*(?=\s*:)/i,
+      important: /!important\b/i,
+      function: /[-a-z0-9]+(?=\()/i,
+      punctuation: /[(){};:,]/,
+    }
+
+    Prism.languages.css['atrule'].inside.rest = Prism.languages.css
+
+    var markup = Prism.languages.markup
+    if (markup) {
+      markup.tag.addInlined('style', 'css')
+
+      Prism.languages.insertBefore(
+        'inside',
+        'attr-value',
+        {
+          'style-attr': {
+            pattern: /\s*style=("|')(?:\\[\s\S]|(?!\1)[^\\])*\1/i,
+            inside: {
+              'attr-name': {
+                pattern: /^\s*style/i,
+                inside: markup.tag.inside,
+              },
+              punctuation: /^\s*=\s*['"]|['"]\s*$/,
+              'attr-value': {
+                pattern: /.+/i,
+                inside: Prism.languages.css,
+              },
+            },
+            alias: 'language-css',
+          },
+        },
+        markup.tag
+      )
+    }
+  })(Prism)
 
 /* **********************************************
      Begin prism-clike.js
@@ -1073,94 +1073,96 @@ if (Prism.languages.markup) {
 
 Prism.languages.js = Prism.languages.javascript
 
-/* **********************************************
-     Begin prism-file-highlight.js
-********************************************** */
-;(function () {
-  if (typeof self === 'undefined' || !self.Prism || !self.document || !document.querySelector) {
-    return
-  }
-
-  /**
-   * @param {Element} [container=document]
-   */
-  self.Prism.fileHighlight = function (container) {
-    container = container || document
-
-    var Extensions = {
-      js: 'javascript',
-      py: 'python',
-      rb: 'ruby',
-      ps1: 'powershell',
-      psm1: 'powershell',
-      sh: 'bash',
-      bat: 'batch',
-      h: 'c',
-      tex: 'latex',
+  /* **********************************************
+       Begin prism-file-highlight.js
+  ********************************************** */
+  ; (function () {
+    if (typeof self === 'undefined' || !self.Prism || !self.document || !document.querySelector) {
+      return
     }
 
-    Array.prototype.slice.call(container.querySelectorAll('pre[data-src]')).forEach(function (pre) {
-      // ignore if already loaded
-      if (pre.hasAttribute('data-src-loaded')) {
-        return
+    /**
+     * @param {Element} [container=document]
+     */
+    self.Prism.fileHighlight = function (container) {
+      container = container || document
+
+      var Extensions = {
+        js: 'javascript',
+        py: 'python',
+        rb: 'ruby',
+        ps1: 'powershell',
+        psm1: 'powershell',
+        sh: 'bash',
+        bash: 'bash',
+        bat: 'batch',
+        h: 'c',
+        tex: 'latex',
+        vue: 'vue',
       }
 
-      // load current
-      var src = pre.getAttribute('data-src')
+      Array.prototype.slice.call(container.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+        // ignore if already loaded
+        if (pre.hasAttribute('data-src-loaded')) {
+          return
+        }
 
-      var language,
-        parent = pre
-      var lang = /\blang(?:uage)?-([\w-]+)\b/i
-      while (parent && !lang.test(parent.className)) {
-        parent = parent.parentNode
-      }
+        // load current
+        var src = pre.getAttribute('data-src')
 
-      if (parent) {
-        language = (pre.className.match(lang) || [, ''])[1]
-      }
+        var language,
+          parent = pre
+        var lang = /\blang(?:uage)?-([\w-]+)\b/i
+        while (parent && !lang.test(parent.className)) {
+          parent = parent.parentNode
+        }
 
-      if (!language) {
-        var extension = (src.match(/\.(\w+)$/) || [, ''])[1]
+        if (parent) {
+          language = (pre.className.match(lang) || [, ''])[1]
+        }
 
-        console.log(extension)
-        language = Extensions[extension] || extension
-      }
+        if (!language) {
+          var extension = (src.match(/\.(\w+)$/) || [, ''])[1]
 
-      var code = document.createElement('code')
-      code.className = 'language-' + language
+          console.log(extension)
+          language = Extensions[extension] || extension
+        }
 
-      pre.textContent = ''
+        var code = document.createElement('code')
+        code.className = 'language-' + language
 
-      code.textContent = 'Loading…'
+        pre.textContent = ''
 
-      pre.appendChild(code)
+        code.textContent = 'Loading…'
 
-      var xhr = new XMLHttpRequest()
+        pre.appendChild(code)
 
-      xhr.open('GET', src, true)
+        var xhr = new XMLHttpRequest()
 
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-          if (xhr.status < 400 && xhr.responseText) {
-            code.textContent = xhr.responseText
+        xhr.open('GET', src, true)
 
-            Prism.highlightElement(code)
-            // mark as loaded
-            pre.setAttribute('data-src-loaded', '')
-          } else if (xhr.status >= 400) {
-            code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText
-          } else {
-            code.textContent = '✖ Error: File does not exist or is empty'
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4) {
+            if (xhr.status < 400 && xhr.responseText) {
+              code.textContent = xhr.responseText
+
+              Prism.highlightElement(code)
+              // mark as loaded
+              pre.setAttribute('data-src-loaded', '')
+            } else if (xhr.status >= 400) {
+              code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText
+            } else {
+              code.textContent = '✖ Error: File does not exist or is empty'
+            }
           }
         }
-      }
 
-      xhr.send(null)
+        xhr.send(null)
+      })
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // execute inside handler, for dropping Event as argument
+      self.Prism.fileHighlight()
     })
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    // execute inside handler, for dropping Event as argument
-    self.Prism.fileHighlight()
-  })
-})()
+  })()

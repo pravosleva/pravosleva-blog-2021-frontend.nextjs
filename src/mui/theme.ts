@@ -45,6 +45,11 @@ const theme = createTheme({
           // Some CSS
           borderRadius: '8px',
         },
+        sizeSmall: {
+          lineHeight: 1.7,
+          borderRadius: '16px',
+          fontSize: '0.7rem',
+        },
       },
     },
     MuiAlert: {

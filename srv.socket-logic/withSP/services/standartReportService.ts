@@ -1,6 +1,6 @@
 import { NEvent, TGeoIpInfo } from '~/srv.socket-logic/withSP/types'
 import { getChannelName, getIsCorrectFormat, mws, state } from '~/srv.socket-logic/withSP/utils'
-import { Socket } from 'socket.io'
+import { Socket, Server } from 'socket.io'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 
 export const standartReportService = ({
@@ -13,7 +13,7 @@ export const standartReportService = ({
 }: {
   ip?: string;
   geoip?: TGeoIpInfo | null;
-  io: Socket;
+  io: Server;
   socket: Socket;
   clientUserAgent?: string;
   clientReferer?: string;
@@ -69,7 +69,7 @@ export const standartReportService = ({
                 geoip,
               },
             )
-            if (typeof cb === 'function') cb({ message: 'Ok: Отправлено. Результат не проверял', ok: true })
+            if (typeof cb === 'function') cb({ message: 'by Server: Отправлено. Результат не проверял', ok: true })
           }
           else throw new Error(validated.reason || 'No reason')
         } catch (err: any) {
@@ -93,7 +93,7 @@ export const standartReportService = ({
               ].join('\n'),
             },
           )
-          if (typeof cb === 'function') cb({ message: err?.message || 'No err.message', ok: false })
+          if (typeof cb === 'function') cb({ message: `by Server: ${err?.message || 'No err.message'}`, ok: false })
         }
         // --
       }

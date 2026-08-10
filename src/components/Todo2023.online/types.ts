@@ -12,6 +12,7 @@ export namespace NEvent {
     // SUBJOB_ADD = 's:subjob.add',
     // SUBJOB_UPDATE = 's:subjob.update',
     // SUBJOB_REMOVE = 's:subjob.remove',
+    AUDITLIST_REPLACE_ITEM = 's:auditlist.replace:item',
 
     // NOTE: New 2023.11
     TODO2023_REPLACE_ROOM_STATE = 's:todo-2023:replace-room-state',
@@ -23,7 +24,7 @@ export namespace NEvent {
 
     ERR_MESSAGE = 's:err-message:common',
   }
-  
+
   export enum EServerIncoming {
     CLIENT_CONNECT_TO_ROOM = 'c:gonna-be-connected-to-room', // 1. YES // NOTE: -> Init state when user connected
     AUDITLIST_REPLACE = 'c:auditlist.replace', // 2. YES // NOTE: Full update
@@ -31,6 +32,7 @@ export namespace NEvent {
     AUDIT_REMOVE = 'c:audit.remove', // 3. YES
     AUDIT_UPDATE_COMMENT = 'c:audit.update-comment',
     AUDIT_UPDATE = 'c:audit.update',
+    AUDITLIST_REPLACE_ITEM = 'c:auditlist.replace:item',
     JOB_ADD = 'c:job.add',
     JOB_UPDATE = 'c:job.update',
     JOB_REMOVE = 'c:job.remove',
@@ -166,6 +168,16 @@ export namespace NEventData {
           total: number;
         };
       };
+    }
+
+    export type TAUDITLIST_REPLACE_ITEM = {
+      room: number;
+      audit?: TAudit;
+      message?: string;
+      isOk: boolean;
+      _specialReport?: {
+        x: number;
+      }
     }
   }
 }

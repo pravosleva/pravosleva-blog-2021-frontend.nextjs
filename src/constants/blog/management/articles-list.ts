@@ -9,7 +9,7 @@ export const bg = {
   type: 'image/jpeg',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: { [key: string]: TArticleTools } = {
   // 'about-management': {
   //   id: '66c702ba08a5177347693291',
   //   brief: 'Interested about project management',
@@ -17,7 +17,7 @@ export const list: {[key: string]: TArticleTools} = {
   // },
   'remote-and-hybrid-work-format': {
     id: '685acd3010f7b720079c8bd3',
-    brief: 'Про "гибрид" и "удаленку" без лишней "воды"',
+    brief: 'Про гибрид и удаленку без лишней воды',
     bg: {
       src: 'https://pravosleva.pro/static/img/blog/ofice-hibryd.jpg',
       size: {

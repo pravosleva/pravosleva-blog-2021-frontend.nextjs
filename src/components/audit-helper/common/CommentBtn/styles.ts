@@ -8,7 +8,7 @@ export const useStyles = makeStyles((theme) => ({
     // @ts-ignore
     // border: `2px solid ${theme.palette.primary.dark}`,
     border: '2px solid rgba(203,213,225,1)',
-    borderLeftWidth: '4px',
+    // borderLeftWidth: '4px',
     // border: '2px solid lightgray',
     // color: 'rgba(203,213,225,1)',
     // @ts-ignore
@@ -16,7 +16,7 @@ export const useStyles = makeStyles((theme) => ({
     // background: `linear-gradient(90deg, ${theme.palette.secondary.light} 0%, rgba(255,255,255,1) 32%, rgba(255,255,255,1) 100%)`,
     // borderRadius: 'inherit',
     // @ts-ignore
-    borderRadius: theme.spacing(1), // NOTE: BORDER_EXP
+    borderRadius: theme.spacing(2), // NOTE: BORDER_EXP
     // backgroundImage: '',
     // @ts-ignore
     // backgroundColor: theme.palette.primary.dark,
@@ -46,7 +46,7 @@ export const useStyles = makeStyles((theme) => ({
     // backgroundColor: theme.palette.primary.dark,
     backgroundColor: 'rgb(203, 213, 225)',
     color: '#fff',
-    borderRadius: '0 4px 0 8px',
+    borderRadius: '0 12px 0 16px',
     // padding: '2px 10px',
     padding: '0px 8px 2px 10px',
     fontSize: '12px',
@@ -69,7 +69,7 @@ export const useStyles = makeStyles((theme) => ({
 
     // border: '1px solid red',
     display: 'flex',
-    gap: '0px',
+    gap: '1px',
 
     '& button': {
       border: 'none',
@@ -78,7 +78,7 @@ export const useStyles = makeStyles((theme) => ({
       fontWeight: 'bold',
       // padding: '0px 10px 2px 10px',
       // padding: '2px 10px 0px 10px',
-      padding: '2px 10px',
+      padding: '4px 16px',
     },
     '& button:first-child': {
       // borderRadius: '8px 0 0 0',

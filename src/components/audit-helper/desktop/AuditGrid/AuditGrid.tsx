@@ -7,6 +7,7 @@ import { ActiveAuditJobList } from './components/ActiveAuditJobList'
 import {
   useMemo,
   // useState, useCallback,
+  memo,
 } from 'react'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import clsx from 'clsx'
@@ -64,7 +65,7 @@ export type TAuditListProps = {
   isInitAppInProgress?: boolean;
 }
 
-export const AuditGrid = ({
+export const AuditGrid = memo(({
   audits,
   onRemoveAudit,
   onAddJob,
@@ -158,11 +159,14 @@ export const AuditGrid = ({
           <div className={clsx(styles.auditListWrapper)}>
             {
               !isInitAppInProgress
-              ? audits.length > 0 ? (
+                ? audits.length > 0 ? (
                   <>
                     {
                       audits.map((audit) => (
-                        <div className={styles.auditItem} key={audit.id}>
+                        <div
+                          key={`${audit.id}-${audit.tsUpdate}`}
+                          className={styles.auditItem}
+                        >
                           <AuditGridItem
                             audit={audit}
                             isEditable={isEditable}
@@ -182,12 +186,12 @@ export const AuditGrid = ({
                     Список пуст
                   </Alert>
                 )
-              : <CircularIndeterminate />
+                : <CircularIndeterminate />
             }
           </div>
         </div>
         <div className={styles.rightSideWrapper}>
-          
+
           <ActiveAuditJobList
             audits={audits}
             onAddJob={onAddJob}
@@ -204,4 +208,4 @@ export const AuditGrid = ({
       </div>
     </WithStateContext>
   )
-}
+})

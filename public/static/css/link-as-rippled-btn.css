@@ -42,11 +42,11 @@ body.hard-gray a.link-as-rippled-btn:active {
 }
 /* 4. DARK */
 body.dark a.link-as-rippled-btn {
-  background: linear-gradient(90deg, #0162c8, #0162c8);
+  background: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.2));
 }
 body.dark a.link-as-rippled-btn:hover,
 body.dark a.link-as-rippled-btn:active {
-  background: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.2));
+  background: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.4));
 }
 
 @media (max-width: 767px) {

@@ -70,8 +70,10 @@ export default function MyProjects({
                 marginTop: 'auto',
                 position: 'sticky',
                 bottom: '0px',
+                // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
                 zIndex: 2,
                 padding: '16px',
+                paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
                 // backgroundColor: '#fff',
                 // borderTop: '1px solid lightgray',
               }}

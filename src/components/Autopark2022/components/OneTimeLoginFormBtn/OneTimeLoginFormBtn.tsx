@@ -25,7 +25,7 @@ const api = axios.create({
   withCredentials: true,
 })
 // NOTE: See also about axios interceptors https://axios-http.com/docs/interceptors
-api.interceptors.response.use(function(config) {
+api.interceptors.response.use(function (config) {
   let count = 0
   count += 1
 
@@ -103,7 +103,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
 
           return data
         })
-        .catch((err)=> {
+        .catch((err) => {
           setApiErr(err?.message || 'ERROR 107; No err.message')
           setIsLoading(false)
           return err

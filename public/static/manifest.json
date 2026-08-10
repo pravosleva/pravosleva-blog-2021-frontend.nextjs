@@ -3,11 +3,10 @@
   "short_name": "Pravosleva",
   "theme_color": "#ffffff",
   "background_color": "#0162c8",
-  
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/blog/",
+  "start_url": "/blog/",
   "icons": [
     {
       "src": "img/logo/logo-pravosleva-72x72.jpg",

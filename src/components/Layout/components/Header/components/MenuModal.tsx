@@ -133,6 +133,11 @@ const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) =>
           <a onClick={onHideModal}>#jsVanilla</a>
         </Link>
       )}
+      {!isCurrentPathCb('/blog/q/reactHook') && (
+        <Link href="/blog/q/reactHook" as="/blog/q/reactHook">
+          <a onClick={onHideModal}>#reactHook</a>
+        </Link>
+      )}
       {!isCurrentPathCb('/blog/q/mongodb') && (
         <Link href="/blog/q/mongodb" as="/blog/q/mongodb">
           <a onClick={onHideModal}>#mongodb</a>

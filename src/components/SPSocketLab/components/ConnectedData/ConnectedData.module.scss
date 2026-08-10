@@ -137,6 +137,7 @@
 .stickyBottomHeader {
   position: sticky;
   bottom: 0;
+  // bottom: calc(0px + env(safe-area-inset-bottom, 0px));
   // border-top: 1px solid lightgray;
   box-shadow: 0 -10px 7px -8px #223c5033;
   background-color: #fff;

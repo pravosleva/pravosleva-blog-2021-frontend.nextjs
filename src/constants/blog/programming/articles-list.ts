@@ -25,7 +25,7 @@ const bgHackerNews = {
   type: 'image/png',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: { [key: string]: TArticleTools } = {
   'programming-solid': {
     id: '6728d250d9a7126af852ec18',
     brief: 'SOLID нужен для обеспечения качественной модульности, уменьшающей когнитивную сложность кода и способствующей большей переиспользуемости',
@@ -40,5 +40,35 @@ export const list: {[key: string]: TArticleTools} = {
     id: '6766beed8c79264aa7fd53aa',
     brief: 'App for open API',
     bg: bgHackerNews,
+  },
+  'programming-solid-s': {
+    id: '6a52a1aaf7929b414054202e',
+    brief: 'SOLID',
+    bg: bgSolid,
+  },
+  'programming-solid-o': {
+    id: '6a52a27ff7929b414054202f',
+    brief: 'SOLID',
+    bg: bgSolid,
+  },
+  'programming-solid-l': {
+    id: '6a52a2eff7929b4140542030',
+    brief: 'SOLID',
+    bg: bgSolid,
+  },
+  'programming-solid-i': {
+    id: '6a52a355f7929b4140542031',
+    brief: 'SOLID',
+    bg: bgSolid,
+  },
+  'programming-solid-d': {
+    id: '6a52a069f7929b414054202d',
+    brief: 'SOLID',
+    bg: bgSolid,
+  },
+  'programming-di': {
+    id: '6a52a780f7929b4140542033',
+    brief: 'DI',
+    bg: bgCoding,
   },
 }

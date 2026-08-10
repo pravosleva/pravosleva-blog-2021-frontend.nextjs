@@ -104,7 +104,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: all 0.5s ease;
 }
-* {
+*:not(pre, pre *, code, code *) {
   font-family: Montserrat, system-ui;
 }
 article,
@@ -207,10 +207,9 @@ code,
 kbd,
 pre,
 samp {
-  font-family: system-ui, monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.9em;
 }
-pre,pre *{font-family:system-ui !important}
 figure {
   margin: 1em 40px;
 }
@@ -572,11 +571,45 @@ table {
   /*  -- NTOTE: exp 1/2 */
   /* margin-bottom: 1.45rem; */
   /* -- */
-  font-size: 1rem;
+  font-size: small;
   line-height: 1.45rem;
+}
+
+table {
+  display: block;                /* Позволяет работать max-width и overflow */
+  max-width: calc(100vw - 32px); /* Ограничиваем по ширине экрана */
+  overflow-x: auto;              /* Включаем горизонтальный скролл */
+  width: 100%;
   border-collapse: collapse;
+}
+
+/* Связываем шапку и тело в единую структуру */
+table thead,
+table tbody {
+  display: block;
   width: 100%;
 }
+
+/* Задаем строкам поведение полноценной таблицы и минимальную ширину */
+table tr {
+  display: table;
+  width: 100%;
+  min-width: 500px;       /* Минимальная ширина, при которой появится скролл */
+  table-layout: fixed;    /* Намертво скрепляет колонки друг под другом */
+}
+
+/* Возвращаем ячейкам их родное поведение */
+table th, 
+table td {
+  display: table-cell;
+  padding: 10px;          /* Аккуратные отступы */
+  border: 1px solid #ccc; /* Границы ячеек для проверки ровности */
+  
+  /* Защита контента: */
+  word-wrap: break-word;  /* Переносить длинные слова, если не помещаются */
+  overflow: hidden;       /* Прятать то, что физически не влезло в ячейку */
+}
+
 fieldset {
   margin-left: 0;
   margin-right: 0;
@@ -763,7 +796,6 @@ code,
   padding: 3px 4px;
   border-radius: 5px;
   margin: 0 1px;
-  font-family: inherit;
   font-size: 0.9em;
   font-weight: bold;
   letter-spacing: 0.3px;
@@ -772,8 +804,8 @@ pre code {
   background-color: hsla(0, 0%, 0%, 0.04);
   border: none;
   box-shadow: none;
-  font-family: 'SFMono-Regular', Consolas, 'Roboto Mono', 'Droid Sans Mono', 'Liberation Mono', Menlo, Courier,
-    monospace;
+  /* font-family: 'SFMono-Regular', Consolas, 'Roboto Mono', 'Droid Sans Mono', 'Liberation Mono', Menlo, Courier,
+    monospace; */
   padding: 0;
   padding-top: 0.2em;
   padding-bottom: 0.2em;

@@ -25,7 +25,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
   // console.log('redux:title', title)
   // console.log('props:title', article?.original?.title || JSON.stringify(article))
   // NOTE: Should be like {article.original.title} on ssr
-  
+
   return (
     <>
       <Head>
@@ -47,8 +47,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
         <meta property="og:locale:alternate" content="tt_RU" />
         <meta property="og:locale:alternate" content="uk_UA" />
         <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:locale:alternate" content="en_US" />
-        
+
         <meta property="og:description" content={article.brief} />
         {
           !!article.bg ? (
@@ -67,7 +66,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
             </>
           )
         }
-        
+
         <meta property="og:site_name" content="WebExp // Blog" />
 
         {/* <!-- Twitter Meta Tags --> */}
@@ -89,7 +88,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
             </>
           )
         }
-        
+
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
         <link href="/static/css/article.css" rel="stylesheet" />

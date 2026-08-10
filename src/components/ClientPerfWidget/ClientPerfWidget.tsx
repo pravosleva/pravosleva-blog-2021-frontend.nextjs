@@ -8,6 +8,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import { useSelector, useDispatch } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
+import { getHumanizedReadableSize } from '~/utils/getHumanizedReadableSize'
 
 type TProps = {
   position: 'top-center';
@@ -133,11 +134,14 @@ export const ClientPerfWidget = (ps: TProps) => {
     }
   }, [counter])
 
-  const limit = useMemo(() => (state?.jsHeapSizeLimit || 0) / 1024 / 1024, [state?.jsHeapSizeLimit])
-  const total = useMemo(() => (state?.totalJSHeapSize || 0) / 1024 / 1024, [state?.totalJSHeapSize])
-  const used = useMemo(() => (state?.usedJSHeapSize || 0) / 1024 / 1024, [state?.usedJSHeapSize])
-  const totalOfLimit = useMemo(() => getPercentage({ x: total, sum: limit }), [total, limit])
-  const usedOfTotal = useMemo(() => getPercentage({ x: used, sum: total }), [used, total])
+  const _limit = useMemo(() => (state?.jsHeapSizeLimit || 0), [state?.jsHeapSizeLimit])
+  const limitHumanized = useMemo(() => getHumanizedReadableSize({ bytes: _limit, decimals: 1 }), [_limit])
+  const _total = useMemo(() => (state?.totalJSHeapSize || 0), [state?.totalJSHeapSize])
+  const totalHumanized = useMemo(() => getHumanizedReadableSize({ bytes: _total, decimals: 1 }), [_total])
+  const _used = useMemo(() => (state?.usedJSHeapSize || 0), [state?.usedJSHeapSize])
+  const usedHumanized = useMemo(() => getHumanizedReadableSize({ bytes: _used, decimals: 0 }), [_used])
+  const totalOfLimit = useMemo(() => getPercentage({ x: _total, sum: _limit }), [_total, _limit])
+  const usedOfTotal = useMemo(() => getPercentage({ x: _used, sum: _total }), [_used, _total])
 
   return (
     <div
@@ -163,19 +167,19 @@ export const ClientPerfWidget = (ps: TProps) => {
                 style={{ display: 'flex', justifyContent: 'space-between' }}
               >
                 <span><b>Used</b> of Total</span>
-                <span>{total.toFixed(0)} MB</span>
+                <span>{totalHumanized}</span>
               </div>
-              <ProgressBar value={usedOfTotal} label={`${used.toFixed(0)} MB`} />
+              <ProgressBar value={usedOfTotal} label={usedHumanized} />
             </div>
-            
+
             <div className={classes.stack0}>
               <div
                 style={{ display: 'flex', justifyContent: 'space-between' }}
               >
                 <span><b>Total</b> of Limit</span>
-                <span>{limit.toFixed(0)} MB</span>
+                <span>{limitHumanized}</span>
               </div>
-              <ProgressBar value={totalOfLimit} label={`${total.toFixed(0)} MB`} />
+              <ProgressBar value={totalOfLimit} label={totalHumanized} />
             </div>
           </>
         ) : (

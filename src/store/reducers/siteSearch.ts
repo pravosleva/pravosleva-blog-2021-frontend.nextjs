@@ -20,7 +20,7 @@ export const initialState: NSiteSearchState.TState = {
 const limits: {
   sqt: number;
 } = {
-  sqt: 3,
+  sqt: 2,
 }
 
 export const siteSearchSlice: any = createSlice({
@@ -42,7 +42,11 @@ export const siteSearchSlice: any = createSlice({
         const isExists = state.sqt.findIndex(({ normalized }) => normalized === action.payload.normalized) !== -1
         switch (true) {
           case isExists:
-            state.sqt = [action.payload, ...state.sqt.filter(({ normalized }) => normalized !== action.payload.normalized)]
+            state.sqt = [
+              action.payload,
+              ...state.sqt
+                .filter(({ normalized }, i) => i <= (limits.sqt - 2) && normalized !== action.payload.normalized)
+            ]
             break
           default:
             state.sqt.unshift(action.payload)

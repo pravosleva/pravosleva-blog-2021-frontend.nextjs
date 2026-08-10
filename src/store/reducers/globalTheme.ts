@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { HYDRATE } from "next-redux-wrapper"
+import { HYDRATE } from 'next-redux-wrapper'
 // import { IRootState } from '~/store/IRootState'
 
 export type TState = {
@@ -9,7 +9,7 @@ export const initialState: TState = {
   theme: 'light',
 }
 
-export const globalThemeSlice: any = createSlice({
+export const globalThemeSlice = createSlice({
   name: 'globalTheme',
   initialState,
   reducers: {

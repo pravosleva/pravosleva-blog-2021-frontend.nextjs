@@ -88,22 +88,22 @@ export const AuditList = memo(({
     >
       {
         !isInitAppInProgress
-        ? audits.length > 0 ? (
-          audits.map((audit) => (
-            <AuditItem
-              // @ts-ignore
-              audit={audit}
-              key={audit.id}
-              onRemoveAudit={onRemoveAudit}
-              onAddJob={onAddJob}
-              onAddSubjob={onAddSubjob}
-              onToggleJobDone={onToggleJobDone}
-              onRemoveJob={onRemoveJob}
-              onToggleSubjob={onToggleSubjob}
-              isEditable={isEditable}
-              onUpdateAuditComment={onUpdateAuditComment}
-            />
-          ))) : (
+          ? audits.length > 0 ? (
+            audits.map((audit) => (
+              <AuditItem
+                // @ts-ignore
+                audit={audit}
+                key={`${audit.id}-${audit.tsUpdate}`}
+                onRemoveAudit={onRemoveAudit}
+                onAddJob={onAddJob}
+                onAddSubjob={onAddSubjob}
+                onToggleJobDone={onToggleJobDone}
+                onRemoveJob={onRemoveJob}
+                onToggleSubjob={onToggleSubjob}
+                isEditable={isEditable}
+                onUpdateAuditComment={onUpdateAuditComment}
+              />
+            ))) : (
             <Alert
               // sx={{ mb: 2 }}
               variant="standard"
@@ -114,9 +114,9 @@ export const AuditList = memo(({
               </Typography>
             </Alert>
           )
-        : (
-          <CircularIndeterminate />
-        )
+          : (
+            <CircularIndeterminate />
+          )
       }
     </div>
   )

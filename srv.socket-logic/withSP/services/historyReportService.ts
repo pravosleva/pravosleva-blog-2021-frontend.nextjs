@@ -1,6 +1,6 @@
 import { NEvent, TGeoIpInfo } from '~/srv.socket-logic/withSP/types'
 import { getChannelName, getIsCorrectFormat, Logger, mws, state, geoHelper } from '~/srv.socket-logic/withSP/utils'
-import { Socket } from 'socket.io'
+import { Socket, Server } from 'socket.io'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 
 const logger = new Logger({ counterLimit: 999 })
@@ -15,7 +15,7 @@ export const historyReportService = ({
 }: {
   ip?: string;
   geoip?: TGeoIpInfo | null;
-  io: Socket;
+  io: Server;
   socket: Socket;
   clientUserAgent?: string;
   clientReferer?: string;

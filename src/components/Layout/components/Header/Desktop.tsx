@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { useCallback, useState } from 'react'
 import Headroom from 'react-headroom'
 import styled from 'styled-components'
@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback'
 import { isCurrentPath } from '@/utils/routing/isCurrentPath'
 // import { getGeoDataStr } from '@/utils/geo/getGeoDataStr'
-import { Button } from '~/ui-kit.uremont/atoms'
+import { Button as _Button } from '~/ui-kit.uremont/atoms'
 import { MenuModal } from './components/MenuModal'
 import { useUnscrolledBody } from '~/hooks/useUnscrolledBody'
 import { ThemeToggler } from '../ThemeToggler'
@@ -71,7 +71,7 @@ const Nav = styled('div')`
     display: none;
   }
 `
-const MenuFlexWrapper = styled('div')`
+const _MenuFlexWrapper = styled('div')`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,9 +81,9 @@ const MenuFlexWrapper = styled('div')`
 //   items.map(({ ip, geo }) => `${ip}${getGeoDataStr(geo)}`).join(`
 // `)
 
-const _DesktopHeader = ({
+const _DesktopHeader = memo(({
   // Translator:
-  t,
+  t: _t,
   setLang,
   suppoerLocales, // Array like this: [{ label, name, value }]
   currentLang,
@@ -91,7 +91,7 @@ const _DesktopHeader = ({
   // const usersConnected = useSelector((state) => state.users?.items)
   const isAuthenticated = !!useSelector((state: IRootState) => state.userInfo?.fromServer?.id)
   // const userInfo = !!useSelector((state: IRootState) => state.userInfo?.fromServer)
-  const router = useRouter()
+  const _router = useRouter()
   const dispatch = useDispatch()
   const isBrowserMemoryMonitorEnabled = !!useSelector((state: IRootState) => state.customDevTools.browserMemoryMonitor.isEnabled)
   const toggleBrowserMemoryMonitorDevTools = useCallback((e) => {
@@ -142,7 +142,7 @@ const _DesktopHeader = ({
     <>
       <Headroom style={{ zIndex: 5 }}>
         <header style={{ boxShadow: '0 0 4px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.28)' }}>
-          
+
           <Nav>
             <ResponsiveBlock isLimited isPaddedMobile>
               <ul
@@ -163,7 +163,7 @@ const _DesktopHeader = ({
                 >
                   <a
                     href='/'
-                    target='_self' 
+                    target='_self'
                     style={{
                       color: '#fff',
                       textDecoration: `none`,
@@ -233,7 +233,7 @@ const _DesktopHeader = ({
 
                 <ThemeToggler type='desktop' />
 
-                {!isAuthenticated && (
+                {/* {!isAuthenticated && (
                   <li className="fade-in-effect" style={{ marginBottom: '0px', padding: '0 16px' }}>
                     <Link href="/auth/login" as="/auth/login">
                       <a style={{ color: isCurrentPathCb(router.pathname, '/auth/login') ? '#ff781e' : '#fff' }}>
@@ -246,7 +246,7 @@ const _DesktopHeader = ({
                   <li style={{ marginBottom: '0px', padding: '0 16px' }} onClick={handleLogout}>
                     <a href="#">{t('LOGOUT')}</a>
                   </li>
-                )}
+                )} */}
                 {/* isAuthenticated && process.browser && (
                   <li style={{ marginBottom: '0px' }} className="avatar-wrapper">
                     <div
@@ -266,7 +266,7 @@ const _DesktopHeader = ({
                     </div>
                   </li>
                 ) */}
-                <li style={{
+                {/* <li style={{
                   marginBottom: '0px',
                   // border: '1px solid red',
                   // padding: '0 0 0 16px',
@@ -281,11 +281,11 @@ const _DesktopHeader = ({
                       {t('MENU')}
                     </Button>
                   </MenuFlexWrapper>
-                </li>
+                </li> */}
               </ul>
             </ResponsiveBlock>
           </Nav>
-          
+
         </header>
       </Headroom>
       <MenuModal
@@ -302,7 +302,7 @@ const _DesktopHeader = ({
       `}</style>
     </>
   )
-}
+})
 
 export const DesktopHeader = withTranslator<{
   [key: string]: any;

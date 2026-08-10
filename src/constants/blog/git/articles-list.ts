@@ -14,7 +14,7 @@ const bg = {
   type: 'image/png',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: { [key: string]: TArticleTools } = {
   'git-cherry-pick': {
     id: '60d1b52000cc4a1dc3edbee9',
     brief: 'Заметки про GIT',
@@ -47,6 +47,11 @@ export const list: {[key: string]: TArticleTools} = {
   },
   'git-tags': {
     id: '61681f822127600bddd02a9d',
+    brief: 'Заметки про GIT',
+    bg,
+  },
+  'git-flow-2026-p2': {
+    id: '6a0deb35f7929b4140542020',
     brief: 'Заметки про GIT',
     bg,
   },

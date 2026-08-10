@@ -115,38 +115,38 @@ const projects: TProject[] = [
     // brief: 'PROJECT_BRIEF@SP_TRADEIN',
     tags: [],
   },
-  {
-    id: 4,
-    title: 'AutoPark 2022',
-    description: 'AUTO_PARK_PROJECT_DESCR',
-    img: {
-      // src: '/static/img/projects/autopark.webp',
-      src: '/static/img/projects/autopark-logo.big.png',
-      alt: 'loading...',
-      color: {
-        average: '#7c8084',
-      },
-    },
-    links: [
-      {
-        href: '/blog/q/[search_query_title]',
-        as: '/blog/q/autoPark',
-        text: 'PROJECT_GO_BTN:LINK_GOTO',
-        color: ELinkColor.YELLOW,
-        icon: ELinkIcon.ARROW,
-      },
-      // {
-      //   href: 'https://t.me/pravosleva_bot?start=autopark',
-      //   as: 'https://t.me/pravosleva_bot?start=autopark',
-      //   text: 'PROJECT_GO_BTN:LINK_TG',
-      //   color: ELinkColor.TG,
-      //   icon: ELinkIcon.TG,
-      // },
-    ],
-    uiDate: '2022',
-    brief: 'PROJECT_BRIEF@CAR_SERVICE_BOOK',
-    tags: ['autoPark', 'telegram'],
-  },
+  // {
+  //   id: 4,
+  //   title: 'AutoPark 2022',
+  //   description: 'AUTO_PARK_PROJECT_DESCR',
+  //   img: {
+  //     // src: '/static/img/projects/autopark.webp',
+  //     src: '/static/img/projects/autopark-logo.big.png',
+  //     alt: 'loading...',
+  //     color: {
+  //       average: '#7c8084',
+  //     },
+  //   },
+  //   links: [
+  //     {
+  //       href: '/blog/q/[search_query_title]',
+  //       as: '/blog/q/autoPark',
+  //       text: 'PROJECT_GO_BTN:LINK_GOTO',
+  //       color: ELinkColor.YELLOW,
+  //       icon: ELinkIcon.ARROW,
+  //     },
+  //     // {
+  //     //   href: 'https://t.me/pravosleva_bot?start=autopark',
+  //     //   as: 'https://t.me/pravosleva_bot?start=autopark',
+  //     //   text: 'PROJECT_GO_BTN:LINK_TG',
+  //     //   color: ELinkColor.TG,
+  //     //   icon: ELinkIcon.TG,
+  //     // },
+  //   ],
+  //   uiDate: '2022',
+  //   brief: 'PROJECT_BRIEF@CAR_SERVICE_BOOK',
+  //   tags: ['autoPark', 'telegram'],
+  // },
   {
     id: 5,
     title: 'RedShark 2022',
@@ -211,10 +211,10 @@ const projects: TProject[] = [
     description: 'PROJECT_DESCR@SEO_EXP',
     // brief: 'PROJECT_BRIEF@SEO_EXP',
     img: {
-      src: '/static/img/projects/blog.webp',
+      src: '/static/img/projects/blog-2.webp', // NOTE: 498x494
       alt: 'loading...',
       color: {
-        average: '#5b6567',
+        average: '#afbec8',
       },
     },
     links: [

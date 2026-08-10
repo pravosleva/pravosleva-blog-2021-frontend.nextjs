@@ -12,7 +12,7 @@ $widget-height-max-desktop: 100dvh;
 $widget-toggler-width-desktop: 40px;
 
 // NOTE: Mobile
-$widget-width-mobile: calc(100vw - 16px);
+$widget-width-mobile: 100vw; // calc(100vw - 16px);
 // $widget-height-min-mobile: 600px;
 // $widget-height-max-mobile: 600px;
 $widget-height-min-mobile: 100dvh;
@@ -27,7 +27,7 @@ $widget-toggler-width-mobile: 0px;
 
   // overflow-x: hidden;
   box-sizing: border-box;
-  border-radius: 0 16px 16px 0;
+  // border-radius: 0 16px 16px 0;
 
   position: fixed;
   z-index: 4;
@@ -39,6 +39,7 @@ $widget-toggler-width-mobile: 0px;
 
   box-shadow: 0 5px 10px 0px rgba(7, 7, 7, 0.3);
 }
+
 .internalSpace {
   // border: 1px dashed red;
 
@@ -46,6 +47,7 @@ $widget-toggler-width-mobile: 0px;
   // padding: 16px;
   width: 100%;
 }
+
 .toggler {
   box-sizing: border-box;
   padding: 0;
@@ -71,22 +73,33 @@ $widget-toggler-width-mobile: 0px;
     top: 50%;
     left: 0;
     min-height: $widget-height-min-mobile;
+    /* Динамическая высота подстраивается под скрытие/появление адресной строки */
+    // min-height: 100dvh;
+    /* Внутренний отступ снизу защищает контент от перекрытия шторкой "Домой" */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Включает правильный расчет высоты, чтобы padding не увеличивал размер блока */
+    box-sizing: border-box;
+
     max-height: $widget-height-max-mobile;
     width: $widget-width-mobile;
 
     transform: translateY(-50%) translateX(calc(-100% + #{$widget-toggler-width-mobile}));
   }
+
   .isOpened {
     transform: translateY(-50%) translateX(0);
   }
+
   .toggler {
     min-width: $widget-toggler-width-mobile;
     max-width: $widget-toggler-width-mobile;
   }
+
   .internalSpace {
     max-width: calc($widget-width-mobile - $widget-toggler-width-mobile);
   }
 }
+
 @media(min-width: calc(#{$sm + 1}px + 1px)) {
   .wrapper {
     top: 50%;
@@ -97,14 +110,17 @@ $widget-toggler-width-mobile: 0px;
 
     transform: translateY(-50%) translateX(calc(-100% + #{$widget-toggler-width-desktop}));
   }
+
   .isOpened {
     transform: translateY(-50%) translateX(0);
   }
+
   .toggler {
     min-width: $widget-toggler-width-desktop;
     max-width: $widget-toggler-width-desktop;
     border-left: 1px solid lightgray;
   }
+
   .internalSpace {
     max-width: calc($widget-width-desktop - $widget-toggler-width-desktop);
   }
@@ -115,6 +131,7 @@ $widget-toggler-width-mobile: 0px;
   flex-direction: column;
   gap: 0px;
 }
+
 .row {
   display: flex;
   flex-direction: row;

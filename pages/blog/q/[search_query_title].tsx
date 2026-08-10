@@ -35,7 +35,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
   )
 
   const thisPageUrl = `https://pravosleva.pro/blog/q/${searchQueryTitle.withoutSpaces}`
-  
+
   return (
     <>
       <Head>
@@ -68,7 +68,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
-        <link href="/static/css/blog_sqt_[search_query_title].css" rel="stylesheet" />
+        <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" />
       </Head>
       <Layout>
         <ArticlesList
@@ -131,7 +131,7 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
           _pageService.message = noteResult?.response?.message || 'No noteResult?.response?.message'
         }
       }
-      break
+        break
       default:
         _pageService.isOk = false
         _pageService.message = 'Кажется, нет такой заметки, но она скоро обязательно появится...'

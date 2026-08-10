@@ -26,6 +26,8 @@ const CookiePolicyOfferWrapper = styled('div').attrs({
 
   position: fixed;
   bottom: 0;
+  // bottom: calc(0px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   // background-color: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;

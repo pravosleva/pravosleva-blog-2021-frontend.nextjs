@@ -7,7 +7,7 @@ export type TSubJob = {
   status: ESubjobStatus;
   name: string;
   description?: string;
-  
+
   tsCreate: number;
   tsUpdate: number;
 }
@@ -49,6 +49,7 @@ export namespace NEvent {
     // SUBJOB_ADD = 's:subjob.add',
     // SUBJOB_UPDATE = 's:subjob.update',
     // SUBJOB_REMOVE = 's:subjob.remove',
+    AUDITLIST_REPLACE_ITEM = 's:auditlist.replace:item',
 
     // NOTE: New 2023.11
     TODO2023_REPLACE_ROOM_STATE = 's:todo-2023:replace-room-state',
@@ -60,12 +61,13 @@ export namespace NEvent {
 
     ERR_MESSAGE = 's:err-message:common',
   }
-  
+
   export enum EServerIncoming {
     // 1.incoming
     CLIENT_CONNECT_TO_ROOM = 'c:gonna-be-connected-to-room',
     // 2.incoming
     AUDITLIST_REPLACE = 'c:auditlist.replace', // NOTE: Full update
+    AUDITLIST_REPLACE_ITEM = 'c:auditlist.replace:item', // NOTE: Full update
     AUDIT_ADD = 'c:audit.add',
     AUDIT_REMOVE = 'c:audit.remove',
     AUDIT_UPDATE_COMMENT = 'c:audit.update-comment',
@@ -114,6 +116,12 @@ export namespace NEventData {
       audits: TAudit[];
     }
     export type TAUDITLIST_REPLACE_CB = ({ data }: { data: { room: number; audits: TAudit[]; message?: string } }) => void;
+
+    export type TAUDITLIST_REPLACE_ITEM = {
+      room: number;
+      audit: TAudit;
+    }
+    export type TAUDITLIST_REPLACE_ITEM_CB = ({ data }: { data: { room: number; audit?: TAudit; message?: string; isOk: boolean; } }) => void;
 
     export type TAUDIT_REMOVE = {
       room: number;
@@ -213,7 +221,7 @@ export namespace NEventData {
     export type TRequestPageCB = {
       isOk: boolean;
       strapiTodos: NTodo.TTodo[];
-      
+
     }
   }
 }
@@ -228,7 +236,7 @@ export namespace NAudit {
     status: ESubjobStatus;
     name: string;
     description?: string;
-    
+
     tsCreate: number;
     tsUpdate: number;
   }
@@ -243,7 +251,7 @@ export namespace NAudit {
     name: string;
     description?: string;
     subjobs: TSubJob[];
-  
+
     tsCreate: number;
     tsUpdate: number;
   }
@@ -252,7 +260,7 @@ export namespace NAudit {
     name: string;
     description?: string;
     jobs: IJob[];
-  
+
     tsCreate: number;
     tsUpdate: number;
   }
@@ -267,7 +275,7 @@ export namespace NTodo {
     DANGER = 'danger',
     SUCCESS = 'success',
     IS_DONE = 'is_done',
-  };  
+  };
   export type TItem = {
     label: string;
     description: string;

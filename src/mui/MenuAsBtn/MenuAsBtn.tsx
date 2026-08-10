@@ -122,6 +122,7 @@ export const MenuAsBtn = ({
         }}
         sx={{
           maxWidth: '350px',
+          fontSize: 'small',
         }}
         TransitionComponent={Fade}
       >
@@ -159,14 +160,14 @@ export const MenuAsBtn = ({
               >
                 {
                   !!ItemIcon
-                  ? (
-                    <>
-                      <ListItemIcon>{ItemIcon}</ListItemIcon>
-                      <Typography variant="inherit">{label}</Typography>
-                    </>
-                  ) : (
-                    <span className='truncate'>{label}</span>
-                  )
+                    ? (
+                      <>
+                        <ListItemIcon>{ItemIcon}</ListItemIcon>
+                        <Typography variant="inherit" sx={{ fontSize: 'small' }}>{label}</Typography>
+                      </>
+                    ) : (
+                      <span className='truncate'>{label}</span>
+                    )
                 }
               </MenuItem>
             )

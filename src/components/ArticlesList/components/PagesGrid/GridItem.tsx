@@ -47,7 +47,7 @@ export const GridItem = ({ article }: TProps) => {
       style={{
         backgroundImage: `url(${url})`,
         filter: !!bg?.src ? 'none' : 'grayscale(100%)',
-        opacity: !!bg?.src ? 1 : 0.5,
+        // opacity: !!bg?.src ? 1 : 0.5,
         fontFamily: 'Montserrat, system-ui',
       }}
     >

@@ -15,7 +15,7 @@ export default function FeedbackThanks() {
             In progress...
           </Alert>
           <Stack spacing={1}>
-            <Button startIcon={<ArrowBackIcon />} variant="contained" color='primary' component={Link} noLinkStyle href="/" shallow>
+            <Button startIcon={<ArrowBackIcon />} variant="contained" color='primary' component={Link} noLinkStyle href="https://pravosleva.pro" shallow>
               Home
             </Button>
           </Stack>

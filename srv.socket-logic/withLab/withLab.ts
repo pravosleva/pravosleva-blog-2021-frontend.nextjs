@@ -1,4 +1,4 @@
-import { Socket, DisconnectReason as TDisconnectReason } from 'socket.io'
+import { Socket, Server, DisconnectReason as TDisconnectReason } from 'socket.io'
 import { Looper, NLooper } from '~/srv.utils/Looper'
 import { state, Singleton as StateSingleton } from './state'
 import { quotesData } from './quotesData'
@@ -26,7 +26,7 @@ const loopers: {
 const quoteNotifIntervalInMinutes = 5
 const quoteNotifAutoHideLimitInMinutes = 1
 
-export const withLab = (io: Socket) => {
+export const withLab = (io: Server) => {
   io.on('connection', function (socket: Socket) {
     // console.log(socket.handshake.query.uniqueClientKey) // Socket-Lab-Unique-Client-Key
     // - NOTE: Discnnect cb

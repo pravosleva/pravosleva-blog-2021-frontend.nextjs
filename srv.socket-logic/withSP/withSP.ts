@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io'
+import { Socket, Server } from 'socket.io'
 // import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 import { NEvent, TGeoIpInfo } from './types'
 import {
@@ -6,9 +6,13 @@ import {
   geoHelper,
   state,
 } from './utils'
-import { historyReportService, standartReportService } from './services'
+import {
+  // experimentalService,
+  historyReportService,
+  standartReportService,
+} from './services'
 
-export const withSP = (io: Socket) => {
+export const withSP = (io: Server) => {
   io.on('connection', async function (socket: Socket) {
     let ip: string | undefined
     let geoip: TGeoIpInfo | null | undefined
@@ -18,7 +22,7 @@ export const withSP = (io: Socket) => {
     // console.log('- EV LOG: socket connection: socket.handshake.headers')
     // console.log(socket.handshake.headers)
     // console.log('- /EV')
-    
+
     // -- MOTE: 1. Get IP adress exp
     // const ip = socket.handshake.address // NOTE: Doesnt work
     try {

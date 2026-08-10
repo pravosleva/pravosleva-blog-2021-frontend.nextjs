@@ -77,7 +77,6 @@ function AppWithRedux(props: MyAppProps) {
     <>
       <Head>
         <meta name="theme-color" content="#0162c8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
@@ -92,7 +91,7 @@ function AppWithRedux(props: MyAppProps) {
           fetchpriority="high"
         />
         <link rel="stylesheet" href="/static/css/min/common.css" />
-        
+
         <link
           href="/static/css/min/gosuslugi.css"
           rel="preload"
@@ -131,7 +130,7 @@ function AppWithRedux(props: MyAppProps) {
           fetchpriority="high"
         />
         <link href="/static/css/min/audit-list.css" rel="stylesheet" />
-        
+
         <link
           href={`/static/css/global-theming.css?ts=${ts}`}
           rel="preload"
@@ -140,7 +139,7 @@ function AppWithRedux(props: MyAppProps) {
           fetchpriority="high"
         />
         <link href={`/static/css/global-theming.css?ts=${ts}`} rel="stylesheet" />
-        
+
         <link
           href="/static/css/min/standart-form.css"
           rel="preload"
@@ -198,7 +197,7 @@ function AppWithRedux(props: MyAppProps) {
           fetchpriority="high"
         />
         <link href="/static/css/min/mapbox-gl@2.6.1.min.css" rel="stylesheet" />
-        
+
         {/* <link
           href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
           rel="preload"

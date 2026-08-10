@@ -20,9 +20,10 @@ export const setCommonStore = ({ store, baseProps }: TProps) => {
   else store.dispatch(setLang(baseProps.langData.default))
 
   // NOTE: 3. Theme
-  if (!!baseProps.themeData.fromCookies)
+  if (!!baseProps.themeData.fromCookies) {
     store.dispatch(setTheme(baseProps.themeData.fromCookies))
-  else store.dispatch(setTheme(baseProps.themeData.default))
+    console.log(`-- theme set: ${baseProps.themeData.fromCookies}`)
+  } else store.dispatch(setTheme(baseProps.themeData.default))
 
   // NOTE: Other common props
   store.dispatch(setBaseProps(baseProps))

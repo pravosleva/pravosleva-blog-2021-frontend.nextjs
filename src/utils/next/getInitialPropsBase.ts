@@ -11,6 +11,7 @@ export const initialBaseProps = {
         _service: {
           isErrored: false,
         },
+        data: null, // { chat_id: null },
       },
     },
   },
@@ -38,6 +39,7 @@ export const getInitialPropsBase = async (ctx: any): Promise<TBaseProps> => {
         _service: {
           isErrored: false,
         },
+        data: null,
       },
     }
   }
@@ -50,14 +52,29 @@ export const getInitialPropsBase = async (ctx: any): Promise<TBaseProps> => {
     default: 'light',
   }
   const errors = []
-  
+
   // NOTE: 1. Auth
   const authCookieName = 'autopark-2022.jwt'
   const secretKey = 'super-secret'
   try {
     const { cookies } = ctx.req
     if (!!cookies[authCookieName]) {
+      // NOTE: v1
       const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
+
+      // NOTE: v2
+      // const [encodedHeader, _encodedPayload, _signature] = cookies.get(authCookieName)?.value.split('.');
+      // const decodedToken = JSON.parse(atob(encodedHeader));
+
+      if (!!decodedToken?.chat_id) {
+        authData.oneTime.jwt.data = {
+          chat_id: decodedToken?.chat_id,
+        }
+        authData.oneTime.jwt._service.message = `Authorized: chat_id detected from jwt: ${decodedToken?.chat_id} (${typeof decodedToken?.chat_id})`
+      } else {
+        authData.oneTime.jwt._service.message = 'Not authorized'
+      }
+
       if (decodedToken?.chat_id === tg_chat_id) {
         authData.oneTime.jwt.isAuthorized = true
       } else {
@@ -109,7 +126,6 @@ export const getInitialPropsBase = async (ctx: any): Promise<TBaseProps> => {
       default:
         break
     }
-    
   } catch (err: any) {
     errors.push(`Ошибка определения темы #THEME_001: ${err?.message || 'No err.message'}`)
   }

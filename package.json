@@ -66,6 +66,7 @@
     "html-to-text": "^9.0.5",
     "javascript-time-ago": "^2.5.10",
     "js-cookie": "^3.0.5",
+    "json-size": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
     "local-storage": "1.4.2",
     "mapbox-gl": "^3.4.0",

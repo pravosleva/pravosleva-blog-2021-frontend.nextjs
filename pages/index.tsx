@@ -76,7 +76,7 @@ const Index = () => {
         {/* <!-- HTML Meta Tags --> */}
         <title>Pravosleva</title>
         <link rel="manifest" href="/static/manifest.json" />
-        <meta name="description" content='Заметки начинающего разраба.' />
+        <meta name="description" content='Заметки разработчика' />
 
         {/* <!-- Facebook Meta Tags --> */}
         <meta property="og:url" content="https://pravosleva.pro" />

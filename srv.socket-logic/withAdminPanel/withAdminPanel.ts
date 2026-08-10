@@ -1,8 +1,7 @@
 import { instrument } from '@socket.io/admin-ui'
-import { Socket } from 'socket.io'
+import { Server } from 'socket.io'
 
-export const withAdminPanel = (io: Socket) => {
-  // @ts-ignore
+export const withAdminPanel = (io: Server) => {
   instrument(io, {
     namespaceName: '/admin',
     // auth: false,

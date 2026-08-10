@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, memo } from 'react'
 import { CircularWithValueLabel } from '~/components/CircularWithValueLabel'
 import { useStyles } from './styles'
 import { useMemo } from 'react'
@@ -47,7 +47,7 @@ type TProps = {
   onEditAudit?: (audit: TAudit) => void;
   isEditable: boolean;
 }
-export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }: TProps) => {
+export const AuditGridItem = memo(({ audit, isEditable, onRemoveAudit, onEditAudit }: TProps) => {
   const styles = useStyles()
   const completeJobsPercentage = useMemo(() => stateHelper.getCompleteJobsPercentage({
     audit,
@@ -55,10 +55,10 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }:
 
   const [activeAuditId, setStore] = useStore((store: TDesktopAuditState) => store.activeAuditId)
   const handleSelectAuditAsActive = useCallback(({ auditId }: { auditId: string | null }) => (_ev: any) => {
-      setStore({ activeAuditId: auditId })
+    setStore({ activeAuditId: auditId })
   }, [])
   const isAuditActive = useMemo<boolean>(() => activeAuditId === audit.id, [activeAuditId])
-  
+
   return (
     <div className={clsx(styles.wrapper, { [styles.activeWrapper]: isAuditActive })}>
       <div className={styles.display}>
@@ -115,4 +115,4 @@ export const AuditGridItem = ({ audit, isEditable, onRemoveAudit, onEditAudit }:
       </div>
     </div>
   )
-}
+})

@@ -102,7 +102,7 @@
 
 .description-markdown pre {
   border-radius: 8px;
-  margin-bottom: 20px !important;
+  margin-bottom: 1.45rem !important;
 }
 @media (max-width: 600px) {
   .description-markdown pre {

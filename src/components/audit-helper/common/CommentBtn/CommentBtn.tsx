@@ -63,7 +63,7 @@ export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
   const handleClose = useCallback(() => {
     setIsEditMode(false)
   }, [initialState.comment])
-  
+
   const handleChange = useCallback((e) => {
     setComment(e.target.value)
   }, [])
@@ -98,15 +98,15 @@ export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
                 onChange={handleChange}
                 multiline
                 maxRows={4}
-                // sx={{
-                //   borderRadius: '8px',
-                // }}
+              // sx={{
+              //   borderRadius: '8px',
+              // }}
               />
             </Grid>
 
             <Grid item xs={6}>
               <Button
-                // size='small'
+                size='small'
                 fullWidth
                 disabled={!isEditable || !comment || comment === initialState.comment || comment.length > 200}
                 variant='contained' onClick={handleSubmit} color='primary' startIcon={<SaveIcon />}
@@ -114,7 +114,7 @@ export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
             </Grid>
             <Grid item xs={6}>
               <Button
-                // size='small'
+                size='small'
                 fullWidth variant='outlined' onClick={() => {
                   handleReset()
                   handleClose()
@@ -196,11 +196,10 @@ export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Button
-                      // size='small'
+                      size='small'
                       startIcon={<AddIcon />}
                       fullWidth
                       variant='outlined' color='primary' onClick={handleEditToggle}
-
                     >
                       Добавить комментарий
                     </Button>

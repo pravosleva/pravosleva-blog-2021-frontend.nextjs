@@ -49,7 +49,7 @@ const nextConfig = {
     runtimeCaching,
     // disable: process.env.NODE_ENV === 'development',
     register: true,
-    scope: '/app',
+    scope: '/blog/',
     sw: 'service-worker.js',
     //...
   },

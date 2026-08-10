@@ -1,4 +1,4 @@
-import { Socket } from 'socket.io'
+import { Socket, Server } from 'socket.io'
 // import { getTstValue } from '~/srv.utils'
 import { NEvent, NEventData, NTodo } from './types'
 // NOTE: Fake DB as cache
@@ -16,7 +16,7 @@ const delay = (ms = 200) => new Promise((res) => {
   setTimeout(res, ms)
 })
 
-export const withAuditListSocketLogic = (io: Socket) => {
+export const withAuditListSocketLogic = (io: Server) => {
   io.on('connection', function (socket: Socket) {
     // 1.
     socket.on(NEvent.EServerIncoming.CLIENT_CONNECT_TO_ROOM, ({ room }: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM, cb: NEventData.NServerIncoming.TCLIENT_CONNECT_TO_ROOM_CB) => {
@@ -63,6 +63,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
         tg_chat_id: room,
       })
         .then((res) => {
+          console.log(res)
           if (res.isOk && Array.isArray(res.response?.audits)) {
             stateInstance.initRoomAudits({ room, audits: res.response?.audits })
             io.to(socket.id).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
@@ -74,7 +75,9 @@ export const withAuditListSocketLogic = (io: Socket) => {
             message: `BACK Socket report <- ${res.message || res.response?.message || 'Не удалось получить список audits (текст ошибки не получен)'}`,
           })
         })
-        .catch((err) => err)
+        .catch((err) => {
+          console.log(err)
+        })
 
       // if (eHelperAudits.isOk && Array.isArray(eHelperAudits.response?.audits))
       //   stateInstance.initRoomAudits({ room, audits: eHelperAudits.response?.audits })
@@ -182,7 +185,8 @@ export const withAuditListSocketLogic = (io: Socket) => {
           //   : []
           strapiTodos: [],
           // --
-        }})
+        }
+      })
     })
     socket.on(NEvent.EServerIncoming.TODO2023_REQUEST_PAGE, ({ room, page }: NEventData.NServerIncoming.TRequestPage) => {
       strapiHttpClient.gqlGetTodos({
@@ -234,6 +238,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       // cb({ data: { room, audits: stateInstance.get(room) || [], message: `stateInstance.size= ${stateInstance.size}` }})
 
       const fixResponses = []
+      console.log(`1. ${NEvent.EServerIncoming.AUDITLIST_REPLACE} room -> ${room}`)
       for (const audit of audits) {
         const fixResponse = await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
           namespace: 'audit-list',
@@ -254,7 +259,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
       //     tg_chat_id: room,
       //     audits,
       //   }).then((res) => res).catch((err) => err)
-      
+
       // NOTE: broadcast to all
       io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
         room,
@@ -264,6 +269,43 @@ export const withAuditListSocketLogic = (io: Socket) => {
         },
       })
     })
+
+    socket.on(
+      NEvent.EServerIncoming.AUDITLIST_REPLACE_ITEM,
+      async ({ room, audit }: NEventData.NServerIncoming.TAUDITLIST_REPLACE_ITEM, cb: NEventData.NServerIncoming.TAUDITLIST_REPLACE_ITEM_CB) => {
+        // TODO: 1
+        // - OLD: stateInstance.initRoomAudits({ room, audits })
+        await universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/replace-audit-item`, {
+          namespace: 'audit-list',
+          tg_chat_id: room,
+          audit,
+        })
+          .then((res) => {
+            console.log(res)
+            stateInstance.replaceAudit({ room, auditId: audit.id, originalData: audit })
+              .then(({ updatedAudit, isOk, message }) => {
+                io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE_ITEM, {
+                  room,
+                  audit: updatedAudit,
+                  isOk,
+                  message,
+                  _specialReport: {
+                    x: 1,
+                  },
+                })
+              })
+              .catch((err) => {
+                if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
+              })
+          })
+          .catch((err) => {
+            // isOk: false,
+            // message: err?.message || 'e-helper ERR /replace-audit-item'
+            if (!!cb) cb({ data: { room, isOk: false, message: err?.message || 'No err.message' } })
+          })
+      }
+    )
+
     // TODO?: /express-next-api/todo2023/auditlist.replace { room, audits }
     // 3.
     socket.on(NEvent.EServerIncoming.AUDIT_REMOVE, ({ room, auditId }: NEventData.NServerIncoming.TAUDIT_REMOVE, cb: NEventData.NServerIncoming.TAUDIT_REMOVE_CB) => {
@@ -292,14 +334,14 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           });
           // cb({ data: { room, isOk, audits, message: `stateInstance.size= ${stateInstance.size}` }})
         })
         .catch((err) => {
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
     socket.on(NEvent.EServerIncoming.AUDIT_UPDATE, ({ room, auditId, newAuditData }: NEventData.NServerIncoming.TAUDIT_UPDATE, cb: NEventData.NServerIncoming.TAUDIT_UPDATE_CB) => {
@@ -321,20 +363,20 @@ export const withAuditListSocketLogic = (io: Socket) => {
             }))
 
           if (isOk) io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
-              room,
-              audits,
-              _specialReport : {
-                fixResponse,
-              },
-            })
+            room,
+            audits,
+            _specialReport: {
+              fixResponse,
+            },
+          })
           else io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
             message: `BACK Socket report <- ${message || 'Не удалось обновить список audits (текст ошибки не получен)'}`,
           })
 
-          cb({ data: { room, isOk, audits, updatedAudit, message: `stateInstance.size= ${stateInstance.size}` }})
+          cb({ data: { room, isOk, audits, updatedAudit, message: `stateInstance.size= ${stateInstance.size}` } })
         })
         .catch((err: any) => {
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
 
@@ -360,13 +402,13 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           });
         })
         .catch((err) => {
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
     // 5.
@@ -396,13 +438,13 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           });
         })
         .catch((err) => {
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
     // 5.
@@ -432,13 +474,13 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           })
         })
         .catch((err) => {
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
     // 6.
@@ -468,13 +510,13 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           });
         })
         .catch((err) => {
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
     // 7.
@@ -504,14 +546,14 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           });
         })
         .catch((err) => {
           // console.log(err)
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
     // 8.
@@ -539,14 +581,14 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           });
         })
         .catch((err) => {
           // console.log(err)
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
     // 9.
@@ -562,14 +604,14 @@ export const withAuditListSocketLogic = (io: Socket) => {
           io.in(getChannelName(room)).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
             room,
             audits,
-            _specialReport : {
+            _specialReport: {
               fixResponse,
             },
           });
         })
         .catch((err) => {
           // console.log(err)
-          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' }})
+          if (!!cb) cb({ data: { room, isOk: err?.isOk || false, message: err?.message || 'No err.message' } })
         })
     })
 
@@ -664,7 +706,7 @@ export const withAuditListSocketLogic = (io: Socket) => {
             // console.log(err)
             if (!!cb) cb({ room: ev.room, isOk: err?.isOk || false, message: err?.message || 'No err.message', roomState: err?.roomState || stateInstance._todo.get(ev.room) })
           })
-    })
+      })
     socket.on(NEvent.EServerIncoming.TODO2023_UPDATE_TODO_ITEM, (ev: NEventData.NServerIncoming.TUpdateTodo, cb?: (e: NEventData.NServerIncoming.TUpdateTodoCB) => void) => {
       stateInstance.updateTodo({
         room: ev.room,

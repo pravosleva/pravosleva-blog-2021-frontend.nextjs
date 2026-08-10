@@ -49,7 +49,7 @@ export const CustomAlert = ({ header, description, alert, controls }: {
       {
         !!description ? (
           <>
-            <AlertTitle>{header}</AlertTitle>
+            <AlertTitle sx={{ wordBreak: 'break-word', fontSize: 'small' }}>{header}</AlertTitle>
             {description}
           </>
         ) : (

@@ -5,7 +5,7 @@ import {
   Button,
   Container,
   Grid,
- } from '@mui/material'
+} from '@mui/material'
 import Link from '~/components/Link'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -98,8 +98,10 @@ export default function MyProjects({
             marginTop: 'auto',
             position: 'sticky',
             bottom: '0px',
+            // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
             zIndex: 2,
             padding: '16px',
+            paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
             // backgroundColor: '#fff',
             borderTop: '1px solid lightgray',
           }}
@@ -109,10 +111,10 @@ export default function MyProjects({
             {
               isOneTimePasswordCorrect && (
                 <Grid item xs={12}>
-                {/* <Button sx={{ mb: 2 }} fullWidth variant="contained" color='primary' onClick={handleAddItem} startIcon={<AddIcon />}>
+                  {/* <Button sx={{ mb: 2 }} fullWidth variant="contained" color='primary' onClick={handleAddItem} startIcon={<AddIcon />}>
                   Добавить расходник
                 </Button> */}
-                <CreateNewItem chat_id={chat_id} project_id={project_id} />
+                  <CreateNewItem chat_id={chat_id} project_id={project_id} />
                 </Grid>
               )
             }

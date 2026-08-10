@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { memo, useCallback, useState, useRef, useEffect } from 'react'
+import { memo, useCallback, useState, useRef, useEffect, useMemo } from 'react'
 import { /* VariantType, */ useSnackbar } from 'notistack'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -45,10 +45,15 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import { useIsInViewport } from '~/hooks/useIsInViewport'
 import TelegramIcon from '@mui/icons-material/Telegram'
 import clsx from 'clsx'
+// @ts-ignore
+import jsonSize from 'json-size'
+import { getHumanizedReadableSize } from '~/utils/getHumanizedReadableSize'
+import { useLightThemeAlways } from '~/hooks/useLightThemeAlways'
 
 const isDev = process.env.NODE_ENV === 'development'
 
 export const ToDo2023 = memo(() => {
+  useLightThemeAlways()
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const dispatch = useDispatch()
@@ -83,7 +88,7 @@ export const ToDo2023 = memo(() => {
   }, [])
 
   const localAudits: TAudit[] = useSelector((state: IRootState) => state.todo2023.localAudits)
-  
+
   const handleRemoveAudit = useCallback(({ auditId }) => {
     const isConfirmed = window.confirm('Аудит будет удален. Вы уверены?')
     if (isConfirmed) dispatch(removeAudit({
@@ -198,7 +203,7 @@ export const ToDo2023 = memo(() => {
     setTimeout(() => {
       setIsScrollToBottomVisible(!isBottomInViewport)
     }, 0)
-    
+
   }, [isBottomInViewport, typeof window, localAudits.length])
   const scrollToBottom = useCallback(() => {
     try {
@@ -208,6 +213,11 @@ export const ToDo2023 = memo(() => {
       console.log(err)
     }
   }, [])
+
+  const sizeInfo = useMemo(
+    () => getHumanizedReadableSize({ bytes: jsonSize(localAudits), decimals: 2 }),
+    [localAudits]
+  )
 
   switch (true) {
     case isMobile: return (
@@ -221,8 +231,8 @@ export const ToDo2023 = memo(() => {
             <Stack
               direction='column'
               alignItems='start'
-              spacing={2}
-              sx={{ pt: 2, pb: 2 }}
+              spacing={0}
+              sx={{ pt: 4, pb: 4 }}
             >
               <Box
                 sx={{
@@ -235,9 +245,9 @@ export const ToDo2023 = memo(() => {
                 <Typography
                   variant="h5"
                   display="block"
-                  // gutterBottom
+                // gutterBottom
                 >
-                  AuditList
+                  AuditList ({sizeInfo})
                 </Typography>
                 {
                   lastVisitedOnlinePages?.length > 0 && (
@@ -287,7 +297,7 @@ export const ToDo2023 = memo(() => {
                 }
               </Box>
             </Stack>
-  
+
             <AuditList
               audits={localAudits}
               onRemoveAudit={handleRemoveAudit}
@@ -307,14 +317,16 @@ export const ToDo2023 = memo(() => {
                   marginTop: 'auto',
                   position: 'sticky',
                   bottom: '0px',
+                  // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
                   zIndex: 2,
                   padding: '16px',
+                  paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
                   // backgroundColor: '#fff',
                   // borderTop: '1px solid lightgray',
                 }}
                 className={clsx('backdrop-blur--lite', 'box-shadow-top__mobile')}
               >
-                <Box sx={{ pt:0, pb: 2 }}>
+                <Box sx={{ pt: 0, pb: 2 }}>
                   <AddNewBtn
                     cb={{
                       onSuccess: handleAddNewAudit,
@@ -343,7 +355,7 @@ export const ToDo2023 = memo(() => {
                   />
                 </Box>
                 <Stack spacing={2} direction='row' sx={{ width: '100%' }}>
-                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/' target='_self'>
+                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='https://pravosleva.pro' target='_self'>
                     Home
                   </Button>
                   {lastVisitedOnlinePages?.length > 0 && (
@@ -430,7 +442,7 @@ export const ToDo2023 = memo(() => {
                       href={'/subprojects/audit-list/123'}
                       target='_self'
                     >
-                      Online 123
+                      Online
                     </Button>
                   </span>
                 ) : (
@@ -468,7 +480,8 @@ export const ToDo2023 = memo(() => {
                 )
               }
             </Typography>
-            <div ref={desktopPageContentTopRef} />
+            <em>{sizeInfo}</em>
+            <div style={{ visibility: 'hidden' }} ref={desktopPageContentTopRef} />
             <AuditGrid
               audits={localAudits}
               onRemoveAudit={handleRemoveAudit}
@@ -482,7 +495,7 @@ export const ToDo2023 = memo(() => {
 
               isEditable={true}
             />
-            <div ref={desktopPageContentBottomRef} />
+            <div style={{ visibility: 'hidden' }} ref={desktopPageContentBottomRef} />
           </Stack>
         </div>
       </>
@@ -494,7 +507,14 @@ export const ToDo2023 = memo(() => {
           <title>AuditList</title>
           {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         </Head>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 50px)' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 'calc(100dvh - 50px)',
+            padding: '24px',
+          }}
+        >
           <CircularIndeterminate />
         </div>
       </>

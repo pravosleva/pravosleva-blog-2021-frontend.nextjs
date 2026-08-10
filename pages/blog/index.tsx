@@ -79,7 +79,7 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
-        <link href="/static/css/blog_sqt_[search_query_title].css" rel="stylesheet" />
+        <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" />
       </Head>
       <Layout>
         <ArticlesList

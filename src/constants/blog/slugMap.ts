@@ -15,6 +15,10 @@ import { list as articlesListFromTogglCom } from './toggl.com'
 import { list as articlesListAboutNetwork } from './network'
 import { list as articlesListAboutProgramming } from './programming'
 import { list as articlesListAboutDocker } from './docker'
+import { list as articlesListAboutWebApi } from './web-api'
+import { list as articlesListAboutAI } from './ai'
+import { list as articlesListAboutMath } from './math'
+import { list as articlesListAboutReact } from './react'
 
 export const slugMapping: { [key: string]: TArticleTools } = {
   ...articlesListAboutBash,
@@ -33,6 +37,10 @@ export const slugMapping: { [key: string]: TArticleTools } = {
   ...articlesListAboutNetwork,
   ...articlesListAboutProgramming,
   ...articlesListAboutDocker,
+  ...articlesListAboutWebApi,
+  ...articlesListAboutAI,
+  ...articlesListAboutMath,
+  ...articlesListAboutReact,
   'this-app-documentation-guide': {
     id: '5fcaa0ac50f83839dfbcfc12',
     brief: 'Чтоб не забыть',

@@ -37,6 +37,7 @@ export const useStyles = makeStyles((_theme) => ({
       lineHeight: '1em',
       marginTop: 0,
     },
+    whiteSpace: 'pre-wrap',
     // fontSize: '0.9em',
     maxWidth: '100%',
     // maxWidth: '550px',

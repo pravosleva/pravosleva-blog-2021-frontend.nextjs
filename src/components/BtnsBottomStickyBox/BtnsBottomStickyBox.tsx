@@ -19,6 +19,8 @@ export const BtnsBottomStickyBox = ({ children }: any) => {
       style={{
         position: 'sticky',
         bottom: '0px',
+        // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
+        paddingBottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
         backgroundColor: '#FFF',
         boxShadow: '0px 0px 5px 5px rgba(0, 0, 0, 0.3)',
         // padding: '20px',

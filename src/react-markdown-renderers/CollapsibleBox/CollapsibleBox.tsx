@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { useSelector } from 'react-redux'
@@ -10,16 +10,22 @@ import classes from './CollapsibleBox.module.scss'
 import { isValidJson } from '~/utils/isValidJson'
 import { withTranslator } from '~/hocs/withTranslator'
 import clsx from 'clsx'
+import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
 // import slugify from 'slugify'
 
 type TProps = {
   header: string;
-  text: string;
+  text?: string;
   actionsJson?: string;
   t: (v: string) => string;
 }
 
 export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, t }: TProps) => {
+  const scrollToIdRef = useRef(scrollToIdFactory({
+    timeout: 250,
+    offsetTop: 16,
+    elementHeightCritery: 2, // NOTE: Все что больше 2px по высоте будет проскроллено в топ страницы
+  }))
   const isActionsRequired = useMemo(() => typeof actionsJson === 'string', [actionsJson])
   const isActionsValid = useMemo(() => !!actionsJson && isActionsRequired && isValidJson(actionsJson), [isActionsRequired, actionsJson])
   const parsedActions = useMemo(() => (!!actionsJson && isActionsRequired && isActionsValid)
@@ -66,19 +72,20 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
     // const hasCurrentTabLinkClicked = (label === 'CURRENT_TAB_LINK' && typeof link === 'string' && !!link) || false
 
     switch (true) {
-      case hasLocalLinkClicked:{
-          e.preventDefault()
-          try {
-            const elmId = link.substring(1)
-            const elm = document.getElementById(elmId)
+      case hasLocalLinkClicked: {
+        e.preventDefault()
+        try {
+          const elmId = link.substring(1)
+          // const elm = document.getElementById(elmId)
 
-            if (!!elm) elm.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
-            else throw new Error(`Element not found: ${link}`)
-          } catch (err: any) {
-            console.log(err?.message || 'No err.message')
-          }
-          break
+          // if (!!elm) elm.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
+          // else throw new Error(`Element not found: ${link}`)
+          scrollToIdRef.current({ id: elmId })
+        } catch (err: any) {
+          console.log(err?.message || 'No err.message')
         }
+        break
+      }
       // case hasNewTabLinkClicked: {
       //   break
       // }
@@ -105,6 +112,7 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
         backgroundColor: bgColor,
         boxShadow: '0 8px 6px -6px rgba(0,0,0,0.3)',
         marginBottom: '20px',
+        whiteSpace: 'pre-wrap',
 
         cursor: 'pointer',
         userSelect: 'none',
@@ -133,6 +141,8 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+
+            paddingTop: '4px',
           }}
         >
           {
@@ -142,8 +152,8 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
           }
         </div>
       </div>
-      
-      {isOpened && (
+
+      {!!text && isOpened && (
         <div
           className={clsx(classes.noMarginBottomForLastChild, classes.content)}
         >
@@ -167,7 +177,7 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
             }}
           >
             {
-              parsedActions.map(({ link, label, target }: { link: 'string'; label: 'string'; target?: '_blank' | '_self' }, i: number) => {
+              parsedActions.map(({ link, label, _label, target }: { link: 'string'; _label?: 'string'; label: 'string'; target?: '_blank' | '_self' }, i: number) => {
                 return (
                   <a
                     key={`${link}-${i}`}
@@ -180,7 +190,7 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
                     }}
                     target={target || '_self'}
                   >
-                    {t(label)}
+                    {_label || t(label)}
                   </a>
                 )
               })

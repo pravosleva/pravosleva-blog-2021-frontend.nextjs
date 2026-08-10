@@ -1,5 +1,5 @@
 import { Request as IRequest, Response as IResponse } from 'express'
-import { Socket } from 'socket.io'
+import { Server } from 'socket.io'
 
 export type TEnhancedResponse = IResponse & {
   startTime: (tag: string, msg: string) => void;
@@ -7,5 +7,5 @@ export type TEnhancedResponse = IResponse & {
 }
 
 export type TEnhancedRequest = IRequest & {
-  io: Socket;
+  io: Server;
 }

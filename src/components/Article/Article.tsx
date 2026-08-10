@@ -223,7 +223,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                     boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 7px -1px',
                     // border: '2px solid lightgray',
                     padding: '8px',
-                    borderRadius: '16px',
+                    borderRadius: '24px',
                     // width: isDesktop ? 'fit-content' : '100%',
                     width: 'fit-content',
                   }}

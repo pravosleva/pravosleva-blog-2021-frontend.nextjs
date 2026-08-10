@@ -53,6 +53,7 @@ class Singleton {
   //   return this._state.set(key, value)
   // }
   public initRoomAudits({ room, audits }: { room: number; audits: TAudit[] }) {
+    console.log(`init state for room ${room} (${audits.length} audits)`)
     this._state.set(room, audits)
   }
   public initRoomTodos({ room }: { room: number; }) {
@@ -168,6 +169,27 @@ class Singleton {
 
     this._state.set(room, targetAudits)
     return Promise.resolve({ isOk: true, message: 'Audit params updated', audits: targetAudits, updatedAudit: targetAuditIndex !== -1 ? targetAudits[targetAuditIndex] : undefined })
+  }
+  public replaceAudit({ room, auditId, originalData }: { room: number; auditId: string; originalData: TAudit; }): Promise<{ isOk: boolean; message?: string; updatedAudit: TAudit; }> {
+    const tsUpdate = new Date().getTime()
+    const targetAudits = this._state.get(room)
+    if (!targetAudits) return Promise.reject({ isOk: false, message: `Room ${room} not found` })
+
+    const targetAuditIndex = targetAudits.findIndex(({ id }) => id === auditId)
+    if (targetAuditIndex === -1) {
+      // return Promise.reject({ isOk: false, message: `Audit not found` })
+      const newItem = { ...originalData, tsUpdate }
+      targetAudits.unshift(newItem)
+
+      this._state.set(room, targetAudits)
+      return Promise.resolve({ isOk: true, message: 'Audit crated', updatedAudit: newItem })
+    } else {
+      targetAudits[targetAuditIndex] = originalData
+      targetAudits[targetAuditIndex].tsUpdate = tsUpdate
+
+      this._state.set(room, targetAudits)
+      return Promise.resolve({ isOk: true, message: 'Audit updated', updatedAudit: targetAudits[targetAuditIndex] })
+    }
   }
   public addJob({ room, auditId, name, subjobs }: NEventData.NServerIncoming.TJOB_ADD): Promise<{ isOk: boolean; message?: string; audits: TAudit[] }> {
     const targetAudits = this._state.get(room)

@@ -23,6 +23,10 @@
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+
+  animation: fadeUp linear;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
 }
 .gridItemBox {
   transition: ease 0.5s all;
@@ -35,6 +39,18 @@
   display: flex;
   flex-direction: column;
 }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 body main.light .gridItemBox {
   background: linear-gradient(rgba(1, 98, 200, 0.9) 30%, rgba(1, 98, 200, 0.65) 60%, rgba(255, 255, 255, 0) 100%);
 }

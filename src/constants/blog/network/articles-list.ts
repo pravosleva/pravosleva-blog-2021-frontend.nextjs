@@ -9,7 +9,7 @@ const bg = {
   type: 'image/jpeg',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: { [key: string]: TArticleTools } = {
   'protocols': {
     id: '66e0201dd9a7126af852ebff',
     brief: 'Заметки про сети',
@@ -26,7 +26,12 @@ export const list: {[key: string]: TArticleTools} = {
     bg,
   },
   'protocols-tcp': {
-    id: '67226b52d9a7126af852ec15',
+    id: '6a4f95d8f7929b4140542029',
+    brief: 'Заметки про сети',
+    bg,
+  },
+  'protocols-tcp-vs-udp': {
+    id: '6a4f94bff7929b4140542028',
     brief: 'Заметки про сети',
     bg,
   },

@@ -23,7 +23,14 @@ const Wrapper = styled("div")`
   @media (max-width: 767px) {
     top: 0;
     bottom: 0; /* tst */
+    // height: 100dvh;
+
+    /* Динамическая высота подстраивается под скрытие/появление адресной строки */
     height: 100dvh;
+    /* Внутренний отступ снизу защищает контент от перекрытия шторкой "Домой" */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Включает правильный расчет высоты, чтобы padding не увеличивал размер блока */
+    box-sizing: border-box;
   }
   @media (min-width: 768px) {
     height: 100vh;
@@ -31,7 +38,7 @@ const Wrapper = styled("div")`
   position: relative;
   box-sizing: border-box;
 `
-const List = styled("div")<{
+const List = styled("div") <{
   test?: boolean;
   opened?: boolean;
 }>`
@@ -54,8 +61,8 @@ const List = styled("div")<{
     /* при открытии/закрытии должна учитываться разница ширин обоих сайдбаров */
     transform: translateX(calc(100% - calc(550px - 585px)));
     ${(p) =>
-      !p.opened &&
-      css`
+    !p.opened &&
+    css`
         transform: translateX(calc(0px - calc(550px - 585px)));
         background-color: #fff;
       `}
@@ -67,8 +74,8 @@ const List = styled("div")<{
     /* opacity: 0.8; */
     transform: translateX(0);
     ${(p) =>
-      !p.opened &&
-      css`
+    !p.opened &&
+    css`
         transform: translateX(-100%);
         background-color: #fff;
       `}
@@ -112,7 +119,7 @@ const ListDesktopToggler = styled("button").attrs({
   }
   border-radius: 0 8px 8px 0;
 `
-const Content = styled("div")<{
+const Content = styled("div") <{
   test?: boolean;
 }>`
   opacity: 1;
@@ -167,11 +174,11 @@ export const withAbsoluteList = (ComposedComponent: any) =>
               }}
             >
               {props.activeEmployee &&
-              props.taskList
-                .filter((e: TTask) => e.employee === props.activeEmployee)
-                .filter(
-                  (e: TTask) => e.startDate && e.realFinishDate && e.forecastFinishDate
-                ) ? (
+                props.taskList
+                  .filter((e: TTask) => e.employee === props.activeEmployee)
+                  .filter(
+                    (e: TTask) => e.startDate && e.realFinishDate && e.forecastFinishDate
+                  ) ? (
                 <>
                   <FlexColumn>
                     <StickyH2
@@ -186,20 +193,20 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                         theTasks={
                           props.activeEmployee
                             ? props.taskList
-                                .filter(
-                                  (e: TTask) => e.employee === props.activeEmployee
-                                )
-                                .filter(
-                                  (e: TTask) =>
-                                    e.startDate &&
-                                    e.realFinishDate &&
-                                    e.forecastFinishDate
-                                )
-                                .filter((e: TTask) =>
-                                  props.activeComplexity
-                                    ? e.complexity === props.activeComplexity
-                                    : true
-                                )
+                              .filter(
+                                (e: TTask) => e.employee === props.activeEmployee
+                              )
+                              .filter(
+                                (e: TTask) =>
+                                  e.startDate &&
+                                  e.realFinishDate &&
+                                  e.forecastFinishDate
+                              )
+                              .filter((e: TTask) =>
+                                props.activeComplexity
+                                  ? e.complexity === props.activeComplexity
+                                  : true
+                              )
                             : []
                         }
                         testDiff={((employee) => {
@@ -207,8 +214,8 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                             Object.keys(e).includes(employee)
                           )
                             ? props.testDates.filter((e: any) =>
-                                Object.keys(e).includes(employee)
-                              )[0]
+                              Object.keys(e).includes(employee)
+                            )[0]
                             : null;
 
                           if (!obj) return null;
@@ -249,20 +256,20 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                         theTasks={
                           props.activeEmployee
                             ? props.taskList
-                                .filter(
-                                  (e: TTask) => e.employee === props.activeEmployee
-                                )
-                                .filter(
-                                  (e: TTask) =>
-                                    e.startDate &&
-                                    e.realFinishDate &&
-                                    e.forecastFinishDate
-                                )
-                                .filter((e: TTask) =>
-                                  props.activeComplexity
-                                    ? e.complexity === props.activeComplexity
-                                    : true
-                                )
+                              .filter(
+                                (e: TTask) => e.employee === props.activeEmployee
+                              )
+                              .filter(
+                                (e: TTask) =>
+                                  e.startDate &&
+                                  e.realFinishDate &&
+                                  e.forecastFinishDate
+                              )
+                              .filter((e: TTask) =>
+                                props.activeComplexity
+                                  ? e.complexity === props.activeComplexity
+                                  : true
+                              )
                             : []
                         }
                       />
@@ -270,7 +277,7 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                   </FlexColumn>
                 </>
               ) : null}
-              
+
               <FlexColumn>
                 <StickyH2
                   label='About'
@@ -316,11 +323,11 @@ export const withAbsoluteList = (ComposedComponent: any) =>
                       />
                     </p>
                     <p>
-                    <h3>Что НЕ учитывает Прогноз:</h3>
-                    <ul>
-                      <li>Рост разраба над собой</li>
-                      <li>Иные причины повышения собственной эффективности</li>
-                    </ul>
+                      <h3>Что НЕ учитывает Прогноз:</h3>
+                      <ul>
+                        <li>Рост разраба над собой</li>
+                        <li>Иные причины повышения собственной эффективности</li>
+                      </ul>
                     </p>
                     <p>
                       <Alert

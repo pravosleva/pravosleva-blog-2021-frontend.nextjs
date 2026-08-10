@@ -13,11 +13,14 @@ export type TGeoIpInfo = {
 
 export namespace NEvent {
   export enum ServerIncoming {
+    EXPERIMENTAL_METRIX_PING = 'from-client:mx:experimental-metrix:ping',
     SP_MX_EV = 'sp-mx:offline-tradein:c:event',
     SP_HISTORY_REPORT_EV = 'sp-history:offline-tradein:c:report',
     _SP_HISTORY_REPORT_EV_DEPRECATED = 'sp-xhr-history:offline-tradein:c:report',
   }
   export enum ServerOutgoing {
+    EXPERIMENTAL_METRIX_PONG_OK = 'from-server:mx:experimental-metrix:pong-ok',
+    EXPERIMENTAL_METRIX_PONG_ERR = 'from-server:mx:experimental-metrix:pong-err',
     SP_MX_EV = 'sp-mx:offline-tradein:s:event',
     SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_OK = 'sp-mx:history-report:s:ok',
     SP_MX_SERVER_ON_HISTORY_REPORT_ANSWER_ERR = 'sp-mx:history-report:s:err',
@@ -66,6 +69,10 @@ export namespace NEvent {
     app: {
       name: string;
       version: string;
+    };
+    specialData?: {
+      message: string;
+      userName: string;
     };
     metrixEventType: string;
     reportType: EReportType;

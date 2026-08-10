@@ -2,7 +2,7 @@ import { useStore, WithSocketContext, TSocketMicroStore } from '~/components/Tod
 import {
   useCallback, useEffect,
   // useLayoutEffect,
-  useMemo, useRef, useState,
+  useMemo, useRef, useState, memo,
 } from 'react'
 import io, { Socket } from 'socket.io-client'
 import { groupLog } from '~/utils/groupLog'
@@ -71,6 +71,7 @@ import {
 } from '~/store/reducers/todo2023NotPersisted'
 import clsx from 'clsx'
 import { AddAnythingNewDialog } from './components/TodoConnected/components'
+import { useLightThemeAlways } from '~/hooks/useLightThemeAlways'
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -79,6 +80,8 @@ type TLogicProps = {
   room: number;
   // hasAuthenticatedOnSSR: boolean;
 }
+
+const delay = (ms: number) => new Promise((res, _rej) => setTimeout(res, ms))
 
 const Logic = ({ room }: TLogicProps) => {
   const router = useRouter()
@@ -92,6 +95,13 @@ const Logic = ({ room }: TLogicProps) => {
   }, [router.query.tg_chat_id])
   const [isConnected, setStore] = useStore((store: TSocketMicroStore) => store.isConnected)
   const [remoteAudits] = useStore((store: TSocketMicroStore) => store.audits)
+
+  // -- NOTE: Испльзуется только для обновления (мержа) локального списка (однонаправленны поток данных: s -> c)
+  const remoteAuditsBufferRef = useRef<TAudit[]>([])
+  // --
+
+  useLightThemeAlways()
+
   const socketRef = useRef<Socket | null>(null)
   const localAudits = useSelector((store: IRootState) => store.todo2023.localAudits)
   const { enqueueSnackbar } = useSnackbar()
@@ -154,6 +164,7 @@ const Logic = ({ room }: TLogicProps) => {
           // },
           // --
         })
+        remoteAuditsBufferRef.current = data.audits
         // if (Array.isArray(data.strapiTodos) && data.strapiTodos.length > 0) {
         //   dispatch(replaceStrapiTodo(data.strapiTodos || []))
         // }
@@ -201,6 +212,7 @@ const Logic = ({ room }: TLogicProps) => {
     const onAuditsReplace = (data: NEventData.NServerOutgoing.TAUDITLIST_REPLACE) => {
       groupLog({ spaceName: `-- ${NEvent.EServerOutgoing.AUDITLIST_REPLACE}`, items: [data] })
       setStore({ audits: data.audits })
+      remoteAuditsBufferRef.current = data.audits
 
       if (!!data?._specialReport) {
         switch (true) {
@@ -273,6 +285,63 @@ const Logic = ({ room }: TLogicProps) => {
       }
     }
     socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE, onAuditsReplace)
+
+    const onAuditsReplaceItem = (data: NEventData.NServerOutgoing.TAUDITLIST_REPLACE_ITEM) => {
+      const logs = ['data received']
+
+      switch (true) {
+        case !data?.isOk:
+          enqueueSnackbar(clsx('Ошибка замены:', data.message || 'No message'), {
+            variant: 'error',
+            autoHideDuration: 30000,
+            action: (snackbarId) => (
+              <IconButton onClick={() => closeSnackbar(snackbarId)} size='small'>
+                <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+              </IconButton>
+            ),
+          })
+          break
+        case !!data.audit:
+          logs.unshift('case 1. !!data.audit')
+          const mutatedAudits = [...(remoteAuditsBufferRef.current || [])]
+          const targetAuditIndexToReplace = mutatedAudits.findIndex(({ id }) => id === data.audit?.id)
+
+          if (targetAuditIndexToReplace !== -1 && typeof data.audit !== 'undefined') {
+            logs.unshift('case 1.1')
+            mutatedAudits[targetAuditIndexToReplace] = data.audit
+          } else {
+            logs.unshift('case 1.2')
+            if (!!data.audit) mutatedAudits.unshift(data.audit)
+          }
+
+          remoteAuditsBufferRef.current = mutatedAudits
+
+          groupLog({
+            spaceName: `-- ${NEvent.EServerOutgoing.AUDITLIST_REPLACE_ITEM}`,
+            items: [
+              data,
+              '- etc.',
+              { mutatedAudits, targetAuditIndexToReplace, logs },
+              '-',
+            ],
+          })
+
+          setTimeout(() => setStore({ audits: mutatedAudits }), 0)
+          break
+        default:
+          enqueueSnackbar(clsx('Что-то пошло не так:', data.message || 'No message'), {
+            variant: 'error',
+            autoHideDuration: 30000,
+            action: (snackbarId) => (
+              <IconButton onClick={() => closeSnackbar(snackbarId)} size='small'>
+                <CloseIcon fontSize='small' style={{ color: '#fff' }} />
+              </IconButton>
+            ),
+          })
+          break
+      }
+    }
+    socket.on(NEvent.EServerOutgoing.AUDITLIST_REPLACE_ITEM, onAuditsReplaceItem)
 
     // NOTE: New 2023.11
     const onTodo2023Replace2 = (data: NEventData.NServerOutgoing.TTodo2023ReplaceRoomState) => {
@@ -356,10 +425,11 @@ const Logic = ({ room }: TLogicProps) => {
   }, [])
   // --
   const handlePush = useCallback(({ noConfirmMessage }: { noConfirmMessage: boolean }) => () => {
-    const doIt = () => {
+    const doIt = async () => {
       try {
         handleMenuClose()
         if (!socketRef.current) throw new Error('socket err')
+        /*
         socketRef.current.emit(NEvent.EServerIncoming.AUDITLIST_REPLACE, {
           room: roomRef.current,
           audits: localAudits,
@@ -369,6 +439,11 @@ const Logic = ({ room }: TLogicProps) => {
           // setStore({ audits: data.audits })
           // enqueueSnackbar('Ok', { variant: 'success', autoHideDuration: 3000 })
         })
+        */
+        for (const audit of localAudits) {
+          socketRef.current.emit(NEvent.EServerIncoming.AUDITLIST_REPLACE_ITEM, { room: roomRef.current, audit })
+          await delay(200)
+        }
       } catch (err) {
         console.warn(err)
       }
@@ -1011,8 +1086,10 @@ const Logic = ({ room }: TLogicProps) => {
                   marginTop: 'auto',
                   position: 'sticky',
                   bottom: '0px',
+                  // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
                   zIndex: 2,
                   padding: '16px',
+                  paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
                   // backgroundColor: '#fff',
                   // borderTop: '1px solid lightgray',
                 }}
@@ -1217,8 +1294,10 @@ const Logic = ({ room }: TLogicProps) => {
                   // position: 'sticky',
                   position: 'fixed',
                   bottom: '0px',
+                  // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
                   zIndex: 2,
                   padding: '16px',
+                  paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
                 }}
                 className='backdrop-blur--lite'
               >
@@ -1242,8 +1321,8 @@ type TProps = {
   room: number;
 }
 
-export const Todo2023Online = ({ room }: TProps) => (
+export const Todo2023Online = memo(({ room }: TProps) => (
   <WithSocketContext>
     <Logic room={room} />
   </WithSocketContext>
-)
+))

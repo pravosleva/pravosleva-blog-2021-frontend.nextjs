@@ -32,7 +32,7 @@ export const CardsExample = memo(({ itemsJson }: TProps) => {
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 
   return (
-    <div>
+    <div className={clsx({ [styles.externalWrapper]: !errMsg })}>
       {
         !!errMsg && (
           <em>{errMsg}</em>
@@ -47,11 +47,7 @@ export const CardsExample = memo(({ itemsJson }: TProps) => {
             {
               normalizedItems.map((item) => {
                 return (
-                  <div
-                    className={styles.cardWrapper}
-                    key={item.id}
-
-                  >
+                  <div className={styles.cardWrapper} key={item.id}>
                     <div
                       className={styles.card}
                       style={{
@@ -71,7 +67,7 @@ export const CardsExample = memo(({ itemsJson }: TProps) => {
                     >
 
                       <div
-                        className={styles.internalCardContent}
+                        className={styles.internalCardGradientSpace}
                         style={{
                           height: 'inherit',
                           // background: 'linear-gradient(rgba(1, 98, 200, 0.9) 30%, rgba(1, 98, 200, 0.65) 60%, rgba(255, 255, 255, 0) 100%)'

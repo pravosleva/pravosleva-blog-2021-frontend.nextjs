@@ -8,6 +8,9 @@ export type TAuthData = {
         isErrored: boolean;
         message?: string;
       };
+      data: {
+        chat_id: number;
+      } | null;
     };
   };
 }

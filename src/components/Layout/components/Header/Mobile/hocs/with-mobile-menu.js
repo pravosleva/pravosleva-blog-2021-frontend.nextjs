@@ -14,6 +14,7 @@ import { withTranslator } from '@/hocs/withTranslator'
 import { breakpoints } from '~/mui/theme'
 // import { userInfoActions } from '@/store/reducers/user-info'
 import { abSort } from '~/utils/string-tools/abSort'
+// import { IRootState } from '~/store/IRootState'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -191,6 +192,7 @@ export const withMobileMenu = (ComposedComponent) =>
           'bash',
           'git',
           'jsVanilla',
+          'reactHook',
           'mongodb',
           'nginx',
           'ssl',
@@ -210,6 +212,10 @@ export const withMobileMenu = (ComposedComponent) =>
             </li>
           ))
       }, [router.pathname, isCurrentPathCb, router.asPath])
+
+      // const isOneTimePasswordCorrect = useSelector((state) => state.autopark.isOneTimePasswordCorrect)
+      const oneTimePasswordServiceMessage = useSelector((state) => state.baseProps.authData.oneTime.jwt._service.message)
+      const oneTimePasswordChatId = useSelector((state) => state.baseProps.authData.oneTime.jwt.data?.chat_id)
 
       return (
         <Wrapper opened={isSidebarOpened}>
@@ -351,6 +357,44 @@ export const withMobileMenu = (ComposedComponent) =>
             >
               {TagLinksListItems}
             </ul>
+            {
+              !!oneTimePasswordChatId && (
+                <>
+                  <div
+                    style={{
+                      borderTop: '1px solid #FFF',
+                    }}
+                  />
+                  <ul>
+                    <li>
+                      <Link href={`/autopark-2022/${oneTimePasswordChatId}`}>
+                        <a
+                          onClick={handleCloseSidebar}
+                          className={isCurrentPathCb(router.asPath, `/autopark-2022/${oneTimePasswordChatId}`) ? 'active' : ''}
+                        >🔓 Logged in Autopark</a>
+                      </Link>
+                    </li>
+                  </ul>
+                </>
+              )
+            }
+            {
+              !!oneTimePasswordServiceMessage && (
+                <>
+                  <div
+                    style={{
+                      borderTop: '1px solid #FFF',
+                    }}
+                  />
+                  <ul style={{ fontSize: 'small' }}>
+                    <li>
+                      <b>⚠️ {oneTimePasswordServiceMessage}</b>
+                    </li>
+                  </ul>
+                </>
+              )
+            }
+
           </Sidebar>
           <ComposedComponent
             {...props}
