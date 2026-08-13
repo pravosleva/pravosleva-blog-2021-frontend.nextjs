@@ -70,6 +70,9 @@ body main.dark .gridItemBox {
 .gridItemTitle {
   max-width: 100%;
 }
+.gridItemTitle > h3 {
+  margin-top: 0px;
+}
 .gridItemDescription {
   margin-bottom: 24px;
   height: 100%;

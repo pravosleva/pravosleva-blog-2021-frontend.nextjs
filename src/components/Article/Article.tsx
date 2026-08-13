@@ -88,11 +88,11 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               t={t}
               // lastLabel={article?.original.title}
               legend={[
-                {
-                  link: '/',
-                  labelCode: 'HOME',
-                  noTranslate: false
-                },
+                // {
+                //   link: '/',
+                //   labelCode: 'HOME',
+                //   noTranslate: false
+                // },
                 {
                   link: '/blog',
                   labelCode: 'BLOG',
@@ -237,7 +237,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                     // url={itemData.url || `${PUBLIC_URL}/#/news/${id}`}
                     url={`https://pravosleva.pro/p/${article.slug}`}
                     title={article.original.title}
-                    text={clsx('WebExp', '|', article?.brief)}
+                    text={clsx('Pravo$leva', '|', article?.brief)}
                   />
                 </div>
               </ResponsiveBlock>

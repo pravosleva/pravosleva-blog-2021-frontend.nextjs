@@ -8,7 +8,7 @@ type TProps = {
 }
 
 const limits: { [key: string]: number; } = {
-  md: 900,
+  md: 800,
 }
 
 export const Container = styled('div')<TProps>`

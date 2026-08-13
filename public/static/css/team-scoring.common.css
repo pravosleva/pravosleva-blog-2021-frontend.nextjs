@@ -60,7 +60,7 @@ ul.standartList > li {
   margin-bottom: 15px;
   white-space: pre-line;
   width: 100%;
-  max-width: 900px;
+  max-width: 800px;
 }
 
 ul.standartList-mobile {
@@ -75,7 +75,7 @@ ul.standartList-mobile > li {
   margin-bottom: 30px;
   white-space: pre-line;
   width: 100%;
-  max-width: 900px;
+  max-width: 800px;
 }
 /* ul.standartList-mobile > li:last-child {
   margin-bottom: 0;

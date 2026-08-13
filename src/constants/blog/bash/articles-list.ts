@@ -17,7 +17,7 @@ const bgHard = {
   type: 'image/gif',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: { [key: string]: TArticleTools } = {
   'bash-quaint-files-copy': {
     id: '605b35611ead2f48d72e74a3',
     brief: 'Скрипт в функции просматривает директории (и поддиректории) srcDir и копирует...',
@@ -30,7 +30,7 @@ export const list: {[key: string]: TArticleTools} = {
   },
   'bash-search-remove-files-and-dirs': {
     id: '5fd270747d536a022794e442',
-    brief: 'Чтобы найти иголку в стоге сена, достаточно сжечь сено и провести магнитом над пеплом',
+    brief: 'Заметки про Bash',
     bg: bgHard,
     // bg: {
     //   src: 'https://pravosleva.pro/static/img/blog/logo-bash-900x600.jpg',

@@ -18,7 +18,7 @@ import { breakpoints } from '~/mui/theme'
 import loadable from '@loadable/component'
 import MemoryIcon from '@mui/icons-material/Memory'
 import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
-import FingerprintIcon from '@mui/icons-material/Fingerprint'
+// import FingerprintIcon from '@mui/icons-material/Fingerprint'
 
 const Identicon = loadable(() => import(/* webpackChunkName: "identicon" */ 'react-hooks-identicons'), {
   ssr: false,
@@ -101,7 +101,7 @@ const MobileHeader = ({
   suppoerLocales, // Array like this: [{ label, name, value }]
   currentLang,
 }) => {
-  const isAuthenticated = !!useSelector((state) => state.userInfo?.fromServer?.id)
+  // const isAuthenticated = !!useSelector((state) => state.userInfo?.fromServer?.id)
   const dispatch = useDispatch()
   const isBrowserMemoryMonitorEnabled = !!useSelector((state) => state.customDevTools.browserMemoryMonitor.isEnabled)
   const toggleBrowserMemoryMonitorDevTools = useCallback((e) => {
@@ -166,7 +166,7 @@ const MobileHeader = ({
               }}
               onClick={() => sidebarToggler(false)}
             >
-              <a href='/' target='_self' style={{ lineHeight: '40px' }}>WebExp</a>
+              <a href='/' target='_self' style={{ lineHeight: '40px' }}>R-ENGINE</a>
             </li>
 
             {
@@ -227,7 +227,7 @@ const MobileHeader = ({
                 </li>
               ))}
             <ThemeToggler />
-            {!isAuthenticated && (
+            {/*!isAuthenticated && (
               <li
                 style={{
                   display: 'flex',
@@ -258,7 +258,7 @@ const MobileHeader = ({
                   </a>
                 </Link>
               </li>
-            )}
+            ) */}
             {/* isAuthenticated && (
               <li
                 style={{
@@ -278,7 +278,8 @@ const MobileHeader = ({
                 </a>
               </li>
             ) */}
-            {isAuthenticated && process.browser && (
+
+            {/* isAuthenticated && process.browser && (
               <li style={{ marginLeft: '0px', marginBottom: '0px', minWidth: '40px' }} className="avatar-wrapper">
                 <div style={{ cursor: 'pointer' }} onClick={redirectToProfile} className="avatar-wrapper">
                   <Identicon
@@ -291,7 +292,7 @@ const MobileHeader = ({
                   />
                 </div>
               </li>
-            )}
+            ) */}
             <li
               style={{
                 marginBottom: '0px',

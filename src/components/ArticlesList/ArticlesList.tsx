@@ -28,11 +28,14 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
   // }, [useCompare([searchQueryTitle])])
 
   const legend = useMemo(() => {
-    let defaultResult: NBreadCrumbs.TLegendItem[] = [{ labelCode: 'HOME', link:'/', noTranslate: false }, { labelCode: 'BLOG' }]
+    let defaultResult: NBreadCrumbs.TLegendItem[] = [
+      // { labelCode: 'HOME', link: '/', noTranslate: false },
+      { labelCode: 'BLOG' }
+    ]
     if (isBlogPage) return defaultResult
 
     defaultResult = [
-      { labelCode: 'HOME', link:'/', noTranslate: false },
+      // { labelCode: 'HOME', link:'/', noTranslate: false },
       {
         labelCode: 'BLOG',
         link: '/blog',
@@ -62,9 +65,9 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
       <ResponsiveBlock
         isLimited
         isPaddedMobile
-        // style={{
-        //   paddingBottom: '50px',
-        // }}
+      // style={{
+      //   paddingBottom: '50px',
+      // }}
       >
         <div
           // className="article-body"

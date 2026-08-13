@@ -15,7 +15,7 @@ const Wrapper = styled('div')`
   @media (max-width: 767px) {
   }
   @media (min-width: 768px) {
-    // max-width: 900px;
+    // max-width: 800px;
     box-shadow: rgba(51, 51, 51, 0.2) 0px 0px 4px;
 
     // border-radius: 10px;

@@ -47,6 +47,9 @@ export const useStyles = makeStyles((theme) => ({
     // fontSize: '13px',
 
     maxWidth: '100%',
+    '& > h3': {
+      marginTop: '0px',
+    },
   },
   gridItemDescription: {
     // marginTop: 'auto',

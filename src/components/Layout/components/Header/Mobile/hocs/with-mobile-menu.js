@@ -178,10 +178,6 @@ export const withMobileMenu = (ComposedComponent) =>
       const router = useRouter()
       const isCurrentPathCb = useCallback(isCurrentPath, [router.pathname, router.asPath, isCurrentPath])
 
-      // useEffect(() => {
-      //   console.log(router)
-      // }, [])
-
       const handleCloseSidebar = useCallback(() => {
         sidebarToggler(false)
       }, [])
@@ -191,11 +187,11 @@ export const withMobileMenu = (ComposedComponent) =>
           'краснаяАкула',
           'bash',
           'git',
-          'jsVanilla',
+          // 'jsVanilla',
           'reactHook',
-          'mongodb',
+          // 'mongodb',
           'nginx',
-          'ssl',
+          // 'ssl',
           'рабочие_моменты',
         ]
           .sort(abSort)
@@ -249,6 +245,8 @@ export const withMobileMenu = (ComposedComponent) =>
                   </Link>
                 </li>
               ) */}
+
+              {/* 
               {isAuthenticated && (
                 <li>
                   <Link href='/profile' as='/profile'>
@@ -256,7 +254,6 @@ export const withMobileMenu = (ComposedComponent) =>
                   </Link>
                 </li>
               )}
-
               {isAuthenticated && (
                 <li onClick={handleLogout}>
                   <a
@@ -268,6 +265,8 @@ export const withMobileMenu = (ComposedComponent) =>
                   </a>
                 </li>
               )}
+              */}
+
               {/*
               <li>
                 <Link href="/subprojects/audit-list">
