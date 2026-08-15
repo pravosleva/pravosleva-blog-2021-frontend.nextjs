@@ -16,6 +16,7 @@ import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
+import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
 // import { useWindowSize } from '~/hooks/useWindowSize'
 // import { breakpoints } from '~/mui/theme'
 
@@ -78,6 +79,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
   return (
     <>
+      <CollapsibleQuickNav />
       {!!article ? (
         <>
           <ResponsiveBlock

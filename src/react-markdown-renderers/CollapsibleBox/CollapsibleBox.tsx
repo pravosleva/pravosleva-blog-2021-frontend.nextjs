@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { useSelector } from 'react-redux'
@@ -11,20 +11,72 @@ import { isValidJson } from '~/utils/isValidJson'
 import { withTranslator } from '~/hocs/withTranslator'
 import clsx from 'clsx'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
+import { collapsibleRegistrySignal, generateSlugId } from '~/store/reactiveCollapsibleStore'
 
 type TProps = {
   header: string;
   text?: string;
   actionsJson?: string;
   t: (v: string) => string;
+  isEnabledForNavigation?: '1' | '0';
 }
 
-export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, t }: TProps) => {
+export const CollapsibleBox = withTranslator<any>(({
+  header,
+  text,
+  actionsJson,
+  t,
+  isEnabledForNavigation = '0', // Дефолтное значение '0' (игнорируется)
+}: TProps) => {
   const scrollToIdRef = useRef(scrollToIdFactory({
     timeout: 250,
     offsetTop: 16,
     elementHeightCritery: 2, // NOTE: Все что больше 2px по высоте будет проскроллено в топ страницы
   }))
+  const rootRef = useRef<HTMLDivElement>(null)
+  // Генерируем ID только если навигация включена, иначе ID на теге не обязателен
+  const boxId = useMemo(() => {
+    return isEnabledForNavigation === '1' ? generateSlugId(header) : undefined
+  }, [header, isEnabledForNavigation])
+  // Отслеживание видимости через IntersectionObserver и реактивный движок
+  // Отслеживание видимости и регистрация в реактивном движке
+  useEffect(() => {
+    // Если навигация для этого блока выключена, ничего не делаем
+    if (isEnabledForNavigation !== '1' || !boxId) return
+
+    const element = rootRef.current
+    if (!element) return
+
+    // Добавляем текущий блок в сигнал реестра
+    collapsibleRegistrySignal.value = {
+      ...collapsibleRegistrySignal.value,
+      [boxId]: { id: boxId, header, isVisible: false }
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      // Обновляем статус видимости в сигнале напрямую
+      if (collapsibleRegistrySignal.value[boxId]) {
+        collapsibleRegistrySignal.value = {
+          ...collapsibleRegistrySignal.value,
+          [boxId]: { ...collapsibleRegistrySignal.value[boxId], isVisible: entry.isIntersecting }
+        }
+      }
+    }, {
+      rootMargin: '-10% 0px -10% 0px'
+    })
+
+    observer.observe(element)
+
+    // При размонтировании удаляем только этот блок из реестра
+    return () => {
+      observer.disconnect()
+      const currentRegistry = { ...collapsibleRegistrySignal.value }
+      if (currentRegistry[boxId]) {
+        delete currentRegistry[boxId]
+        collapsibleRegistrySignal.value = currentRegistry
+      }
+    }
+  }, [boxId, header, isEnabledForNavigation])
   const isActionsRequired = useMemo(() => typeof actionsJson === 'string', [actionsJson])
   const isActionsValid = useMemo(() => !!actionsJson && isActionsRequired && isValidJson(actionsJson), [isActionsRequired, actionsJson])
   const parsedActions = useMemo(() => (!!actionsJson && isActionsRequired && isActionsValid)
@@ -87,6 +139,8 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
 
   return (
     <div
+      ref={rootRef}
+      id={boxId}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -100,7 +154,6 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
         boxShadow: '0 8px 6px -6px rgba(0,0,0,0.3)',
         marginBottom: '20px',
         whiteSpace: 'pre-wrap',
-
         cursor: 'pointer',
         userSelect: 'none',
         WebkitTapHighlightColor: 'transparent',
