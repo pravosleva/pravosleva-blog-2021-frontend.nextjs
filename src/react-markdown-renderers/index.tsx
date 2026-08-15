@@ -24,7 +24,14 @@ export const baseRenderers = {
   html: HtmlRenderer,
   image: ImageRenderer,
   link: LinkRenderer,
-  table: TableRenderer,
+  table: (props: any) => (
+    <TableRenderer 
+      withScrollButtons={true} /* Включает стрелки прокрутки */
+      withFloatingHeader={true} /* Включает умную плавающую шапку */
+      topOffset={0} /* Измените на высоту хедера сайта, если он у вас есть (например, 60) */
+      {...props} 
+    />
+  ),
 }
 
 export const theNotePageRenderers = {

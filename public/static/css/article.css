@@ -290,6 +290,59 @@ body main.dark .description-markdown table tr:nth-child(even) {
 
 /* --- */
 
+/* Стили для плавающего хедера таблицы */
+.table-floating-header-wrapper table th {
+  border: 1px solid lightgray;
+  padding: 8px 12px;
+  min-width: 140px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  font-weight: 600;
+  text-align: left;
+}
+
+.table-floating-header-wrapper table th:first-child {
+  min-width: 180px;
+}
+
+/* Переносы inline code внутри плавающего хедера */
+.table-floating-header-wrapper table th code {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* Состояние по умолчанию: скрыто и смещено чуть вверх */
+.table-floating-header-wrapper.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px); /* Небольшой сдвиг наверх при исчезновении */
+}
+
+/* Состояние при прокрутке: плавно проявляется и встает на место */
+.table-floating-header-wrapper.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+body main.light .table-floating-header-wrapper {
+  background-color: #f9f9f9;
+}
+
+body main.gray .table-floating-header-wrapper {
+  background-color: #c1c1c1;
+}
+body main.hard-gray .table-floating-header-wrapper {
+  background-color: #424242;
+}
+body main.dark .table-floating-header-wrapper {
+  background-color: #303030;
+}
+
+/* --- */
+
 .description-markdown img {
   transition: max-width 0.3s;
   margin: 0 auto;

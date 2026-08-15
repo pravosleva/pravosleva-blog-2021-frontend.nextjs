@@ -11,7 +11,6 @@ import { isValidJson } from '~/utils/isValidJson'
 import { withTranslator } from '~/hocs/withTranslator'
 import clsx from 'clsx'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-// import slugify from 'slugify'
 
 type TProps = {
   header: string;
@@ -68,30 +67,18 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
   const handleClickLink = useCallback(({ link, label }: { link: string; label: string }) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.stopPropagation()
     const hasLocalLinkClicked = (label === 'LOCAL_LINK' && typeof link === 'string' && link[0] === '#') || false
-    // const hasNewTabLinkClicked = (label === 'NEW_TAB_LINK' && typeof link === 'string' && !!link) || false
-    // const hasCurrentTabLinkClicked = (label === 'CURRENT_TAB_LINK' && typeof link === 'string' && !!link) || false
 
     switch (true) {
       case hasLocalLinkClicked: {
         e.preventDefault()
         try {
           const elmId = link.substring(1)
-          // const elm = document.getElementById(elmId)
-
-          // if (!!elm) elm.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
-          // else throw new Error(`Element not found: ${link}`)
           scrollToIdRef.current({ id: elmId })
         } catch (err: any) {
           console.log(err?.message || 'No err.message')
         }
         break
       }
-      // case hasNewTabLinkClicked: {
-      //   break
-      // }
-      // case hasCurrentTabLinkClicked: {
-      //   break
-      // }
       default:
         break
     }
@@ -128,8 +115,6 @@ export const CollapsibleBox = withTranslator<any>(({ header, text, actionsJson, 
         }}
         className={classes.collapsible}
       >
-        {/* <input id={togglerSlug} type='checkbox' style={{ border: '1px solid red' }} />
-        <label style={{ fontWeight: 'bold' }} htmlFor={togglerSlug}>{header}</label> */}
         <div style={{ fontWeight: 'bold' }}>{header}</div>
         <div
           style={{
