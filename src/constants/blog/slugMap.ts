@@ -237,6 +237,18 @@ export const slugMapping: { [key: string]: TArticleTools } = {
       type: 'image/jpg',
     },
   },
+  'reactive-engine-news-1.5.5': {
+    id: '6a7f1677f7929b4140542039',
+    brief: 'News',
+    bg: {
+      src: '/static/img/blog/coca-cola.webp',
+      size: {
+        w: 1080,
+        h: 1080,
+      },
+      type: 'image/webp',
+    },
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

@@ -139,19 +139,157 @@
 .description-markdown ul input[type='checkbox'] {
   margin-right: 8px;
 }
-.description-markdown > table {
+
+/* .description-markdown table {
   margin-bottom: 1.45rem;
   border-collapse: collapse;
 }
-.description-markdown > table,
-.description-markdown > table th,
-.description-markdown > table td {
+.description-markdown table,
+.description-markdown table th,
+.description-markdown table td {
   border: 1px solid lightgray;
 }
-.description-markdown > table th,
-.description-markdown > table td {
+.description-markdown table th,
+.description-markdown table td {
   padding: 5px;
+} */
+
+
+
+
+/* Контейнер, в котором лежит ваш <ReactMarkdown> (ограничен 800px) */
+
+/* Общий контейнер */
+.description-markdown .table-root-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
 }
+
+/* Контейнер скролла таблицы с рамкой и скруглениями */
+.description-markdown .table-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid lightgray;
+}
+
+.description-markdown table {
+  margin-bottom: 0;
+  border-collapse: collapse;
+  font-size: small;
+}
+
+.description-markdown table th,
+.description-markdown table td {
+  border: 1px solid lightgray;
+  padding: 6px 8px;
+  min-width: 140px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Первая колонка шире остальных */
+.description-markdown table th:first-child,
+.description-markdown table td:first-child {
+  min-width: 180px;
+}
+
+/* Принудительный перенос inline code */
+.description-markdown table td code,
+.description-markdown table th code {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* Липкий контейнер для кнопок */
+.table-scroll-controls {
+  position: sticky;
+  bottom: 24px;       /* Кнопки парят в 24px от нижнего края экрана */
+  margin-top: -60px;   /* Поднимает кнопки, накладывая их поверх нижнего края таблицы */
+  height: 60px;
+  
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  pointer-events: none; /* Пропускаем клики сквозь контейнер плашки */
+  z-index: 95;
+}
+
+/* Стилизация круглых кнопок с эффектом стекла */
+.table-scroll-btn {
+  pointer-events: auto; /* Возвращаем кнопкам кликабельность */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #dcdcdc;
+  
+  /* Эффект Glassmorphism */
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+  transition: all 0.15s ease;
+}
+
+.table-scroll-btn:hover:not(:disabled) {
+  /* background-color: #ffffff; */
+
+  border-color: #a0a0a0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: scale(1.03);
+}
+
+.table-scroll-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  box-shadow: none;
+  background-color: rgba(245, 245, 245, 0.6);
+}
+
+/* Скрываем на планшетах и мобилках, где нативный свайп удобнее */
+@media (max-width: 800px) {
+  .table-scroll-controls {
+    display: none !important;
+  }
+}
+
+/* --- */
+
+/* Добавляем полосатость для строк таблицы */
+.description-markdown table tr:nth-child(even) {
+  background-color: #f9f9f9; /* Легкий серый оттенок для четных строк */
+}
+
+body main.light .description-markdown table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+body main.gray .description-markdown table tr:nth-child(even) {
+  background-color: #c1c1c1;
+}
+body main.hard-gray .description-markdown table tr:nth-child(even) {
+  background-color: #424242;
+}
+body main.dark .description-markdown table tr:nth-child(even) {
+  background-color: #303030;
+}
+
+/* --- */
+
 .description-markdown img {
   transition: max-width 0.3s;
   margin: 0 auto;

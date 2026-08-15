@@ -9,6 +9,7 @@ import { HeadingRenderer } from './HeadingRenderer'
 import { ImageRenderer } from './ImageRenderer'
 import { HtmlRenderer } from './HtmlRenderer'
 import { LinkRenderer } from './LinkRenderer'
+import { TableRenderer } from './TableRenderer'
 
 export * from './BlockquoteRenderer'
 export * from './CodeRenderer'
@@ -23,6 +24,7 @@ export const baseRenderers = {
   html: HtmlRenderer,
   image: ImageRenderer,
   link: LinkRenderer,
+  table: TableRenderer,
 }
 
 export const theNotePageRenderers = {

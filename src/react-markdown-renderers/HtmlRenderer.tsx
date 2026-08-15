@@ -55,14 +55,6 @@ const componentTransforms = {
       <CardsExample {...props} />
     </ErrorBoundary>
   ),
-  // StickyHeader: (props: any) => (
-  //   <ErrorBoundary
-  //     FallbackComponent={ErrorFallback}
-  //   // onReset={handleClearText}
-  //   >
-  //     <StickyHeader {...props} />
-  //   </ErrorBoundary>
-  // ),
 }
 
 // @ts-ignore

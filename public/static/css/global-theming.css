@@ -1,10 +1,10 @@
-main {
+body main {
   transition: ease 0.5s all;
 }
 
 /* LIGHT */
 
-main.light {
+body main.light {
   background-color: #fff;
   color: #000;
 }
@@ -54,7 +54,7 @@ body main.light div.article-body ul li::marker {
 
 /* GRAY */
 
-main.gray {
+body main.gray {
   background-color: #d3d3d3;
   /* color: #708090; */
   color: #683434;

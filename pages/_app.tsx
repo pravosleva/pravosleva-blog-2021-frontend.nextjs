@@ -102,13 +102,13 @@ function AppWithRedux(props: MyAppProps) {
         <link rel="stylesheet" href="/static/css/min/gosuslugi.css" />
 
         <link
-          href="/static/css/min/layout.css"
+          href={`/static/css/min/layout.css?ts=${ts}`}
           rel="preload"
           as="style"
           // @ts-ignore
           fetchpriority="high"
         />
-        <link href="/static/css/min/layout.css" rel="stylesheet" />
+        <link href={`/static/css/min/layout.css?ts=${ts}`} rel="stylesheet" />
 
         {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
         {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}

@@ -11,11 +11,20 @@ import { IRootState } from '~/store/IRootState'
 import { setTitle } from '~/store/reducers/pageMeta'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 
+// const defaultBg = {
+//   src: 'https://pravosleva.pro/static/img/blog/best-programming-languages.webp',
+//   size: {
+//     w: 750,
+//     h: 375,
+//   },
+//   type: 'image/webp',
+// }
+
 const defaultBg = {
-  src: 'https://pravosleva.pro/static/img/blog/best-programming-languages.webp',
+  src: 'https://pravosleva.pro/static/img/blog/dog.webp',
   size: {
-    w: 750,
-    h: 375,
+    w: 896,
+    h: 1344,
   },
   type: 'image/webp',
 }
@@ -101,7 +110,7 @@ const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService
 
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
-        <link href="/static/css/article.css" rel="stylesheet" />
+        <link href="/static/css/min/article.css?ts=0" rel="stylesheet" />
 
         {/* <meta property="og:image:width" content="1200"/>
         <meta property="og:image:height" content="630"/> */}

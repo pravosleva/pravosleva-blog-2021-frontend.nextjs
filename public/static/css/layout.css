@@ -559,57 +559,6 @@ pre.text-wrap {
 }
 */
 
-table {
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 0;
-  padding-bottom: 0;
-  padding-left: 0;
-  padding-right: 0;
-  padding-top: 0;
-
-  /*  -- NTOTE: exp 1/2 */
-  /* margin-bottom: 1.45rem; */
-  /* -- */
-  font-size: small;
-  line-height: 1.45rem;
-}
-
-table {
-  display: block;                /* Позволяет работать max-width и overflow */
-  max-width: calc(100vw - 32px); /* Ограничиваем по ширине экрана */
-  overflow-x: auto;              /* Включаем горизонтальный скролл */
-  width: 100%;
-  border-collapse: collapse;
-}
-
-/* Связываем шапку и тело в единую структуру */
-table thead,
-table tbody {
-  display: block;
-  width: 100%;
-}
-
-/* Задаем строкам поведение полноценной таблицы и минимальную ширину */
-table tr {
-  display: table;
-  width: 100%;
-  min-width: 500px;       /* Минимальная ширина, при которой появится скролл */
-  table-layout: fixed;    /* Намертво скрепляет колонки друг под другом */
-}
-
-/* Возвращаем ячейкам их родное поведение */
-table th, 
-table td {
-  display: table-cell;
-  padding: 10px;          /* Аккуратные отступы */
-  border: 1px solid #ccc; /* Границы ячеек для проверки ровности */
-  
-  /* Защита контента: */
-  word-wrap: break-word;  /* Переносить длинные слова, если не помещаются */
-  overflow: hidden;       /* Прятать то, что физически не влезло в ячейку */
-}
-
 fieldset {
   margin-left: 0;
   margin-right: 0;
@@ -749,22 +698,9 @@ abbr[title] {
   cursor: help;
   text-decoration: none;
 }
-thead {
+/* thead {
   text-align: left;
-}
-td,
-th {
-  text-align: left;
-  border-bottom: 1px solid hsla(0, 0%, 0%, 0.12);
-  font-feature-settings: 'tnum';
-  -moz-font-feature-settings: 'tnum';
-  -ms-font-feature-settings: 'tnum';
-  -webkit-font-feature-settings: 'tnum';
-  padding-left: 0.96667rem;
-  padding-right: 0.96667rem;
-  padding-top: 0.725rem;
-  padding-bottom: calc(0.725rem - 1px);
-}
+} */
 
 /*  -- NTOTE: exp 1/2 */
 /* th:first-child,
