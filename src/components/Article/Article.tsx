@@ -63,7 +63,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       <CollapsibleQuickNav pageLimit={5} />
 
       {/* Левая панель содержания (настраивается пропсами) */}
-      <HeadingsQuickNav levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} />
+      <HeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} />
       
       {!!article ? (
         <>
