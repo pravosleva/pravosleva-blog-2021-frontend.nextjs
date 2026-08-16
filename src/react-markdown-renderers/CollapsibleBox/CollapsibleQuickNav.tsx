@@ -200,7 +200,7 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
               currentTheme === 'dark'
               ? (item.isVisible ? '#FF8E53' : '#fff')
               : currentTheme === 'hard-gray'
-                ? (item.isVisible ? '#FF8E53' : '#fff')
+                ? (item.isVisible ? '#39e5ac' : '#fff')
               : currentTheme === 'gray'
                 ? item.isVisible ? '#39e5ac' : '#000'
               : item.isVisible ? '#FF8E53' : '#000',

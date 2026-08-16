@@ -238,7 +238,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
 
     if (item.isActiveProgress || item.isVisible) {
       switch (currentTheme) {
-        case 'gray': return '#39e5ac'
+        case 'hard-gray': case 'gray': return '#39e5ac'
         default: return '#FF8E53'
       }
       
