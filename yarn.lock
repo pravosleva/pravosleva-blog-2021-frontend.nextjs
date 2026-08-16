@@ -2285,10 +2285,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.1.tgz#728ecd95ab207aab8a9a4e421f0422db329232be"
   integrity sha512-HnUhk1Sy9IuKrxEMdIRCxpIqPw6BFsbYSEUO9p/hNw5sMld/+3OLMWQP80F8/db9qsv3qUjs7ZR5bS/R+iinXw==
 
-"@pravosleva/reactive-engine@^1.5.6-beta":
-  version "1.5.6-beta"
-  resolved "https://registry.yarnpkg.com/@pravosleva/reactive-engine/-/reactive-engine-1.5.6-beta.tgz#92c8cf50e4475e86b08f43417842364d37865de4"
-  integrity sha512-zmSn59OwA/WZnKDAs/SbVDsxxbr+UISPDrERSqwlOAUjfasAChXmr35zLdTnL6fyTVAwI8SgFtw0uuAKFRMSfg==
+"@pravosleva/reactive-engine@^1.5.8-beta":
+  version "1.5.8-beta"
+  resolved "https://registry.yarnpkg.com/@pravosleva/reactive-engine/-/reactive-engine-1.5.8-beta.tgz#fcb6ba79e6493d1138caa1e9b91408543e8d54a5"
+  integrity sha512-5zHJs3ar6ZQCxJP2DbCLukofLzyJeSg9BMbciRAEXTcbFmwLtUCf6tZ2yW/4mvZXiuy01rb3q4rW4Oa6vs0YkA==
 
 "@reduxjs/toolkit@^1.8.3":
   version "1.8.3"

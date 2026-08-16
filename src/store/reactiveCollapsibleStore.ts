@@ -1,4 +1,4 @@
-import { ReactiveEngine } from '@pravosleva/reactive-engine'
+import { ReactiveEngine, withThrottleComputed } from '@pravosleva/reactive-engine'
 import { useState, useEffect } from 'react'
 
 export interface ICollapsibleItem {
@@ -19,7 +19,7 @@ export const collapsibleEngine = new ReactiveEngine({
 // Сигнал — это встроенный примитив ReactiveEngine
 export const collapsibleRegistrySignal = collapsibleEngine.signal<Record<string, ICollapsibleItem>>(
   {}, 
-  'global:collapsible:registry'
+  'global:collapsible-boxes'
 )
 
 // Хелпер для генерации валидного HTML ID из заголовка
@@ -68,7 +68,13 @@ export interface IHeadingStoredItem {
 // Новый сигнал для глобального хранения и расчетов левого меню содержания
 export const headingsRegistrySignal = collapsibleEngine.signal<IHeadingStoredItem[]>(
   [], 
-  'global:headings:registry:[IS_OPTIMIZED=1]'
+  'global:article-headings:[IS_OPTIMIZED=0]'
+)
+export const throttledHeadingsSignal = withThrottleComputed(
+  collapsibleEngine,
+  () => headingsRegistrySignal.value,
+  { limit: 300 },
+  'throttled-headings-300:[IS_OPTIMIZED=1]',
 )
 
 // Нам также понадобится утилита перевода тега в число

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { headingsRegistrySignal, useSignalValue, getLevelNum, IHeadingStoredItem } from '~/store/reactiveCollapsibleStore'
+import { headingsRegistrySignal, throttledHeadingsSignal, useSignalValue, getLevelNum, IHeadingStoredItem } from '~/store/reactiveCollapsibleStore'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
 
 interface UseHeadingsNavigationProps {
@@ -14,7 +14,8 @@ export const useHeadingsNavigation = ({
   levels = ['h1', 'h2', 'h3'],
   pageLimit = 5,
 }: UseHeadingsNavigationProps = {}) => {
-  const headings = useSignalValue<IHeadingStoredItem[]>(headingsRegistrySignal)
+  // const headings = useSignalValue<IHeadingStoredItem[]>(headingsRegistrySignal)
+  const headings = useSignalValue<IHeadingStoredItem[]>(throttledHeadingsSignal)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Фабрика скролла (утилита)
@@ -93,7 +94,7 @@ export const useHeadingsNavigation = ({
     // Настройка IntersectionObserver для прогресса
     const observer = new IntersectionObserver(
       (entries) => {
-        let currentHeadings = [...headingsRegistrySignal.value]
+        let currentHeadings = [...throttledHeadingsSignal.value]
         let isVisibilityChanged = false
 
         entries.forEach((entry) => {
