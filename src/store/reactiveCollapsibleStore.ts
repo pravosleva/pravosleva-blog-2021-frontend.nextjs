@@ -53,3 +53,23 @@ export function useSignalValue<T>(signal: { value: T; subscribe?: (cb: (val: T) 
 
   return value
 }
+
+// Интерфейс для левого меню (теперь содержит готовый префикс)
+export interface IHeadingStoredItem {
+  id: string;
+  text: string;
+  tagName: string;
+  isVisible: boolean;
+  isActiveProgress: boolean;
+  prefix: string; // Храним префикс дерева здесь
+  levelDiff: number; // Храним уровень глубины здесь
+}
+
+// Новый сигнал для глобального хранения и расчетов левого меню содержания
+export const headingsRegistrySignal = collapsibleEngine.signal<IHeadingStoredItem[]>(
+  [], 
+  'global:headings:registry:[IS_OPTIMIZED=1]'
+)
+
+// Нам также понадобится утилита перевода тега в число
+export const getLevelNum = (tagName: string) => parseInt(tagName.replace('h', ''), 10) || 1

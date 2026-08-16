@@ -17,17 +17,9 @@ import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
 import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
-// import { useWindowSize } from '~/hooks/useWindowSize'
-// import { breakpoints } from '~/mui/theme'
+import { HeadingsQuickNav } from '~/react-markdown-renderers/HeadingsQuickNav'
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
-  // React.useEffect(() => {
-  //   // You can call the Prism.js API here
-  //   // Use setTimeout to push onto callback queue so it runs after the DOM is updated
-  //   setTimeout(() => Prism.highlightAll(), 1000)
-  // }, [])
-  // const convertedTitle = convert(article?.original.title)
-
   const baseClasses = useBaseStyles()
   const tagList = useMemo(() => getTagList({ originalMsgList: [clsx(article.original.title, article.brief)] }).sortedList, [])
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
@@ -39,24 +31,12 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
           ? '#FF9000' : '#0162c8'
     )
   }, [currentTheme])
-  // const briefGradientLayout = useMemo(() => {
-  //   switch (true) {
-  //     case currentTheme === 'light':
-  //       return 'linear-gradient(rgba(1, 98, 200, 1) 35%, transparent 100%)'
-  //     default:
-  //       return 'linear-gradient(rgba(0, 0, 0, 1), transparent)'
-  //   }
-  // }, [currentTheme])
-  // const { isDesktop } = useWindowSize()
 
   const MemoizedArticleBody = useMemo(() => {
     return (
       <ResponsiveBlock
         isLimited
         isPaddedMobile
-      // style={{
-      //   paddingBottom: '30px',
-      // }}
       >
         <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
           {!!article.original.description ? (
@@ -79,7 +59,12 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
   return (
     <>
-      <CollapsibleQuickNav />
+      {/* Правая панель экстренных блоков */}
+      <CollapsibleQuickNav pageLimit={5} />
+
+      {/* Левая панель содержания (настраивается пропсами) */}
+      <HeadingsQuickNav levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} />
+      
       {!!article ? (
         <>
           <ResponsiveBlock
