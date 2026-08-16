@@ -17,7 +17,7 @@ import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
 import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
-import { HeadingsQuickNav } from '~/react-markdown-renderers/HeadingsQuickNav'
+import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
@@ -64,6 +64,9 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
       {/* Левая панель содержания (настраивается пропсами) */}
       <HeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} />
+
+      {/* Мобильная шторка содержания (показывается автоматически < 800px) */}
+      <HeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} />
       
       {!!article ? (
         <>
@@ -202,7 +205,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                   marginTop: '16px',
                   // border: '1px dashed red',
                   position: 'sticky',
-                  bottom: '16px',
+                  bottom: '76px',
                 }}
               >
                 <div

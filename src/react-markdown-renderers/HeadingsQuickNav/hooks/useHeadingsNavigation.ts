@@ -229,6 +229,36 @@ export const useHeadingsNavigation = ({
     }
   }
 
+  const getActiveBorderCSS = ({ currentTheme }: { currentTheme: string }) => {
+    switch (currentTheme) {
+      case 'light':
+        return '1px solid #FF8E53'
+      case 'gray':
+        return '1px solid #39e5ac'
+      case 'hard-gray':
+        return '1px solid #39e5ac'
+      case 'dark':
+        return '1px solid #FF8E53'
+      default:
+        return '1px solid #FF8E53'
+    }
+  }
+
+  const getActiveBgColor = ({ currentTheme }: { currentTheme: string }) => {
+    switch (currentTheme) {
+      case 'light':
+        return 'rgba(255, 142, 83, 0.1)' 
+      case 'gray':
+        return 'rgba(57, 229, 172, 0.1)'
+      case 'hard-gray':
+        return 'rgba(57, 229, 172, 0.1)'
+      case 'dark':
+        return 'rgba(255, 142, 83, 0.1)' 
+      default:
+        return 'rgba(255, 142, 83, 0.1)' 
+    }
+  }
+
   return {
     headings,              // Весь массив
     visibleItems,          // Постраничный срез для рендера списка кнопок
@@ -239,5 +269,7 @@ export const useHeadingsNavigation = ({
     getHeadingColor,       // Готовые цвета с учетом темы, прогресса и прочтения
     getTextColor,
     getBgColor,
+    getActiveBorderCSS,
+    getActiveBgColor,
   }
 }
