@@ -40,7 +40,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
 
   return (
     <div
-      className={clsx('headings-quick-nav-panel-desktop', 'fadeIn')}
+      className={clsx('headings-quick-nav-panel-desktop', 'fade-in-effect')}
       style={{
         position: 'fixed',
         left: '24px', // Позиционируем строго СЛЕВА экрана
@@ -67,32 +67,6 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
       </div>
 
       {visibleItems.map((heading, idx) => (
-        // <button
-        //   key={heading.id}
-        //   onClick={() => handleScrollTo(heading.id)}
-        //   style={{
-        //     textAlign: 'left',
-        //     padding: '0px',
-        //     display: 'flex',
-        //     flexDirection: 'row',
-        //     alignItems: 'center',
-        //     fontFamily: 'system-ui, monospace, Courier, Courier New',
-        //     border: 'none',
-        //     backgroundColor: bgColor,
-        //     color: getHeadingColor({ item: heading, idx, currentTheme }),
-        //     cursor: 'pointer',
-        //     fontWeight: 'bold',
-        //     transition: 'all 0.15s ease',
-        //     overflow: 'hidden',
-        //     textOverflow: 'ellipsis',
-        //     whiteSpace: 'nowrap',
-        //   }}
-        //   title={heading.text}
-        // >
-        //   <span style={{ whiteSpace: 'pre', fontFamily: heading.levelDiff > 0 ? 'monospace, Courier' : 'inherit' }}>
-        //     {heading.prefix}{heading.text}
-        //   </span>
-        // </button>
         <button
           key={heading.id}
           onClick={() => handleScrollTo(heading.id)}

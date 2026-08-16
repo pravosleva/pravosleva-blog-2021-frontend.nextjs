@@ -7,6 +7,9 @@ interface UseHeadingsNavigationProps {
   pageLimit?: number;
 }
 
+const standardDesktopOffsetTop = 50 + 16
+const elementCriticalHeight = 2
+
 export const useHeadingsNavigation = ({
   levels = ['h1', 'h2', 'h3'],
   pageLimit = 5,
@@ -17,8 +20,8 @@ export const useHeadingsNavigation = ({
   // Фабрика скролла (утилита)
   const scrollToIdRef = useRef(scrollToIdFactory({
     timeout: 0,
-    offsetTop: 20,
-    elementHeightCritery: 200,
+    offsetTop: standardDesktopOffsetTop,
+    elementHeightCritery: elementCriticalHeight,
   }))
 
   // 1. Инициализация: сбор заголовков, нормализация ID и построение дерева
@@ -164,12 +167,12 @@ export const useHeadingsNavigation = ({
           }
           const elementHeight = targetElm.offsetHeight
 
-          if (elementHeight <= 200) {
+          if (elementHeight <= elementCriticalHeight) {
             const windowHeight = window.innerHeight
             const targetCenterPos = absoluteTop - (windowHeight / 2) + (elementHeight / 2)
             return absoluteTop - targetCenterPos
           }
-          return 20
+          return standardDesktopOffsetTop // Стандартный отступ для больших блоков
         }
       }
     })

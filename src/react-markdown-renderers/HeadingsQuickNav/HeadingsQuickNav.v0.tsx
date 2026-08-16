@@ -171,6 +171,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
       headingsRegistrySignal.value = []
     }
   }, [levels])
+  
   // 2. Умная пагинация: слушает изменение активного прогресса в сигнале
   useEffect(() => {
     if (headings.length === 0) return
