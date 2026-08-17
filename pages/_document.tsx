@@ -17,48 +17,89 @@ export default class MyDocument extends Document {
     return (
       <Html lang="ru" prefix="og: http://ogp.me/ns#">
         <Head>
+          {/* Кодировка */}
           <meta charSet="utf-8" />
           <meta httpEquiv='Content-Type' content='text/html;charset=UTF-8' />
-          <link rel="shortcut icon" href="/static/img/logo/favicon.ico" />
 
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-76x76.jpg" sizes="76x76"></link>
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-120x120.jpg" sizes="120x120"></link>
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-152x152.jpg" sizes="152x152"></link>
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-180x180.jpg" sizes="180x180"></link>
+          {/* Фавиконки и иконки Apple Touch */}
+          <link rel="shortcut icon" href="/static/img/logo/favicon.ico" />
+          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-76x76.jpg" sizes="76x76" />
+          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-120x120.jpg" sizes="120x120" />
+          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-152x152.jpg" sizes="152x152" />
+          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-180x180.jpg" sizes="180x180" />
           <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-16x16.jpg" sizes="16x16" />
           <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-32x32.jpg" sizes="32x32" />
           <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-192x192.jpg" sizes="192x192" />
           <link rel="apple-touch-icon" sizes="180x180" href="https://pravosleva.pro/static/img/logo/apple-touch-icon.png" />
           <link rel="icon" type="image/png" sizes="32x32" href="https://pravosleva.pro/static/img/logo/favicon-32x32.png" />
           <link rel="icon" type="image/png" sizes="16x16" href="https://pravosleva.pro/static/img/logo/favicon-16x16.png" />
-
-          {/* <link rel="manifest" href="/static/manifest.json" /> */}
           <link rel="mask-icon" href="/static/img/logo/safari-pinned-tab.svg" color="#5bbad5" />
+
+          {/* Настройки отображения системных приложений */}
           <meta name="msapplication-TileColor" content="#0162c8" />
-          <meta name="theme-color" content="#0162c8" />
-          
-          <link rel="canonical" href='https://pravosleva.pro/'></link>
-          
-          {/* <meta name="application-name" content="Pravosleva" />
-          <meta name="apple-mobile-web-app-title" content="Pravosleva" /> */}
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="msapplication-tap-highlight" content="no" />
+
+          {/* Оставляем строго ОДНУ строчку на каждый CSS файл */}
+          {/* Атрибут fetchpriority теперь поддерживается всеми современными браузерами напрямую */}
+          <link rel="stylesheet" href="/static/css/min/common.css" fetchpriority="high" />
+          <link rel="stylesheet" href="/static/css/min/gosuslugi.css" fetchpriority="high" />
           
+          <link rel="stylesheet" href='/static/css/min/layout.css' fetchpriority="high" />
+          <link rel="stylesheet" href='/static/css/min/backdrop-blur.css' />
+          <link rel="stylesheet" href="/static/css/min/audit-list.css" />
+          
+          {/* Наш главный файл темизации — ему точно нужен высокий приоритет */}
+          <link rel="stylesheet" href="/static/css/min/global-theming.css" fetchpriority="high" />
+          
+          <link rel="stylesheet" href="/static/css/min/standart-form.css" />
+          <link rel="stylesheet" href="/static/css/min/rippled-btn.css" />
+          <link rel="stylesheet" href="/static/css/min/link-as-rippled-btn.css" />
+          <link rel="stylesheet" href="/static/css/custom-breadcrumbs.css" />
+          <link rel="stylesheet" href="/static/prismjs/themes/prism-material-theme.min.css" />
+          <link rel="stylesheet" href="/static/css/min/mapbox-gl@2.6.1.min.css" />
+          <link rel="stylesheet" href="/static/css/variant.react-image-ligthbox.css" />
+
+          <link href="/static/css/min/article.css" rel="stylesheet" />
+
+          {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
+          {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}
+
           {/* <link
+            href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
+            rel="preload"
+            as="style"
+            // @ts-ignore
+            fetchpriority="high"
+            integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
+            crossOrigin="anonymous"
+          />
+          <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
+            integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
+            crossOrigin="anonymous"
           /> */}
-          {/* <style>
-            @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
-          </style> */}
-          {/* <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin='anonymous' />
-          <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet"></link> */}
+
         </Head>
         <body style={{ fontSize: '0.9em' }}>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  try {
+                    var cookies = document.cookie.split('; ');
+                    var themeCookie = cookies.find(function(c) { return c.startsWith('theme='); });
+                    var theme = themeCookie ? themeCookie.split('=') : 'light';
+                    document.body.className = theme;
+                  } catch (e) {}
+                })();
+              `,
+            }}
+          />
           <Main />
           <NextScript />
           {/*

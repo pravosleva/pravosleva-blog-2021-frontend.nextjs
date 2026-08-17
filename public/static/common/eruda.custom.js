@@ -34,4 +34,4 @@ const customEruda = CustomErudaSingletone.getInstance({
   document: window.document,
 })
 
-// customEruda.initIfNecessary()
+customEruda.initIfNecessary()

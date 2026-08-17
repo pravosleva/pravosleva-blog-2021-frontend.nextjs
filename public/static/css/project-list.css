@@ -67,7 +67,7 @@
   -webkit-mask-clip: text, padding-box;
   margin: -1px;
 
-  transition: .3s;
+  /* transition: .3s; */
 }
 .projects-grid--item > figure:hover figcaption {
   --_i: 0%;

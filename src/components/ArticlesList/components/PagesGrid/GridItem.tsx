@@ -1,3 +1,4 @@
+import { memo } from 'react'
 // import { TCRMPage } from '~/store/reducers/crmPages'
 // import { useStyles } from './styles'
 // import {
@@ -14,6 +15,7 @@ import Link from '~/components/Link'
 import { slugMap } from '~/constants/blog/slugMap'
 import { Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+// import Link from 'next/dist/client/link'
 // import PauseIcon from '@mui/icons-material/Pause'
 // import HourglassFullIcon from '@mui/icons-material/HourglassFull'
 
@@ -24,7 +26,7 @@ type TProps = {
 // const defaultBgUrl = '/static/img/blog/coming-soon.avif'
 const defaultBgUrl = '/static/img/blog/coming-soon-v3.jpg'
 
-export const GridItem = ({ article }: TProps) => {
+export const GridItem = memo(({ article }: TProps) => {
   const { original, bg, brief } = article
   const {
     _id,
@@ -70,12 +72,12 @@ export const GridItem = ({ article }: TProps) => {
                   noLinkStyle
 
                   // NOTE: v1
-                  href={`https://pravosleva.pro/blog/article/${slugMap.get(_id)?.slug || ''}`}
-                  target='_self'
+                  href={`/p/${slugMap.get(_id)?.slug || ''}`}
+                  // target='_self'
 
                   // NOTE: v2
-                  // href='/blog/article/[slug]'
-                  // as={`/blog/article/${slugMap.get(_id)?.slug || ''}`}
+                  // href='/p/[note_id]'
+                  // as={`/p/${slugMap.get(_id)?.slug || ''}`}
 
                   endIcon={<ArrowForwardIcon />}
                   sx={{
@@ -99,4 +101,4 @@ export const GridItem = ({ article }: TProps) => {
       </div>
     </div>
   )
-}
+})

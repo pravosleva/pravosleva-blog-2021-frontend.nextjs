@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 // import Head from 'next/head';
-import { AppProps } from 'next/app';
+import App, { AppContext, AppProps } from 'next/app';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider, EmotionCache } from '@emotion/react';
@@ -19,6 +19,7 @@ import { SnackbarProvider } from 'notistack'
 import { ThemeProvider as SCThemeProvider } from 'styled-components'
 import { Theme } from '~/ui-kit.uremont/Theme'
 import Head from 'next/head'
+import Script from 'next/script'
 
 // import '../public/static/css/min/gosuslugi.css'
 import '../public/static/css/min/animations.css'
@@ -37,6 +38,8 @@ import '../public/static/css/min/block-quotes.css'
 import '../public/static/css/min/sp-nw-2022.css'
 
 import { ClientPerfWidget } from '~/components'
+import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase';
+import { setTheme } from '~/store/reducers/globalTheme';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -83,145 +86,14 @@ function AppWithRedux(props: MyAppProps) {
         />
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
-        <link
-          href="/static/css/min/common.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link rel="stylesheet" href="/static/css/min/common.css" />
+        {/* Базовый цвет темы (оставляем тут, так как завязано на рантайм) */}
+        <meta name="theme-color" content="#0162c8" />
+        
+        {/* Каноническая ссылка по умолчанию (страницы смогут перебивать её своим уникальным URL) */}
+        <link rel="canonical" href='https://pravosleva.pro/' />
 
-        <link
-          href="/static/css/min/gosuslugi.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link rel="stylesheet" href="/static/css/min/gosuslugi.css" />
-
-        <link
-          href={`/static/css/min/layout.css?ts=${ts}`}
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href={`/static/css/min/layout.css?ts=${ts}`} rel="stylesheet" />
-
-        {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
-        {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}
-
-        <link
-          href={`/static/css/min/backdrop-blur.css?ts=${ts}`}
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href={`/static/css/min/backdrop-blur.css?ts=${ts}`} rel="stylesheet" />
-
-        <link
-          href="/static/css/min/audit-list.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/min/audit-list.css" rel="stylesheet" />
-
-        <link
-          href={`/static/css/global-theming.css?ts=${ts}`}
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href={`/static/css/global-theming.css?ts=${ts}`} rel="stylesheet" />
-
-        <link
-          href="/static/css/min/standart-form.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/min/standart-form.css" rel="stylesheet" />
-
-        <link
-          href="/static/css/min/rippled-btn.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/min/rippled-btn.css" rel="stylesheet" />
-
-        <link
-          href="/static/css/min/link-as-rippled-btn.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/min/link-as-rippled-btn.css" rel="stylesheet" />
-
-        <link
-          href="/static/css/custom-breadcrumbs.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/custom-breadcrumbs.css" rel="stylesheet" />
-
-        {/* <link href="/static/css/min/block-quotes.css" rel="stylesheet" /> */}
-
-        {/* <link href="/static/css/min/sp-nw-2022.css" rel="stylesheet" /> */}
-
-        <link
-          href="/static/prismjs/themes/prism-material-theme.min.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/prismjs/themes/prism-material-theme.min.css" rel="stylesheet" />
-
-        <link
-          href="/static/css/min/mapbox-gl@2.6.1.min.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/min/mapbox-gl@2.6.1.min.css" rel="stylesheet" />
-
-        {/* <link
-          href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-          integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="stylesheet"
-          href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
-          integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
-          crossOrigin="anonymous"
-        /> */}
-
-        <link
-          href="/static/css/variant.react-image-ligthbox.css"
-          rel="preload"
-          as="style"
-          // @ts-ignore
-          fetchpriority="high"
-        />
-        <link href="/static/css/variant.react-image-ligthbox.css" rel="stylesheet" />
+        {/* Мета-тег viewport (Next.js требует держать его строго в _app) */}
+        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
 
         {/* <script type="text/javascript" defer src='/static/common/eruda.custom.js' /> */}
       </Head>
@@ -266,8 +138,32 @@ function AppWithRedux(props: MyAppProps) {
           </PersistGate>
         )
       }
+
+      {!isServer &&
+        <Script src="/static/common/eruda.custom.js" strategy="lazyOnload" />
+      }
     </>
   )
 }
+
+AppWithRedux.getInitialProps = wrapper.getInitialAppProps(
+  (store) => async (context: AppContext) => {
+    // 1. Запускаем базовую функцию
+    const baseProps = await getInitialPropsBase(context.ctx)
+    const targetTheme = baseProps.themeData.fromCookies || baseProps.themeData.default
+    
+    // 2. Диспатчим тему в стор, чтобы серверный HTML зафиксировал её
+    store.dispatch(setTheme(targetTheme))
+
+    const appProps = await App.getInitialProps(context)
+    return {
+      ...appProps,
+      pageProps: {
+        ...appProps.pageProps,
+        baseProps
+      }
+    }
+  }
+)
 
 export default wrapper.withRedux(AppWithRedux)

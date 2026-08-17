@@ -1,10 +1,11 @@
+import { memo } from 'react'
 // import { useStyles } from './styles'
 import { GridItem } from './GridItem'
 import { TArticle } from '~/components/Article/types'
 // import styles from './PagesGrid.module.scss'
 // import clsx from 'clsx' 
 
-export const PagesGrid = ({ articles }: { articles: TArticle[] }) => {
+export const PagesGrid = memo(({ articles }: { articles: TArticle[] }) => {
   // const classes = useStyles()
   
   return (
@@ -14,4 +15,4 @@ export const PagesGrid = ({ articles }: { articles: TArticle[] }) => {
       }
     </div>
   )
-}
+})
