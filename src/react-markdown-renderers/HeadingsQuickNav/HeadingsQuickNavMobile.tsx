@@ -47,6 +47,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     <>
       {/* ================= КНОПКА-ПЛАШКА СНИЗУ ЭКРАНА ================= */}
       <div
+        className='fade-in-effect'
         onClick={() => setIsOpen(true)}
         style={{
           position: 'fixed',
@@ -73,8 +74,12 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', marginRight: '12px' }}>
-          <span style={{ fontSize: 'small', opacity: 0.6 }}>Содержание:</span>
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{activeHeading?.text}</span>
+          <span style={{ fontSize: 'small', opacity: 0.6 }}>
+            Содержание:
+          </span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {activeHeading?.text}
+          </span>
         </div>
         <span style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}>
           {currentPage} / {totalPages} ☰

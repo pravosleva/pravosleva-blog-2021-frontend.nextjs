@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux';
 import { ReactiveEngine } from '@pravosleva/reactive-engine'
 import { IRootState } from '~/store/IRootState';
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-import { collapsibleEngine, headingsRegistrySignal, IHeadingStoredItem, useSignalValue } from '~/store/reactiveCollapsibleStore';
+import { collapsibleEngine, headingsRegistrySignal, IHeadingStoredItem } from '~/store/reactiveCollapsibleStore';
+import { useSignalValue } from '~/utils/reactive-engine';
 
 const standardDesktopOffsetTop = 50 + 16
 const elementCriticalHeight = 2
@@ -14,26 +15,6 @@ interface HeadingsQuickNavProps {
   levels?: ('h1' | 'h2' | 'h3' | 'h4')[];
   pageLimit?: number;
 }
-
-const getHeadingColor = (
-  theme: 'light' | 'gray' | 'hard-gray' | 'dark' | string, 
-  item: { isCurrent: boolean; isRead: boolean; isUnread: boolean }
-) => {
-  const isDarkTheme = theme === 'dark' || theme === 'hard-gray';
-
-  // 1. ПУНКТ ЧИТАЕТСЯ ПРЯМО СЕЙЧАС (В процессе чтения)
-  if (item.isCurrent) {
-    return '#FF8E53'; // Оранжевый для всех тем
-  }
-
-  // 2. ПУНКТ УЖЕ ПРОЧИТАН (Блок уехал наверх)
-  // if (item.isRead) {
-  //   return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'; // Гасим текст
-  // }
-
-  // 3. ПУНКТ ЕЩЕ НЕ ПРОЧИТАН (Горит обычным цветом)
-  return isDarkTheme ? '#ffffff' : '#000000';
-};
 
 const getLevelNum = (tagName: string) => parseInt(tagName.replace('h', ''), 10) || 1
 

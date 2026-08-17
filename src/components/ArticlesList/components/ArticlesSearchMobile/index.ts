@@ -1,2 +1,1 @@
 export * from './ArticlesSearchMobile'
-export * from './PagesGrid'

@@ -4,9 +4,10 @@ import { Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { IRootState } from '~/store/IRootState'
-import { collapsibleRegistrySignal, useSignalValue, ICollapsibleItem } from '~/store/reactiveCollapsibleStore'
+import { collapsibleRegistrySignal, ICollapsibleItem } from '~/store/reactiveCollapsibleStore'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
 import clsx from 'clsx'
+import { useSignalValue } from '~/utils/reactive-engine'
 
 const standardDesktopOffsetTop = 50 + 16
 interface CollapsibleQuickNavProps {

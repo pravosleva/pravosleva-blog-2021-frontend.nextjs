@@ -4,10 +4,12 @@ import { GoHomeSection } from '~/components/GoHomeSection'
 import { withTranslator } from '~/hocs/withTranslator'
 import { TArticle } from '~/components/Article/types'
 import { BreadCrumbs, NBreadCrumbs } from '~/components/BreadCrumbs'
-import { PagesGrid } from './components'
+import { ArticlesSearchMobile, PagesGrid } from './components'
 import { useCompare } from '~/hooks/useDeepEffect'
 // import { useSearch } from '~/hooks/useSearch'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
 
 type TArticlesListComponentProps = {
   // t: (translatableString: string) => string;
@@ -26,6 +28,8 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
   //   if (isBlogPage) reset()
   //   else if (!!searchQueryTitle.withoutSpaces) set(searchQueryTitle)
   // }, [useCompare([searchQueryTitle])])
+
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 
   const legend = useMemo(() => {
     let defaultResult: NBreadCrumbs.TLegendItem[] = [
@@ -97,6 +101,8 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
       >
         <GoHomeSection t={t} currentLang={currentLang} />
       </ResponsiveBlock>
+
+      {typeof window !== 'undefined' && <ArticlesSearchMobile currentTheme={currentTheme} />}
     </>
   )
 })

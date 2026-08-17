@@ -1,0 +1,89 @@
+import { ReactiveEngine, withDebounce, AbstractService } from '@pravosleva/reactive-engine'
+import { NCodeSamplesSpace } from '~/types'
+import { universalHttpClient } from '~/utils/universalHttpClient'
+
+export class SearchArticlesService extends AbstractService {
+  // Реактивные сигналы-зависимости
+  public searchQuery = this.engine.signal<string>('', 'search:query')
+  public currentPage = this.engine.signal<number>(1, 'search:current_page')
+  
+  // Дополнительные сигналы для хранения пагинации от бэкенда
+  public totalPages = this.engine.signal<number>(1, 'search:total_pages')
+  public totalNotes = this.engine.signal<number>(0, 'search:total_notes')
+
+  private resourceDeps = this.engine.computed(
+    () => [
+      this.searchQuery.value,
+      this.currentPage.value,
+    ],
+    'search:resource_deps'
+  )
+
+  /**
+   * АВТОМАТИЧЕСКИЙ РЕСУРС ПОИСКА
+   * Реагирует на любые изменения searchQuery и currentPage.
+   * Дебаунс накладывается прямо на асинхронную функцию фетчинга.
+   */
+  public searchResource = this.engine.resource(
+    withDebounce(
+      async ([queryValue, page], _abortSignal) => {
+        if (!queryValue || typeof queryValue !== 'string')
+          throw new Error('Empty queryValue!')
+
+        // Копируем вашу логику нормализации слов через запятую
+        const withoutSpaces = queryValue.replace(/\s/g, '')
+        // const page = this.currentPage.value
+
+        const endpoint = `/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}&page=${page}&limit=5`
+        const response = await universalHttpClient.get(endpoint)
+
+        if (response.ok && response.response?.success && Array.isArray(response.response.data)) {
+          const { data, pagination } = response.response
+          
+          // Синхронизируем мета-данные пагинации
+          this.totalPages.value = pagination.totalPages || 1
+          this.totalNotes.value = pagination.totalNotes || 0
+          
+          return data as NCodeSamplesSpace.TNote[]
+        }
+
+        if (!response.response?.success) throw new Error(response.message || 'API ERR (no mgs)')
+        
+        return [] as NCodeSamplesSpace.TNote[]
+      },
+      { delay: 400 } // Задержка дебаунса 400 мс
+    ),
+    this.resourceDeps, // Отслеживаем изменения строки поиска и текущей запрашиваемой страницы
+    {
+      name: 'search:resource:fetch',
+      // Запрещаем отправку запроса на сервер, если инпут пустой или состоит из пробелов
+      validateBeforeFetch: ([queryValue, _page]) =>
+        typeof queryValue !== 'string'
+        ? 'queryValue ERR: Expected string!'
+        : !(queryValue as string).trim()
+          ? 'queryValue ERR: Expected NOT EMPTY string!'
+          : true
+    }
+  )
+
+  public resetPagination(): void {
+    this.currentPage.value = 1
+    this.totalPages.value = 1
+    this.totalNotes.value = 0
+  }
+
+  // Метод полной очистки стейта
+  public reset(): void {
+    this.searchQuery.value = ''
+    this.currentPage.value = 1
+    this.totalPages.value = 1
+    this.totalNotes.value = 0
+  }
+}
+
+export const searchEngine = new ReactiveEngine({
+  logger: {
+    isEnabled: true,
+    instanceName: 'Articles Search'
+  }
+})

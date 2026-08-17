@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { headingsRegistrySignal, throttledHeadingsSignal, useSignalValue, getLevelNum, IHeadingStoredItem } from '~/store/reactiveCollapsibleStore'
+import { headingsRegistrySignal, throttledHeadingsSignal, getLevelNum, IHeadingStoredItem } from '~/store/reactiveCollapsibleStore'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
+import { getBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { useSignalValue } from '~/utils/reactive-engine'
 
 interface UseHeadingsNavigationProps {
   levels?: ('h1' | 'h2' | 'h3' | 'h4')[];
@@ -198,66 +200,6 @@ export const useHeadingsNavigation = ({
       return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)' // Прочитан
     }
     return isDarkTheme ? '#ffffff' : '#000000' // Не прочитан
-  }
-
-  const getBgColor = ({ currentTheme }: { currentTheme: string }) => {
-    switch (currentTheme) {
-      case 'light':
-        return '#ededed'
-      case 'gray':
-        return '#ededed'
-      case 'hard-gray':
-        return 'gray'
-      case 'dark':
-        return 'rgba(255, 255, 255, 0.1)'
-      default:
-        return '#fff'
-    }
-  }
-
-  const getTextColor = ({ currentTheme }: { currentTheme: string }) => {
-    switch (currentTheme) {
-      case 'light':
-        return '#000'
-      case 'gray':
-        return 'inherit'
-      case 'hard-gray':
-        return '#fff'
-      case 'dark':
-        return 'inherit'
-      default:
-        return '#000'
-    }
-  }
-
-  const getActiveBorderCSS = ({ currentTheme }: { currentTheme: string }) => {
-    switch (currentTheme) {
-      case 'light':
-        return '1px solid #FF8E53'
-      case 'gray':
-        return '1px solid #39e5ac'
-      case 'hard-gray':
-        return '1px solid #39e5ac'
-      case 'dark':
-        return '1px solid #FF8E53'
-      default:
-        return '1px solid #FF8E53'
-    }
-  }
-
-  const getActiveBgColor = ({ currentTheme }: { currentTheme: string }) => {
-    switch (currentTheme) {
-      case 'light':
-        return 'rgba(255, 142, 83, 0.1)' 
-      case 'gray':
-        return 'rgba(57, 229, 172, 0.1)'
-      case 'hard-gray':
-        return 'rgba(57, 229, 172, 0.1)'
-      case 'dark':
-        return 'rgba(255, 142, 83, 0.1)' 
-      default:
-        return 'rgba(255, 142, 83, 0.1)' 
-    }
   }
 
   return {
