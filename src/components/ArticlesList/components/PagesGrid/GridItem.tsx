@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { QRCodeSVG } from 'qrcode.react' // Импортируем SVG-версию QR-кода
 import { getNormalizedDate } from '~/utils/time-tools/timeConverter'
 import { TArticle } from '~/components/Article/types'
 import Link from '~/components/Link'
@@ -14,13 +15,15 @@ const defaultBgUrl = '/static/img/blog/coming-soon-v3.jpg'
 
 export const GridItem = memo(({ article }: TProps) => {
   const { original, bg, brief } = article
-  const {
-    _id,
-    createdAt,
-    // description,
-    title,
-  } = original
+  const { _id, createdAt, title } = original
   const url = bg?.src || defaultBgUrl
+
+  // 1. Формируем полную абсолютную ссылку для QR-кода
+  const articleSlug = slugMap.get(_id)?.slug || ''
+  
+  // Важно: QR-код должен содержать полный URL с доменом, чтобы телефон его распознал
+  const host = typeof window !== 'undefined' ? window.location.origin : 'https://pravosleva.pro'
+  const fullArticleUrl = `${host}/p/${articleSlug}`
 
   return (
     <div
@@ -29,8 +32,22 @@ export const GridItem = memo(({ article }: TProps) => {
         backgroundImage: `url(${url})`,
         filter: !!bg?.src ? 'none' : 'grayscale(100%)',
         fontFamily: 'Montserrat, system-ui',
+        position: 'relative', // Контекст для абсолютного позиционирования QR-кода
       }}
     >
+      {/* 2. БЛОК С QR-КОДОМ (Показывается только если у статьи есть слаг) */}
+      {slugMap.has(_id) && (
+        <div className="gridItemQrContainer" title="Сканируйте QR-код, чтобы читать с телефона">
+          <QRCodeSVG 
+            value={fullArticleUrl} 
+            size={64} // Компактный размер для угла карточки
+            bgColor="#ffffff"
+            fgColor="#000000"
+            level="L" // Низкий уровень избыточности для четкости мелкого кода
+          />
+        </div>
+      )}
+
       <div className='gridItemBox'>
         <div className='gridItemTitle'><h3>{title}</h3></div>
         <div className='gridItemDescription'>{brief}</div>
@@ -43,15 +60,7 @@ export const GridItem = memo(({ article }: TProps) => {
                   color='primary'
                   component={Link}
                   noLinkStyle
-
-                  // NOTE: v1
-                  href={`/p/${slugMap.get(_id)?.slug || ''}`}
-                  // target='_self'
-
-                  // NOTE: v2
-                  // href='/p/[note_id]'
-                  // as={`/p/${slugMap.get(_id)?.slug || ''}`}
-
+                  href={`/p/${articleSlug}`}
                   endIcon={<ArrowForwardIcon />}
                   sx={{
                     backgroundColor: '#FFC800',

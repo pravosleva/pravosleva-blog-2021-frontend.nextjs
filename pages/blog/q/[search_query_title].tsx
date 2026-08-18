@@ -69,6 +69,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
 
         <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" />
+        <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" />
       </Head>
       <Layout>
         <ArticlesList

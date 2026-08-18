@@ -83,6 +83,7 @@
     "notistack": "^3.0.1",
     "object-sizeof": "^2.6.3",
     "prismjs": "^1.29.0",
+    "qrcode.react": "^4.2.0",
     "ramda": "^0.29.0",
     "react": "17.x",
     "react-copy-to-clipboard": "^5.1.0",

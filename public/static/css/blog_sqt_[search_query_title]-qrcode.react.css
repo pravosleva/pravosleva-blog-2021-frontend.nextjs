@@ -1,0 +1,35 @@
+/* Базовое состояние QR-кода (скрыт) */
+.gridItemQrContainer {
+  height: 76px;
+
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  
+  /* Белая аккуратная подложка с мягкой тенью */
+  background-color: #ffffff;
+  padding: 6px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  
+  /* Плавный эффект появления */
+  opacity: 0;
+  transform: scale(0.9) translateY(-5px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none; /* Чтобы контейнер не мешал кликам по карточке, пока скрыт */
+}
+
+/* Эффект проявления при наведении мышки на саму карточку статьи */
+.gridItemBg:hover .gridItemQrContainer {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto; /* Возвращаем интерактивность (например для title подсказки) */
+}
+
+/* На мобильных телефонах QR-коды полностью выключаем */
+@media (max-width: 767px) {
+  .gridItemQrContainer {
+    display: none !important;
+  }
+}
