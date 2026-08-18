@@ -261,7 +261,7 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
         <div style={{ position: 'relative', width: '100%', maxWidth: '600px', marginBottom: '20px', flexShrink: 0 }}>
           <input
             type="text"
-            placeholder="Ключевые слова через запятую..."
+            placeholder="Ключевые слова через пробел..."
             value={localInput}
             onChange={(e) => {
               const val = e.target.value

@@ -1,43 +1,112 @@
+/* Базовая сетка */
 .articleListWrapper {
   display: grid;
   column-gap: 16px;
   row-gap: 16px;
-
   grid-auto-flow: dense;
+  max-width: 800px; /* Жесткое ограничение по ТЗ */
+  margin: 0 auto;   /* Центрируем сетку на странице */
 }
-/* h1, h2, h3, h4, h5 { line-break: anywhere; } */
+
+/* Мобильные устройства (до 767px) — всегда в одну колонку */
 @media (max-width: 767px) {
   .articleListWrapper {
     grid-template-columns: minmax(250px, 1fr);
   }
 }
+
+.gridItemTitle h3 {
+  word-break: break-word; /* Запрещает длинным словам распирать сетку */
+  overflow-wrap: break-word;
+  font-size: 1.1rem;
+}
+
+/* Десктоп и планшеты (от 768px) */
 @media (min-width: 768px) {
-  .articleListWrapper {
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  /* Включаем журнальную асимметричную сетку */
+  .articleListWrapper.--magazine-layout {
+    max-width: 800px;
+    /* Делим 800px на 3 равные колонки (~256px каждая с учетом gap) */
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Запирает фракции */
+    box-sizing: border-box;
+  }
+
+  /* По умолчанию все карточки занимают 1 колонку */
+  .articleListWrapper.--magazine-layout .gridItemBg {
+    grid-column: span 1;
+    /* min-height: 260px; */
+  }
+
+  /* ----------------------------------------------------
+     СТРОКА 1: Делаем акцент на самой первой статье (на всю ширину)
+     ---------------------------------------------------- */
+  .articleListWrapper.--magazine-layout .gridItemBg:first-child {
+    grid-column: span 3; /* На все 3 колонки (800px) */
+    /* min-height: 340px;   Повышенная высота для главного баннера */
+  }
+
+  /* ----------------------------------------------------
+     СТРОКА 2: Левая — широкая (2), Правая — узкая (1)
+     Это 2-я и 3-я статьи в массиве.
+     ---------------------------------------------------- */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(2) {
+    grid-column: span 2; /* 2/3 ширины */
+  }
+
+  /* ----------------------------------------------------
+     СТРОКА 3: Левая — узкая (1), Правая — широкая (2)
+     Это 4-я и 5-я статьи в массиве.
+     ---------------------------------------------------- */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5) {
+    grid-column: span 2; /* 2/3 ширины */
+  }
+
+  /* ----------------------------------------------------
+     ЦИКЛИЧЕСКОЕ ЧЕРЕДОВАНИЕ ДЛЯ ВСЕХ ПОСЛЕДУЮЩИХ СТРОК (Паттерн)
+     Формула каждые 4 элемента зацикливает логику 2:1 и 1:2 до бесконечности,
+     если статей в блоге очень много.
+     ---------------------------------------------------- */
+  
+  /* Широкие карточки для четных строк паттерна */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(4n + 6) {
+    grid-column: span 2;
+  }
+  
+  /* Широкие карточки для нечетных строк паттерна */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(4n + 9) {
+    grid-column: span 2;
   }
 }
 
+/* Код анимаций и карточек остается без изменений */
 .gridItemBg {
   object-fit: cover;
   border-radius: 16px;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  /* min-height: 240px; Задаем базовую высоту для обычных карточек */
 
   animation: fadeUp linear;
   animation-timeline: view();
   animation-range: entry 0% cover 30%;
 }
+
 .gridItemBox {
   transition: ease 0.5s all;
   max-width: 100%;
   height: 100%;
   border-radius: inherit;
-  background-image: '';
-  padding: 16px;
+  /* padding: 16px; */
   color: #fff;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+  /* background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 60%, rgba(0, 0, 0, 0) 100%); */
+  padding: 20px;
+  box-sizing: border-box;
+  /* Плавный затемняющий градиент, чтобы белый текст читался на любых фонах */
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
 }
 
 @keyframes fadeUp {

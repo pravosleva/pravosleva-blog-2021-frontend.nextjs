@@ -253,7 +253,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           >
             <input
               type="text"
-              placeholder="Ключевые слова через запятую..."
+              placeholder="Ключевые слова через пробел..."
               value={localInput}
               onChange={(e) => {
                 setLocalInput(e.target.value)

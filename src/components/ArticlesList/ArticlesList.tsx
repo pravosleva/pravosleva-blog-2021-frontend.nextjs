@@ -84,7 +84,7 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
           </Typography>
           {
             !!list && Array.isArray(list) && (
-              <PagesGrid articles={list} />
+              <PagesGrid articles={list} variant='magazine' />
             )
           }
         </div>

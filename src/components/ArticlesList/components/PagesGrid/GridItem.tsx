@@ -69,7 +69,7 @@ export const GridItem = memo(({ article }: TProps) => {
               </div>
             ) : null
           }
-          <div>{!!createdAt ? getNormalizedDate(createdAt) : 'No date'}</div>
+          <div style={{ fontSize: 'small' }}>{!!createdAt ? getNormalizedDate(createdAt) : 'No date'}</div>
         </div>
       </div>
     </div>
