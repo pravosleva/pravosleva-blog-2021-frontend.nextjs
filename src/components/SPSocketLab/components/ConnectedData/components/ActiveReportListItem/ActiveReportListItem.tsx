@@ -446,7 +446,7 @@ export const ActiveReportListItem = memo(() => {
         }}
       >
         {/* <i className="fas fa-times-circle" style={{ fontSize: '35px' }} /> */}
-        <CloseIcon fontSize='large' />
+        <CloseIcon fontSize='medium' />
       </Fab>
     </>
   )

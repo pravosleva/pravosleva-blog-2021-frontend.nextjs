@@ -1,1 +1,2 @@
-export * from './WebShareBtn'
+export * from './desktop'
+export * from './mobile'

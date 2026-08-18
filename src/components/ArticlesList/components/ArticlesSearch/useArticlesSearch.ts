@@ -22,6 +22,8 @@ export const useArticlesSearch = () => {
     __resultsRef.current = []
   }
 
+  const isSearchPanelOpen = useReactiveValue0(searchArticlesService.isSearchPanelOpen)
+
   return {
     query,
     results: data, // Отдаем закешированные данные, чтобы экран не "мигал" белизной при загрузке
@@ -33,6 +35,12 @@ export const useArticlesSearch = () => {
     totalNotes,
     setQuery: (q: string) => { searchArticlesService.changeQuery(q) },
     setCurrentPage: (page: number) => { searchArticlesService.currentPage.value = page },
-    reset: () => searchArticlesService.reset()
+    // Метод изменения лимита выдачи (потребовалось в зависимости от ширины устройства)
+    setLimit: (l: number) => { searchArticlesService.limit.value = l }, 
+    reset: () => searchArticlesService.reset(),
+
+    // #SEARCH_PANEL_EXP 3/3
+    isSearchPanelOpen,
+    setIsSearchPanelOpen: (val: boolean) => { searchArticlesService.isSearchPanelOpen.value = val }
   }
 }

@@ -4,7 +4,7 @@ import { GoHomeSection } from '~/components/GoHomeSection'
 import { withTranslator } from '~/hocs/withTranslator'
 import { TArticle } from '~/components/Article/types'
 import { BreadCrumbs, NBreadCrumbs } from '~/components/BreadCrumbs'
-import { ArticlesSearchMobile, PagesGrid } from './components'
+import { ArticlesSearchDesktop, ArticlesSearchMobile, PagesGrid } from './components'
 import { useCompare } from '~/hooks/useDeepEffect'
 // import { useSearch } from '~/hooks/useSearch'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
@@ -103,6 +103,8 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
       </ResponsiveBlock>
 
       {typeof window !== 'undefined' && <ArticlesSearchMobile currentTheme={currentTheme} />}
+
+      {typeof window !== 'undefined' && <ArticlesSearchDesktop currentTheme={currentTheme} />}
     </>
   )
 })

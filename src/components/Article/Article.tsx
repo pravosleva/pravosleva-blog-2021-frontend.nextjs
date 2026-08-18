@@ -7,7 +7,7 @@ import { withTranslator } from '~/hocs/withTranslator'
 import { baseRenderers } from '~/react-markdown-renderers'
 import { TArticleComponentProps } from './types'
 import gfm from 'remark-gfm'
-import { GoHomeSection, BreadCrumbs, WebShareBtn } from '~/components'
+import { GoHomeSection, BreadCrumbs, WebShareBtn, WebShareDesktopBtn } from '~/components'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // import { convert } from 'html-to-text'
 import clsx from 'clsx'
@@ -18,6 +18,9 @@ import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
 import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
 import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
+import { ArticlesSearchDesktop } from '../ArticlesList/components'
+import { useIsDesktop } from '~/hooks/useIsDesktop'
+import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
@@ -57,8 +60,14 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
     )
   }, [article.original.description])
 
+  const isDesktop = useIsDesktop()
+  const { isSearchPanelOpen } = useArticlesSearch()
+
   return (
     <>
+      {/* Универсальный поиск по сайту */}
+      {isDesktop && typeof window !== 'undefined' && <ArticlesSearchDesktop currentTheme={currentTheme} />}
+
       {/* Правая панель экстренных блоков */}
       <CollapsibleQuickNav pageLimit={5} />
 
@@ -197,7 +206,15 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
           {/* NOTE: Shared section */}
           {
-            !!article?.slug && (
+            typeof window !== 'undefined' && !!article?.slug && (
+              isDesktop
+              ? <WebShareDesktopBtn
+                url={`https://pravosleva.pro/p/${article.slug}`}
+                title={article.original.title} 
+                // text={currentArticleDescription}
+                isSearchPanelOpen={isSearchPanelOpen}
+              />
+              : (
               <ResponsiveBlock
                 isLimited
                 isPaddedMobile
@@ -232,7 +249,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                 </div>
               </ResponsiveBlock>
             )
-          }
+          )}
 
           <ResponsiveBlock
             isLimited

@@ -276,10 +276,10 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
               {
                 isTestedIFrameOpened ? (
                   // <i className="fas fa-arrow-left" style={{ fontSize: '35px' }} />
-                  <ArrowBackIcon fontSize='large' />
+                  <ArrowBackIcon fontSize='medium' />
                 ) : (
                   // <i className="fas fa-mobile" style={{ fontSize: '35px' }} />
-                  <PhoneIphoneIcon fontSize='large' />
+                  <PhoneIphoneIcon fontSize='medium' />
                 )
               }
             </Fab>

@@ -19,15 +19,20 @@ export class SearchArticlesService extends AbstractService {
   // 1. Инициализируем реактивные сигналы-зависимости. searchQuery сразу получает значение из LocalStorage
   public searchQuery = this.engine.signal<string>(getInitialQuery(), 'search:query')
   public currentPage = this.engine.signal<number>(1, 'search:current_page')
-  
+
   // Дополнительные сигналы для хранения пагинации от бэкенда
   public totalPages = this.engine.signal<number>(1, 'search:total_pages')
   public totalNotes = this.engine.signal<number>(0, 'search:total_notes')
+  public limit = this.engine.signal<number>(5, 'search:limit')
+
+  // #SEARCH_PANEL_EXP 1/3
+  public isSearchPanelOpen = this.engine.signal<boolean>(false, 'search:is_panel_open')
 
   private resourceDeps = this.engine.computed(
     () => [
       this.searchQuery.value,
       this.currentPage.value,
+      this.limit.value,
     ],
     'search:resource_deps'
   )
@@ -52,15 +57,26 @@ export class SearchArticlesService extends AbstractService {
    */
   public searchResource = this.engine.resource(
     withDebounce(
-      async ([queryValue, page], _abortSignal) => {
+      async ([queryValue, page, limit], _abortSignal) => {
         if (!queryValue || typeof queryValue !== 'string')
           throw new Error('Empty queryValue!')
 
-        // Копируем вашу логику нормализации слов через запятую
-        const withoutSpaces = queryValue.replace(/\s/g, '')
-        // const page = this.currentPage.value
+        /**
+         * НОВАЯ ЛОГИКА НОРМАЛИЗАЦИИ:
+         * 1. .trim() — убираем пробелы по краям
+         * 2. .toLowerCase() — приводим всю строку к нижнему регистру
+         * 3. .replace(/\s+/g, ' ') — заменяем любые группы пробелов (двойные, тройные, табы) на один пробел
+         * 4. .split(' ') — бьем строку на массив отдельных слов
+         * 5. .join(',') — склеиваем слова через запятую для API
+         */
+        const normalizedWords = queryValue
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, ' ')
+          .split(' ')
+          .join(',')
 
-        const endpoint = `/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}&page=${page}&limit=5`
+        const endpoint = `/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(normalizedWords)}&page=${page}&limit=${limit}`
         const response = await universalHttpClient.get(endpoint)
 
         if (response.ok && response.response?.success && Array.isArray(response.response.data)) {
@@ -136,6 +152,9 @@ export class SearchArticlesService extends AbstractService {
     if (typeof window !== 'undefined') {
       try { localStorage.removeItem(STORAGE_KEY_QUERY) } catch (e) { console.error(e) }
     }
+
+    // #SEARCH_PANEL_EXP 2/3
+    this.isSearchPanelOpen.value = false
   }
 }
 

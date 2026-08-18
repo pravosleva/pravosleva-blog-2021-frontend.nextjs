@@ -80,7 +80,7 @@ export const ScrollTopBtn = memo(() => {
       isShowed={isMoreThan2Screens}
       themeName={currentTheme}
     >
-      <ArrowUpwardIcon fontSize='large' />
+      <ArrowUpwardIcon fontSize='medium' />
     </StyledScrollTopBtn>
   )
 })

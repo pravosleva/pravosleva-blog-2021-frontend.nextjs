@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 // import { getBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
-import { useArticlesSearch } from './useArticlesSearch'
 import { getBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
 import { pluralize } from '~/utils/string-tools/pluralize';
+import { useArticlesSearch } from '../useArticlesSearch'
+import { useIsDesktop } from '~/hooks/useIsDesktop';
 
 interface ArticlesSearchMobileProps {
   currentTheme: string;
@@ -18,12 +19,20 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
     totalNotes,
     setQuery,
     setCurrentPage,
+    setLimit,
     reset
   } = useArticlesSearch()
 
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [localInput, setLocalInput] = useState(query) // Локальный стейт для мгновенного ввода символов в инпут
+
+  const isDesktop = useIsDesktop(800)
+  useEffect(() => {
+    if (!isDesktop) {
+      setLimit(5) // Для мобилки выставляем лимит 5
+    }
+  }, [isDesktop])
 
   useEffect(() => {
     const checkWidth = () => setIsMobile(window.innerWidth < 800)
