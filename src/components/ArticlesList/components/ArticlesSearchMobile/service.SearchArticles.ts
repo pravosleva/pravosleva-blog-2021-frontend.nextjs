@@ -2,9 +2,22 @@ import { ReactiveEngine, withDebounce, AbstractService } from '@pravosleva/react
 import { NCodeSamplesSpace } from '~/types'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 
+const STORAGE_KEY_QUERY = 'search:ls:query'
+// Вспомогательная утилита для безопасного чтения QUERY на этапе SSR
+const getInitialQuery = (): string => {
+  if (typeof window !== 'undefined') {
+    try {
+      return localStorage.getItem(STORAGE_KEY_QUERY) || ''
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  return ''
+}
+
 export class SearchArticlesService extends AbstractService {
-  // Реактивные сигналы-зависимости
-  public searchQuery = this.engine.signal<string>('', 'search:query')
+  // 1. Инициализируем реактивные сигналы-зависимости. searchQuery сразу получает значение из LocalStorage
+  public searchQuery = this.engine.signal<string>(getInitialQuery(), 'search:query')
   public currentPage = this.engine.signal<number>(1, 'search:current_page')
   
   // Дополнительные сигналы для хранения пагинации от бэкенда
@@ -18,6 +31,19 @@ export class SearchArticlesService extends AbstractService {
     ],
     'search:resource_deps'
   )
+
+  /**
+   * ✅ BUGFIX: Явный публичный метод для изменения строки поиска.
+   * Он вызывается только тогда, когда ПОЛЬЗОВАТЕЛЬ вводит текст в инпут.
+   * Никакие внутренние тики дебаунса ресурса его не затриггерят.
+   */
+  public changeQuery(newQuery: string): void {
+    this.searchQuery.value = newQuery
+    // Если мы ушли на дальние страницы, принудительно возвращаем пользователя на 1-ю
+    if (this.currentPage.value !== 1) {
+      this.resetPagination()
+    }
+  }
 
   /**
    * АВТОМАТИЧЕСКИЙ РЕСУРС ПОИСКА
@@ -66,6 +92,35 @@ export class SearchArticlesService extends AbstractService {
     }
   )
 
+  /**
+   * 2. ПРИВАТНЫЙ ЭФФЕКТ ДЛЯ СОХРАНЕНИЯ QUERY В LOCALSTORAGE
+   * Создается как свойство класса. Движок подхватит его автоматически при старте.
+   */
+  private persistEffect = this.engine.effect(() => {
+    if (typeof window === 'undefined') return
+    const query = this.searchQuery.value
+
+    try {
+      if (query) {
+        localStorage.setItem(STORAGE_KEY_QUERY, query)
+      } else {
+        localStorage.removeItem(STORAGE_KEY_QUERY)
+      }
+    } catch (e) {
+      console.error('Ошибка записи QUERY в localStorage:', e)
+    }
+  }, 'effect:persist-search-query')
+
+  /**
+   * ⛔ 3. ПРИВАТНАЯ ПОДПИСКА ДЛЯ СБРОСА ПАГИНАЦИИ
+   * Автоматически сбрасывает страницу на 1 при изменении строки поиска.
+   */
+  // private __resetPageSubscription = this.searchQuery.subscribe((_queryValue) => {
+  //   if (this.currentPage.value !== 1) {
+  //     this.resetPagination()
+  //   }
+  // })
+
   public resetPagination(): void {
     this.currentPage.value = 1
     this.totalPages.value = 1
@@ -78,12 +133,16 @@ export class SearchArticlesService extends AbstractService {
     this.currentPage.value = 1
     this.totalPages.value = 1
     this.totalNotes.value = 0
+    if (typeof window !== 'undefined') {
+      try { localStorage.removeItem(STORAGE_KEY_QUERY) } catch (e) { console.error(e) }
+    }
   }
 }
 
 export const searchEngine = new ReactiveEngine({
   logger: {
     isEnabled: true,
-    instanceName: 'Articles Search'
+    isCoreOptimizationDebugEnabled: true,
+    instanceName: 'Articles Search',
   }
 })

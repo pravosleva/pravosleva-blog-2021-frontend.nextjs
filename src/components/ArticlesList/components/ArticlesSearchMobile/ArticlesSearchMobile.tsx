@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 // import { getBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { useArticlesSearch } from './useArticlesSearch'
 import { getBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
+import { pluralize } from '~/utils/string-tools/pluralize';
 
 interface ArticlesSearchMobileProps {
   currentTheme: string;
@@ -22,7 +23,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
 
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  const [localInput, setLocalInput] = useState('') // Локальный стейт для мгновенного ввода символов в инпут
+  const [localInput, setLocalInput] = useState(query) // Локальный стейт для мгновенного ввода символов в инпут
 
   useEffect(() => {
     const checkWidth = () => setIsMobile(window.innerWidth < 800)
@@ -85,7 +86,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           // style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: elementBg, color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}
           style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}
         >
-          {!!totalNotes ? `${totalNotes} находок 🔍` : '🔍'}
+          {!!totalNotes ? `${pluralize({ count: totalNotes, titles: ['находка', 'находки', 'находок'] })} 🔍` : '🔍'}
         </span>
       </div>
 
@@ -170,7 +171,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                   <div
                     style={{
                       fontSize: '14px', fontWeight: 'bold',
-                      color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : '#FF8E53',
+                      color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : currentTheme === 'light' ? '#2672b6' : '#FF8E53',
                       display: '-webkit-box',
                       WebkitLineClamp: 2,           // Задаем максимальное количество строк (2 строки)
                       WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
@@ -264,7 +265,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
             />
             {localInput && (
               <button 
-                onClick={() => { reset(); setLocalInput(''); }}
+                onClick={() => { setLocalInput(''); reset(); }}
                 style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(calc(-50% + 6px))', border: 'none', background: 'transparent', color: '#888', fontSize: '16px', cursor: 'pointer' }}
               >
                 ✕

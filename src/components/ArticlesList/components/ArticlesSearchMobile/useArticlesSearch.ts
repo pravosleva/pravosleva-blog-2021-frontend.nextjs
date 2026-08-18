@@ -1,8 +1,7 @@
 import { NCodeSamplesSpace } from '~/types'
-import { searchEngine, SearchArticlesService } from './SearchArticlesService'
+import { searchEngine, SearchArticlesService } from './service.SearchArticles'
 import { useRef } from 'react'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
-// import { useReactiveResource, useSignalValue } from '~/utils/reactive-engine'
 
 export const useArticlesSearch = () => {
   const searchArticlesService = searchEngine.inject(SearchArticlesService)
@@ -32,7 +31,7 @@ export const useArticlesSearch = () => {
     currentPage,
     totalPages,
     totalNotes,
-    setQuery: (q: string) => { searchArticlesService.searchQuery.value = q },
+    setQuery: (q: string) => { searchArticlesService.changeQuery(q) },
     setCurrentPage: (page: number) => { searchArticlesService.currentPage.value = page },
     reset: () => searchArticlesService.reset()
   }
