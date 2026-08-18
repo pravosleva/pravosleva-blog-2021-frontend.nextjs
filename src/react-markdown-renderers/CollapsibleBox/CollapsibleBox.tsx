@@ -21,6 +21,8 @@ type TProps = {
   isEnabledForNavigation?: '1' | '0';
 }
 
+const standardDesktopOffsetTop = 50 + 16
+
 export const CollapsibleBox = withTranslator<any>(({
   header,
   text,
@@ -29,8 +31,8 @@ export const CollapsibleBox = withTranslator<any>(({
   isEnabledForNavigation = '0', // Дефолтное значение '0' (игнорируется)
 }: TProps) => {
   const scrollToIdRef = useRef(scrollToIdFactory({
-    timeout: 250,
-    offsetTop: 16,
+    timeout: 0,
+    offsetTop: standardDesktopOffsetTop,
     elementHeightCritery: 2, // NOTE: Все что больше 2px по высоте будет проскроллено в топ страницы
   }))
   const rootRef = useRef<HTMLDivElement>(null)

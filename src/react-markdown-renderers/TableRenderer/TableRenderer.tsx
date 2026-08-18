@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { FloatingHeader } from './FloatingHeader'
+import { useIsDesktop } from '~/hooks/useIsDesktop';
 
 interface TableRendererProps {
   children: React.ReactNode;
@@ -93,6 +94,8 @@ export const TableRenderer: React.FC<TableRendererProps> = ({
     }
   }, [withFloatingHeader, withScrollButtons, topOffset])
 
+  const isDesktop = useIsDesktop()
+
   return (
     <div ref={rootRef} className="table-root-wrapper" style={{ position: 'relative', width: '100%' }}>
       
@@ -102,7 +105,11 @@ export const TableRenderer: React.FC<TableRendererProps> = ({
           tableRef={tableRef}
           scrollContainerRef={scrollContainerRef}
           isVisible={isHeaderFloating}
-          topOffset={topOffset}
+          // topOffset={isDesktop ? 42 : 36}
+          topOffset={isDesktop ? 50 : 40}
+          // -- TODO: Сделать обертку, вынести зависимость выше. Здесь должно быть это:
+          // topOffset={topOffset}
+          // --
         />
       )}
 

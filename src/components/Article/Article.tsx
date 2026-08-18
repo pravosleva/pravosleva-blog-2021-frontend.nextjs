@@ -1,15 +1,12 @@
-import { useMemo, memo } from 'react'
-// import Link from 'next/link'
+import { useMemo, memo, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
-// import Prism from 'prismjs'
 import { withTranslator } from '~/hocs/withTranslator'
 import { baseRenderers } from '~/react-markdown-renderers'
 import { TArticleComponentProps } from './types'
 import gfm from 'remark-gfm'
 import { GoHomeSection, BreadCrumbs, WebShareBtn, WebShareDesktopBtn } from '~/components'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
-// import { convert } from 'html-to-text'
 import clsx from 'clsx'
 import { useBaseStyles } from '~/mui/useBaseStyles'
 import { getTagList } from '~/utils/string-tools/getTagList'
@@ -21,127 +18,104 @@ import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-rende
 import { ArticlesSearchDesktop } from '../ArticlesList/components'
 import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
+import { StickyArticleHeaderComponent } from './StickyArticleHeader'
+import { DesktopOnly, MobileOnly } from './render-utils'
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
-  const tagList = useMemo(() => getTagList({ originalMsgList: [clsx(article.original.title, article.brief)] }).sortedList, [])
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  const isDesktop = useIsDesktop(800) // Наш безопасный адаптивный хук
+  const { isSearchPanelOpen } = useArticlesSearch() // Глобальный реактивный стейт шторки
+
+  // 1. Оптимизация тегов: собираем список один раз при изменении статьи
+  const tagList = useMemo(() => {
+    return getTagList({ 
+      originalMsgList: [clsx(article?.original?.title, article?.brief)] 
+    }).sortedList
+  }, [article?.original?.title, article?.brief])
+
+  // Динамический расчет цвета ссылок под тему
   const linkColor = useMemo(() => {
-    return (
-      currentTheme === 'hard-gray'
-        ? '#fff'
-        : currentTheme === 'dark'
-          ? '#FF9000' : '#0162c8'
-    )
+    return currentTheme === 'hard-gray'
+      ? '#fff'
+      : currentTheme === 'dark'
+        ? '#FF9000' 
+        : '#0162c8'
   }, [currentTheme])
 
-  const MemoizedArticleBody = useMemo(() => {
-    return (
-      <ResponsiveBlock
-        isLimited
-        isPaddedMobile
-      >
-        <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
-          {!!article.original.description ? (
-            <div className="description-markdown">
-              <ReactMarkdown
-                // key={Math.random()}
-                renderers={baseRenderers}
-                // @ts-ignore
-                plugins={[gfm, { singleTilde: false }]}
-                children={article.original.description}
-              />
-            </div>
-          ) : (
-            'No body'
-          )}
-        </div>
-      </ResponsiveBlock>
-    )
-  }, [article.original.description])
-
-  const isDesktop = useIsDesktop()
-  const { isSearchPanelOpen } = useArticlesSearch()
+  // Реф для отслеживания положения главного баннера
+  const bannerRef = useRef<HTMLDivElement>(null)
 
   return (
     <>
-      {/* Универсальный поиск по сайту */}
-      {isDesktop && typeof window !== 'undefined' && <ArticlesSearchDesktop currentTheme={currentTheme} />}
+      {/* 
+        СЖАТАЯ КОПИЯ ЗАГОЛОВКА (Показывается только на десктопе при скролле): Рендерим изолированную шапку и передаем ей реф.
+        Теперь при скролле обновляется ТОЛЬКО этот изолированный компонент,
+        а ReactMarkdown ниже остается неподвижным и не ререндерится!
+      */}
+      <StickyArticleHeaderComponent 
+        currentTheme={currentTheme}
+        linkColor={linkColor}
+        article={article}
+        bannerRef={bannerRef}
+      />
 
+      {/* 
+        Универсальный поиск по сайту.
+        ИСПРАВЛЕНО: Убрали typeof window. Хук isDesktop гарантирует, 
+        что код выполнится только на клиенте и не сломает гидратацию Next.js.
+      */}
+      <DesktopOnly>
+        <ArticlesSearchDesktop currentTheme={currentTheme} />
+      </DesktopOnly>
+      
       {/* Правая панель экстренных блоков */}
       <CollapsibleQuickNav pageLimit={5} />
-
-      {/* Левая панель содержания (настраивается пропсами) */}
-      <HeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} />
-
-      {/* Мобильная шторка содержания (показывается автоматически < 800px) */}
-      <HeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} />
       
+      {/* Левая панель содержания (десктоп) */}
+      <HeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} />
+      
+      {/* Мобильная шторка содержания (автоматически < 800px) */}
+      <HeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} />
+
       {!!article ? (
         <>
-          <ResponsiveBlock
-            isPaddedMobile
-            isLimited
-          >
+          {/* Хлебные крошки */}
+          <ResponsiveBlock isPaddedMobile isLimited>
             <BreadCrumbs
               t={t}
-              // lastLabel={article?.original.title}
               legend={[
-                // {
-                //   link: '/',
-                //   labelCode: 'HOME',
-                //   noTranslate: false
-                // },
-                {
-                  link: '/blog',
-                  labelCode: 'BLOG',
-                },
-                {
-                  labelCode: article?.original.title,
-                  noTranslate: true,
-                }
+                { link: '/blog', labelCode: 'BLOG' },
+                { labelCode: article.original.title, noTranslate: true }
               ]}
             />
           </ResponsiveBlock>
 
-          {!!article?.bg && (
+          {/* Главный широкоформатный баннер статьи */}
+          {!!article.bg && (
             <ResponsiveBlock isLimitedForDesktop>
-              <div
-                style={{
-                  // border: '1px solid red',
-                  // background: briefGradientLayout,
-                }}
-                className={styles['external-article-wrapper']}
-              >
+              <div ref={bannerRef} className={styles['external-article-wrapper']}>
                 <article
                   className='article-wrapper'
-
                   style={{
-                    content: '',
-                    background: `url(${!!article.bg ? article.bg?.src : '/static/img/blog/coming-soon-v3.jpg'})`,
+                    background: `url(${article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    // filter: 'grayscale(1)',
-                    // borderRadius: '16px',
                   }}
                 >
                   <div
-                    className={
-                      clsx(
-                        'tiles-grid-item-in-article',
-                        'white',
-                        'article-wrapper__big-image-as-container'
-                      )
-                    }
-                    style={{
-                      backdropFilter: 'grayscale(1)',
-                    }}
+                    className={clsx(
+                      'tiles-grid-item-in-article',
+                      'white',
+                      'article-wrapper__big-image-as-container'
+                    )}
+                    style={{ backdropFilter: 'grayscale(1)' }}
                   >
                     <h1 className='article-page-title'>
-                      {article?.original.title}
+                      {article.original.title}
                     </h1>
-                    {article?.brief && (
+                    {article.brief && (
                       <div
                         className='article-wrapper__big-image-as-container__brief'
                         style={{ fontSize: '0.8em', maxWidth: '550px' }}
@@ -158,27 +132,32 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
             </ResponsiveBlock>
           )}
 
-          {MemoizedArticleBody}
+          {/* 
+            Тело статьи (Текст в формате Markdown)
+            ИСПРАВЛЕНО: Убран деструктивный useMemo. Теперь при смене темы 
+            оформление кода и блоков контента мгновенно и корректно перерисовывается.
+          */}
+          <ResponsiveBlock isLimited isPaddedMobile>
+            <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
+              {!!article.original.description ? (
+                <div className="description-markdown">
+                  <ReactMarkdown
+                    renderers={baseRenderers}
+                    // @ts-ignore
+                    plugins={[gfm, { singleTilde: false }]}
+                    children={article.original.description}
+                  />
+                </div>
+              ) : (
+                'No body'
+              )}
+            </div>
+          </ResponsiveBlock>
 
+          {/* Облако тегов внизу статьи */}
           {tagList.length > 0 && (
-            <ResponsiveBlock
-              isLimited
-              isPaddedMobile
-              style={{
-                // border: '1px solid red',
-                // marginBottom: '30px',
-                paddingTop: '16px',
-                // paddingBottom: '16px',
-              }}
-            >
-              <div
-                // className="special-link-wrapper--tags fade-in-effect unselectable"
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '16px',
-                }}
-              >
+            <ResponsiveBlock isLimited isPaddedMobile style={{ paddingTop: '16px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
                 {tagList.map((tag) => (
                   <a
                     className={clsx('truncate')}
@@ -190,88 +169,62 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                     key={tag}
                     href={`/blog/q/${tag.substring(1)}`}
                   >
-                    {/* <i className="fas fa-tag"></i> */}
-                    <span
-                      style={{
-                        // marginLeft: '10px',
-                        whiteSpace: 'pre',
-                      }}
-                      className='truncate'
-                    >{tag}</span>
+                    <span style={{ whiteSpace: 'pre' }} className='truncate'>{tag}</span>
                   </a>
                 ))}
               </div>
             </ResponsiveBlock>
           )}
 
-          {/* NOTE: Shared section */}
-          {
-            typeof window !== 'undefined' && !!article?.slug && (
-              isDesktop
-              ? <WebShareDesktopBtn
-                url={`https://pravosleva.pro/p/${article.slug}`}
-                title={article.original.title} 
-                // text={currentArticleDescription}
-                isSearchPanelOpen={isSearchPanelOpen}
-              />
-              : (
-              <ResponsiveBlock
-                isLimited
-                isPaddedMobile
+          {/* Блок шаринга статьи (Адаптивный виджет) */}
+          {!!article.slug && (
+            <>
+              <DesktopOnly>
+                <WebShareDesktopBtn
+                  url={`https://pravosleva.pro/p/${article.slug}`}
+                  title={article.original.title} 
+                  isSearchPanelOpen={isSearchPanelOpen}
+                />
+              </DesktopOnly>
+              <MobileOnly
                 style={{
-                  marginTop: '16px',
-                  // border: '1px dashed red',
+                  margin: '16px 0px 0px 0px',
+                  paddingLeft: '16px',
                   position: 'sticky',
                   bottom: '76px',
+                  zIndex: 10,
+                  width: 'fit-content',
                 }}
               >
                 <div
                   style={{
                     boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 7px -1px',
-                    // border: '2px solid lightgray',
                     padding: '8px',
                     borderRadius: '24px',
-                    // width: isDesktop ? 'fit-content' : '100%',
                     width: 'fit-content',
                   }}
-                  className={clsx({
-                    // 'backdrop-blur--subdark': currentTheme !== 'dark',
-                    // 'backdrop-blur--lite': currentTheme === 'dark',
-                    'backdrop-blur--lite': true,
-                  })}
+                  className={clsx({ 'backdrop-blur--lite': true })}
                 >
                   <WebShareBtn
-                    // url={itemData.url || `${PUBLIC_URL}/#/news/${id}`}
                     url={`https://pravosleva.pro/p/${article.slug}`}
                     title={article.original.title}
-                    text={clsx('Pravo$leva', '|', article?.brief)}
+                    text={clsx('Pravo$leva', '|', article.brief)}
                   />
                 </div>
-              </ResponsiveBlock>
-            )
+              </MobileOnly>
+            </>
           )}
 
+          {/* Кнопка "На главную" */}
           <ResponsiveBlock
             isLimited
-            // isLastSection
-            style={{
-              paddingTop: '50px',
-              paddingBottom: '50px',
-            }}
+            style={{ paddingTop: '50px', paddingBottom: '50px' }}
             isPaddedMobile
           >
             <GoHomeSection t={t} currentLang={currentLang} />
           </ResponsiveBlock>
         </>
-      ) : (
-        <>
-          <h1>Not found, try again...</h1>
-          <div>
-            Hey, where is the f*ckn <code>id</code> in query params?
-          </div>
-        </>
-      )
-      }
+      ) : null}
     </>
   )
 }))

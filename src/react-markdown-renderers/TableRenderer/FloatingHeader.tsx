@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
+// import { useIsDesktop } from '~/hooks/useIsDesktop'
 
 interface FloatingHeaderProps {
   tableRef: React.RefObject<HTMLTableElement | null>;
@@ -37,6 +38,8 @@ export const FloatingHeader: React.FC<FloatingHeaderProps> = ({
       headerContainer.scrollLeft = mainContainer.scrollLeft
     }
   }
+
+  // const isDesktop = useIsDesktop()
 
   // 1. Синхронизация горизонтального скролла
   useEffect(() => {
@@ -90,10 +93,10 @@ export const FloatingHeader: React.FC<FloatingHeaderProps> = ({
         top: `${topOffset}px`,
         left: scrollContainerRef.current.getBoundingClientRect().left,
         width: `${scrollContainerRef.current.clientWidth}px`,
-        zIndex: 1,
+        zIndex: 6, // isDesktop ? 6 : 4,
         borderLeft: '1px solid lightgray',
         borderRight: '1px solid lightgray',
-        // borderTop: '1px solid lightgray',
+        borderTop: '1px solid lightgray',
         // borderTopLeftRadius: '8px',
         // borderTopRightRadius: '8px',
         overflow: 'hidden',

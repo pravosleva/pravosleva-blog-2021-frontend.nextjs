@@ -293,7 +293,7 @@ body main.dark .description-markdown table tr:nth-child(even) {
 /* Стили для плавающего хедера таблицы */
 .table-floating-header-wrapper table th {
   border: 1px solid lightgray;
-  padding: 8px 12px;
+  padding: 6px 8px;
   min-width: 140px;
   white-space: normal;
   word-break: break-word;
