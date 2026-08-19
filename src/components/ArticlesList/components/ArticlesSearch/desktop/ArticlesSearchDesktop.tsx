@@ -11,6 +11,7 @@ import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByT
 import { pluralize } from '~/utils/string-tools/pluralize' // Наша функция склонений
 import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { getCounterBadgeBgColor, getCounterBadgeTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { ReactiveEngine } from '@pravosleva/reactive-engine'
 
 const getTextColorByThemeName = (themeName: TThemeName) => {
   switch (themeName) {
@@ -25,15 +26,15 @@ const getTextColorByThemeName = (themeName: TThemeName) => {
 }
 
 const getPanelBgColor = (themeName: TThemeName) => {
-  return themeName === 'dark' || themeName === 'hard-gray' ? '#1e1e1e' : '#f9f9f9'
+  return themeName === 'dark' || themeName === 'hard-gray' || themeName === 'gray' ? '#1e1e1e' : '#f9f9f9'
 }
 
 const getPanelTextColor = (themeName: TThemeName) => {
-  return themeName === 'dark' || themeName === 'hard-gray' ? '#fff' : '#000'
+  return themeName === 'dark' || themeName === 'hard-gray' || themeName === 'gray' ? '#fff' : '#000'
 }
 
 const getCardBgColor = (themeName: TThemeName) => {
-  return themeName === 'dark' || themeName === 'hard-gray' ? 'rgba(255,255,255,0.03)' : '#fff'
+  return themeName === 'dark' || themeName === 'hard-gray' || themeName === 'gray' ? 'rgba(255,255,255,0.03)' : '#fff'
 }
 
 /* ================= СТИЛИ КНОПКИ СНИЗУ (НАД SCROLL TOP) ================= */
@@ -120,7 +121,7 @@ const SlidingSearchPanel = styled('div')<TPanelProps>`
     css`
       background-color: ${getPanelBgColor(themeName)};
       color: ${getPanelTextColor(themeName)};
-      border-top-color: ${themeName === 'dark' || themeName === 'hard-gray' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'};
+      border-top-color: ${themeName === 'dark' || themeName === 'hard-gray' || themeName === 'gray' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'};
     `}
 `
 
@@ -151,7 +152,7 @@ const SearchCountBadge = styled('span')<TBadgeProps>`
   animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   ${({ themeName }) => {
-    const isDark = themeName === 'dark' || themeName === 'hard-gray'
+    const isDark = themeName === 'gray' || themeName === 'hard-gray' || themeName === 'dark'
     return css`
       // background-color: ${isDark ? '#fff' : '#2a2a2a'};
       // color: ${isDark ? '#000' : '#fff'};
@@ -204,7 +205,7 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
   //   return () => window.removeEventListener('resize', checkWidth)
   // }, [])
 
-  const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray'
+  const isDark = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
   // Кнопка триггера задвигается (transform: translateX), когда открыта сама панель
   const isTriggerVisible = !isSearchPanelOpen
 

@@ -523,3 +523,24 @@ code,
 .description-markdown > :last-child {
   margin-bottom: 0;
 }
+
+/* -- */
+
+.collapsible-quick-nav-panel > .btns {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.collapsible-quick-nav-panel > .btns > button {
+  border-radius: 0px;
+}
+.collapsible-quick-nav-panel > .btns > button:first-child {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.collapsible-quick-nav-panel > .btns > button:last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* -- */

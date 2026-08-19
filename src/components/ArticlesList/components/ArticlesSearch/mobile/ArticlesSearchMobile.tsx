@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-// import { getBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
-import { getBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
+// import { getButtonBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getButtonBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
 import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';
+
 
 interface ArticlesSearchMobileProps {
   currentTheme: string;
@@ -48,10 +49,10 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
 
   if (!isMobile) return null
 
-  const isDarkTheme = currentTheme === 'dark' || currentTheme === 'hard-gray'
+  const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
   const textColor = isDarkTheme ? '#fff' : '#000'
   const panelBg = isDarkTheme ? '#1e1e1e' : '#f9f9f9'
-  const elementBg = isDarkTheme ? '#2a2a2a' : '#ededed'
+  // const elementBg = isDarkTheme ? '#2a2a2a' : '#ededed'
 
   return (
     <>
@@ -93,7 +94,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
         </div>
         <span
           // style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: elementBg, color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}
-          style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}
+          style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getButtonBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}
         >
           {!!totalNotes ? `${pluralize({ count: totalNotes, titles: ['находка', 'находки', 'находок'] })} 🔍` : '🔍'}
         </span>

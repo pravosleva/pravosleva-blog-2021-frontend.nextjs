@@ -2,10 +2,11 @@ import { Button } from '@mui/material';
 import clsx from 'clsx';
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useSelector } from 'react-redux';
-import { ReactiveEngine } from '@pravosleva/reactive-engine'
+// import { ReactiveEngine } from '@pravosleva/reactive-engine'
 import { IRootState } from '~/store/IRootState';
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-import { collapsibleEngine, headingsRegistrySignal, IHeadingStoredItem } from '~/store/reactiveCollapsibleStore';
+// import { collapsibleEngine } from '~/store/reactive-engine/reactiveCollapsibleStore';
+import { headingsRegistrySignal, IHeadingStoredItem } from '~/store/reactive-engine/reactiveHeadingsEngine';
 import { useSignalValue } from '~/utils/reactive-engine';
 
 const standardDesktopOffsetTop = 50 + 16
@@ -214,7 +215,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
   // Глобальный индекс активного элемента для декларативного стиля цвета кнопок
   const globalActiveIndex = headings.findIndex(h => h.isActiveProgress)
 
-  const getHeadingColor = (item: IHeadingStoredItem, idx: number) => {
+  const getHeadingButtonColor = (item: IHeadingStoredItem, idx: number) => {
     const globalIndex = startIndex + idx
     const isDarkTheme = currentTheme === 'dark' || currentTheme === 'hard-gray'
 
@@ -321,7 +322,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
               // backgroundColor: bgColor,
               backgroundColor: 'transparent',
               // marginLeft: levelIndent, // Визуальное смещение поддерева
-              color: getHeadingColor(heading, i),
+              color: getHeadingButtonColor(heading, i),
 
               // Кнопка задизейблена для клика ТОЛЬКО если она в фокусе прогресса чтения
               // pointerEvents: heading.isVisible ? 'none' : 'auto',

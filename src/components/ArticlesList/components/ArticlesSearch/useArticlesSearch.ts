@@ -1,7 +1,16 @@
 import { NCodeSamplesSpace } from '~/types'
-import { searchEngine, SearchArticlesService } from './service.SearchArticles'
+import { SearchArticlesService } from './service.SearchArticles'
 import { useRef } from 'react'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
+import { ReactiveEngine } from '@pravosleva/reactive-engine'
+
+const searchEngine = new ReactiveEngine({
+  logger: {
+    isEnabled: true,
+    isCoreOptimizationDebugEnabled: false,
+    instanceName: 'Articles Search',
+  }
+})
 
 export const useArticlesSearch = () => {
   const searchArticlesService = searchEngine.inject(SearchArticlesService)

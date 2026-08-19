@@ -1,37 +1,12 @@
 import { ReactiveEngine, withThrottleComputed } from '@pravosleva/reactive-engine'
-import { useState, useEffect } from 'react'
-
-export interface ICollapsibleItem {
-  id: string;
-  header: string;
-  isVisible: boolean;
-}
 
 // 1. Инициализируем движок в соответствии с ReactiveEngineOptions
-export const collapsibleEngine = new ReactiveEngine({
+export const reactiveHeadingsEngine = new ReactiveEngine({
   logger: {
     isEnabled: true,
-    instanceName: 'collapsible-global-engine'
+    instanceName: 'Reactive Headings'
   }
 })
-
-// 2. Создаем глобальный сигнал, который будет хранить реестр блоков
-// Сигнал — это встроенный примитив ReactiveEngine
-export const collapsibleRegistrySignal = collapsibleEngine.signal<Record<string, ICollapsibleItem>>(
-  {}, 
-  'global:collapsible-boxes'
-)
-
-// Хелпер для генерации валидного HTML ID из заголовка
-export const generateSlugId = (text: string): string => {
-  return 'collapsible-' + text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-}
 
 // Интерфейс для левого меню (теперь содержит готовый префикс)
 export interface IHeadingStoredItem {
@@ -45,12 +20,13 @@ export interface IHeadingStoredItem {
 }
 
 // Новый сигнал для глобального хранения и расчетов левого меню содержания
-export const headingsRegistrySignal = collapsibleEngine.signal<IHeadingStoredItem[]>(
+// Сигнал — это встроенный примитив ReactiveEngine
+export const headingsRegistrySignal = reactiveHeadingsEngine.signal<IHeadingStoredItem[]>(
   [], 
   'global:article-headings:[IS_OPTIMIZED=0]'
 )
 export const throttledHeadingsSignal = withThrottleComputed(
-  collapsibleEngine,
+  reactiveHeadingsEngine,
   () => headingsRegistrySignal.value,
   { limit: 300 },
   'throttled-headings-300:[IS_OPTIMIZED=1]',

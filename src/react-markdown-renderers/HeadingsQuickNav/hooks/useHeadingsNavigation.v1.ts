@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { headingsRegistrySignal, throttledHeadingsSignal, getLevelNum, IHeadingStoredItem } from '~/store/reactive-engine/reactiveHeadingsEngine'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-import { getButtonBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getButtonBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor, getInfoToolBgColor, getInfoToolTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { useSignalValue } from '~/utils/reactive-engine'
 
 interface UseHeadingsNavigationProps {
@@ -27,32 +27,33 @@ export const useHeadingsNavigation = ({
     elementHeightCritery: elementCriticalHeight,
   }))
 
-  // 1. Инициализация: сбор заголовков, нормализация ID и построение дерева
   useEffect(() => {
     let observer: IntersectionObserver | null = null;
     let isCancelled = false;
 
-    // СБРОС СТЕЙТА: При смене статьи мгновенно очищаем старое содержание и возвращаем пагинацию на 1
-    headingsRegistrySignal.value = [];
-    /* NOTE: Благодаря этому старое содержание предыдущей статьи мгновенно исчезает с экрана,
-    не вызывая визуального бага «смешивания» текстов двух статей.
-    */
+    // ИСПРАВЛЕНО: УБРАЛИ headingsRegistrySignal.value = []. 
+    // Больше не зануляем глобальный сигнал превентивно, чтобы не вызывать "моргание" интерфейса.
+    // Вместо этого просто сбрасываем локальный указатель страницы пагинации.
     setCurrentPage(1);
 
     const initNavigation = () => {
+      // Если за 50мс юзер уже ушел на другую статью, полностью игнорируем выполнение
       if (isCancelled) return;
 
       const selector = levels.map(lvl => `${lvl}[id]`).join(', ')
       const elements = Array.from(document.querySelectorAll(selector)) as HTMLElement[]
 
-      // Если ReactMarkdown ещё не отрендерил новые ноды, выходим. 
-      // Следующий таймаут или MutationObserver подхватит их.
-      if (elements.length === 0) return;
+      // Если разметка новой статьи еще не появилась в DOM — мягко выходим, 
+      // оставляя сигнал в покое, пока MutationObserver или повторный цикл не заполнит его
+      if (elements.length === 0) {
+        // Если элементов действительно нет во всей статье, тогда очищаем атомарно
+        headingsRegistrySignal.value = [];
+        return;
+      }
 
       const baseLevel = 1
       const usedIds = new Map<string, number>()
 
-      // Дедупликация ID в DOM
       elements.forEach((el) => {
         const rawId = el.id.trim()
         if (!usedIds.has(rawId)) {
@@ -64,7 +65,6 @@ export const useHeadingsNavigation = ({
         }
       })
 
-      // Построение структуры дерева
       const initialTree: IHeadingStoredItem[] = elements.map((el, idx, arr) => {
         const tagName = el.tagName.toLowerCase()
         const currentLevel = getLevelNum(tagName)
@@ -106,11 +106,17 @@ export const useHeadingsNavigation = ({
         }
       })
 
+      // ИСПРАВЛЕНО: Записываем новое дерево АТОМАРНО одним махом. 
+      // Сигнал перетечет из [старые_заголовки] напрямую в [новые_заголовки], 
+      // минуя фазу пустого массива [], убирая эффект схлопывания блока.
       headingsRegistrySignal.value = initialTree
 
-      // Настройка IntersectionObserver для прогресса
       observer = new IntersectionObserver(
         (entries) => {
+          // Защита: если хук уже находится в процессе уничтожения/смены статьи,
+          // полностью блокируем колбэки старого обсервера
+          if (isCancelled) return;
+
           let currentHeadings = [...throttledHeadingsSignal.value]
           let isVisibilityChanged = false
 
@@ -150,27 +156,19 @@ export const useHeadingsNavigation = ({
       elements.forEach(el => observer?.observe(el))
     }
 
-    // РЕШЕНИЕ БАГА: Макротаска через setTimeout(..., 50) сдвигает выполнение разбора DOM
-    // в конец очереди, когда ReactMarkdown гарантированно завершил вставку новых тегов h1-h4 статьи.
     const timerId = setTimeout(initNavigation, 50);
-    /* NOTE: Микро-задержка инициализации (setTimeout):
-    Заворачивание функции initNavigation в setTimeout(..., 50) — это классический паттерн для работы
-    с динамическим контентом (Markdown/WYSIWYG) в React. Мы даём браузеру 50 миллисекунд на то,
-    чтобы очистить старое дерево элементов и полностью отрисовать новые текстовые ноды.
-    В момент вызова document.querySelectorAll новые ID гарантированно будут находиться в DOM.
-    */
 
     return () => {
+      // ИСПРАВЛЕНО: Сразу выставляем флаг отмены, чтобы заблокировать асинхронные
+      // ответы IntersectionObserver старой статьи, которые летели в микротаски
       isCancelled = true;
       clearTimeout(timerId);
       if (observer) {
         observer.disconnect();
       }
-      headingsRegistrySignal.value = [];
     };
-  }, [levels, actualSlug]) // Перезапускаем строго при изменении уровней или слажка статьи
+  }, [levels, actualSlug])
 
-  // 2. Авто-синхронизация текущей страницы пагинации при скролле статьи
   useEffect(() => {
     if (headings.length === 0) return
     const activeProgressIndex = headings.findIndex(h => h.isActiveProgress)
@@ -178,9 +176,8 @@ export const useHeadingsNavigation = ({
       const targetPage = Math.floor(activeProgressIndex / pageLimit) + 1
       setCurrentPage(targetPage)
     }
-  }, [headings, pageLimit]) // Убрали лишний actualSlug, так как headings теперь обновляются корректно
+  }, [headings, pageLimit])
 
-  // 3. Вычисление среза данных для текущей страницы
   const totalPages = Math.ceil(headings.length / pageLimit)
   const startIndex = (currentPage - 1) * pageLimit
   const visibleItems = headings.slice(startIndex, startIndex + pageLimit)
@@ -216,7 +213,7 @@ export const useHeadingsNavigation = ({
     currentTheme: string;
   }) => {
     const globalIndex = startIndex + idx
-    const isDarkTheme = currentTheme === 'dark' || currentTheme === 'hard-gray'
+    // const isDarkTheme = currentTheme === 'dark' || currentTheme === 'hard-gray'
 
     if (item.isActiveProgress || item.isVisible) {
       switch (currentTheme) {
@@ -224,10 +221,26 @@ export const useHeadingsNavigation = ({
         default: return '#FF8E53'
       }
     }
-    if (globalIndex < globalActiveIndex) {
-      return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
+    // if (globalIndex < globalActiveIndex) {
+    //   return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
+    // }
+    // return isDarkTheme ? '#ffffff' : '#000000'
+
+    switch (true) {
+      case globalIndex < globalActiveIndex: {
+        switch (currentTheme) {
+          case 'light': return 'rgba(0, 0, 0, 0.4)'
+          case 'gray': case 'hard-gray': case 'dark': return 'rgba(255, 255, 255, 0.4)'
+          default: return 'rgba(0, 0, 0, 0.4)'
+        }
+      }
+      default:
+        switch (currentTheme) {
+          case 'light': return '#000'
+          case 'hard-gray': case 'gray': case 'dark': return '#fff'
+          default: return '#000'
+        }
     }
-    return isDarkTheme ? '#ffffff' : '#000000'
   }
 
   return {
@@ -242,5 +255,7 @@ export const useHeadingsNavigation = ({
     getButtonBgColor,
     getActiveBorderCSS,
     getActiveBgColor,
+    getInfoToolBgColor,
+    getInfoToolTextColor,
   }
 }

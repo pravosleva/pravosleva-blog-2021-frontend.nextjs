@@ -3,7 +3,7 @@ import Link from 'next/link'
 import styled, { css } from 'styled-components'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
 import { useReactiveValue0 } from '~/utils/reactive-engine/hooks'
-import { SearchArticlesService } from './stickyHeaderEngine'
+import { StickyHeaderService } from './stickyHeaderEngine'
 import { ReactiveEngine } from '@pravosleva/reactive-engine'
 
 type TStickyHeaderProps = {
@@ -19,7 +19,6 @@ const stickyHeaderEngine = new ReactiveEngine({
   }
 })
 
-
 const StyledStickyHeader = styled('div')<TStickyHeaderProps>`
   position: fixed;
   top: 0;
@@ -27,7 +26,7 @@ const StyledStickyHeader = styled('div')<TStickyHeaderProps>`
   width: 100vw;
   @media (min-width: 768px) {
     height: 50px;
-    padding: 0px 40px 0px 20px;
+    padding: 0px 40px 0px 40px;
   }
   @media (max-width: 767px) {
     height: 40px;
@@ -120,7 +119,7 @@ interface StickyArticleHeaderProps {
 }
 
 export const StickyArticleHeaderComponent = memo(({ currentTheme, linkColor, article, bannerRef }: StickyArticleHeaderProps) => {
-  const specialEngine = stickyHeaderEngine.inject(SearchArticlesService)
+  const specialEngine = stickyHeaderEngine.inject(StickyHeaderService)
   
   // Подписываемся НАПРЯМУЮ на сигнал видимости шапки
   const isVisible = useReactiveValue0(specialEngine.isStickyHeaderVisible)

@@ -1,11 +1,11 @@
-export const getBgColor = ({ currentTheme }: { currentTheme: string }) => {
+export const getButtonBgColor = ({ currentTheme }: { currentTheme: string }) => {
   switch (currentTheme) {
     case 'light':
       return '#ededed'
     case 'gray':
-      return '#ededed'
+      return 'rgba(255,255,255,0.1)'
     case 'hard-gray':
-      return 'gray'
+      return 'rgba(255,255,255,0.1)'
     case 'dark':
       return 'rgba(255, 255, 255, 0.1)'
     default:

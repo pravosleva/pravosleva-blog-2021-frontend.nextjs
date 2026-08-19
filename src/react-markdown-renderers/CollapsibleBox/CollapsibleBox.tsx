@@ -11,7 +11,8 @@ import { isValidJson } from '~/utils/isValidJson'
 import { withTranslator } from '~/hocs/withTranslator'
 import clsx from 'clsx'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-import { collapsibleRegistrySignal, generateSlugId } from '~/store/reactiveCollapsibleStore'
+import { collapsibleRegistrySignal } from '~/store/reactive-engine/reactiveCollapsibleStore'
+import { generateSlugId } from '~/store/reactive-engine/utils'
 
 type TProps = {
   header: string;

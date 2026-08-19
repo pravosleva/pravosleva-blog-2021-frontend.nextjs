@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, memo } from 'react'
 import { useHeadingsNavigation } from './hooks'
 import clsx from 'clsx';
 
@@ -9,7 +9,7 @@ interface HeadingsQuickNavProps {
   actualSlug: string;
 }
 
-export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
+export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
   levels,
   pageLimit,
   currentTheme,
@@ -21,9 +21,11 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
     totalPages,
     setCurrentPage,
     handleScrollTo,
-    getHeadingColor,
-    getBgColor,
+    getHeadingButtonColor,
+    getButtonBgColor,
     getTextColor,
+    getInfoToolBgColor,
+    getInfoToolTextColor,
   } = useHeadingsNavigation({ levels, pageLimit, actualSlug })
 
   const [isDesktop, setIsDesktop] = useState(false)
@@ -35,7 +37,9 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
   const textColor = getTextColor({ currentTheme })
-  const bgColor = getBgColor({ currentTheme })
+  // const buttonBgColor = getButtonBgColor({ currentTheme })
+  const bgColor = getInfoToolBgColor({ currentTheme })
+  // const buttonBgColor = getButtonBgColor({ currentTheme })
 
   // Если не десктоп или контента нет — скрываем десктопную плашку
   if (!isDesktop || visibleItems.length === 0) return null
@@ -59,7 +63,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
         backgroundColor: bgColor,
         color: textColor,
         backdropFilter: 'blur(8px)',
-        border: '2px solid lightgray',
+        // border: '2px solid lightgray',
         boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
         fontSize: 'small',
       }}
@@ -81,7 +85,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
             fontFamily: 'system-ui, monospace, Courier, Courier New',
             border: 'none',
             backgroundColor: 'transparent',
-            color: getHeadingColor({ item: heading, idx, currentTheme }),
+            color: getHeadingButtonColor({ item: heading, idx, currentTheme }),
             cursor: 'pointer',
             fontWeight: 'bold',
             transition: 'all 0.15s ease',
@@ -114,22 +118,24 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            className={clsx({
-              'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
-            })}
+            // className={clsx({
+            //   'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
+            // })}
             style={{
               padding: '4px 8px',
               fontSize: 'small',
               cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
               opacity: currentPage === 1 ? 0.3 : 1,
               borderRadius: '8px',
-              border: '2px solid lightgray',
-              backgroundColor: bgColor,
-              color: currentTheme === 'dark'
-              ? '#fff'
-              : currentTheme === 'hard-gray'
-                ? '#fff'
-                : '#000',
+              // border: '2px solid lightgray',
+              border: '1px solid transparent',
+              backgroundColor: 'transparent',
+              // color: currentTheme === 'dark'
+              // ? '#fff'
+              // : currentTheme === 'hard-gray'
+              //   ? '#fff'
+              //   : '#000',
+              color: textColor,
             }}
           >
             ← Назад
@@ -142,22 +148,24 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            className={clsx({
-              'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
-            })}
+            // className={clsx({
+            //   'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
+            // })}
             style={{
               padding: '4px 8px',
               fontSize: 'small',
               cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
               opacity: currentPage === totalPages ? 0.3 : 1,
               borderRadius: '8px',
-              border: '2px solid lightgray',
-              backgroundColor: bgColor,
-              color: currentTheme === 'dark'
-              ? '#fff'
-              : currentTheme === 'hard-gray'
-                ? '#fff'
-                : '#000',
+              // border: '2px solid lightgray',
+              border: '1px solid transparent',
+              backgroundColor: 'transparent',
+              // color: currentTheme === 'dark'
+              // ? '#fff'
+              // : currentTheme === 'hard-gray'
+              //   ? '#fff'
+              //   : '#000',
+              color: textColor,
             }}
           >
             Вперед →
@@ -166,4 +174,4 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
       )}
     </div>
   )
-}
+})

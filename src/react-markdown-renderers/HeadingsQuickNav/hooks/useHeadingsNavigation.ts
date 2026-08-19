@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { headingsRegistrySignal, throttledHeadingsSignal, getLevelNum, IHeadingStoredItem } from '~/store/reactiveCollapsibleStore'
+import { headingsRegistrySignal, throttledHeadingsSignal, getLevelNum, IHeadingStoredItem } from '~/store/reactive-engine/reactiveHeadingsEngine'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-import { getBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getButtonBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor, getInfoToolBgColor, getInfoToolTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { useSignalValue } from '~/utils/reactive-engine'
 
 interface UseHeadingsNavigationProps {
@@ -21,6 +21,10 @@ export const useHeadingsNavigation = ({
   const headings = useSignalValue<IHeadingStoredItem[]>(throttledHeadingsSignal)
   const [currentPage, setCurrentPage] = useState(1)
 
+  // ИСПРАВЛЕНО: Сериализуем массив уровней в стабильную строку (например, "h1,h2,h3,h4"),
+  // чтобы перерендеры из-за поиска не триггерили перезапуск эффекта.
+  const levelsKey = levels.join(',');
+
   const scrollToIdRef = useRef(scrollToIdFactory({
     timeout: 0,
     offsetTop: standardDesktopOffsetTop,
@@ -31,22 +35,17 @@ export const useHeadingsNavigation = ({
     let observer: IntersectionObserver | null = null;
     let isCancelled = false;
 
-    // ИСПРАВЛЕНО: УБРАЛИ headingsRegistrySignal.value = []. 
-    // Больше не зануляем глобальный сигнал превентивно, чтобы не вызывать "моргание" интерфейса.
-    // Вместо этого просто сбрасываем локальный указатель страницы пагинации.
     setCurrentPage(1);
 
     const initNavigation = () => {
-      // Если за 50мс юзер уже ушел на другую статью, полностью игнорируем выполнение
       if (isCancelled) return;
 
-      const selector = levels.map(lvl => `${lvl}[id]`).join(', ')
+      // ИСПРАВЛЕНО: Восстанавливаем массив из стабильного ключа для селектора
+      const currentLevels = levelsKey.split(',');
+      const selector = currentLevels.map(lvl => `${lvl}[id]`).join(', ')
       const elements = Array.from(document.querySelectorAll(selector)) as HTMLElement[]
 
-      // Если разметка новой статьи еще не появилась в DOM — мягко выходим, 
-      // оставляя сигнал в покое, пока MutationObserver или повторный цикл не заполнит его
       if (elements.length === 0) {
-        // Если элементов действительно нет во всей статье, тогда очищаем атомарно
         headingsRegistrySignal.value = [];
         return;
       }
@@ -106,15 +105,10 @@ export const useHeadingsNavigation = ({
         }
       })
 
-      // ИСПРАВЛЕНО: Записываем новое дерево АТОМАРНО одним махом. 
-      // Сигнал перетечет из [старые_заголовки] напрямую в [новые_заголовки], 
-      // минуя фазу пустого массива [], убирая эффект схлопывания блока.
       headingsRegistrySignal.value = initialTree
 
       observer = new IntersectionObserver(
         (entries) => {
-          // Защита: если хук уже находится в процессе уничтожения/смены статьи,
-          // полностью блокируем колбэки старого обсервера
           if (isCancelled) return;
 
           let currentHeadings = [...throttledHeadingsSignal.value]
@@ -159,15 +153,15 @@ export const useHeadingsNavigation = ({
     const timerId = setTimeout(initNavigation, 50);
 
     return () => {
-      // ИСПРАВЛЕНО: Сразу выставляем флаг отмены, чтобы заблокировать асинхронные
-      // ответы IntersectionObserver старой статьи, которые летели в микротаски
       isCancelled = true;
       clearTimeout(timerId);
       if (observer) {
         observer.disconnect();
       }
     };
-  }, [levels, actualSlug])
+    
+    // ИСПРАВЛЕНО: Вместо нестабильной ссылки `levels` следим за примитивной строкой `levelsKey`
+  }, [levelsKey, actualSlug]) 
 
   useEffect(() => {
     if (headings.length === 0) return
@@ -207,13 +201,13 @@ export const useHeadingsNavigation = ({
     })
   }
 
-  const getHeadingColor = ({ item, idx, currentTheme }: {
+  const getHeadingButtonColor = ({ item, idx, currentTheme }: {
     item: IHeadingStoredItem;
     idx: number;
     currentTheme: string;
   }) => {
     const globalIndex = startIndex + idx
-    const isDarkTheme = currentTheme === 'dark' || currentTheme === 'hard-gray'
+    // const isDarkTheme = currentTheme === 'dark' || currentTheme === 'hard-gray'
 
     if (item.isActiveProgress || item.isVisible) {
       switch (currentTheme) {
@@ -221,10 +215,26 @@ export const useHeadingsNavigation = ({
         default: return '#FF8E53'
       }
     }
-    if (globalIndex < globalActiveIndex) {
-      return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
+    // if (globalIndex < globalActiveIndex) {
+    //   return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
+    // }
+    // return isDarkTheme ? '#ffffff' : '#000000'
+
+    switch (true) {
+      case globalIndex < globalActiveIndex: {
+        switch (currentTheme) {
+          case 'light': return 'rgba(0, 0, 0, 0.4)'
+          case 'gray': case 'hard-gray': case 'dark': return 'rgba(255, 255, 255, 0.4)'
+          default: return 'rgba(0, 0, 0, 0.4)'
+        }
+      }
+      default:
+        switch (currentTheme) {
+          case 'light': return '#000'
+          case 'hard-gray': case 'gray': case 'dark': return '#fff'
+          default: return '#000'
+        }
     }
-    return isDarkTheme ? '#ffffff' : '#000000'
   }
 
   return {
@@ -234,10 +244,12 @@ export const useHeadingsNavigation = ({
     totalPages,
     setCurrentPage,
     handleScrollTo,
-    getHeadingColor,
+    getHeadingButtonColor,
     getTextColor,
-    getBgColor,
+    getButtonBgColor,
     getActiveBorderCSS,
     getActiveBgColor,
+    getInfoToolBgColor,
+    getInfoToolTextColor,
   }
 }

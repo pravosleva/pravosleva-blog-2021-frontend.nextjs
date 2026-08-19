@@ -3,11 +3,11 @@ export const getTextColor = ({ currentTheme }: { currentTheme: string }) => {
     case 'light':
       return '#000'
     case 'gray':
-      return 'inherit'
+      return '#fff'
     case 'hard-gray':
       return '#fff'
     case 'dark':
-      return 'inherit'
+      return '#fff'
     default:
       return '#000'
   }

@@ -157,11 +157,3 @@ export class SearchArticlesService extends AbstractService {
     this.isSearchPanelOpen.value = false
   }
 }
-
-export const searchEngine = new ReactiveEngine({
-  logger: {
-    isEnabled: true,
-    isCoreOptimizationDebugEnabled: true,
-    instanceName: 'Articles Search',
-  }
-})

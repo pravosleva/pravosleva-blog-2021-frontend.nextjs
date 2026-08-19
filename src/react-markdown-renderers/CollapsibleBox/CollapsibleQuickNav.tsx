@@ -4,10 +4,11 @@ import { Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { IRootState } from '~/store/IRootState'
-import { collapsibleRegistrySignal, ICollapsibleItem } from '~/store/reactiveCollapsibleStore'
+import { collapsibleRegistrySignal, ICollapsibleItem } from '~/store/reactive-engine/reactiveCollapsibleStore'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
 import clsx from 'clsx'
 import { useSignalValue } from '~/utils/reactive-engine'
+import { getInfoToolBgColor, getTextColor, getActiveBorderCSS } from '../HeadingsQuickNav/utils'
 
 const standardDesktopOffsetTop = 50 + 16
 interface CollapsibleQuickNavProps {
@@ -69,32 +70,34 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
   const startIndex = (currentPage - 1) * pageLimit
   const visibleItems = items.slice(startIndex, startIndex + pageLimit)
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
-  const bgColor = useMemo(() => {
+  const infoToolBgColor = getInfoToolBgColor({ currentTheme })
+  // const textColor = useMemo(() => {
+  //   switch (currentTheme) {
+  //     case 'light':
+  //       return '#000'
+  //     case 'gray':
+  //       return 'inherit'
+  //     case 'hard-gray':
+  //       return '#fff'
+  //     case 'dark':
+  //       return 'inherit'
+  //     default:
+  //       return '#000'
+  //   }
+  // }, [currentTheme])
+  const textColor = getTextColor({ currentTheme })
+  const buttonBgColor = useMemo(() => {
     switch (currentTheme) {
       case 'light':
-        return '#ededed'
+        return 'rgba(0, 0, 0, 0.1)' // 'rgba(255, 255, 255, 0.2)'
       case 'gray':
-        return '#ededed'
+        return 'rgba(255, 255, 255, 0.05)'
       case 'hard-gray':
-        return 'gray'
+        return 'rgba(0, 0, 0, 0.5)'
       case 'dark':
-        return 'rgba(255, 255, 255, 0.1)'
+        return 'rgba(0, 0, 0, 0.5)'
       default:
         return '#fff'
-    }
-  }, [currentTheme])
-  const textColor = useMemo(() => {
-    switch (currentTheme) {
-      case 'light':
-        return '#000'
-      case 'gray':
-        return 'inherit'
-      case 'hard-gray':
-        return '#fff'
-      case 'dark':
-        return 'inherit'
-      default:
-        return '#000'
     }
   }, [currentTheme])
 
@@ -120,12 +123,13 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
         zIndex: 200,
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
+        gap: '16px',
         padding: '16px',
         borderRadius: '16px',
-        backgroundColor: bgColor,
+        backgroundColor: infoToolBgColor,
+        color: textColor,
         backdropFilter: 'blur(8px)',
-        border: '2px solid lightgray',
+        // border: '2px solid lightgray',
         boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
 
         // --- ДИНАМИЧЕСКОЕ СМЕЩЕНИЕ НАВЕРХ ---
@@ -142,88 +146,92 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
         Навигация по блокам
       </div> */}
       
-      {visibleItems.map((item) => (
-        <button
-          // size='small'
-          // variant='contained'
-          // color='primary'
-          key={item.id}
-          // disabled={item.isVisible}
-          onClick={() => {
-            try {
-              scrollToIdRef.current({ 
-                id: item.id,
-                _cfg: {
-                  getOffsetTop: ({ targetElm }) => {
-                    // НАДЕЖНЫЙ АБСОЛЮТНЫЙ РАСЧЕТ позиции элемента на странице с нуля
-                    let absoluteTop = 0
-                    let currentElm: HTMLElement | null = targetElm
-                    while (currentElm) {
-                      absoluteTop += currentElm.offsetTop
-                      currentElm = currentElm.offsetParent as HTMLElement | null
-                    }
+      <div className="btns">
+        {visibleItems.map((item) => (
+          <button
+            // size='small'
+            // variant='contained'
+            // color='primary'
+            key={item.id}
+            // disabled={item.isVisible}
+            onClick={() => {
+              try {
+                scrollToIdRef.current({ 
+                  id: item.id,
+                  _cfg: {
+                    getOffsetTop: ({ targetElm }) => {
+                      // НАДЕЖНЫЙ АБСОЛЮТНЫЙ РАСЧЕТ позиции элемента на странице с нуля
+                      let absoluteTop = 0
+                      let currentElm: HTMLElement | null = targetElm
+                      while (currentElm) {
+                        absoluteTop += currentElm.offsetTop
+                        currentElm = currentElm.offsetParent as HTMLElement | null
+                      }
 
-                    const elementHeight = targetElm.offsetHeight
-                    
-                    // Если блок свернут (меньше 200px)
-                    if (elementHeight <= 200) {
-                      const windowHeight = window.innerHeight
-                      // Вычисляем офсет сверху так, чтобы после вычитания в window.scrollTo 
-                      // элемент оказался ровно по центру экрана
-                      const targetCenterPos = absoluteTop - (windowHeight / 2) + (elementHeight / 2)
+                      const elementHeight = targetElm.offsetHeight
                       
-                      // Нам нужно вернуть такое число, которое при вычитании из (getBoundingClientRect().top + pageYOffset)
-                      // даст точно targetCenterPos. 
-                      // Так как (getBoundingClientRect().top + pageYOffset) всегда равен нашему absoluteTop,
-                      // то специальный офсет равен:
-                      return absoluteTop - targetCenterPos
+                      // Если блок свернут (меньше 200px)
+                      if (elementHeight <= 200) {
+                        const windowHeight = window.innerHeight
+                        // Вычисляем офсет сверху так, чтобы после вычитания в window.scrollTo 
+                        // элемент оказался ровно по центру экрана
+                        const targetCenterPos = absoluteTop - (windowHeight / 2) + (elementHeight / 2)
+                        
+                        // Нам нужно вернуть такое число, которое при вычитании из (getBoundingClientRect().top + pageYOffset)
+                        // даст точно targetCenterPos. 
+                        // Так как (getBoundingClientRect().top + pageYOffset) всегда равен нашему absoluteTop,
+                        // то специальный офсет равен:
+                        return absoluteTop - targetCenterPos
+                      }
+                      
+                      return standardDesktopOffsetTop // Стандартный отступ для больших блоков
                     }
-                    
-                    return standardDesktopOffsetTop // Стандартный отступ для больших блоков
                   }
-                }
-              })
-            } catch (e) {
-              console.error(e)
-            }
-          }}
-          className={clsx({
-            'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
-          })}
-          style={{
-            textAlign: 'left',
-            padding: '8px 12px',
-            fontSize: 'small',
-            borderRadius: '8px',
-            border: item.isVisible ? '2px solid transparent' : '2px solid lightgray',
-            backgroundColor: bgColor,
-            color:
-              currentTheme === 'dark'
-              ? (item.isVisible ? '#FF8E53' : '#fff')
-              : currentTheme === 'hard-gray'
-                ? (item.isVisible ? '#39e5ac' : '#fff')
-              : currentTheme === 'gray'
-                ? item.isVisible ? '#39e5ac' : '#000'
-              : item.isVisible ? '#FF8E53' : '#000',
-            // opacity: item.isVisible ? 0.5 : 1,
-            pointerEvents: item.isVisible ? 'none' : 'auto', 
-            cursor: item.isVisible ? 'not-allowed' : 'pointer',
+                })
+              } catch (e) {
+                console.error(e)
+              }
+            }}
+            // className={clsx({
+            //   'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
+            // })}
+            style={{
+              textAlign: 'left',
+              padding: '8px 12px',
+              fontSize: 'small',
+              // borderRadius: '8px',
+              // border: item.isVisible ? '2px solid transparent' : '2px solid lightgray',
+              // border: item.isVisible ? getActiveBorderCSS({ currentTheme }) : '1px solid transparent',
+              border: '1px solid transparent',
+              backgroundColor: item.isVisible ? 'transparent' : buttonBgColor,
+              color:
+                currentTheme === 'dark'
+                ? (item.isVisible ? '#FF8E53' : '#fff')
+                : currentTheme === 'hard-gray'
+                  ? (item.isVisible ? '#39e5ac' : '#fff')
+                : currentTheme === 'gray'
+                  ? item.isVisible ? '#39e5ac' : '#fff'
+                : item.isVisible ? '#FF8E53' : '#000',
+              // opacity: item.isVisible ? 0.5 : 1,
+              pointerEvents: item.isVisible ? 'none' : 'auto', 
+              cursor: item.isVisible ? 'not-allowed' : 'pointer',
 
-            // fontWeight: item.isVisible ? 'normal' : 'bold',
-            fontWeight : 'bold',
-            transition: 'all 0.15s ease',
-            boxShadow: item.isVisible ? 'none' : '0 2px 4px rgba(0,0,0,0.04)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            // textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-          }}
-          title={item.header}
-        >
-          {item.header}
-        </button>
-      ))}
+              // fontWeight: item.isVisible ? 'normal' : 'bold',
+              fontWeight : 'bold',
+              transition: 'all 0.15s ease',
+              // boxShadow: item.isVisible ? 'none' : '0 2px 4px rgba(0,0,0,0.04)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              // textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}
+            title={item.header}
+          >
+            {`📌 ${item.header}`}
+          </button>
+        ))}
+      </div>
 
       {/* ПОДВАЛ ПАГИНАЦИИ (Отображается, только если страниц больше одной) */}
       {totalPages > 1 && (
@@ -237,16 +245,17 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            className={clsx({
-              'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
-            })}
+            // className={clsx({
+            //   'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
+            // })}
             style={{
               padding: '4px 8px',
               fontSize: 'small',
               cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
               opacity: currentPage === 1 ? 0.3 : 1,
-              backgroundColor: bgColor,
-              border: '2px solid lightgray',
+              backgroundColor: buttonBgColor,
+              // border: '2px solid lightgray',
+              border: '1px solid transparent',
               borderRadius: '8px',
               letterSpacing: '0.5px',
 
@@ -267,16 +276,17 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            className={clsx({
-              'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
-            })}
+            // className={clsx({
+            //   'backdrop-blur--lite': currentTheme === 'dark' || currentTheme === 'gray' || currentTheme === 'hard-gray',
+            // })}
             style={{
               padding: '4px 8px',
               fontSize: '11px',
               cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
               opacity: currentPage === totalPages ? 0.3 : 1,
-              backgroundColor: bgColor,
-              border: '2px solid lightgray',
+              backgroundColor: buttonBgColor,
+              // border: '2px solid lightgray',
+              border: '1px solid transparent',
               borderRadius: '8px',
               letterSpacing: '0.5px',
 

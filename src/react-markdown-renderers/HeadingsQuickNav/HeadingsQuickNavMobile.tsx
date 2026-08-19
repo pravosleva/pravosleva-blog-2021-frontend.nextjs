@@ -21,11 +21,12 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     totalPages,
     setCurrentPage,
     handleScrollTo,
-    getHeadingColor,
-    getBgColor,
+    getHeadingButtonColor,
+    getButtonBgColor,
     getTextColor,
     getActiveBorderCSS,
     getActiveBgColor,
+    getInfoToolBgColor,
   } = useHeadingsNavigation({ levels, pageLimit, actualSlug })
 
   const [isMobile, setIsMobile] = useState(false)
@@ -43,7 +44,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
 
   // Находим текущий активный заголовок, чтобы вывести его название прямо на закрытую кнопку-плашку
   const activeHeading = headings.find(h => h.isActiveProgress) || headings[0]
-  const isDarkTheme = currentTheme === 'dark' || currentTheme === 'hard-gray'
+  const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
 
   return (
     <>
@@ -60,6 +61,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           maxWidth: '400px',
           padding: '12px 16px',
           borderRadius: '12px',
+          // backgroundColor: getInfoToolBgColor({ currentTheme }),
           backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
           color: getTextColor({ currentTheme }),
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
@@ -83,7 +85,13 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
             {activeHeading?.text}
           </span>
         </div>
-        <span style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}>
+        <span
+          style={{
+            letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px',
+            backgroundColor: getButtonBgColor({ currentTheme }),
+            color: (isDarkTheme || currentTheme === 'gray') ? '#fff' : '#000',
+          }}
+        >
           {currentPage} / {totalPages} ☰
         </span>
       </div>
@@ -115,6 +123,8 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           width: '100vw',
           // maxHeight: '60vh',
           backgroundColor: isDarkTheme ? '#1e1e1e' : '#f9f9f9',
+          // backgroundColor: getInfoToolBgColor({ currentTheme }),
+          // backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
           color: getTextColor({ currentTheme }),
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
@@ -164,9 +174,9 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
                 backgroundColor: heading.isActiveProgress 
                   ? getActiveBgColor({ currentTheme })
                   : heading.isVisible
-                    ? getBgColor({ currentTheme })
+                    ? getButtonBgColor({ currentTheme })
                     : 'transparent',
-                color: getHeadingColor({ item: heading, idx, currentTheme }),
+                color: getHeadingButtonColor({ item: heading, idx, currentTheme }),
                 // fontWeight: heading.isActiveProgress ? 'bold' : '500',
                 fontWeight: 'bold',
                 transition: 'all 0.15s ease',
