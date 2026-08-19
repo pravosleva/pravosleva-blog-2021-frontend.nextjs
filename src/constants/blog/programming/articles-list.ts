@@ -9,12 +9,12 @@ const bgSolid = {
   type: 'image/jpg',
 }
 const bgCoding = {
-  src: 'https://pravosleva.pro/static/img/coding.jpg',
+  src: 'https://pravosleva.pro/static/img/blog/joker.webp',
   size: {
-    w: 1080,
-    h: 687,
+    w: 990,
+    h: 1220,
   },
-  type: 'image/jpg',
+  type: 'image/webp',
 }
 const bgHackerNews = {
   src: 'https://pravosleva.pro/static/img/projects/hacker-news-bg.png',
@@ -23,6 +23,14 @@ const bgHackerNews = {
     h: 710,
   },
   type: 'image/png',
+}
+const bgEyes = {
+  src: 'https://pravosleva.pro/static/img/blog/eyes.webp',
+  size: {
+    w: 896,
+    h: 1344,
+  },
+  type: 'image/webp',
 }
 
 export const list: { [key: string]: TArticleTools } = {
@@ -69,6 +77,6 @@ export const list: { [key: string]: TArticleTools } = {
   'programming-di': {
     id: '6a52a780f7929b4140542033',
     brief: 'DI',
-    bg: bgCoding,
+    bg: bgEyes,
   },
 }

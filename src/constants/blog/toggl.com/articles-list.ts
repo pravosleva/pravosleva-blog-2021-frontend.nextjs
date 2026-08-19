@@ -112,10 +112,10 @@ export const list: {[key: string]: TArticleTools} = {
     id: '66c70fbb08a5177347693296',
     brief: 'Interested by toggl.com',
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/best-programming-languages.webp',
+      src: 'https://pravosleva.pro/static/img/blog/joker.webp',
       size: {
-        w: 750,
-        h: 375,
+        w: 990,
+        h: 1220,
       },
       type: 'image/webp',
     },

@@ -217,12 +217,12 @@ export const slugMapping: { [key: string]: TArticleTools } = {
     id: '66c6dac8ac4921798fee38ab',
     brief: 'Dev exp',
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/wrench-btn.png',
+      src: 'https://pravosleva.pro/static/img/blog/eyes.webp',
       size: {
-        w: 497,
-        h: 260,
+        w: 896,
+        h: 1344,
       },
-      type: 'image/png',
+      type: 'image/webp',
     },
   },
   'what-where-when': {
@@ -245,6 +245,44 @@ export const slugMapping: { [key: string]: TArticleTools } = {
       size: {
         w: 1080,
         h: 1080,
+      },
+      type: 'image/webp',
+    },
+  },
+  // {
+  //   id: 1,
+  //   title: 'AuditList 2023',
+  //   description: 'AUDIT_LIST_PROJECT_DESCR',
+  //   img: {
+  //     // NOTE: Converter online https://cloudconvert.com/
+  //     src: '/static/img/projects/audit-v2.webp',
+  //     alt: 'loading...',
+  //     color: {
+  //       // NOTE: Get average color online https://matkl.github.io/average-color/
+  //       average: '#d79695',
+  //     },
+  //   },
+  //   links: [
+  //     {
+  //       href: '/subprojects/audit-list',
+  //       as: '/subprojects/audit-list',
+  //       text: 'PROJECT_GO_BTN:LINK_GOTO',
+  //       color: ELinkColor.YELLOW,
+  //       icon: ELinkIcon.ARROW,
+  //     },
+  //   ],
+  //   uiDate: '2023',
+  //   brief: 'PROJECT_BRIEF@AUDITOR_HELPER',
+  //   tags: [],
+  // },
+  'audit-list-2023': {
+    id: '6a85e2a2f7929b4140542042',
+    brief: 'Audit helper',
+    bg: {
+      src: '/static/img/projects/audit-v2.webp',
+      size: {
+        w: 700,
+        h: 466,
       },
       type: 'image/webp',
     },

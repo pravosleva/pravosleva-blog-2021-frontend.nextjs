@@ -9,10 +9,10 @@ const madDeveloperBg = {
   type: 'image/jpg',
 }
 const dxBg = {
-  src: 'https://pravosleva.pro/static/img/blog/dx.webp',
+  src: 'https://pravosleva.pro/static/img/blog/joker.webp',
   size: {
-    w: 1920,
-    h: 1080,
+    w: 990,
+    h: 1220,
   },
   type: 'image/webp',
 }
