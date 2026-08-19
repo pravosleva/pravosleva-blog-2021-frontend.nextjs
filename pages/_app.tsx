@@ -40,6 +40,8 @@ import '../public/static/css/min/sp-nw-2022.css'
 import { ClientPerfWidget } from '~/components'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase';
 import { setTheme } from '~/store/reducers/globalTheme';
+import { GlobalAudioPlayer } from '~/components/GlobalAudioPlayer';
+import { GlobalPodcastSidebarButton } from '~/components/GlobalPodcastSidebarButton';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -153,6 +155,10 @@ function AppWithRedux(props: MyAppProps) {
       {!isServer &&
         <Script src="/static/common/eruda.custom.js" strategy="lazyOnload" />
       }
+
+      {/* Сквозные глобальные UI-компоненты экосистемы */}
+      <GlobalPodcastSidebarButton />
+      <GlobalAudioPlayer />
     </>
   )
 }

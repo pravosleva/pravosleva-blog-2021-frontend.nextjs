@@ -65,6 +65,7 @@ export default class MyDocument extends Document {
           <link rel="stylesheet" href="/static/css/min/variant.react-image-ligthbox.v2.css" />
 
           <link href="/static/css/min/article.css" rel="stylesheet" />
+          <link href="/static/css/min/audio-podcast.css" rel="stylesheet" />
 
           {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
           {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}

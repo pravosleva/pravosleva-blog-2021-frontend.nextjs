@@ -1,2 +1,2 @@
 export * from './ImageInNewTab'
-export * from './ImageRenderer'
+export * from './ImageRenderer.v0'
