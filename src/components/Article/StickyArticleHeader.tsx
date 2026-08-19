@@ -21,7 +21,7 @@ const StyledStickyHeader = styled('div')<TStickyHeaderProps>`
   }
   @media (max-width: 767px) {
     height: 40px;
-    padding: 0 20px;
+    padding: 0 16px;
   }
   z-index: 3;
   display: flex;
