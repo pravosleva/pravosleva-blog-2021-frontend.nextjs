@@ -24,24 +24,33 @@ export const galleryActiveIndexSignal = reactiveGalleryEngine.signal<number>(
 )
 
 /**
- * Безопасное добавление картинок конкретной галереи в общий пул
+ * Абсолютно безопасное добавление картинок в общий пул всей статьи.
+ * Иммунно к Strict Mode, двойной гидратации и смене ID.
  */
-export const registerGalleryItems = (galleryId: string, items: TNormalizedItem[]) => {
+export const registerGalleryItems = (items: TNormalizedItem[]) => {
+  // Берём текущее состояние реестра из сигнала
   const currentRegistry = [...galleryRegistrySignal.value];
-  
-  // Проверяем, не добавлены ли уже картинки ЭТОЙ конкретной галереи (защита от лишних ререндеров React)
-  const isAlreadyRegistered = currentRegistry.some(img => img.galleryId === galleryId);
-  if (isAlreadyRegistered) return;
+  const newItemsToPush: IGalleryRegistryItem[] = [];
 
-  const startIdx = currentRegistry.length;
-  
-  const mappedItems: IGalleryRegistryItem[] = items.map((item, index) => ({
-    ...item,
-    globalIndex: startIdx + index,
-    galleryId
-  }));
-  
-  galleryRegistrySignal.value = [...currentRegistry, ...mappedItems];
+  items.forEach((item) => {
+    // Проверяем, добавлена ли уже эта картинка по её уникальному URL (src)
+    const isAlreadyPresent = currentRegistry.some(img => img.src === item.src) ||
+                             newItemsToPush.some(img => img.src === item.src);
+
+    if (!isAlreadyPresent) {
+      newItemsToPush.push({
+        ...item,
+        // Индекс строго инкрементируется от текущей реальной длины глобального массива
+        globalIndex: currentRegistry.length + newItemsToPush.length,
+        galleryId: 'article-static-node' // Нам больше не нужны рандомные ID
+      });
+    }
+  });
+
+  // Обновляем сигнал только если реально пришли новые, ещё не зарегистрированные картинки
+  if (newItemsToPush.length > 0) {
+    galleryRegistrySignal.value = [...currentRegistry, ...newItemsToPush];
+  }
 };
 
 /**

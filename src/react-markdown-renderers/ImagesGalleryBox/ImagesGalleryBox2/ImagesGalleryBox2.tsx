@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState, memo } from 'react'
+import { useMemo, useEffect, memo } from 'react'
 import { useStyles } from './useStyles'
 import { CircularIndeterminate } from '~/mui/CircularIndeterminate'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
@@ -13,10 +13,6 @@ import { useSignalValue } from '~/utils/reactive-engine'
 
 export const ImagesGalleryBox2 = memo(({ itemsJson }: TProps) => {
   const styles = useStyles()
-  
-  // Создаем стабильный ID галереи на весь её жизненный цикл
-  const [galleryId] = useState(() => `gallery-${Math.random().toString(36).substr(2, 9)}`)
-  
   const globalRegistry = useSignalValue(galleryRegistrySignal)
 
   const arePropsValid = useMemo(() => {
@@ -34,12 +30,12 @@ export const ImagesGalleryBox2 = memo(({ itemsJson }: TProps) => {
     return arePropsValid ? JSON.parse(itemsJson) : []
   }, [itemsJson, arePropsValid])
 
-  // Пушим картинки в сквозной реактивный список по мере рендеринга JsxParser
+  // Просто отправляем элементы на проверку. Повторные вызовы из-за ререндеров безопасны!
   useEffect(() => {
     if (normalizedItems.length > 0) {
-      registerGalleryItems(galleryId, normalizedItems)
+      registerGalleryItems(normalizedItems)
     }
-  }, [galleryId, normalizedItems])
+  }, [normalizedItems])
 
   const isServer = typeof window === 'undefined'
   if (isServer) return <CircularIndeterminate />
@@ -53,10 +49,10 @@ export const ImagesGalleryBox2 = memo(({ itemsJson }: TProps) => {
   if (normalizedItems.length === 0) return <b>Empty ImagesGalleryBox</b>
 
   const handleImageClick = (src: string) => () => {
-    // Находим глобальный сквозной индекс кликнутой картинки в ядре
-    const targetItem = globalRegistry.find(img => img.galleryId === galleryId && img.src === src);
+    // Находим картинку по её глобальному src в стабильном реестре
+    const targetItem = globalRegistry.find(img => img.src === src)
     if (targetItem) {
-      galleryActiveIndexSignal.value = targetItem.globalIndex;
+      galleryActiveIndexSignal.value = targetItem.globalIndex // Провоцируем открытие лайтбокса
     }
   }
 

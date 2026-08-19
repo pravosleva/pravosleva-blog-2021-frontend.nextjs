@@ -11,11 +11,24 @@ export const GlobalArticleLightbox = () => {
   
   const currentImage = useMemo(() => isOpen ? images[activeIndex] : null, [images, activeIndex, isOpen])
   
-  const nextIndex = useMemo(() => (activeIndex + 1) % images.length, [images, activeIndex])
-  const nextImage = useMemo(() => images[nextIndex] || currentImage, [images, nextIndex, currentImage])
+  // Проверяем реальное количество УНИКАЛЬНЫХ картинок в статье
+  const hasMoreThanOneImage = images.length > 1
+
+  const nextIndex = useMemo(() => {
+    return hasMoreThanOneImage ? (activeIndex + 1) % images.length : -1
+  }, [images, activeIndex, hasMoreThanOneImage])
   
-  const prevIndex = useMemo(() => (activeIndex + images.length - 1) % images.length, [images, activeIndex])
-  const prevImage = useMemo(() => images[prevIndex] || currentImage, [images, currentImage])
+  const nextImage = useMemo(() => {
+    return (hasMoreThanOneImage && nextIndex !== -1) ? images[nextIndex] : null
+  }, [images, nextIndex, hasMoreThanOneImage])
+  
+  const prevIndex = useMemo(() => {
+    return hasMoreThanOneImage ? (activeIndex + images.length - 1) % images.length : -1
+  }, [images, activeIndex, hasMoreThanOneImage])
+  
+  const prevImage = useMemo(() => {
+    return (hasMoreThanOneImage && prevIndex !== -1) ? images[prevIndex] : null
+  }, [images, prevIndex, hasMoreThanOneImage])
 
   if (!isOpen || !currentImage) return null
 
@@ -25,19 +38,18 @@ export const GlobalArticleLightbox = () => {
       imageTitle={currentImage.title}
       imageCaption={currentImage.caption}
       mainSrcThumbnail={currentImage.src}
-      nextSrc={nextImage.original}
-      nextSrcThumbnail={nextImage.src}
-      prevSrc={prevImage.original}
-      prevSrcThumbnail={prevImage.src}
+      
+      // ИСПРАВЛЕНО: Передаем undefined вместо null, чтобы соответствовать типам библиотеки
+      nextSrc={nextImage?.original ?? undefined}
+      nextSrcThumbnail={nextImage?.src ?? undefined}
+      prevSrc={prevImage?.original ?? undefined}
+      prevSrcThumbnail={prevImage?.src ?? undefined}
+      
       onCloseRequest={() => {
-        galleryActiveIndexSignal.value = -1 // Закрываем лайтбокс
+        galleryActiveIndexSignal.value = -1
       }}
-      onMovePrevRequest={() => {
-        galleryActiveIndexSignal.value = prevIndex
-      }}
-      onMoveNextRequest={() => {
-        galleryActiveIndexSignal.value = nextIndex
-      }}
+      onMovePrevRequest={hasMoreThanOneImage ? () => { galleryActiveIndexSignal.value = prevIndex } : undefined}
+      onMoveNextRequest={hasMoreThanOneImage ? () => { galleryActiveIndexSignal.value = nextIndex } : undefined}
     />
   )
 }

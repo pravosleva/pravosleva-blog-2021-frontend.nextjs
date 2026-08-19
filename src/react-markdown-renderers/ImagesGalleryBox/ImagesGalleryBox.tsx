@@ -38,11 +38,12 @@ export const ImagesGalleryBox = memo(({ itemsJson }: TProps) => {
   }, [itemsJson, arePropsValid])
 
   // РЕГИСТРАЦИЯ: Пушим картинки этой галереи в общий стек ядра статьи
+  // Просто отправляем элементы на проверку. Повторные вызовы из-за ререндеров безопасны!
   useEffect(() => {
     if (normalizedItems.length > 0) {
-      registerGalleryItems(galleryId, normalizedItems)
+      registerGalleryItems(normalizedItems)
     }
-  }, [galleryId, normalizedItems])
+  }, [normalizedItems])
 
   const isServer = typeof window === 'undefined'
   if (isServer) return <CircularIndeterminate />
@@ -57,9 +58,10 @@ export const ImagesGalleryBox = memo(({ itemsJson }: TProps) => {
 
   // Хендлер клика: открывает модалку на правильном глобальном индексе
   const handleImageClick = (src: string) => () => {
-    const targetItem = globalRegistry.find(img => img.galleryId === galleryId && img.src === src)
+    // Находим картинку по её глобальному src в стабильном реестре
+    const targetItem = globalRegistry.find(img => img.src === src)
     if (targetItem) {
-      galleryActiveIndexSignal.value = targetItem.globalIndex // Передаем управление в GlobalArticleLightbox
+      galleryActiveIndexSignal.value = targetItem.globalIndex // Провоцируем открытие лайтбокса
     }
   }
 
