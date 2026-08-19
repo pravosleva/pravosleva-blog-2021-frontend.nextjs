@@ -279,7 +279,13 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
               backgroundColor: isDark ? '#2a2a2a' : '#fff',
               color: getPanelTextColor(currentTheme),
               outline: 'none',
-              boxSizing: 'border-box'
+              boxSizing: 'border-box',
+              
+              fontWeight: 'bold',
+              fontFamily: 'monospace, system-ui',
+              // @ts-ignore
+              caretShape: 'block', // Делает курсор прямоугольным
+              caretColor: isDark ? '#39e5ac' : 'lightgray', // Окрашивает курсор
             }}
           />
           {localInput && (

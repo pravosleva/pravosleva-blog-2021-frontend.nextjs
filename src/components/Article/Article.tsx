@@ -1,4 +1,4 @@
-import { useMemo, memo, useRef } from 'react'
+import { useMemo, memo, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
 import { withTranslator } from '~/hocs/withTranslator'
@@ -15,10 +15,13 @@ import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
 import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
 import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
+import { resetGalleryRegistry } from '~/store/reactive-engine/reactiveGalleryEngine';
 import { ArticlesSearchDesktop } from '../ArticlesList/components'
 import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
 import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
+import { GlobalArticleLightbox } from '~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox'
+// import { GlobalArticleLightbox } from '~/components/Gallery/GlobalArticleLightbox'; // Созданный на прошлом шаге синглтон
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
@@ -44,6 +47,12 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
   // Реф для отслеживания положения главного баннера
   const bannerRef = useRef<HTMLDivElement>(null)
+
+  // КРИТИЧЕСКИ ВАЖНО: Атомарный сброс сквозной галереи при переключении статей
+  useEffect(() => {
+    resetGalleryRegistry();
+    return () => resetGalleryRegistry();
+  }, [article.slug]);
 
   return (
     <>
@@ -224,6 +233,9 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
           </ResponsiveBlock>
         </>
       ) : null}
+
+      {/* Единственный глобальный инстанс модалки на всю страницу */}
+      <GlobalArticleLightbox />
     </>
   )
 }))

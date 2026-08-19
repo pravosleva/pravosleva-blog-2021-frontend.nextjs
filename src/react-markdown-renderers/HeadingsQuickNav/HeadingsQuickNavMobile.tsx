@@ -192,7 +192,12 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
               }}
               title={heading.text}
             >
-              <span style={{ whiteSpace: 'pre', fontFamily: heading.levelDiff > 0 ? 'monospace, Courier' : 'inherit' }}>
+              <span
+                style={{
+                  whiteSpace: 'pre',
+                  // fontFamily: heading.levelDiff > 0 ? 'monospace, Courier' : 'inherit',
+                  fontFamily: 'monospace, Courier',
+                }}>
                 {heading.prefix}{heading.text}
               </span>
             </button>

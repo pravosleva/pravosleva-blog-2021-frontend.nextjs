@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 // import { getButtonBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
-import { getButtonBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
+import { getButtonBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
 import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';
@@ -21,7 +21,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
     setQuery,
     setCurrentPage,
     setLimit,
-    reset
+    reset,
   } = useArticlesSearch()
 
   const [isMobile, setIsMobile] = useState(false)
@@ -269,8 +269,13 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                 backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
                 color: textColor,
                 // fontSize: '15px',
-                fontFamily: 'system-ui',
-                outline: 'none'
+                fontFamily: 'monospace, system-ui',
+                outline: 'none',
+
+                fontWeight: 'bold',
+                // @ts-ignore
+                caretShape: 'block', // Делает курсор прямоугольным
+                caretColor: isDarkTheme ? '#39e5ac' : 'lightgray', // Окрашивает курсор
               }}
             />
             {localInput && (
