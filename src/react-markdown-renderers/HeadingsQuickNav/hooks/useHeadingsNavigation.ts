@@ -9,7 +9,14 @@ interface UseHeadingsNavigationProps {
   pageLimit?: number;
   actualSlug?: string;
   // ДОБАВЛЕНО: Массив CSS-селекторов контейнеров, заголовки внутри которых нужно игнорировать
-  ignoreSelectors?: string[]; 
+  ignoreSelectors?: string[];
+  /* NOTE: Когда мы передаем массив ['.article-alert', '.notice-block'],
+  хук внутри себя компилирует для браузера следующую строчку CSS-селектора (например, для уровня h2):
+  h2[id]:not(.article-alert h2, .notice-block h2)
+  Как это понимает браузер:
+  Псевдокласс :not(.article-alert h2) на уровне движка отрисовки Chromium/Gecko означает буквально следующее:
+  «Найди мне все теги h2 с атрибутом id, КРОМЕ тех, у которых где-то выше по дереву предков (на любом уровне вложенности — будь то прямой родитель или пра-пра-прадедушка) есть элемент с классом .article-alert».
+  */
 }
 
 const standardDesktopOffsetTop = 50 + 16
