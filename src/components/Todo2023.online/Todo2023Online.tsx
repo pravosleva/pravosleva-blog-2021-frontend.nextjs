@@ -837,7 +837,7 @@ const Logic = ({ room }: TLogicProps) => {
               )
             }
             <CopyToClipboard
-              text={`/subprojects/audit-list/${room}`}
+              text={`https://pravosleva.pro/subprojects/audit-list/${room}`}
               onCopy={handleCopyLink}
             >
               <MenuItem selected={false}>
