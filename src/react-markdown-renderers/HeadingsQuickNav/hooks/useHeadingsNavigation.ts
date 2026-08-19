@@ -7,6 +7,7 @@ import { useSignalValue } from '~/utils/reactive-engine'
 interface UseHeadingsNavigationProps {
   levels?: ('h1' | 'h2' | 'h3' | 'h4')[];
   pageLimit?: number;
+  actualSlug?: string;
 }
 
 const standardDesktopOffsetTop = 50 + 16
@@ -15,12 +16,11 @@ const elementCriticalHeight = 2
 export const useHeadingsNavigation = ({
   levels = ['h1', 'h2', 'h3'],
   pageLimit = 5,
+  actualSlug,
 }: UseHeadingsNavigationProps = {}) => {
-  // const headings = useSignalValue<IHeadingStoredItem[]>(headingsRegistrySignal)
   const headings = useSignalValue<IHeadingStoredItem[]>(throttledHeadingsSignal)
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Фабрика скролла (утилита)
   const scrollToIdRef = useRef(scrollToIdFactory({
     timeout: 0,
     offsetTop: standardDesktopOffsetTop,
@@ -29,116 +29,146 @@ export const useHeadingsNavigation = ({
 
   // 1. Инициализация: сбор заголовков, нормализация ID и построение дерева
   useEffect(() => {
-    const selector = levels.map(lvl => `${lvl}[id]`).join(', ')
-    const elements = Array.from(document.querySelectorAll(selector)) as HTMLElement[]
+    let observer: IntersectionObserver | null = null;
+    let isCancelled = false;
 
-    if (elements.length === 0) return
+    // СБРОС СТЕЙТА: При смене статьи мгновенно очищаем старое содержание и возвращаем пагинацию на 1
+    headingsRegistrySignal.value = [];
+    /* NOTE: Благодаря этому старое содержание предыдущей статьи мгновенно исчезает с экрана,
+    не вызывая визуального бага «смешивания» текстов двух статей.
+    */
+    setCurrentPage(1);
 
-    const baseLevel = 1
-    const usedIds = new Map<string, number>()
+    const initNavigation = () => {
+      if (isCancelled) return;
 
-    // Дедупликация ID в DOM
-    elements.forEach((el) => {
-      const rawId = el.id.trim()
-      if (!usedIds.has(rawId)) {
-        usedIds.set(rawId, 0)
-      } else {
-        const nextIndex = usedIds.get(rawId)! + 1
-        usedIds.set(rawId, nextIndex)
-        el.id = `${rawId}-${nextIndex}`
-      }
-    })
+      const selector = levels.map(lvl => `${lvl}[id]`).join(', ')
+      const elements = Array.from(document.querySelectorAll(selector)) as HTMLElement[]
 
-    // Построение структуры дерева
-    const initialTree: IHeadingStoredItem[] = elements.map((el, idx, arr) => {
-      const tagName = el.tagName.toLowerCase()
-      const currentLevel = getLevelNum(tagName)
-      const levelDiff = currentLevel - baseLevel
-      let prefix = ''
+      // Если ReactMarkdown ещё не отрендерил новые ноды, выходим. 
+      // Следующий таймаут или MutationObserver подхватит их.
+      if (elements.length === 0) return;
 
-      if (levelDiff > 0) {
-        const tail = arr.slice(idx + 1)
-        const nextParentIdx = tail.findIndex(item => getLevelNum(item.tagName.toLowerCase()) < currentLevel)
-        const validSearchZone = nextParentIdx !== -1 ? tail.slice(0, nextParentIdx) : tail
-        
-        const hasNextSibling = validSearchZone.some(item => getLevelNum(item.tagName.toLowerCase()) === currentLevel)
-        const nodeIcon = hasNextSibling ? '├─ ' : '└─ '
+      const baseLevel = 1
+      const usedIds = new Map<string, number>()
 
-        if (levelDiff === 1) {
-          prefix = nodeIcon
+      // Дедупликация ID в DOM
+      elements.forEach((el) => {
+        const rawId = el.id.trim()
+        if (!usedIds.has(rawId)) {
+          usedIds.set(rawId, 0)
         } else {
-          const fields: string[] = []
-          for (let l = 1; l < levelDiff; l++) {
-            const checkLevel = baseLevel + l
-            const nextHigherParentIdx = tail.findIndex(item => getLevelNum(item.tagName.toLowerCase()) < checkLevel)
-            const parentSearchZone = nextHigherParentIdx !== -1 ? tail.slice(0, nextHigherParentIdx) : tail
-            const extendsParent = parentSearchZone.some(item => getLevelNum(item.tagName.toLowerCase()) === checkLevel)
-            
-            fields.push(extendsParent ? '│  ' : '   ')
-          }
-          prefix = fields.join('') + nodeIcon
+          const nextIndex = usedIds.get(rawId)! + 1
+          usedIds.set(rawId, nextIndex)
+          el.id = `${rawId}-${nextIndex}`
         }
-      }
+      })
 
-      return {
-        id: el.id,
-        text: el.innerText || el.textContent || '',
-        tagName,
-        prefix,
-        levelDiff,
-        isVisible: false,
-        isActiveProgress: false
-      }
-    })
+      // Построение структуры дерева
+      const initialTree: IHeadingStoredItem[] = elements.map((el, idx, arr) => {
+        const tagName = el.tagName.toLowerCase()
+        const currentLevel = getLevelNum(tagName)
+        const levelDiff = currentLevel - baseLevel
+        let prefix = ''
 
-    headingsRegistrySignal.value = initialTree
+        if (levelDiff > 0) {
+          const tail = arr.slice(idx + 1)
+          const nextParentIdx = tail.findIndex(item => getLevelNum(item.tagName.toLowerCase()) < currentLevel)
+          const validSearchZone = nextParentIdx !== -1 ? tail.slice(0, nextParentIdx) : tail
+          
+          const hasNextSibling = validSearchZone.some(item => getLevelNum(item.tagName.toLowerCase()) === currentLevel)
+          const nodeIcon = hasNextSibling ? '├─ ' : '└─ '
 
-    // Настройка IntersectionObserver для прогресса
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let currentHeadings = [...throttledHeadingsSignal.value]
-        let isVisibilityChanged = false
-
-        entries.forEach((entry) => {
-          const item = currentHeadings.find(h => h.id === entry.target.id)
-          if (item && item.isVisible !== entry.isIntersecting) {
-            item.isVisible = entry.isIntersecting
-            isVisibilityChanged = true
+          if (levelDiff === 1) {
+            prefix = nodeIcon
+          } else {
+            const fields: string[] = []
+            for (let l = 1; l < levelDiff; l++) {
+              const checkLevel = baseLevel + l
+              const nextHigherParentIdx = tail.findIndex(item => getLevelNum(item.tagName.toLowerCase()) < checkLevel)
+              const parentSearchZone = nextHigherParentIdx !== -1 ? tail.slice(0, nextHigherParentIdx) : tail
+              const extendsParent = parentSearchZone.some(item => getLevelNum(item.tagName.toLowerCase()) === checkLevel)
+              
+              fields.push(extendsParent ? '│  ' : '   ')
+            }
+            prefix = fields.join('') + nodeIcon
           }
-        })
-
-        let activeIndex = -1
-        elements.forEach((el, idx) => {
-          const rect = el.getBoundingClientRect()
-          if (rect.top <= window.innerHeight * 0.4) {
-            activeIndex = idx
-          }
-        })
-        if (activeIndex === -1 && elements.length > 0) activeIndex = 0
-
-        let isProgressChanged = false
-        currentHeadings.forEach((h, idx) => {
-          const shouldBeActive = idx === activeIndex
-          if (h.isActiveProgress !== shouldBeActive) {
-            h.isActiveProgress = shouldBeActive
-            isProgressChanged = true
-          }
-        })
-
-        if (isVisibilityChanged || isProgressChanged) {
-          headingsRegistrySignal.value = currentHeadings
         }
-      },
-      { rootMargin: '0px 0px -20% 0px' }
-    )
 
-    elements.forEach(el => observer.observe(el))
-    
-    return () => {
-      observer.disconnect()
-      headingsRegistrySignal.value = []
+        return {
+          id: el.id,
+          text: el.innerText || el.textContent || '',
+          tagName,
+          prefix,
+          levelDiff,
+          isVisible: false,
+          isActiveProgress: false
+        }
+      })
+
+      headingsRegistrySignal.value = initialTree
+
+      // Настройка IntersectionObserver для прогресса
+      observer = new IntersectionObserver(
+        (entries) => {
+          let currentHeadings = [...throttledHeadingsSignal.value]
+          let isVisibilityChanged = false
+
+          entries.forEach((entry) => {
+            const item = currentHeadings.find(h => h.id === entry.target.id)
+            if (item && item.isVisible !== entry.isIntersecting) {
+              item.isVisible = entry.isIntersecting
+              isVisibilityChanged = true
+            }
+          })
+
+          let activeIndex = -1
+          elements.forEach((el, idx) => {
+            const rect = el.getBoundingClientRect()
+            if (rect.top <= window.innerHeight * 0.4) {
+              activeIndex = idx
+            }
+          })
+          if (activeIndex === -1 && elements.length > 0) activeIndex = 0
+
+          let isProgressChanged = false
+          currentHeadings.forEach((h, idx) => {
+            const shouldBeActive = idx === activeIndex
+            if (h.isActiveProgress !== shouldBeActive) {
+              h.isActiveProgress = shouldBeActive
+              isProgressChanged = true
+            }
+          })
+
+          if (isVisibilityChanged || isProgressChanged) {
+            headingsRegistrySignal.value = currentHeadings
+          }
+        },
+        { rootMargin: '0px 0px -20% 0px' }
+      )
+
+      elements.forEach(el => observer?.observe(el))
     }
-  }, [levels])
+
+    // РЕШЕНИЕ БАГА: Макротаска через setTimeout(..., 50) сдвигает выполнение разбора DOM
+    // в конец очереди, когда ReactMarkdown гарантированно завершил вставку новых тегов h1-h4 статьи.
+    const timerId = setTimeout(initNavigation, 50);
+    /* NOTE: Микро-задержка инициализации (setTimeout):
+    Заворачивание функции initNavigation в setTimeout(..., 50) — это классический паттерн для работы
+    с динамическим контентом (Markdown/WYSIWYG) в React. Мы даём браузеру 50 миллисекунд на то,
+    чтобы очистить старое дерево элементов и полностью отрисовать новые текстовые ноды.
+    В момент вызова document.querySelectorAll новые ID гарантированно будут находиться в DOM.
+    */
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timerId);
+      if (observer) {
+        observer.disconnect();
+      }
+      headingsRegistrySignal.value = [];
+    };
+  }, [levels, actualSlug]) // Перезапускаем строго при изменении уровней или слажка статьи
 
   // 2. Авто-синхронизация текущей страницы пагинации при скролле статьи
   useEffect(() => {
@@ -148,7 +178,7 @@ export const useHeadingsNavigation = ({
       const targetPage = Math.floor(activeProgressIndex / pageLimit) + 1
       setCurrentPage(targetPage)
     }
-  }, [headings, pageLimit])
+  }, [headings, pageLimit]) // Убрали лишний actualSlug, так как headings теперь обновляются корректно
 
   // 3. Вычисление среза данных для текущей страницы
   const totalPages = Math.ceil(headings.length / pageLimit)
@@ -156,7 +186,6 @@ export const useHeadingsNavigation = ({
   const visibleItems = headings.slice(startIndex, startIndex + pageLimit)
   const globalActiveIndex = headings.findIndex(h => h.isActiveProgress)
 
-  // Функция хэндлера клика (скролл к элементу)
   const handleScrollTo = (id: string) => {
     scrollToIdRef.current({
       id,
@@ -175,7 +204,7 @@ export const useHeadingsNavigation = ({
             const targetCenterPos = absoluteTop - (windowHeight / 2) + (elementHeight / 2)
             return absoluteTop - targetCenterPos
           }
-          return standardDesktopOffsetTop // Стандартный отступ для больших блоков
+          return standardDesktopOffsetTop
         }
       }
     })
@@ -194,22 +223,21 @@ export const useHeadingsNavigation = ({
         case 'hard-gray': case 'gray': return '#39e5ac'
         default: return '#FF8E53'
       }
-      
     }
     if (globalIndex < globalActiveIndex) {
-      return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)' // Прочитан
+      return isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'
     }
-    return isDarkTheme ? '#ffffff' : '#000000' // Не прочитан
+    return isDarkTheme ? '#ffffff' : '#000000'
   }
 
   return {
-    headings,              // Весь массив
-    visibleItems,          // Постраничный срез для рендера списка кнопок
-    currentPage,           // Текущая страница пагинации
-    totalPages,            // Всего страниц пагинации
-    setCurrentPage,        // Метод ручного переключения страниц (для кнопок вперед/назад)
-    handleScrollTo,        // Метод точного скролла до центра при клике
-    getHeadingColor,       // Готовые цвета с учетом темы, прогресса и прочтения
+    headings,
+    visibleItems,
+    currentPage,
+    totalPages,
+    setCurrentPage,
+    handleScrollTo,
+    getHeadingColor,
     getTextColor,
     getBgColor,
     getActiveBorderCSS,

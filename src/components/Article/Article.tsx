@@ -16,7 +16,6 @@ import styles from './Article.module.scss'
 import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
 import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
 import { ArticlesSearchDesktop } from '../ArticlesList/components'
-import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
 import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
@@ -24,7 +23,7 @@ import { DesktopOnly, MobileOnly } from './render-utils'
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
-  const isDesktop = useIsDesktop(800) // Наш безопасный адаптивный хук
+  const { slug } = article
   const { isSearchPanelOpen } = useArticlesSearch() // Глобальный реактивный стейт шторки
 
   // 1. Оптимизация тегов: собираем список один раз при изменении статьи
@@ -73,10 +72,10 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       <CollapsibleQuickNav pageLimit={5} />
       
       {/* Левая панель содержания (десктоп) */}
-      <HeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} />
+      <HeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} actualSlug={slug} />
       
       {/* Мобильная шторка содержания (автоматически < 800px) */}
-      <HeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} />
+      <HeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} actualSlug={slug} />
 
       {!!article ? (
         <>

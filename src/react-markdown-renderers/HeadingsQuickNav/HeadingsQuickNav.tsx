@@ -6,12 +6,14 @@ interface HeadingsQuickNavProps {
   levels?: ('h1' | 'h2' | 'h3' | 'h4')[];
   pageLimit?: number;
   currentTheme: string;
+  actualSlug: string;
 }
 
 export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
   levels,
   pageLimit,
-  currentTheme
+  currentTheme,
+  actualSlug,
 }) => {
   const {
     visibleItems,
@@ -22,7 +24,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
     getHeadingColor,
     getBgColor,
     getTextColor,
-  } = useHeadingsNavigation({ levels, pageLimit })
+  } = useHeadingsNavigation({ levels, pageLimit, actualSlug })
 
   const [isDesktop, setIsDesktop] = useState(false)
 

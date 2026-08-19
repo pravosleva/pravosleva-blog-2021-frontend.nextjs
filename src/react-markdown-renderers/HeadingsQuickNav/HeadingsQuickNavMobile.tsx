@@ -5,12 +5,14 @@ interface HeadingsQuickNavMobileProps {
   levels?: ('h1' | 'h2' | 'h3' | 'h4')[];
   pageLimit?: number;
   currentTheme: string;
+  actualSlug: string;
 }
 
 export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
   levels,
   pageLimit = 4, // Для мобилки лучше уменьшить лимит до 4-5 пунктов, чтобы шторка не занимала весь экран
-  currentTheme
+  currentTheme,
+  actualSlug
 }) => {
   const {
     headings,
@@ -24,7 +26,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     getTextColor,
     getActiveBorderCSS,
     getActiveBgColor,
-  } = useHeadingsNavigation({ levels, pageLimit })
+  } = useHeadingsNavigation({ levels, pageLimit, actualSlug })
 
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(false) // Стейт открытия шторки меню
