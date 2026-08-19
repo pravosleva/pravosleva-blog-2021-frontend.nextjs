@@ -59,10 +59,10 @@ export default class MyDocument extends Document {
           <link rel="stylesheet" href="/static/css/min/standart-form.css" />
           <link rel="stylesheet" href="/static/css/min/rippled-btn.css" />
           <link rel="stylesheet" href="/static/css/min/link-as-rippled-btn.css" />
-          <link rel="stylesheet" href="/static/css/custom-breadcrumbs.css" />
+          <link rel="stylesheet" href="/static/css/min/custom-breadcrumbs.css" />
           <link rel="stylesheet" href="/static/prismjs/themes/prism-material-theme.min.css" />
           <link rel="stylesheet" href="/static/css/min/mapbox-gl@2.6.1.min.css" />
-          <link rel="stylesheet" href="/static/css/variant.react-image-ligthbox.css" />
+          <link rel="stylesheet" href="/static/css/min/variant.react-image-ligthbox.v2.css" />
 
           <link href="/static/css/min/article.css" rel="stylesheet" />
 

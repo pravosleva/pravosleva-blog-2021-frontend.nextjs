@@ -31,11 +31,21 @@ export const ImagesGalleryBox2 = memo(({ itemsJson }: TProps) => {
   }, [itemsJson, arePropsValid])
 
   // Просто отправляем элементы на проверку. Повторные вызовы из-за ререндеров безопасны!
+  // useEffect(() => {
+  //   if (normalizedItems.length > 0) {
+  //     registerGalleryItems(normalizedItems)
+  //   }
+  // }, [normalizedItems])
   useEffect(() => {
     if (normalizedItems.length > 0) {
-      registerGalleryItems(normalizedItems)
+      // ИСПРАВЛЕНО: Защита от родительского сброса при монтировании
+      const timerId = setTimeout(() => {
+        registerGalleryItems(normalizedItems);
+      }, 0);
+
+      return () => clearTimeout(timerId);
     }
-  }, [normalizedItems])
+  }, [normalizedItems]);
 
   const isServer = typeof window === 'undefined'
   if (isServer) return <CircularIndeterminate />
