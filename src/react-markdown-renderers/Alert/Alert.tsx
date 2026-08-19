@@ -20,7 +20,7 @@ export const Alert = ({ type, text, header }: IProps) => {
 
   return (
     // @ts-ignore
-    <div className={clsx(classes.likeBlockuote, classes[`likeBlockuote_${type || 'default'}`])}>
+    <div className={clsx(classes.likeBlockuote, classes[`likeBlockuote_${type || 'default'}`], 'article-alert')}>
       {!!header && (
         <ReactMarkdown
           // @ts-ignore

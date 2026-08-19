@@ -26,7 +26,11 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
     getTextColor,
     getInfoToolBgColor,
     getInfoToolTextColor,
-  } = useHeadingsNavigation({ levels, pageLimit, actualSlug })
+  } = useHeadingsNavigation({
+    levels, pageLimit, actualSlug,
+    // Заголовки внутри элементов с этими классами будут полностью проигнорированы!
+    ignoreSelectors: ['.article-alert', '.notice-block', '.info-banner']
+  })
 
   const [isDesktop, setIsDesktop] = useState(false)
 

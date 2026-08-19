@@ -27,7 +27,11 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     getActiveBorderCSS,
     getActiveBgColor,
     getInfoToolBgColor,
-  } = useHeadingsNavigation({ levels, pageLimit, actualSlug })
+  } = useHeadingsNavigation({
+    levels, pageLimit, actualSlug,
+    // Заголовки внутри элементов с этими классами будут полностью проигнорированы!
+    ignoreSelectors: ['.article-alert', '.notice-block', '.info-banner']
+  })
 
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(false) // Стейт открытия шторки меню
