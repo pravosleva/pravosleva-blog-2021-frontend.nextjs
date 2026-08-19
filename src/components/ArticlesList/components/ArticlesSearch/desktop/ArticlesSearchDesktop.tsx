@@ -11,7 +11,6 @@ import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByT
 import { pluralize } from '~/utils/string-tools/pluralize' // Наша функция склонений
 import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { getCounterBadgeBgColor, getCounterBadgeTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
-import { ReactiveEngine } from '@pravosleva/reactive-engine'
 
 const getTextColorByThemeName = (themeName: TThemeName) => {
   switch (themeName) {

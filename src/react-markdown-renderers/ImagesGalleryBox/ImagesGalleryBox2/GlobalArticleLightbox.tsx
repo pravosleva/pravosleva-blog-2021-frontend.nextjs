@@ -10,8 +10,6 @@ export const GlobalArticleLightbox = () => {
   const isOpen = activeIndex !== -1 && images.length > 0
   
   const currentImage = useMemo(() => isOpen ? images[activeIndex] : null, [images, activeIndex, isOpen])
-  
-  // Проверяем реальное количество УНИКАЛЬНЫХ картинок в статье
   const hasMoreThanOneImage = images.length > 1
 
   const nextIndex = useMemo(() => {
@@ -30,16 +28,28 @@ export const GlobalArticleLightbox = () => {
     return (hasMoreThanOneImage && prevIndex !== -1) ? images[prevIndex] : null
   }, [images, prevIndex, hasMoreThanOneImage])
 
+  // ИСПРАВЛЕНО: Динамически формируем верхний заголовок со счётчиком ("1 / 5 | Название картинки")
+  const displayTitle = useMemo(() => {
+    if (!currentImage) return undefined
+    
+    const counterStr = `${activeIndex + 1} / ${images.length}`
+    const customTitle = currentImage.title || ''
+    
+    // Если у картинки есть свой title, красиво объединяем его со счётчиком
+    return customTitle ? `${counterStr} — ${customTitle}` : counterStr
+  }, [currentImage, activeIndex, images.length])
+
   if (!isOpen || !currentImage) return null
 
   return (
     <Lightbox
       mainSrc={currentImage.original}
-      imageTitle={currentImage.title}
+      
+      // ИСПРАВЛЕНО: Передаем сгенерированный заголовок со счетчиком в imageTitle
+      imageTitle={displayTitle}
       imageCaption={currentImage.caption}
       mainSrcThumbnail={currentImage.src}
       
-      // ИСПРАВЛЕНО: Передаем undefined вместо null, чтобы соответствовать типам библиотеки
       nextSrc={nextImage?.original ?? undefined}
       nextSrcThumbnail={nextImage?.src ?? undefined}
       prevSrc={prevImage?.original ?? undefined}
