@@ -5,8 +5,9 @@ import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from '~/createEmotionCache';
 import { metrics } from '~/constants'
 import { ServerStyleSheet } from 'styled-components'
-import { ServerStyleSheets } from '@mui/styles';
 // import { Partytown } from '@builder.io/partytown/react'
+import { ServerStyleSheets } from '@mui/styles' // Для MUI v5 legacy styles (JSS)
+// Примечание: Если вы используете MUI v4, импортируйте из '@mui/core/styles' или '@mui/styles'
 
 const isProd = process.env.NODE_ENV === 'production'
 // const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
@@ -121,91 +122,64 @@ export default class MyDocument extends Document {
   }
 }
 
-// `getInitialProps` belongs to `_document` (instead of `_app`),
+// -- NOTE: Fragment
+// //     const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
+// //       <script
+// //         type="text/javascript"
+// //         defer
+// //         dangerouslySetInnerHTML={{
+// //           __html: `
+// // (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+// // m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+// // (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+// // ym(${YANDEX_COUNTER_ID}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
+// // `,
+// //         }}
+// //       />
+// //     ) : null
+// //     if (!!yaMetrica) styles.push(yaMetrica)
+// --
+
+// NOTE: `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with static-site generation (SSG).
 MyDocument.getInitialProps = async (ctx) => {
-  // Resolution order
-  //
-  // On the server:
-  // 1. app.getInitialProps
-  // 2. page.getInitialProps
-  // 3. document.getInitialProps
-  // 4. app.render
-  // 5. page.render
-  // 6. document.render
-  //
-  // On the server with error:
-  // 1. document.getInitialProps
-  // 2. app.render
-  // 3. page.render
-  // 4. document.render
-  //
-  // On the client
-  // 1. app.getInitialProps
-  // 2. page.getInitialProps
-  // 3. app.render
-  // 4. page.render
-
-  const styledSheet = new ServerStyleSheet()
-  const muiSheet = new ServerStyleSheets();
+  // 1. Создаем строго по одному инстансу для каждого сборщика стилей
+  const styledComponentSheet = new ServerStyleSheet();
+  const muiJssSheet = new ServerStyleSheets();
+  
+  const cache = createEmotionCache();
+  const { extractCriticalToChunks } = createEmotionServer(cache);
+  
+  const originalRenderPage = ctx.renderPage;
 
   try {
-    const originalRenderPage = ctx.renderPage;
-
-    // You can consider sharing the same emotion cache between all the SSR requests to speed up performance.
-    // However, be aware that it can have global side effects.
-    const cache = createEmotionCache();
-    const { extractCriticalToChunks } = createEmotionServer(cache);
-
+    // 2. Оборачиваем App последовательно во ВСЕ три сборщика стилей!
     ctx.renderPage = () =>
       originalRenderPage({
-        // enhanceApp: (App: any) => (props) => <App emotionCache={cache} {...props} />,
-        // enhanceApp: (App) => (props) => styledSheet.collectStyles(<App {...props} />),
-        // enhanceApp: (App) => (props) => styledSheet.collectStyles(muiSheet.collect(<App {...props} />)),
-        enhanceApp: (App: any) => (props) => styledSheet.collectStyles(muiSheet.collect(<App emotionCache={cache} {...props} />)),
+        enhanceApp: (App) => (props) => 
+          styledComponentSheet.collectStyles(     // Сборщик 1: styled-components
+            muiJssSheet.collect(                  // Сборщик 2: MUI JSS (withStyles)
+              // @ts-ignore
+              <App emotionCache={cache} {...props} />
+            )
+          ),
       });
 
+    // 3. Запускаем стандартный рендеринг страницы Next.js
     const initialProps = await Document.getInitialProps(ctx);
-    // This is important. It prevents emotion to render invalid HTML.
-    // See https://github.com/mui-org/material-ui/issues/26561#issuecomment-855286153
+    
+    // 4. Извлекаем критические стили Emotion (MUI v5 System)
     const emotionStyles = extractCriticalToChunks(initialProps.html);
     const emotionStyleTags = emotionStyles.styles.map((style) => (
       <style
         data-emotion={`${style.key} ${style.ids.join(' ')}`}
         key={style.key}
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: style.css }}
       />
     ));
-    const styles = [
-      ...React.Children.toArray(initialProps.styles),
-      // initialProps.styles,
-      styledSheet.getStyleElement(),
-      muiSheet.getStyleElement(),
-      ...emotionStyleTags,
-    ]
-//     const yaMetrica = isProd && !!YANDEX_COUNTER_ID ? (
-//       <script
-//         type="text/javascript"
-//         defer
-//         dangerouslySetInnerHTML={{
-//           __html: `
-// (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-// m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-// (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-// ym(${YANDEX_COUNTER_ID}, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
-// `,
-//         }}
-//       />
-//     ) : null
-//     if (!!yaMetrica) styles.push(yaMetrica)
     const gMetrica = isProd && !!GA_TRACKING_ID ? (
       <>
-        {/* <Partytown
-          // debug
-          forward={['dataLayer.push']}
-          lib='/static/~partytown/'
-        /> */}
+        {/* <Partytown debug forward={['dataLayer.push']} lib='/static/~partytown/' */}
         <script
           async
           type='text/javascript'
@@ -222,48 +196,24 @@ gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
         `,
           }}
         />
-        <script
-          async
-          type='text/javascript'
-          dangerouslySetInnerHTML={{
-            __html: `function detectBtnsAndSetHandlers () {
-const rippledButtons = document.querySelectorAll('.link-as-rippled-btn');
-// console.log(rippledButtons);
-
-rippledButtons.forEach(btn => {
-  btn.addEventListener('click', function(e) {
-    // e.preventDefault();
-    // console.log(e.clientX, e.target.offsetLeft)
-    // const x = e.clientX - e.target.offsetLeft;
-    // const y = e.clientY - e.target.offsetTop;
-    const x = e.clientX - e.target.offsetLeft;
-    const y = e.clientY;
-
-    const ripples = document.createElement('span');
-    ripples.classList.add('ripples');
-
-    // ripples.style.left = x + 'px';
-    // ripples.style.top = y + 'px';
-    ripples.style.left = x + 'px';
-    ripples.style.top = '50%';
-
-    console.log(this);
-    this.appendChild(ripples);
-    console.log(this)
-
-    setTimeout(() => {
-      ripples.remove();
-    }, 1000);
-  })
-})
-}
-
-setTimeout(detectBtnsAndSetHandlers, 0);`,
-          }}
-        />
       </>
     ) : null
-    if (!!gMetrica) styles.push(gMetrica)
+
+    // 5. Формируем единый массив стилей для инжекции в <head>
+    const styles = [
+      ...React.Children.toArray(initialProps.styles),
+      
+      // Извлекаем РЕАЛЬНО собранные JSS-стили (исправлен нейминг переменной)
+      muiJssSheet.getStyleElement(), 
+      
+      // Извлекаем реально собранные стили styled-components
+      styledComponentSheet.getStyleElement(),
+      
+      // Извлекаем теги Emotion
+      ...emotionStyleTags,
+
+      gMetrica,
+    ];
 
     return {
       ...initialProps,
@@ -271,6 +221,7 @@ setTimeout(detectBtnsAndSetHandlers, 0);`,
       styles,
     };
   } finally {
-    styledSheet.seal()
+    // Обязательно закрываем синглтон styled-components во избежание утечек памяти
+    styledComponentSheet.seal();
   }
 };

@@ -1,207 +1,159 @@
 import React from 'react'
 import { withStyles, WithStyles } from '@mui/styles';
 import { Styles } from '@mui/styles/withStyles';
-import Button from '@mui/material/Button';
+import Button, { ButtonProps } from '@mui/material/Button';
+import clsx from 'clsx';
 import { EPartnerCode } from './types';
 
-interface IStyles {
+interface IButtonStyles extends WithStyles<Styles<any, any, any>>, Omit<ButtonProps, 'classes' | 'variant'> {
   partnerCode: EPartnerCode;
-  children: React.ReactNode;
-  [key: string]: any;
-}
-interface IColorsMapping {
-  default: string | number;
-  red: string | number;
-  [key: string]: any;
-}
-interface IButtonStyles extends WithStyles<Styles<any, any, any>> {
-  partnerCode: EPartnerCode;
+  variant?: 'contained' | 'outlined';
 }
 
-// Like https://github.com/brunobertolini/styled-by
-const styledBy = (property: string, mapping: IColorsMapping) => (
-  props: IStyles
-) => mapping[props[property]];
+// 1. Выносим ВСЮ конфигурацию в изолированный плоский объект данных.
+// Это не стили JSS, это просто конфиг, который не зависит от пропсов React!
+const partnersConfig = {
+  [EPartnerCode.Red]: {
+    letterSpacing: 'inherit',
+    fontWeight: 'normal',
+    lineHeight: '38px',
+    minWidth: 'unset',
+    borderRadius: '0px',
+    contained: {
+      backgroundColor: 'linear-gradient(45deg, #e63946 30%, #fe7f2d 90%)',
+      border: '2px solid red',
+      color: '#FFF',
+      boxShadow: '0 3px 5px 2px rgba(230, 57, 70, .3)',
+    },
+    outlined: {
+      backgroundColor: 'transparent',
+      border: '2px solid red',
+      color: '#e63946',
+      boxShadow: 'none',
+    },
+    hover: {
+      color: '#FFF',
+      backgroundColor: 'linear-gradient(0deg, #e63946 10%, #fe7f2d 110%)',
+      border: '2px solid red',
+      boxShadow: '0 0px 8px 2px rgba(230, 57, 70, .5)',
+    },
+    disabled: { borderColor: 'inherit', opacity: 1 }
+  },
 
+  [EPartnerCode.SvyaznoyYellow]: {
+    letterSpacing: '0.6px',
+    fontWeight: 500,
+    lineHeight: '38px',
+    minWidth: '200px',
+    borderRadius: '8px',
+    contained: { backgroundColor: '#FFC800', border: '2px solid #FFC800', color: '#4C1E87', boxShadow: 'none' },
+    outlined: { backgroundColor: 'transparent', border: '2px solid #FFC800', color: '#4C1E87', boxShadow: 'none' },
+    hover: { color: '#FFC800', backgroundColor: '#4C1E87', border: '2px solid #4C1E87', boxShadow: 'none' },
+    disabled: { borderColor: '#FFC800', opacity: 0.5 }
+  },
+
+  [EPartnerCode.Yellow]: {
+    letterSpacing: '0.6px',
+    fontWeight: 'bold',
+    lineHeight: '30px',
+    minWidth: '120px',
+    borderRadius: '8px',
+    contained: { backgroundColor: '#FFC800', border: '2px solid #FFC800', color: '#000', boxShadow: 'none' },
+    outlined: { backgroundColor: 'transparent', border: '2px solid #FFC800', color: '#FFC800', boxShadow: 'none' },
+    hover: { color: '#FFC800', backgroundColor: 'rgba(0, 0, 0, 0.5)', border: '2px solid #fff', boxShadow: 'none' },
+    disabled: { borderColor: 'transparent', opacity: 0.5 }
+  },
+
+  [EPartnerCode.SvyaznoySecondary]: {
+    letterSpacing: '0.6px',
+    fontWeight: 500,
+    lineHeight: '38px',
+    minWidth: '200px',
+    borderRadius: '8px',
+    contained: { backgroundColor: 'transparent', border: '2px solid #4C1E87', color: '#4C1E87', boxShadow: 'none' },
+    outlined: { backgroundColor: 'transparent', border: '2px solid #4C1E87', color: '#4C1E87', boxShadow: 'none' },
+    hover: { color: '#FFF', backgroundColor: '#4C1E87', border: '2px solid #4C1E87', boxShadow: 'none' },
+    disabled: { borderColor: 'lightgray', opacity: 1 }
+  },
+
+  default: {
+    letterSpacing: 'inherit',
+    fontWeight: 'normal',
+    lineHeight: '40px',
+    minWidth: 'unset',
+    borderRadius: '0px',
+    contained: {
+      backgroundColor: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+      border: 'none',
+      color: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+      boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    },
+    outlined: {
+      backgroundColor: 'transparent',
+      border: '2px solid #FE6B8B',
+      color: '#FE6B8B',
+      boxShadow: 'none',
+    },
+    hover: {
+      color: 'inherit',
+      backgroundColor: 'linear-gradient(0deg, #FE6B8B 10%, #FF8E53 110%)',
+      border: 'none',
+      boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .5)',
+    },
+    disabled: { borderColor: 'inherit', opacity: 1 }
+  }
+};
+
+// 2. Делаем функцию-селектор для JSS стилей.
+// ВАЖНО: Она принимает props и возвращает значение динамически. 
+// Так как имена базовых классов станут статичными (root, rootOutlined), несоответствие className исчезнет.
+const getStyleByProps = (path: string) => (props: any) => {
+  const partner = props.partnerCode;
+  const variant = props.variant || 'contained';
+  const config = (partnersConfig as Record<string, any>)[partner] || partnersConfig.default;
+
+  if (path === 'variantStyles') {
+    return config[variant] || config['contained'];
+  }
+  return config[path];
+};
+
+// 3. Статичные JSS-классы для MUI. 
+// Имена "root" и "hover" теперь монолитны, генератор классов на сервере и клиенте выдаст одинаковый хэш.
 const styles = {
   root: {
     padding: '0px',
-    letterSpacing: styledBy('partnerCode', {
-      default: 'inherit',
-      red: 'inherit',
-
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: '0.6px',
-      [EPartnerCode.SvyaznoySecondaryBig]: '0.6px',
-      [EPartnerCode.SvyaznoyYellow]: '0.6px',
-      [EPartnerCode.SvyaznoyYellowBig]: '0.6px',
-      [EPartnerCode.Yellow]: '0.6px',
-    }),
-    fontWeight: styledBy('partnerCode', {
-      default: 'normal',
-      red: 'normal',
-
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: 500,
-      [EPartnerCode.SvyaznoySecondaryBig]: 500,
-      [EPartnerCode.SvyaznoyYellow]: 500,
-      [EPartnerCode.SvyaznoyYellowBig]: 500,
-      [EPartnerCode.Yellow]: 'bold',
-    }),
-    lineHeight: styledBy('partnerCode', {
-      default: '40px',
-      red: '38px',
-
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: '38px',
-      [EPartnerCode.SvyaznoySecondaryBig]: '48px',
-      [EPartnerCode.SvyaznoyYellow]: '38px',
-      [EPartnerCode.SvyaznoyYellowBig]: '48px',
-      [EPartnerCode.Yellow]: '30px',
-    }),
-    minWidth: styledBy('partnerCode', {
-      default: 'unset',
-      red: 'unset',
-
-      // SVYAZNOY: 280px
-      [EPartnerCode.SvyaznoySecondary]: '200px',
-      [EPartnerCode.SvyaznoySecondaryBig]: '200px',
-      [EPartnerCode.SvyaznoyYellow]: '200px',
-      [EPartnerCode.SvyaznoyYellowBig]: '200px',
-      [EPartnerCode.Yellow]: '120px',
-    }),
-    backgroundColor: styledBy('partnerCode', {
-      default: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-      red: 'linear-gradient(45deg, #e63946 30%, #fe7f2d 90%)',
-
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: 'transparent',
-      [EPartnerCode.SvyaznoySecondaryBig]: 'transparent',
-      [EPartnerCode.SvyaznoyYellow]: '#FFC800',
-      [EPartnerCode.SvyaznoyYellowBig]: '#FFC800',
-      [EPartnerCode.Yellow]: '#FFC800',
-    }),
-    border: styledBy('partnerCode', {
-      default: 'none',
-      red: '2px solid red',
-
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: '2px solid #4C1E87',
-      [EPartnerCode.SvyaznoySecondaryBig]: '2px solid #4C1E87',
-      [EPartnerCode.SvyaznoyYellow]: '2px solid #FFC800',
-      [EPartnerCode.SvyaznoyYellowBig]: '2px solid #FFC800',
-      [EPartnerCode.Yellow]: '2px solid #FFC800',
-    }),
-    borderRadius: styledBy('partnerCode', {
-      default: '0px',
-      red: '0px',
-
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: '8px',
-      [EPartnerCode.SvyaznoySecondaryBig]: '8px',
-      [EPartnerCode.SvyaznoyYellow]: '8px',
-      [EPartnerCode.SvyaznoyYellowBig]: '8px',
-      [EPartnerCode.Yellow]: '8px',
-    }),
     transition: 'all 0.1s ease-in',
-    color: styledBy('partnerCode', {
-      default: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-      red: '#FFF',
+    
+    // Подмешиваем общие параметры партнера
+    letterSpacing: getStyleByProps('letterSpacing'),
+    fontWeight: getStyleByProps('fontWeight'),
+    lineHeight: getStyleByProps('lineHeight'),
+    minWidth: getStyleByProps('minWidth'),
+    borderRadius: getStyleByProps('borderRadius'),
 
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: '#4C1E87',
-      [EPartnerCode.SvyaznoySecondaryBig]: '#4C1E87',
-      [EPartnerCode.SvyaznoyYellow]: '#4C1E87',
-      [EPartnerCode.SvyaznoyYellowBig]: '#4C1E87',
-      [EPartnerCode.Yellow]: '#000',
-    }),
-    boxShadow: styledBy('partnerCode', {
-      default: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-      red: '0 3px 5px 2px rgba(230, 57, 70, .3)',
+    // Разворачиваем специфичные стили для contained или outlined
+    ...getStyleByProps('variantStyles') as any,
 
-      // SVYAZNOY:
-      [EPartnerCode.SvyaznoySecondary]: 'none',
-      [EPartnerCode.SvyaznoySecondaryBig]: 'none',
-      [EPartnerCode.SvyaznoyYellow]: 'none',
-      [EPartnerCode.SvyaznoyYellowBig]: 'none',
-      [EPartnerCode.Yellow]: 'none',
-    }),
     '&:hover': {
-      color: styledBy('partnerCode', {
-        default: 'inherit',
-        red: '#FFF',
-
-        // SVYAZNOY:
-        [EPartnerCode.SvyaznoySecondary]: '#FFF',
-        [EPartnerCode.SvyaznoySecondaryBig]: '#FFF',
-        [EPartnerCode.SvyaznoyYellow]: '#FFC800',
-        [EPartnerCode.SvyaznoyYellowBig]: '#FFC800',
-        [EPartnerCode.Yellow]: '#FFC800',
-      }),
-      backgroundColor: styledBy('partnerCode', {
-        default: 'linear-gradient(0deg, #FE6B8B 10%, #FF8E53 110%)',
-        red: 'linear-gradient(0deg, #e63946 10%, #fe7f2d 110%)',
-
-        // SVYAZNOY:
-        [EPartnerCode.SvyaznoySecondary]: '#4C1E87',
-        [EPartnerCode.SvyaznoySecondaryBig]: '#4C1E87',
-        [EPartnerCode.SvyaznoyYellow]: '#4C1E87',
-        [EPartnerCode.SvyaznoyYellowBig]: '#4C1E87',
-        [EPartnerCode.Yellow]: 'rgba(0, 0, 0, 0.5)',
-      }),
-      border: styledBy('partnerCode', {
-        default: 'none',
-        red: '2px solid red',
-
-        // SVYAZNOY:
-        [EPartnerCode.SvyaznoySecondary]: '2px solid #4C1E87',
-        [EPartnerCode.SvyaznoySecondaryBig]: '2px solid #4C1E87',
-        [EPartnerCode.SvyaznoyYellow]: '2px solid #4C1E87',
-        [EPartnerCode.SvyaznoyYellowBig]: '2px solid #4C1E87',
-        [EPartnerCode.Yellow]: '2px solid #fff',
-      }),
-      boxShadow: styledBy('partnerCode', {
-        default: '0 3px 5px 2px rgba(255, 105, 135, .5)',
-        red: '0 0px 8px 2px rgba(230, 57, 70, .5)',
-
-        // SVYAZNOY:
-        [EPartnerCode.SvyaznoySecondary]: 'none',
-        [EPartnerCode.SvyaznoySecondaryBig]: 'none',
-        [EPartnerCode.SvyaznoyYellow]: 'none',
-        [EPartnerCode.SvyaznoyYellowBig]: 'none',
-        [EPartnerCode.Yellow]: 'none',
-      }),
+      // Подмешиваем ховеры из нашего конфига
+      ...getStyleByProps('hover') as any
     },
     '&:disabled': {
-      borderColor: styledBy('partnerCode', {
-        default: 'inherit',
-        red: 'inherit',
-
-        // SVYAZNOY:
-        [EPartnerCode.SvyaznoySecondary]: 'lightgray',
-        [EPartnerCode.SvyaznoySecondaryBig]: 'lightgray',
-        [EPartnerCode.SvyaznoyYellow]: '#FFC800',
-        [EPartnerCode.SvyaznoyYellowBig]: '#FFC800',
-        [EPartnerCode.Yellow]: 'transparent',
-      }),
-      opacity: styledBy('partnerCode', {
-        default: 1,
-        red: 1,
-
-        // SVYAZNOY:
-        [EPartnerCode.SvyaznoySecondary]: 1,
-        [EPartnerCode.SvyaznoySecondaryBig]: 1,
-        [EPartnerCode.SvyaznoyYellow]: 0.5,
-        [EPartnerCode.SvyaznoyYellowBig]: 0.5,
-        [EPartnerCode.Yellow]: 0.5,
-      }),
+      ...getStyleByProps('disabled') as any
     },
   },
-};
+} as Record<string, any> as any;
 
-
-export const ThemedButton = withStyles(
-  styles
-)(({ classes, partnerCode, ...other }: IButtonStyles) => (
-  <Button className={classes.root} {...other} />
-));
+export const ThemedButton = withStyles(styles)(
+  ({ classes, partnerCode, variant = 'contained', ...other }: IButtonStyles) => {
+    // Вся магия выбора теперь лежит внутри динамического getStyleByProps,
+    // а класс на ноде всегда один — стабильный classes.root
+    return (
+      <Button 
+        className={classes.root} 
+        {...other} 
+      />
+    );
+  }
+);

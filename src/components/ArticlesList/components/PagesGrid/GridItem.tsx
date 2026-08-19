@@ -56,7 +56,6 @@ export const GridItem = memo(({ article }: TProps) => {
             slugMap.has(_id) ? (
               <div>
                 <Button
-                  variant='contained'
                   color='primary'
                   component={Link}
                   noLinkStyle

@@ -3,12 +3,22 @@ import Link from 'next/link'
 import styled, { css } from 'styled-components'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
 import { useReactiveValue0 } from '~/utils/reactive-engine/hooks'
-import { SearchArticlesService, stickyHeaderEngine } from './stickyHeaderEngine'
+import { SearchArticlesService } from './stickyHeaderEngine'
+import { ReactiveEngine } from '@pravosleva/reactive-engine'
 
 type TStickyHeaderProps = {
   themeName: string
   isVisible: boolean
 }
+
+const stickyHeaderEngine = new ReactiveEngine({
+  logger: {
+    isEnabled: true,
+    isCoreOptimizationDebugEnabled: false,
+    instanceName: 'Sticky Header',
+  }
+})
+
 
 const StyledStickyHeader = styled('div')<TStickyHeaderProps>`
   position: fixed;

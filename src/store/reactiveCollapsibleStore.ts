@@ -10,7 +10,7 @@ export interface ICollapsibleItem {
 // 1. Инициализируем движок в соответствии с ReactiveEngineOptions
 export const collapsibleEngine = new ReactiveEngine({
   logger: {
-    isEnabled: false,
+    isEnabled: true,
     instanceName: 'collapsible-global-engine'
   }
 })

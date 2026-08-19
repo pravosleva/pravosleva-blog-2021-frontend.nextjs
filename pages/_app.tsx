@@ -72,9 +72,20 @@ function AppWithRedux(props: MyAppProps) {
     }
   }, [router.events])
 
+  // -- NOTE: Optimization
+  useEffect(() => {
+    // Находим на клиенте тег со стилями, который прилетел с сервера
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles && jssStyles.parentElement) {
+      // Удаляем его, так как клиентский рантайм @mui/styles уже перехватил управление
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+  }, []);
+  // --
+
   const store = useStore()
   const isServer = useMemo<boolean>(() => typeof window === 'undefined', [typeof window])
-  const ts = new Date().getTime()
+  // const ts = new Date().getTime()
 
   return (
     <>
