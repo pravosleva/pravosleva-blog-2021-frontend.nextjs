@@ -8,7 +8,7 @@ export const GlobalAudioPlayer = () => {
     isPlayerVisible, 
     trackErrors, 
     removeFromQueue, 
-    playTrack, 
+    // playTrack, 
     markTrackAsBroken, 
     setPlayerVisible 
   } = useAudioPodcast()
@@ -178,7 +178,7 @@ export const GlobalAudioPlayer = () => {
                 }}
               >
                 <span 
-                  onClick={() => !isBroken && playTrack(track)}
+                  // onClick={() => !isBroken && playTrack(track)}
                   style={{ 
                     cursor: isBroken ? 'default' : 'pointer', 
                     fontWeight: isPlaying ? 500 : 400,

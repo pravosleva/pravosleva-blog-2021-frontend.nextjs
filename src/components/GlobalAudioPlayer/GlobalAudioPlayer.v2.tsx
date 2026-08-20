@@ -4,7 +4,9 @@ import { useAudioPodcast } from './hooks'
 export const GlobalAudioPlayer = () => {
   const { 
     queue, currentTrack, isPlayerVisible, isPlayerMinimized, trackErrors, 
-    removeFromQueue, playTrack, markTrackAsBroken, setPlayerMinimized,
+    removeFromQueue,
+    // playTrack,
+    markTrackAsBroken, setPlayerMinimized,
     saveTrackProgress, getTrackProgress 
   } = useAudioPodcast()
   
@@ -162,7 +164,7 @@ export const GlobalAudioPlayer = () => {
                 return (
                   <div key={track.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 8px', borderRadius: '6px', backgroundColor: isPlaying ? 'rgba(255,142,83,0.08)' : 'rgba(255,255,255,0.01)', border: isPlaying ? '1px solid rgba(255,142,83,0.2)' : '1px solid transparent' }}>
                     <span 
-                      onClick={() => !isBroken && playTrack(track)}
+                      // onClick={() => !isBroken && playTrack(track)}
                       style={{ cursor: isBroken ? 'default' : 'pointer', fontWeight: isPlaying ? 500 : 400, textDecoration: isBroken ? 'line-through' : 'none', color: isBroken ? '#ff4d4d' : (isPlaying ? '#FF8E53' : 'rgba(255,255,255,0.8)'), fontSize: '0.85em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, marginRight: '10px' }}
                     >
                       {track.title}

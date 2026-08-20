@@ -10,7 +10,9 @@ interface IProps {
 
 export const ImageRenderer = ({ alt, src, title }: IProps) => {
   // Подключаем наш инжектированный сервис подкастов через хук
-  const { queue, addToQueue, playTrack } = useAudioPodcast()
+  const { queue, addToQueue,
+    // playTrack
+  } = useAudioPodcast()
 
   const isAudio = useMemo(() => {
     if (!src) return false
@@ -59,7 +61,7 @@ export const ImageRenderer = ({ alt, src, title }: IProps) => {
         <audio src={src} controls style={{ width: '100%' }} preload="metadata" />
         <div style={{ display: 'flex', gap: '8px' }}>
           <button 
-            onClick={() => { addToQueue(trackPayload); playTrack(trackPayload); }}
+            onClick={() => { addToQueue(trackPayload); /* playTrack(trackPayload); */ }}
             style={{ padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', background: '#FF8E53', border: 'none', color: '#fff' }}
           >
             ▶ Слушать сейчас

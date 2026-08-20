@@ -10,6 +10,9 @@ export const useAudioPodcast = () => {
   const isPlayerVisible = useReactiveValue0<boolean>(audioPodcastService.isPlayerVisible)
   const isPlayerMinimized = useReactiveValue0<boolean>(audioPodcastService.isPlayerMinimized)
   const trackErrors = useReactiveValue0<Record<string, boolean>>(audioPodcastService.trackErrors)
+  // const playTrigger = useReactiveValue0<number>(audioPodcastService.playTrigger)
+  const isPlaying = useReactiveValue0<boolean>(audioPodcastService.isPlaying)
+  const currentTime = useReactiveValue0<number>(audioPodcastService.currentTime)
 
   return {
     queue,
@@ -17,13 +20,19 @@ export const useAudioPodcast = () => {
     isPlayerVisible,
     isPlayerMinimized,
     trackErrors,
+    // playTrigger,
+    isPlaying,
+    currentTime,
+    toggleTrack: (track: IAudioTrack) => audioPodcastService.toggleTrack(track), // ИСПРАВЛЕНО
     addToQueue: (track: IAudioTrack) => audioPodcastService.addToQueue(track),
     removeFromQueue: (trackId: string) => audioPodcastService.removeFromQueue(trackId),
-    playTrack: (track: IAudioTrack) => audioPodcastService.playTrack(track),
+    // playTrack: (track: IAudioTrack) => audioPodcastService.playTrack(track),
     markTrackAsBroken: (trackId: string) => audioPodcastService.markTrackAsBroken(trackId),
     setPlayerVisible: (visible: boolean) => audioPodcastService.isPlayerVisible.value = visible,
     setPlayerMinimized: (minimized: boolean) => audioPodcastService.isPlayerMinimized.value = minimized,
+    setIsPlaying: (playing: boolean) => audioPodcastService.isPlaying.value = playing, // Изменение стейта плеера
     saveTrackProgress: (trackId: string, time: number) => audioPodcastService.saveTrackProgress(trackId, time),
-    getTrackProgress: (trackId: string) => audioPodcastService.getTrackProgress(trackId)
+    getTrackProgress: (trackId: string) => audioPodcastService.getTrackProgress(trackId),
+    registerAudioElement: (el: HTMLAudioElement | null) => audioPodcastService.registerAudioElement(el),
   }
 }

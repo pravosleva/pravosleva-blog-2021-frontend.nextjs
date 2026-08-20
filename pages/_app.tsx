@@ -1,47 +1,30 @@
-import React, { useEffect, useMemo } from 'react';
-// import Head from 'next/head';
-import App, { AppContext, AppProps } from 'next/app';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { CacheProvider, EmotionCache } from '@emotion/react';
-import theme from '~/mui/theme';
-import createEmotionCache from '~/createEmotionCache';
-// import { CookiesProvider } from 'react-cookie';
-import { wrapper } from '~/store';
-import { pageview } from '~/utils/googleAnalitycs';
+import React, { useEffect, useMemo } from 'react'
+import App, { AppContext, AppProps } from 'next/app'
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import { CacheProvider, EmotionCache } from '@emotion/react'
+import theme from '~/mui/theme'
+import createEmotionCache from '~/createEmotionCache'
+import { wrapper } from '~/store'
+import { pageview } from '~/utils/googleAnalitycs'
 import { useRouter } from 'next/router'
-// import '~/mui/common.module.scss'
 // @ts-ignore
-import { PersistGate } from 'redux-persist/integration/react';
-import { useStore } from 'react-redux';
-// import { IRootState } from '~/store/IRootState';
+import { PersistGate } from 'redux-persist/integration/react'
+import { useStore } from 'react-redux'
 import { SnackbarProvider } from 'notistack'
 import { ThemeProvider as SCThemeProvider } from 'styled-components'
 import { Theme } from '~/ui-kit.uremont/Theme'
 import Head from 'next/head'
 import Script from 'next/script'
-
-// import '../public/static/css/min/gosuslugi.css'
 import '../public/static/css/min/animations.css'
 import '../public/static/css/min/fix.sweetalert2.css'
-// import '../public/static/css/min/backdrop-blur.css'
-// import '../public/static/css/article.css'
-// import '../public/static/css/min/audit-list.css'
-// import '../public/static/css/min/layout.css'
-// import '../public/static/css/min/project-list.css'
-// import '../public/static/css/min/global-theming.css'
-// import '../public/static/css/min/standart-form.css'
-// import '../public/static/css/min/rippled-btn.css'
-// import '../public/static/css/min/link-as-rippled-btn.css'
-// import '../public/static/css/min/custom-breadcrumbs.css'
 import '../public/static/css/min/block-quotes.css'
 import '../public/static/css/min/sp-nw-2022.css'
-
 import { ClientPerfWidget } from '~/components'
-import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase';
-import { setTheme } from '~/store/reducers/globalTheme';
-import { GlobalAudioPlayer } from '~/components/GlobalAudioPlayer';
-import { GlobalPodcastSidebarButton } from '~/components/GlobalPodcastSidebarButton';
+import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
+import { setTheme } from '~/store/reducers/globalTheme'
+import { GlobalAudioPlayer } from '~/components/GlobalAudioPlayer'
+import { GlobalPodcastSidebarButton } from '~/components/GlobalPodcastSidebarButton'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -144,6 +127,13 @@ function AppWithRedux(props: MyAppProps) {
                     <CssBaseline />
                     <Component {...pageProps} />
                     <ClientPerfWidget position='top-center' />
+                    {/* ИСПРАВЛЕНО: Плеер и кнопка перенесены СЮДА.
+                        1. Они рендерятся строго на клиенте (нет ошибок гидратации).
+                        2. Находятся внутри ThemeProvider и CssBaseline (стили применятся эталонно).
+                        3. По каскаду они перекроют футер страницы, так как лежат внутри того же контекста наложения. */}
+                    <GlobalPodcastSidebarButton />
+                    <GlobalAudioPlayer />
+                    <Script src="/static/common/eruda.custom.js" strategy="lazyOnload" />
                   </ThemeProvider>
                 </SCThemeProvider>
               </CacheProvider>
@@ -151,14 +141,6 @@ function AppWithRedux(props: MyAppProps) {
           </PersistGate>
         )
       }
-
-      {!isServer &&
-        <Script src="/static/common/eruda.custom.js" strategy="lazyOnload" />
-      }
-
-      {/* Сквозные глобальные UI-компоненты экосистемы */}
-      <GlobalPodcastSidebarButton />
-      <GlobalAudioPlayer />
     </>
   )
 }

@@ -96,3 +96,114 @@ body main.dark ~ .blog-audio-player-container .player-track-link { color: rgba(2
 body main.dark ~ .blog-audio-player-container .player-track-link.playing { color: #ff781e; font-weight: 500; }
 body main.dark ~ .blog-audio-player-container .player-track-link.broken { color: #ff4d4d; text-decoration: line-through; }
 body main.dark ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: rgba(255, 77, 77, 0.7); cursor: pointer; font-size: 0.8em; }
+
+/* Анимация вращения компактного диска */
+/* @keyframes audioPlayerSpin {
+  100% { transform: rotate(360deg); }
+}
+.rotating-disk-mobile {
+  animation: audioPlayerSpin 4s linear infinite;
+  display: inline-block;
+  line-height: 1;
+} */
+
+/* Настройки кругового SVG трека прогресса */
+.svg-profile-circle {
+  transition: stroke-dashoffset 0.1s linear;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* АДАПТИВНОСТЬ ДЛЯ ДЕСКТОПА И МОБИЛКИ */
+
+/* На десктопе прячем мобильную круглую кнопку-триггер */
+.mobile-podcast-fab-trigger {
+  display: none !important;
+}
+
+/* На мобилке перестраиваем интерфейс */
+@media (max-width: 768px) {
+  /* Прячем десктопную кнопку над шарингом (если она была) */
+  .global-desktop-podcast-trigger {
+    display: none !important;
+  }
+  
+  /* Показываем мобильную круглую FAB-кнопку слева */
+  .mobile-podcast-fab-trigger {
+    display: flex !important;
+  }
+
+  /* Полностью скрываем горизонтальную нижнюю плашку в СВЕРНУТОМ режиме на мобилке */
+  body main.light ~ .blog-audio-player-container.is-minimized,
+  body main.gray ~ .blog-audio-player-container.is-minimized,
+  body main.hard-gray ~ .blog-audio-player-container.is-minimized,
+  body main.dark ~ .blog-audio-player-container.is-minimized {
+    display: none !important;
+  }
+}
+
+/* Анимации и SVG */
+@keyframes audioPlayerSpin { 100% { transform: rotate(360deg); } }
+.rotating-disk-mobile { animation: audioPlayerSpin 4s linear infinite; display: inline-block; line-height: 1; }
+.svg-profile-circle { transition: stroke-dashoffset 0.1s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
+
+/* ДЕСКТОПНЫЙ РЕЖИМ (Справа над шарингом) */
+.mobile-podcast-fab-trigger {
+  position: fixed !important;
+  display: flex !important;
+  left: auto !important;
+  right: 20px !important;
+  bottom: 290px !important;
+  
+  /* Поднимаем на максимальную высоту, чтобы кнопка гарантированно была НАД футером */
+  z-index: 99999 !important; 
+  
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  /* background-color: #111111 !important; */
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important; */
+  box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px !important;
+  cursor: pointer !important;
+  align-items: center !important;
+  justify-content: center !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* ⚪ ТЕМА: LIGHT */
+body main.light ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+/* 🔘 ТЕМА: GRAY */
+body main.gray ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+/* ⚫ ТЕМА: HARD-GRAY */
+body main.hard-gray ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+/* 🌌 ТЕМА: DARK */
+body main.dark ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* МОБИЛЬНЫЙ РЕЖИМ (Справа экрана) */
+@media (max-width: 768px) {
+  .mobile-podcast-fab-trigger {
+    display: flex !important;
+    right: 8px !important;
+    left: auto !important;
+    bottom: 290px !important;
+    z-index: 99999 !important; /* На мобилке тоже держим в топе */
+  }
+
+  /* Скрываем длинную плашку плеера в мини-режиме, чтобы работала только круглая FAB */
+  body main.light ~ .blog-audio-player-container.is-minimized,
+  body main.gray ~ .blog-audio-player-container.is-minimized,
+  body main.hard-gray ~ .blog-audio-player-container.is-minimized,
+  body main.dark ~ .blog-audio-player-container.is-minimized {
+    display: none !important;
+  }
+}

@@ -1,0 +1,35 @@
+/* Базовые ховер-эффекты для кнопок в статье */
+.podcast-inline-btn-play:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+.podcast-inline-btn-queue:hover {
+  opacity: 1 !important;
+  color: #ff781e !important;
+}
+
+/* ⚪ ТЕМА: LIGHT */
+body main.light .article-podcast-inline-control {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+body main.light .podcast-inline-btn-play {
+  color: #111 !important;
+}
+body main.light .podcast-inline-btn-play.active {
+  color: #fff !important;
+  background-color: #ff781e !important;
+}
+
+/* 🌌 ТЕМА: DARK */
+body main.dark .article-podcast-inline-control {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+body main.dark .podcast-inline-btn-play {
+  color: #eee !important;
+}
+body main.dark .podcast-inline-btn-play.active {
+  color: #fff !important;
+  background-color: #ff781e !important;
+}

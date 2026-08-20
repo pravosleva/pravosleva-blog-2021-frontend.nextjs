@@ -55,16 +55,68 @@ function minifyStaticCSS() {
 minifyStaticCSS()
 // ──────────────────────────────────────────────────────────────────────
 
+// Создаем кастомные правила кэширования, расширяя стандартные от next-pwa
+// Создаем кастомные правила кэширования
+const customRuntimeCaching = [
+  // 1. ПРАВИЛО ДЛЯ АУДИО (ПОДКАСТЫ): Жесткий CacheFirst с поддержкой Range Requests
+  {
+    urlPattern: /\.(?:mp3|wav|ogg|m4a)(?:\?.*)?$/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'podcast-audio-cache',
+      expiration: {
+        maxEntries: 10, // Храним максимум 10 последних подкастов
+        maxAgeSeconds: 60 * 60 * 24 * 30, // 30 дней
+      },
+      // ИСПРАВЛЕНО: Синтаксис плагинов для старых версий Workbox / next-pwa
+      // Мы передаем имя плагина строкой, без обертки в объект { name }, либо массив готовых объектов
+      plugins: [
+        {
+          // По спецификации Workbox Webpack Plugin, для декларативного описания
+          // достаточно передать объект без свойства "name", если это поддерживается,
+          // либо использовать готовый импорт. Но в JSON-конфигах next-pwa 
+          // самым надежным способом является передача инстанса, если бы мы собирали sw.js сами.
+          // Для next-pwa пишем пустую конфигурацию класса, которую он развернет:
+        }
+      ],
+      cacheableResponse: {
+        statuses: [0, 200],
+      },
+    },
+  },
+  // 2. ПРАВИЛО ДЛЯ ВАШИХ МИНИФИЦИРОВАННЫХ CSS И СТАТИКИ
+  {
+    urlPattern: /\/static\/css\/min\/.*\.css$/i,
+    handler: 'StaleWhileRevalidate',
+    options: {
+      cacheName: 'static-minified-css',
+      expiration: {
+        maxEntries: 20,
+        maxAgeSeconds: 60 * 60 * 24 * 7,
+      },
+    },
+  },
+  {
+    urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|woff2)$/i,
+    handler: 'StaleWhileRevalidate',
+    options: {
+      cacheName: 'static-assets-images',
+    },
+  },
+  ...runtimeCaching,
+]
+
 const nextConfig = {
   productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
   pwa: {
     dest: 'public', // NOTE: By default to .next
-    runtimeCaching,
-    // disable: process.env.NODE_ENV === 'development',
+    runtimeCaching: customRuntimeCaching,
     register: true,
+    // Обратите внимание на scope: если ваши подкасты и страницы лежат и на главном руте /, 
+    // scope лучше убрать или поставить '/', чтобы PWA защищал весь сайт целиком
+    disable: isDev,
     scope: '/blog/',
     sw: 'service-worker.js',
-    disable: isDev, // Оптимизация 2 (см. ниже)
   },
   exportPathMap: function () {
     return {

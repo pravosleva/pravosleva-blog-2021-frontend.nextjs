@@ -66,6 +66,7 @@ export default class MyDocument extends Document {
 
           <link href="/static/css/min/article.css" rel="stylesheet" />
           <link href="/static/css/min/audio-podcast.css" rel="stylesheet" />
+          <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" />
 
           {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
           {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}

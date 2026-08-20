@@ -4,7 +4,9 @@ import { useAudioPodcast } from './hooks'
 export const GlobalAudioPlayer = () => {
   const { 
     queue, currentTrack, isPlayerVisible, isPlayerMinimized, trackErrors, 
-    removeFromQueue, playTrack, markTrackAsBroken, setPlayerMinimized,
+    removeFromQueue,
+    // playTrack,
+    markTrackAsBroken, setPlayerMinimized,
     saveTrackProgress, getTrackProgress 
   } = useAudioPodcast()
   
@@ -158,7 +160,7 @@ export const GlobalAudioPlayer = () => {
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 8px', borderRadius: '6px' }}
                   >
                     <span 
-                      onClick={() => !isBroken && playTrack(track)}
+                      // onClick={() => !isBroken && playTrack(track)}
                       className={`player-track-link ${isBroken ? 'broken' : ''} ${isPlaying ? 'playing' : ''}`}
                       style={{ cursor: isBroken ? 'default' : 'pointer', fontSize: '0.85em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, marginRight: '10px' }}
                     >
