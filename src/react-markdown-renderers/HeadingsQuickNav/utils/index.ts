@@ -1,6 +1,6 @@
 export * from './getActiveBgColor'
 export * from './getActiveBorderCSS'
-export * from './getButtonBgColor'
+export * from './getLabelBgColor'
 export * from './getCounterBadgeBgColor'
 export * from './getCounterBadgeTextColor'
 export * from './getInfoToolBgColor'

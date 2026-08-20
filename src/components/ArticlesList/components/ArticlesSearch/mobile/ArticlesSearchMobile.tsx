@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-// import { getButtonBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
-import { getButtonBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
+// import { getLabelBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
 import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';
@@ -94,7 +94,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
         </div>
         <span
           // style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: elementBg, color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}
-          style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getButtonBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}
+          style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getLabelBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}
         >
           {!!totalNotes ? `${pluralize({ count: totalNotes, titles: ['находка', 'находки', 'находок'] })} 🔍` : '🔍'}
         </span>

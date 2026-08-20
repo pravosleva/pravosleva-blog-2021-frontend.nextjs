@@ -22,7 +22,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     setCurrentPage,
     handleScrollTo,
     getHeadingButtonColor,
-    getButtonBgColor,
+    getLabelBgColor,
     getTextColor,
     getActiveBorderCSS,
     getActiveBgColor,
@@ -92,7 +92,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
         <span
           style={{
             letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px',
-            backgroundColor: getButtonBgColor({ currentTheme }),
+            backgroundColor: getLabelBgColor({ currentTheme }),
             color: (isDarkTheme || currentTheme === 'gray') ? '#fff' : '#000',
           }}
         >
@@ -178,7 +178,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
                 backgroundColor: heading.isActiveProgress 
                   ? getActiveBgColor({ currentTheme })
                   : heading.isVisible
-                    ? getButtonBgColor({ currentTheme })
+                    ? getLabelBgColor({ currentTheme })
                     : 'transparent',
                 color: getHeadingButtonColor({ item: heading, idx, currentTheme }),
                 // fontWeight: heading.isActiveProgress ? 'bold' : '500',

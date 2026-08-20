@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { headingsRegistrySignal, throttledHeadingsSignal, getLevelNum, IHeadingStoredItem } from '~/store/reactive-engine/reactiveHeadingsEngine'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-import { getButtonBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getLabelBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { useSignalValue } from '~/utils/reactive-engine'
 
 interface UseHeadingsNavigationProps {
@@ -239,7 +239,7 @@ export const useHeadingsNavigation = ({
     handleScrollTo,
     getHeadingButtonColor,
     getTextColor,
-    getButtonBgColor,
+    getLabelBgColor,
     getActiveBorderCSS,
     getActiveBgColor,
   }

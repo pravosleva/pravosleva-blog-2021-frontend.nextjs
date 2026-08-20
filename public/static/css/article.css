@@ -174,6 +174,15 @@
   border: 1px solid lightgray;
 }
 
+/* -- MOBILE_TABLE_EXP */
+@media (max-width: 768px) {
+  .description-markdown .table-scroll-container {
+    width: calc(100% + 32px);
+    transform: translateX(-16px);
+  }
+}
+/* -- */
+
 .description-markdown table {
   margin-bottom: 0;
   border-collapse: collapse;

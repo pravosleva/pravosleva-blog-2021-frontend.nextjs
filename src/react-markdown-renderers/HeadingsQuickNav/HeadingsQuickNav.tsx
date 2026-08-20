@@ -22,7 +22,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
     setCurrentPage,
     handleScrollTo,
     getHeadingButtonColor,
-    getButtonBgColor,
+    getLabelBgColor,
     getTextColor,
     getInfoToolBgColor,
     getInfoToolTextColor,
@@ -41,9 +41,9 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
   const textColor = getTextColor({ currentTheme })
-  // const buttonBgColor = getButtonBgColor({ currentTheme })
+  // const buttonBgColor = getLabelBgColor({ currentTheme })
   const bgColor = getInfoToolBgColor({ currentTheme })
-  // const buttonBgColor = getButtonBgColor({ currentTheme })
+  // const buttonBgColor = getLabelBgColor({ currentTheme })
 
   // Если не десктоп или контента нет — скрываем десктопную плашку
   if (!isDesktop || visibleItems.length === 0) return null

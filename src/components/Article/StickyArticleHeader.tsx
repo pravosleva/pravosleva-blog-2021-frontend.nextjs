@@ -79,7 +79,7 @@ const StyledStickyHeader = styled('div')<TStickyHeaderProps>`
 
 const StickyHeaderTitle = styled('h4')`
   margin: 0;
-  font-size: 15px;
+  font-size: .9em;
   font-weight: 600;
   font-family: 'Montserrat', system-ui;
   white-space: nowrap;
@@ -92,7 +92,7 @@ const StickyHeaderTitle = styled('h4')`
 
 const StickyBlogLink = styled('a')<{ hoverColor: string }>`
   font-family: 'Montserrat', system-ui;
-  font-size: 14px;
+  font-size: .9em;
   font-weight: 500;
   text-decoration: none;
   color: #888;

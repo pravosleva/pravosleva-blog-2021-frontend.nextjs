@@ -166,8 +166,11 @@ export const GlobalAudioPlayer = () => {
                   gap: '6px',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                    <span className="player-meta-info" style={{ fontSize: '0.75em', textTransform: 'uppercase' }}>
-                      Сейчас играет {queue.indexOf(activeTrack) + 1} / {queue.length}
+                    <span
+                      className="player-meta-info"
+                      style={{ fontSize: '0.75em', textTransform: 'uppercase', display: 'inline-flex', gap: '8px', alignItems: 'center' }}
+                    >
+                      <span>Сейчас играет</span><span>{queue.indexOf(activeTrack) + 1} / {queue.length}</span>
                     </span>
                     
                     {/* ИСПРАВЛЕНО: Добавлен текущий тайминг и общая длительность трека в заголовок шторки */}
@@ -219,7 +222,7 @@ export const GlobalAudioPlayer = () => {
                           className={`player-track-link ${isBroken ? 'broken' : ''} ${isTrackActiveInPlayer ? 'selected' : ''}`}
                           style={{
                             cursor: isBroken ? 'default' : 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1,
-                            marginRight: '10px',
+                            // marginRight: '10px',
                             display: 'inline-flex',
                             flexDirection: 'row',
                             gap: '8px',
@@ -250,61 +253,68 @@ export const GlobalAudioPlayer = () => {
                 {
                   ((isPlaying && !isCurrentTrackBroken) || (totalPages > 1)) && (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        {isPlaying && !isCurrentTrackBroken && (
-                          <button 
-                            onClick={() => stopTrack()} 
-                            className="player-btn-stop"
-                            style={{
-                              background: 'rgba(255, 77, 77, 0.1)',
-                              border: '1px solid rgba(255, 77, 77, 0.2)',
-                              color: '#ff4d4d',
-                              // padding: '6px 12px',
-                              // borderRadius: '12px',
-                              cursor: 'pointer',
-                              fontSize: '0.85em',
-                              fontWeight: 500,
-                              transition: 'all 0.2s ease',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              padding: '10px 16px',
-                              borderRadius: '8px',
-                            }}
-                            title="Полностью остановить и закрыть плеер"
-                          >
-                            ⏹️
-                          </button>
-                        )}
-                        {isPlaying && !isCurrentTrackBroken && (
-                          <button 
-                            onClick={!!activeTrack ? () => toggleTrack(activeTrack) : undefined} 
-                            className="player-btn-stop"
-                            style={{
-                              background: 'rgba(255, 77, 77, 0.1)',
-                              border: '1px solid rgba(255, 77, 77, 0.2)',
-                              color: '#ff4d4d',
-                              // padding: '6px 12px',
-                              // borderRadius: '12px',
-                              cursor: 'pointer',
-                              fontSize: '0.85em',
-                              fontWeight: 500,
-                              transition: 'all 0.2s ease',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              padding: '10px 16px',
-                              borderRadius: '8px',
-                            }}
-                            title="Полностью остановить и закрыть плеер"
-                          >
-                            ⏸️
-                          </button>
-                        )}
-                      </div>
+                      {
+                        isPlaying && !isCurrentTrackBroken && (
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            {isPlaying && !isCurrentTrackBroken && (
+                              <button 
+                                onClick={() => stopTrack()} 
+                                className="player-btn-stop"
+                                style={{
+                                  background: 'rgba(255, 77, 77, 0.1)',
+                                  border: '2px solid rgba(255, 77, 77, 0.2)',
+                                  color: '#ff4d4d',
+                                  // padding: '6px 12px',
+                                  // borderRadius: '12px',
+                                  cursor: 'pointer',
+                                  fontSize: '0.85em',
+                                  fontWeight: 500,
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '10px 16px',
+                                  borderRadius: '8px',
+                                }}
+                                title="Полностью остановить и закрыть плеер"
+                              >
+                                ⏹️
+                              </button>
+                            )}
+                            {isPlaying && !isCurrentTrackBroken && (
+                              <button 
+                                onClick={!!activeTrack ? () => toggleTrack(activeTrack) : undefined} 
+                                className="player-btn-pause"
+                                style={{
+                                  // background: 'rgba(255, 77, 77, 0.1)',
+                                  // border: '2px solid rgba(255, 77, 77, 0.2)',
+                                  // border: '2px solid rgb(204, 204, 204)',
+                                  background: 'rgba(255, 142, 83, 0.1)',
+                                  border: '2px solid rgba(255, 77, 77, 0.2)',
+                                  // color: '#ff4d4d',
+                                  // padding: '6px 12px',
+                                  // borderRadius: '12px',
+                                  cursor: 'pointer',
+                                  fontSize: '0.85em',
+                                  fontWeight: 500,
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '10px 16px',
+                                  borderRadius: '8px',
+                                }}
+                                title="Полностью остановить и закрыть плеер"
+                              >
+                                ⏸️
+                              </button>
+                            )}
+                          </div>
+                        )
+                      }
 
                       {totalPages > 1 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="player-pagination-btn">◀</button>
                           <span className="player-meta-info" style={{ fontSize: 'small' }}>{currentPage} / {totalPages}</span>
                           <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="player-pagination-btn">▶</button>

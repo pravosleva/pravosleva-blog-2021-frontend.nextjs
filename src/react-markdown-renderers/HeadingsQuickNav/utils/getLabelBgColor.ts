@@ -1,4 +1,4 @@
-export const getButtonBgColor = ({ currentTheme }: { currentTheme: string }) => {
+export const getLabelBgColor = ({ currentTheme }: { currentTheme: string }) => {
   switch (currentTheme) {
     case 'light':
       return '#ededed'
