@@ -302,7 +302,7 @@ interface LinkRendererProps {
 }
 
 export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, title }) => {
-  const { queue, currentTrack, isPlaying, toggleTrack, addToQueue, removeFromQueue } = useAudioPodcast()
+  const { queue, currentTrack, isPlaying, toggleTrack, addToQueue, removeFromQueue, stopTrack } = useAudioPodcast()
   const isAudioFile = href?.match(/\.(mp3|wav|ogg|m4a)(\?.*)?$/i)
 
   if (!isAudioFile || !href) {
@@ -324,21 +324,54 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
       
       <div
         className="article-podcast-inline-control"
-        style={{ display: 'inline-flex', width: 'fit-content', alignItems: 'center', gap: '16px', padding: '16px', borderRadius: '32px', backgroundColor: 'rgba(255, 142, 83, 0.05)', border: '1px solid rgba(255, 142, 83, 0.15)', verticalAlign: 'middle' }}>
+        style={{ display: 'inline-flex', width: 'fit-content', alignItems: 'center', gap: '8px', padding: '16px', borderRadius: '32px', backgroundColor: 'rgba(255,142,83,.08)', border: '1px solid rgba(255, 142, 83, 0.15)', verticalAlign: 'middle' }}>
         <button
           onClick={() => toggleTrack(trackData)}
           className={`podcast-inline-btn-play ${isThisTrackPlaying ? 'active' : ''}`}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', background: isThisTrackPlaying ? '#FF8E53' : 'rgba(255, 142, 83, 0.1)', color: isThisTrackPlaying ? '#fff' : 'inherit', border: 'none', padding: '6px 14px', borderRadius: '16px', cursor: 'pointer', fontSize: '0.85em', fontWeight: 500, transition: 'all 0.2s ease' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', background: isThisTrackPlaying ? '#FF8E53' : 'rgba(255, 142, 83, 0.1)', color: isThisTrackPlaying ? '#fff' : 'inherit', border: 'none', padding: '6px 14px', borderRadius: '16px', cursor: 'pointer',
+            // fontSize: '0.85em',
+            fontWeight: 500, transition: 'all 0.2s ease' }}
         >
-          {isThisTrackPlaying ? '⏸ Слушаю сейчас' : '▶ Слушать сейчас'}
+          {isThisTrackPlaying
+            ? <span style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}><span>⏸</span><span>Слушаю сейчас</span></span>
+            : <span style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}><span>▶</span><span>Слушать сейчас</span></span>
+          }
         </button>
 
         <button
-          onClick={() => isInQueue ? removeFromQueue(trackId) : addToQueue(trackData)}
+          onClick={() => {
+            switch (isInQueue) {
+              case true:
+                switch (isThisTrackPlaying) {
+                  case true:
+                    stopTrack()
+                    removeFromQueue(trackId)
+                  default:
+                    removeFromQueue(trackId)
+                    break
+                }
+                break
+              default:
+                addToQueue(trackData)
+                break
+            }
+          }}
           className={`podcast-inline-btn-queue ${isInQueue ? 'in-queue' : ''}`}
-          style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: isInQueue ? '#39e5ac' : 'inherit', opacity: isInQueue ? 1 : 0.6, padding: '6px 8px', cursor: 'pointer', fontSize: '0.85em', fontWeight: 500, transition: 'all 0.2s ease' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none',
+            color: (isInQueue && !isThisTrackPlaying)
+              ? '#FF8E53'
+              : (isInQueue && isThisTrackPlaying)
+                ? '#39e5ac'
+                : 'inherit',
+            opacity: isInQueue ? 1 : 0.6,
+            padding: '6px 8px', cursor: 'pointer',
+            // fontSize: '0.85em',
+            fontWeight: 500, transition: 'all 0.2s ease' }}
         >
-          {isInQueue ? (<><span style={{ fontWeight: 'bold' }}>✓</span> В очереди</>) : (<><span style={{ fontSize: '1.1em' }}>＋</span> В очередь</>)}
+          {isInQueue
+            ? (<span style={{ fontWeight: 'bold', display: 'inline-flex', gap: '8px', alignItems: 'center' }}><span>✓</span><span>В очереди</span></span>)
+            : (<span style={{ fontWeight: 'bold', display: 'inline-flex', gap: '8px', alignItems: 'center' }}><span>＋</span><span>В очередь</span></span>)
+          }
         </button>
       </div>
     </div>

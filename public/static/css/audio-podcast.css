@@ -8,94 +8,165 @@
 
 /* ⚪ ТЕМА: LIGHT */
 body main.light ~ .blog-audio-player-container {
-  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 1);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
 }
 body main.light ~ .blog-audio-player-container .player-main-title { color: #111; }
 body main.light ~ .blog-audio-player-container .player-active-title { color: #ff781e; }
-body main.light ~ .blog-audio-player-container .player-meta-info { color: rgba(0, 0, 0, 0.5); }
+body main.light ~ .blog-audio-player-container .player-meta-info,
+body main.light ~ .blog-audio-player-container .player-meta-info ~ span {
+  color: rgba(0, 0, 0, 0.5);
+}
+body main.light ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue {
+  color: #ff781e;
+}
 body main.light ~ .blog-audio-player-container .player-queue-count { color: #000; }
 body main.light ~ .blog-audio-player-container .player-btn-minimize { color: rgba(0, 0, 0, 0.5); background: none; border: none; cursor: pointer; }
-body main.light ~ .blog-audio-player-container .player-btn-action { background: rgba(0, 0, 0, 0.05); color: #222; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: 0.8em; font-weight: 500; }
+body main.light ~ .blog-audio-player-container .player-btn-action { background: rgba(0, 0, 0, 0.05); color: #222; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
 body main.light ~ .blog-audio-player-container .player-progress-track { background: rgba(0, 0, 0, 0.06); }
 body main.light ~ .blog-audio-player-container .player-pagination-btn {
   background: rgba(0, 0, 0, 0.04);
   border: none; color: #000;
-  padding: 2px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer;
+  padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer;
 }
 body main.light ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.light ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(0, 0, 0, 0.06); }
 body main.light ~ .blog-audio-player-container .player-queue-item { background-color: rgba(0, 0, 0, 0.02); border: 1px solid transparent; }
-body main.light ~ .blog-audio-player-container .player-queue-item.active { background-color: rgba(255, 120, 30, 0.06); border: 1px solid rgba(255, 120, 30, 0.2); }
-body main.light ~ .blog-audio-player-container .player-track-link { color: #333; }
-body main.light ~ .blog-audio-player-container .player-track-link.playing { color: #ff781e; font-weight: 500; }
+body main.light ~ .blog-audio-player-container .player-queue-item.active {
+  background-color: rgba(255, 120, 30, 0.06); border: 1px solid rgba(255, 120, 30, 0.2); }
+body main.light ~ .blog-audio-player-container .player-track-link { color: #333; font-weight: bold; }
+body main.light ~ .blog-audio-player-container .player-track-link.selected {
+  color: #ff781e;
+}
+body main.light ~ .blog-audio-player-container .player-queue-item.active-and-playing {
+  background-color: rgba(57, 229, 172, 0.1); border: 1px solid #39e5ac; }
+body main.light ~ .blog-audio-player-container .player-queue-item.active-and-playing > * {
+  color: #39e5ac;
+}
 body main.light ~ .blog-audio-player-container .player-track-link.broken { color: #ff4d4d; text-decoration: line-through; }
-body main.light ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: 0.8em; }
+body main.light ~ .blog-audio-player-container .player-btn-delete {
+  background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: small; font-weight: bold; }
 
 /* 🔘 ТЕМА: GRAY */
 body main.gray ~ .blog-audio-player-container {
-  background-color: rgba(0, 0, 0, 0.4);border-top: 1px solid rgba(255, 255, 255, 0.08);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5); border-top: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
 }
 body main.gray ~ .blog-audio-player-container .player-main-title {
   color: #fff;
 }
 body main.gray ~ .blog-audio-player-container .player-active-title {
 color: #FF8E53; }
-body main.gray ~ .blog-audio-player-container .player-meta-info { color: rgba(255, 255, 255, 0.4); }
+body main.gray ~ .blog-audio-player-container .player-meta-info,
+body main.gray ~ .blog-audio-player-container .player-meta-info ~ span {
+  color: rgba(255, 255, 255, 1);
+}
+body main.gray ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue {
+  color: #ff781e;
+}
 body main.gray ~ .blog-audio-player-container .player-queue-count { color: #fff; }
 body main.gray ~ .blog-audio-player-container .player-btn-minimize { color: rgba(255, 255, 255, 0.5); background: none; border: none; cursor: pointer; }
-body main.gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: 0.8em; font-weight: 500; }
+body main.gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
 body main.gray ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
-body main.gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
+body main.gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.gray ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
 body main.gray ~ .blog-audio-player-container .player-queue-item { background-color: rgba(255, 255, 255, 0.01); border: 1px solid transparent; }
-body main.gray ~ .blog-audio-player-container .player-queue-item.active { background-color: rgba(255, 142, 83, 0.08); border: 1px solid rgba(255, 142, 83, 0.2); }
-body main.gray ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); }
-body main.gray ~ .blog-audio-player-container .player-track-link.playing { color: #FF8E53; font-weight: 500; }
+body main.gray ~ .blog-audio-player-container .player-queue-item.active {
+  background-color: rgba(255, 142, 83, 0.08); border: 1px solid rgba(255, 142, 83, 0.2); }
+body main.gray ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); font-weight: bold; }
+body main.gray ~ .blog-audio-player-container .player-track-link.selected {
+  color: #FF8E53;
+  font-weight: bold;
+}
+body main.gray ~ .blog-audio-player-container .player-queue-item.active-and-playing {
+  color: #39e5ac;
+  background-color: rgba(57, 229, 172, 0.1); border: 1px solid #39e5ac; }
+body main.gray ~ .blog-audio-player-container .player-queue-item.active-and-playing > * {
+  color: #39e5ac;
+}
 body main.gray ~ .blog-audio-player-container .player-track-link.broken { color: #ff4d4d; text-decoration: line-through; }
-body main.gray ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: rgba(255, 77, 77, 0.7); cursor: pointer; font-size: 0.8em; }
+body main.gray ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: rgba(255, 77, 77, 1); cursor: pointer; font-size: small; font-weight: bold; }
 
 /* ⚫ ТЕМА: HARD-GRAY */
 body main.hard-gray ~ .blog-audio-player-container {
-  background-color: rgba(0, 0, 0, 0.6);border-top: 1px solid rgba(255, 255, 255, 0.08);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);}
+  background-color: rgba(0, 0, 0, 0.6);border-top: 1px solid rgba(255, 255, 255, 0.08);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+}
 
 body main.hard-gray ~ .blog-audio-player-container .player-main-title { color: #fff; }
 body main.hard-gray ~ .blog-audio-player-container .player-active-title { color: #FF8E53; }
-body main.hard-gray ~ .blog-audio-player-container .player-meta-info { color: rgba(255, 255, 255, 0.4); }
+body main.hard-gray ~ .blog-audio-player-container .player-meta-info,
+body main.hard-gray ~ .blog-audio-player-container .player-meta-info ~ span {
+  color: rgba(255, 255, 255, 1);
+}
+body main.hard-gray ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue {
+  color: #ff781e;
+}
 body main.hard-gray ~ .blog-audio-player-container .player-queue-count { color: #fff; }
 body main.hard-gray ~ .blog-audio-player-container .player-btn-minimize { color: rgba(255, 255, 255, 0.5); background: none; border: none; cursor: pointer; }
-body main.hard-gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: 0.8em; font-weight: 500; }
+body main.hard-gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
 body main.hard-gray ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
-body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
+body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.hard-gray ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
 body main.hard-gray ~ .blog-audio-player-container .player-queue-item { background-color: rgba(255, 255, 255, 0.01); border: 1px solid transparent; }
-body main.hard-gray ~ .blog-audio-player-container .player-queue-item.active { background-color: rgba(255, 142, 83, 0.08); border: 1px solid rgba(255, 142, 83, 0.2); }
-body main.hard-gray ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); }
-body main.hard-gray ~ .blog-audio-player-container .player-track-link.playing { color: #FF8E53; font-weight: 500; }
+body main.hard-gray ~ .blog-audio-player-container .player-queue-item.active {
+  background-color: rgba(255, 142, 83, 0.08); border: 1px solid rgba(255, 142, 83, 0.2); }
+body main.hard-gray ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); font-weight: bold; }
+body main.hard-gray ~ .blog-audio-player-container .player-track-link.selected {
+  color: #FF8E53;
+  font-weight: bold;
+}
+body main.hard-gray ~ .blog-audio-player-container .player-queue-item.active-and-playing {
+  color: #39e5ac;
+  background-color: rgba(57, 229, 172, 0.1); border: 1px solid #39e5ac; }
+body main.hard-gray ~ .blog-audio-player-container .player-queue-item.active-and-playing > * {
+  color: #39e5ac;
+}
 body main.hard-gray ~ .blog-audio-player-container .player-track-link.broken { color: #ff4d4d; text-decoration: line-through; }
-body main.hard-gray ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: rgba(255, 77, 77, 0.7); cursor: pointer; font-size: 0.8em; }
+body main.hard-gray ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: rgba(255, 77, 77, 1); cursor: pointer; font-size: small; font-weight: bold; }
 
 /* 🌌 ТЕМА: DARK */
-body main.dark ~ .blog-audio-player-container {background-color: rgba(255, 255, 255, 0.1);border-top: 1px solid rgba(255, 255, 255, 0.1);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);}
+body main.dark ~ .blog-audio-player-container {
+  background-color: rgba(0, 0, 0, 0.2);border-top: 1px solid rgba(255,255,255,.5);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
 body main.dark ~ .blog-audio-player-container .player-main-title { color: #fff; }
 body main.dark ~ .blog-audio-player-container .player-active-title { color: #ff781e; }
-body main.dark ~ .blog-audio-player-container .player-meta-info { color: rgba(255, 255, 255, 0.4); }
+body main.dark ~ .blog-audio-player-container .player-meta-info,
+body main.dark ~ .blog-audio-player-container .player-meta-info ~ span {
+  color: rgba(255, 255, 255, 0.5);
+}
+body main.dark ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue {
+  color: #ff781e;
+}
 body main.dark ~ .blog-audio-player-container .player-queue-count { color: #fff; }
 body main.dark ~ .blog-audio-player-container .player-btn-minimize { color: rgba(255, 255, 255, 0.5); background: none; border: none; cursor: pointer; }
-body main.dark ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: 0.8em; font-weight: 500; }
+body main.dark ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
 body main.dark ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
-body main.dark ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; cursor: pointer; }
+body main.dark ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.dark ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.dark ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
 body main.dark ~ .blog-audio-player-container .player-queue-item { background-color: rgba(255, 255, 255, 0.01); border: 1px solid transparent; }
-body main.dark ~ .blog-audio-player-container .player-queue-item.active { background-color: rgba(255, 120, 30, 0.08); border: 1px solid rgba(255, 120, 30, 0.2); }
-body main.dark ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); }
-body main.dark ~ .blog-audio-player-container .player-track-link.playing { color: #ff781e; font-weight: 500; }
+body main.dark ~ .blog-audio-player-container .player-queue-item.active {
+  background-color: rgba(255, 120, 30, 0.08); border: 1px solid rgba(255, 120, 30, 0.2); }
+body main.dark ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); font-weight: bold; }
+body main.dark ~ .blog-audio-player-container .player-track-link.selected {
+  color: #ff781e;
+  font-weight: bold;
+}
+body main.dark ~ .blog-audio-player-container .player-queue-item.active-and-playing {
+  background-color: rgba(57, 229, 172, 0.1); border: 1px solid #39e5ac; }
+body main.dark ~ .blog-audio-player-container .player-queue-item.active-and-playing > * {
+  color: #39e5ac;
+}
 body main.dark ~ .blog-audio-player-container .player-track-link.broken { color: #ff4d4d; text-decoration: line-through; }
-body main.dark ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: rgba(255, 77, 77, 0.7); cursor: pointer; font-size: 0.8em; }
+body main.dark ~ .blog-audio-player-container .player-btn-delete { background: none; border: none; color: rgba(255, 77, 77, 1); cursor: pointer; font-size: small; font-weight: bold; }
+
+.player-btn-delete { font-family: monospace, system-ui, Courier }
 
 /* Анимация вращения компактного диска */
 /* @keyframes audioPlayerSpin {
@@ -119,6 +190,19 @@ body main.dark ~ .blog-audio-player-container .player-btn-delete { background: n
 /* На десктопе прячем мобильную круглую кнопку-триггер */
 .mobile-podcast-fab-trigger {
   display: none !important;
+  backdrop-filter: blur(8px);
+}
+body main.light ~ .mobile-podcast-fab-trigger {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+body main.gray ~ .mobile-podcast-fab-trigger {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+body main.hard-gray ~ .mobile-podcast-fab-trigger {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+body main.dark ~ .mobile-podcast-fab-trigger {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* На мобилке перестраиваем интерфейс */
@@ -206,4 +290,9 @@ body main.dark ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
   body main.dark ~ .blog-audio-player-container.is-minimized {
     display: none !important;
   }
+}
+
+.player-btn-stop:hover {
+  background-color: rgba(255, 77, 77, 0.2) !important;
+  transform: scale(1.02);
 }

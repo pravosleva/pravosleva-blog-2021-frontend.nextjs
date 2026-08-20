@@ -16,6 +16,8 @@ export class AudioPodcastService extends AbstractService {
   public currentTime: Signal<number>;
 
   private audioEl: HTMLAudioElement | null = null;
+  // 1. Добавьте в список сигналов класса:
+  public duration: Signal<number>;
 
   constructor(...args: any[]) {
     // @ts-ignore
@@ -33,6 +35,9 @@ export class AudioPodcastService extends AbstractService {
     this.currentTime = this.engine.signal<number>(this.getTrackProgress(firstTrackId), 'audio:current-time');
 
     // ВСЕ ЭФФЕКТЫ ДВИЖКА (this.engine.effect) ПОЛНОСТЬЮ УДАЛЕНЫ, ЧТОБЫ ИСКЛЮЧИТЬ ЦИКЛЫ И ЗАЕДАНИЯ
+
+    // 2. Внутри constructor инициализируйте его:
+    this.duration = this.engine.signal<number>(0, 'audio:duration');
   }
 
   private loadQueueFromStorage(): IAudioTrack[] {
@@ -78,7 +83,7 @@ export class AudioPodcastService extends AbstractService {
   /**
    * ИМПЕРАТИВНОЕ И ЧИСТОЕ ПЕРЕКЛЮЧЕНИЕ ТРЕКОВ
    */
-    public toggleTrack(track: IAudioTrack): void {
+  public toggleTrack(track: IAudioTrack): void {
     if (!this.audioEl) return;
 
     // Автоматически добавляем трек в очередь, если пользователь запустил его прямо из текста статьи
@@ -91,41 +96,91 @@ export class AudioPodcastService extends AbstractService {
     }
 
     const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
+    console.log(JSON.stringify(activeTrack, null, 2))
+
     const isCurrentActive = activeTrack?.id === track.id;
 
+    // -- EXP
+    if (!!activeTrack && !isCurrentActive) {
+      this.audioEl.src = activeTrack.url;
+      this.audioEl.load();
+    }
+    // --
+
     if (isCurrentActive) {
+      console.log('- 1')
       if (this.audioEl.paused) {
+        console.log('- 1.1 | this track will played')
+
         this.audioEl.play().then(() => {
           this.isPlaying.value = true;
         }).catch(() => {
           this.isPlaying.value = false;
         });
       } else {
+        console.log('- 1.2 | this track will paused')
         this.audioEl.pause();
         this.isPlaying.value = false;
       }
     } else {
+      console.log('- 2 | another track clicked')
       this.currentTrack.value = track;
       this.isPlayerVisible.value = true;
       this.isPlayerMinimized.value = false;
+
+      // 3. Внутрь метода toggleTrack(), в ветку else (когда включается ДРУГОЙ трек), 
+      // перед или после изменения src добавьте сброс длительности:
+      this.duration.value = 0; 
 
       this.audioEl.src = track.url;
       this.audioEl.load();
 
       const savedTime = this.getTrackProgress(track.id);
       if (savedTime > 0) {
+        console.log('- 2.1 | another track current time synced with saved time (set to original eml)')
         this.audioEl.currentTime = savedTime;
       }
 
+      console.log('- 2.2 | will play')
+
       this.audioEl.play().then(() => {
+        console.log('- 2.3 | -> play().then( this.isPlaying.value = true')
         this.isPlaying.value = true;
-      }).catch(() => {
+      }).catch((err) => {
+        console.log('- 2.4 | -> play().catch( this.isPlaying.value = false | ERR:')
+        console.log(err)
         this.isPlaying.value = false;
       });
 
+      console.log('- 2.5 | play called')
       const errors = { ...this.trackErrors.value };
       delete errors[track.id];
       this.trackErrors.value = errors;
+    }
+  }
+
+  /**
+   * ИСПРАВЛЕНО: Метод полной остановки трека и сброса таймингов
+   */
+  public stopTrack(): void {
+    if (!this.audioEl) return;
+
+    // 1. Останавливаем нативное воспроизведение и сбрасываем время в начало
+    this.audioEl.pause();
+    this.audioEl.currentTime = 0;
+
+    // 2. Обнуляем реактивные сигналы состояния плеера
+    this.isPlaying.value = false;
+    this.currentTime.value = 0;
+    
+    // 3. Закрываем нижнюю шторку управления
+    // this.isPlayerVisible.value = false;
+    // this.isPlayerMinimized.value = false;
+
+    // 4. Опционально: сбрасываем прогресс текущего трека в localStorage, если нужно, чтобы при следующем запуске он играл с начала
+    const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
+    if (activeTrack) {
+      this.saveTrackProgress(activeTrack.id, 0);
     }
   }
 
@@ -144,21 +199,51 @@ export class AudioPodcastService extends AbstractService {
   }
 
   public removeFromQueue(trackId: string): void {
+    // If curent -> stop (already)
+
+    const { value: snapshot } = this.currentTrack
+    console.log('-- (1) current track: (will be removed)')
+    console.log(JSON.stringify({ value: snapshot }, null, 2))
+
+    const { value: currentQueueSnapshot } = this.queue;
+    if (snapshot?.id === trackId) {
+      console.log('-- (2) 1. track to remove is playing now')
+      
+      console.log('-- (3) 1.1 | currentQueue: there are all tracks in array')
+      console.log(JSON.stringify({ currentQueueSnapshot }, null, 2))
+
+      // mutate current track!
+      this.currentTrack.value = currentQueueSnapshot.length > 0 ? currentQueueSnapshot[0] : null;
+      if (!this.currentTrack.value) {
+        console.log('-- 1.1.1')
+        this.isPlaying.value = false;
+        if (this.audioEl) {
+          console.log('-- 1.1.1.1 | src will be reset')
+          this.audioEl.src = '';
+          this.currentTime.value = 0
+        }
+      } else {
+        // 2.1 there is another track?
+        // this.isPlaying.value = false;
+        // if (this.audioEl) {
+        //   this.audioEl.src = '';
+        //   this.currentTime.value = 0
+        // }
+      }
+    }
+
+    // console.log('-- (4) 1.2 | currentQueueSnapshot:')
+    // console.log(JSON.stringify(currentQueueSnapshot, null, 2))
     const updatedQueue = this.queue.value.filter((t: IAudioTrack) => t.id !== trackId);
+    console.log('-- (4) 1.3 this.queue.value will be := updatedQueue (target track removed)')
+    console.log(JSON.stringify(updatedQueue, null, 2))
+
     this.queue.value = updatedQueue;
+    console.log('-- 1.4 save queue to LS...')
     this.saveQueueToStorage(updatedQueue);
     
     if (typeof window !== 'undefined') {
       localStorage.removeItem(`track_progress_${trackId}`);
-    }
-
-    if (this.currentTrack.value?.id === trackId) {
-      const currentQueue = this.queue.value;
-      this.currentTrack.value = currentQueue.length > 0 ? currentQueue[0] : null;
-      if (!this.currentTrack.value) {
-        this.isPlaying.value = false;
-        if (this.audioEl) this.audioEl.src = '';
-      }
     }
   }
 

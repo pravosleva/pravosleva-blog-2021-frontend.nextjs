@@ -13,7 +13,8 @@ export const useAudioPodcast = () => {
   // const playTrigger = useReactiveValue0<number>(audioPodcastService.playTrigger)
   const isPlaying = useReactiveValue0<boolean>(audioPodcastService.isPlaying)
   const currentTime = useReactiveValue0<number>(audioPodcastService.currentTime)
-
+  const duration = useReactiveValue0<number>(audioPodcastService.duration)
+  
   return {
     queue,
     currentTrack,
@@ -23,6 +24,7 @@ export const useAudioPodcast = () => {
     // playTrigger,
     isPlaying,
     currentTime,
+    duration,
     toggleTrack: (track: IAudioTrack) => audioPodcastService.toggleTrack(track), // ИСПРАВЛЕНО
     addToQueue: (track: IAudioTrack) => audioPodcastService.addToQueue(track),
     removeFromQueue: (trackId: string) => audioPodcastService.removeFromQueue(trackId),
@@ -34,5 +36,7 @@ export const useAudioPodcast = () => {
     saveTrackProgress: (trackId: string, time: number) => audioPodcastService.saveTrackProgress(trackId, time),
     getTrackProgress: (trackId: string) => audioPodcastService.getTrackProgress(trackId),
     registerAudioElement: (el: HTMLAudioElement | null) => audioPodcastService.registerAudioElement(el),
+    setDurationValue: (v: number) => audioPodcastService.duration.value = v,
+    stopTrack: () => audioPodcastService.stopTrack(),
   }
 }

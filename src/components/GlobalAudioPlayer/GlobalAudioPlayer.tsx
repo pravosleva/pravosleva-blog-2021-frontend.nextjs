@@ -1,11 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useAudioPodcast } from './hooks'
+import clsx from 'clsx'
+
+const formatAudioTime = (seconds: number): string => {
+  if (isNaN(seconds) || seconds === Infinity) return '00:00'
+  const mins = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
 
 export const GlobalAudioPlayer = () => {
   const { 
     queue, currentTrack, isPlayerVisible, isPlayerMinimized, trackErrors, isPlaying,
+    duration: __duration, currentTime,
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
-    saveTrackProgress, getTrackProgress, registerAudioElement
+    saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -55,6 +64,12 @@ export const GlobalAudioPlayer = () => {
     
     if (duration) {
       setProgressPercent((current / duration) * 100)
+      
+      // ИСПРАВЛЕНО: Синхронизируем общую длительность трека с реактивным сервисом
+      if (__duration !== duration) {
+        // audioPodcastService.duration.value = duration
+        setDurationValue(duration)
+      }
     }
 
     if (Math.abs(current - lastSavedTimeRef.current) > 2) {
@@ -65,6 +80,44 @@ export const GlobalAudioPlayer = () => {
 
   // ИСПРАВЛЕНО: Если треков нет, мы всё равно рендерим скрытый тег <audio>, чтобы сервис всегда имел к нему доступ!
   const hasTracks = queue.length > 0 && activeTrack;
+
+  // const [cacheSizeText, setCacheSizeText] = useState<string>('0 Байт')
+  // useEffect(() => {
+  //   const calculatePodcastCacheSize = async () => {
+  //     if (typeof window === 'undefined' || !('caches' in window)) return
+  //     try {
+  //       // Открываем именно то хранилище, которое мы указали в next.config.js
+  //       const cache = await caches.open('podcast-audio-cache')
+  //       const keys = await cache.keys()
+  //       let totalBytes = 0
+
+  //       for (const request of keys) {
+  //         const response = await cache.match(request)
+  //         if (response) {
+  //           // Читаем заголовок content-length, возвращаемый сервером/CDN
+  //           const contentLength = response.headers.get('content-length')
+  //           if (contentLength) {
+  //             totalBytes += parseInt(contentLength, 10)
+  //           }
+  //         }
+  //       }
+
+  //       // Форматируем байты в понятный человеку вид (Кб / Мб)
+  //       if (totalBytes === 0) {
+  //         setCacheSizeText('0 Мб')
+  //       } else if (totalBytes < 1024 * 1024) {
+  //         setCacheSizeText(`${(totalBytes / 1024).toFixed(1)} Кб`)
+  //       } else {
+  //         setCacheSizeText(`${(totalBytes / (1024 * 1024)).toFixed(1)} Мб`)
+  //       }
+  //     } catch (e) {
+  //       console.error('Ошибка подсчета кэша PWA:', e)
+  //       setCacheSizeText('неизвестно')
+  //     }
+  //   }
+
+  //   calculatePodcastCacheSize()
+  // }, [queue.length]) // Пересчитываем размер каждый раз, когда меняется состав очереди треков
 
   return (
     <>
@@ -83,7 +136,7 @@ export const GlobalAudioPlayer = () => {
       {isPlayerVisible && hasTracks && (
         <div className={`blog-audio-player-container ${isPlayerMinimized ? 'is-minimized' : ''}`} style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 2000,
-          backdropFilter: 'blur(8px)', maxWidth: '600px', margin: '0 auto', borderRadius: '16px 16px 0 0',
+          maxWidth: '600px', margin: '0 auto', borderRadius: '20px 20px 0 0',
           transition: 'all 0.2s ease-out', overflow: 'hidden', paddingLeft: '20px', paddingRight: '20px', paddingTop: '10px',
           display: 'flex', flexDirection: 'column',
           paddingBottom: isPlayerMinimized ? '0px' : 'calc(env(safe-area-inset-bottom, 16px) + 10px)',
@@ -105,51 +158,165 @@ export const GlobalAudioPlayer = () => {
           ) : (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ flex: 1, minWidth: 0, marginRight: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span className="player-meta-info" style={{ fontSize: '0.75em', textTransform: 'uppercase' }}>Сейчас играет ({queue.indexOf(activeTrack) + 1} из {queue.length})</span>
+                <div style={{
+                  flex: 1, minWidth: 0,
+                  // marginRight: '10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                    <span className="player-meta-info" style={{ fontSize: '0.75em', textTransform: 'uppercase' }}>
+                      Сейчас играет {queue.indexOf(activeTrack) + 1} / {queue.length}
+                    </span>
+                    
+                    {/* ИСПРАВЛЕНО: Добавлен текущий тайминг и общая длительность трека в заголовок шторки */}
+                    <span style={{ fontSize: '0.8em', fontWeight: 'bold', color: '#FF8E53', fontFamily: 'monospace' }}>
+                      [ {formatAudioTime(currentTime)} / {formatAudioTime(__duration)} ]
+                    </span>
+
                     {isCurrentTrackBroken && <span style={{ color: '#ff4d4d', fontSize: '0.75em' }}>⚠️ Файл недоступен</span>}
                   </div>
-                  <div className="player-active-title" style={{ fontWeight: 500, fontSize: '0.95em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{activeTrack.title}</div>
+                  <div className="player-active-title" style={{ fontWeight: 'bold', fontSize: 'small', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {activeTrack.title}
+                  </div>
                 </div>
-                <button onClick={() => setPlayerMinimized(true)} className="player-btn-minimize">✕ Свернуть</button>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  
+                  <button
+                    onClick={() => setPlayerMinimized(true)}
+                    className="player-btn-minimize"
+                    style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}
+                  >
+                    <span>✕</span>
+                    <span>Свернуть</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="player-queue-section" style={{ marginTop: '2px', paddingTop: '6px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <div className="player-meta-info" style={{ fontSize: '0.75em' }}>Очередь подкастов: <b className="player-queue-count">{queue.length}</b></div>
-                  {totalPages > 1 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="player-pagination-btn">◀</button>
-                      <span className="player-meta-info" style={{ fontSize: '0.75em' }}>{currentPage} / {totalPages}</span>
-                      <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="player-pagination-btn">▶</button>
-                    </div>
-                  )}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div className="player-queue-section" style={{ paddingTop: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: 'small' }}>
                   {queue.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((track) => {
                     const isTrackActiveInPlayer = activeTrack?.id === track.id
                     const isTrackPlayingNow = isTrackActiveInPlayer && isPlaying
                     const isBroken = trackErrors[track.id]
                     
                     return (
-                      <div key={track.id} className={`player-queue-item ${isTrackActiveInPlayer ? 'active' : ''}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 8px', borderRadius: '6px' }}>
+                      <div
+                        key={track.id}
+                        className={clsx(
+                          'player-queue-item',
+                          {
+                            ['active']: isTrackActiveInPlayer && !isTrackPlayingNow,
+                            ['active-and-playing']: isTrackActiveInPlayer && isTrackPlayingNow,
+                          })
+                        }
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '8px' }}
+                      >
                         <span 
                           onClick={() => !isBroken && toggleTrack(track)} 
-                          className={`player-track-link ${isBroken ? 'broken' : ''} ${isTrackActiveInPlayer ? 'playing' : ''}`}
-                          style={{ cursor: isBroken ? 'default' : 'pointer', fontSize: '0.85em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, marginRight: '10px' }}
+                          className={`player-track-link ${isBroken ? 'broken' : ''} ${isTrackActiveInPlayer ? 'selected' : ''}`}
+                          style={{
+                            cursor: isBroken ? 'default' : 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1,
+                            marginRight: '10px',
+                            display: 'inline-flex',
+                            flexDirection: 'row',
+                            gap: '8px',
+                          }}
                         >
-                          {isTrackPlayingNow ? '⏸ ' : (isTrackActiveInPlayer ? '▶ ' : '')}
-                          {track.title}
+                          <span style={{ fontFamily: 'monospace, system-ui, Courier' }}>{isTrackPlayingNow ? '⏸' : (isTrackActiveInPlayer ? '▶' : '💤')}</span>
+                          <span style={{ fontFamily: 'monospace, system-ui, Courier' }}>{track.title}</span>
                         </span>
                         <button onClick={() => removeFromQueue(track.id)} className="player-btn-delete">Удалить</button>
                       </div>
                     )
                   })}
                 </div>
+                
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div className="player-meta-info" style={{ fontSize: '0.75em', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                    <span>Очередь подкастов:</span><b className="player-queue-count">{queue.length}</b>
+                  </div>
+                  
+                  {/* ИСПРАВЛЕНО: Добавлен размер занимаемого кэша PWA */}
+                  {/* <span style={{ fontSize: '0.7em', padding: '2px 6px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', opacity: 0.8 }} title="Объем аудиофайлов, сохраненных в памяти браузера для оффлайн-доступа">
+                    📦 В кэше PWA: <b>{cacheSizeText}</b>
+                  </span> */}
+                </div>
+
+                {
+                  ((isPlaying && !isCurrentTrackBroken) || (totalPages > 1)) && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        {isPlaying && !isCurrentTrackBroken && (
+                          <button 
+                            onClick={() => stopTrack()} 
+                            className="player-btn-stop"
+                            style={{
+                              background: 'rgba(255, 77, 77, 0.1)',
+                              border: '1px solid rgba(255, 77, 77, 0.2)',
+                              color: '#ff4d4d',
+                              // padding: '6px 12px',
+                              // borderRadius: '12px',
+                              cursor: 'pointer',
+                              fontSize: '0.85em',
+                              fontWeight: 500,
+                              transition: 'all 0.2s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '10px 16px',
+                              borderRadius: '8px',
+                            }}
+                            title="Полностью остановить и закрыть плеер"
+                          >
+                            ⏹️
+                          </button>
+                        )}
+                        {isPlaying && !isCurrentTrackBroken && (
+                          <button 
+                            onClick={!!activeTrack ? () => toggleTrack(activeTrack) : undefined} 
+                            className="player-btn-stop"
+                            style={{
+                              background: 'rgba(255, 77, 77, 0.1)',
+                              border: '1px solid rgba(255, 77, 77, 0.2)',
+                              color: '#ff4d4d',
+                              // padding: '6px 12px',
+                              // borderRadius: '12px',
+                              cursor: 'pointer',
+                              fontSize: '0.85em',
+                              fontWeight: 500,
+                              transition: 'all 0.2s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '10px 16px',
+                              borderRadius: '8px',
+                            }}
+                            title="Полностью остановить и закрыть плеер"
+                          >
+                            ⏸️
+                          </button>
+                        )}
+                      </div>
+
+                      {totalPages > 1 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+                          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="player-pagination-btn">◀</button>
+                          <span className="player-meta-info" style={{ fontSize: 'small' }}>{currentPage} / {totalPages}</span>
+                          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="player-pagination-btn">▶</button>
+                        </div>
+                      )}
+                    </div>
+                  )
+                }
               </div>
             </>
-          )}
+          )
+        }
         </div>
       )}
     </>
