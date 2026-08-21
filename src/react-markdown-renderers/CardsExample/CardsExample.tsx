@@ -11,23 +11,6 @@ import clsx from 'clsx'
 export const CardsExample = memo(({ itemsJson }: TProps) => {
   const styles = useStyles()
   const [errMsg, _setErrMsg] = useState<string | null>(null)
-  // const arePropsValid = ((str) => {
-  //   try {
-  //     switch (true) {
-  //       case typeof str === 'string':
-  //         // @ts-ignore
-  //         JSON.parse(str)
-  //         break
-  //       default:
-  //         throw new Error(`🚫 Incorrect type: ${typeof str}`)
-  //     }
-  //   } catch (e: any) {
-  //     console.warn(e)
-  //     setErrMsg(e?.message || 'Incorrect props')
-  //     return false
-  //   }
-  //   return true
-  // })(itemsJson)
   const normalizedItems: TNormalizedItem[] = JSON.parse(itemsJson)
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 

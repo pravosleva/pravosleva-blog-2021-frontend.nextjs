@@ -1,0 +1,31 @@
+/* Базовый класс карточки подкаста */
+.blog-podcast-card {
+  /* ... ваши базовые стили, если они вынесены в CSS ... */
+  
+  /* ХАНДЛЕР ПЛАВНОСТИ: Анимируем трансформацию и тень */
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
+              box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  will-change: transform, box-shadow;
+}
+
+/* ЭФФЕКТ НАВЕДЕНИЯ КУРСОРA */
+@media (hover: hover) {
+  .blog-podcast-card:hover {
+    transform: scale(1.015) translateY(-2px); /* Мягкое увеличение и легкое приподнятие */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22) !important; /* Усиливаем глубину тени */
+  }
+}
+
+/* Анимация вращения диска (если её еще не было в вашем CSS) */
+.rotating-disk {
+  animation: spin-disk 4s linear infinite;
+}
+
+@keyframes spin-disk {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

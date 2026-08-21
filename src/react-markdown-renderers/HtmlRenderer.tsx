@@ -10,6 +10,7 @@ import { ImagesGalleryBox, ImagesGalleryBox2, TProps as TImagesGalleryBoxProps }
 import { JSONComparison } from './JSONComparison'
 import { CollapsibleBox } from './CollapsibleBox'
 import { CardsExample } from './CardsExample'
+import { Podcast } from './PodcastComponent'
 // import { StickyHeader } from './StickyHeader'
 
 const componentTransforms = {
@@ -55,6 +56,7 @@ const componentTransforms = {
       <CardsExample {...props} />
     </ErrorBoundary>
   ),
+  Podcast: (props: any) => <Podcast {...props} />,
 }
 
 // @ts-ignore
