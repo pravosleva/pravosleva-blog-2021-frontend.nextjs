@@ -15,6 +15,7 @@ export const GlobalAudioPlayer = () => {
     duration: __duration, currentTime,
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
     saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
+    playNextTrack,
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -31,6 +32,24 @@ export const GlobalAudioPlayer = () => {
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) setCurrentPage(totalPages)
   }, [queue.length, totalPages, currentPage])
+  // ИСПРАВЛЕНО: Автоматически переводим пагинацию на ту страницу, где находится активный трек
+  useEffect(() => {
+    if (!activeTrack || queue.length === 0) return
+
+    // 1. Находим физический индекс активного трека в общем массиве очереди
+    const trackIndex = queue.findIndex(t => t.id === activeTrack.id)
+    if (trackIndex === -1) return
+
+    // 2. Вычисляем, на какой странице пагинации находится этот индекс
+    // Математика: индекс 0,1,2 -> страница 1 | индекс 3,4,5 -> страница 2 (при itemsPerPage = 3)
+    const targetPage = Math.floor(trackIndex / itemsPerPage) + 1
+
+    // 3. Если мы сейчас не на той странице, мягко переключаем интерфейс
+    if (currentPage !== targetPage) {
+      setCurrentPage(targetPage)
+    }
+  }, [activeTrack?.id, queue.length]) // Срабатывает при физической смене трека или обновлении состава очереди
+
 
   // ИСПРАВЛЕНО: Теперь элемент регистрируется ВСЕГДА, так как тег <audio> больше не размонтируется
   useEffect(() => {
@@ -130,6 +149,8 @@ export const GlobalAudioPlayer = () => {
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={handleTimeUpdate} 
         onError={() => activeTrack && markTrackAsBroken(activeTrack.id)}
+        // Привязываем триггер окончания трека к автопереходу сервиса
+        onEnded={() => playNextTrack()}
       />
 
       {/* ИСПРАВЛЕНО: Визуальную шторку плеера рендерим строго по условию видимости */}

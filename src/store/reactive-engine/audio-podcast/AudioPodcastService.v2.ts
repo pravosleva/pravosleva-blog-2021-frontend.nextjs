@@ -24,24 +24,14 @@ export class AudioPodcastService extends AbstractService {
 
     const initialQueue = this.loadQueueFromStorage();
     this.queue = this.engine.signal<IAudioTrack[]>(initialQueue, 'audio:queue');
-    
-    // ИСПРАВЛЕНО: Загружаем последний активный трек из localStorage
-    const savedActiveTrack = this.loadActiveTrackFromStorage(initialQueue);
-    this.currentTrack = this.engine.signal<IAudioTrack | null>(savedActiveTrack, 'audio:current-track');
-    
-    // Если трек был сохранен, делаем плеер видимым (но свернутым, чтобы не мешать)
-    const hasSavedTrack = !!savedActiveTrack;
-    this.isPlayerVisible = this.engine.signal<boolean>(hasSavedTrack, 'audio:player-ui-visible');
-    this.isPlayerMinimized = this.engine.signal<boolean>(hasSavedTrack, 'audio:player-ui-minimized');
-    
+    this.currentTrack = this.engine.signal<IAudioTrack | null>(null, 'audio:current-track');
+    this.isPlayerVisible = this.engine.signal<boolean>(false, 'audio:player-ui-visible');
+    this.isPlayerMinimized = this.engine.signal<boolean>(false, 'audio:player-ui-minimized');
     this.trackErrors = this.engine.signal<Record<string, boolean>>({}, 'audio:track-errors');
-    
-    // После перезагрузки страницы оставляем на паузе (UX-безопасно)
     this.isPlaying = this.engine.signal<boolean>(false, 'audio:is-playing');
     
-    // Подтягиваем тайминг для восстановленного трека
-    const activeTrackId = savedActiveTrack?.id || (initialQueue[0]?.id || '');
-    this.currentTime = this.engine.signal<number>(this.getTrackProgress(activeTrackId), 'audio:current-time');
+    const firstTrackId = initialQueue[0]?.id || '';
+    this.currentTime = this.engine.signal<number>(this.getTrackProgress(firstTrackId), 'audio:current-time');
     this.duration = this.engine.signal<number>(0, 'audio:duration');
   }
 
@@ -60,63 +50,6 @@ export class AudioPodcastService extends AbstractService {
     localStorage.setItem('blog_audio_queue', JSON.stringify(queue));
   }
 
-  // ИСПРАВЛЕНО: Методы для работы с активным треком в localStorage
-  private loadActiveTrackFromStorage(currentQueue: IAudioTrack[]): IAudioTrack | null {
-    if (typeof window === 'undefined') return null;
-    try {
-      const savedId = localStorage.getItem('blog_audio_active_track_id');
-      if (!savedId) return currentQueue.length > 0 ? currentQueue[0] : null;
-      
-      // Ищем трек в текущей очереди, чтобы убедиться, что он валидный
-      const track = currentQueue.find(t => t.id === savedId);
-      return track || (currentQueue.length > 0 ? currentQueue[0] : null);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  private saveActiveTrackToStorage(trackId: string | null): void {
-    if (typeof window === 'undefined') return;
-    if (trackId) {
-      localStorage.setItem('blog_audio_active_track_id', trackId);
-    } else {
-      localStorage.removeItem('blog_audio_active_track_id');
-    }
-  }
-
-    /**
-   * ИСПРАВЛЕНО: Автопереход на следующий трек в очереди
-   */
-  public playNextTrack(): void {
-    if (!this.audioEl) return;
-
-    const currentQueue = this.queue.value;
-    if (currentQueue.length === 0) return;
-
-    // 1. Находим текущий активный трек
-    const activeTrack = this.currentTrack.value || currentQueue[0];
-    const currentIndex = currentQueue.findIndex(t => t.id === activeTrack.id);
-
-    // 2. Проверяем, есть ли следующий трек в массиве
-    const nextIndex = currentIndex + 1;
-
-    if (nextIndex < currentQueue.length) {
-      // Следующий трек существует — запускаем его через наш пуленепробиваемый toggleTrack
-      const nextTrack = currentQueue[nextIndex];
-      
-      // Сначала сбрасываем текущий трек в стейте, чтобы гарантированно сработала ветка else в toggleTrack
-      this.currentTrack.value = null; 
-      
-      // Запускаем воспроизведение нового трека
-      this.toggleTrack(nextTrack);
-      console.log(`⏭️ Автопереход: Запущен следующий трек "${nextTrack.title}"`);
-    } else {
-      // Очередь закончилась — полностью останавливаем плеер и сбрасываем состояние
-      this.stopTrack();
-      console.log('🏁 Автопереход: Очередь подкастов полностью прослушана');
-    }
-  }
-
   public saveTrackProgress(trackId: string, currentTime: number): void {
     if (typeof window === 'undefined' || !trackId) return;
     localStorage.setItem(`track_progress_${trackId}`, currentTime.toString());
@@ -131,6 +64,7 @@ export class AudioPodcastService extends AbstractService {
 
   public registerAudioElement(el: HTMLAudioElement | null): void {
     this.audioEl = el;
+    // При первой привязке (рефреш страницы) восстанавливаем тайминг
     if (el && !el.src) {
       const track = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
       if (track) {
@@ -144,6 +78,7 @@ export class AudioPodcastService extends AbstractService {
   public toggleTrack(track: IAudioTrack): void {
     if (!this.audioEl) return;
 
+    // Автоматически добавляем трек в очередь, если запустили из статьи
     const currentQueue = [...this.queue.value];
     const isDuplicate = currentQueue.some(t => t.id === track.id);
     if (!isDuplicate) {
@@ -156,6 +91,7 @@ export class AudioPodcastService extends AbstractService {
     const isCurrentActive = activeTrack?.id === track.id;
 
     if (isCurrentActive) {
+      // Клик по текущему треку: играть / пауза
       if (this.audioEl.paused) {
         this.audioEl.play().then(() => {
           this.isPlaying.value = true;
@@ -167,10 +103,8 @@ export class AudioPodcastService extends AbstractService {
         this.isPlaying.value = false;
       }
     } else {
+      // ИСПРАВЛЕНО: Чистое переключение на совершенно другой трек
       this.currentTrack.value = track;
-      // ИСПРАВЛЕНО: Сохраняем новый активный трек в localStorage при переключении
-      this.saveActiveTrackToStorage(track.id);
-
       this.isPlayerVisible.value = true;
       this.isPlayerMinimized.value = false;
       this.duration.value = 0; 
@@ -197,15 +131,13 @@ export class AudioPodcastService extends AbstractService {
 
   public stopTrack(): void {
     if (!this.audioEl) return;
+    // 1. Останавливаем нативное воспроизведение и сбрасываем время в начало
     this.audioEl.pause();
     this.audioEl.currentTime = 0;
+    // 2. Обнуляем реактивные сигналы состояния плеера
     this.isPlaying.value = false;
     this.currentTime.value = 0;
-    
-    // ИСПРАВЛЕНО: Стираем активный трек при полной остановке
-    this.saveActiveTrackToStorage(null);
-    this.isPlayerVisible.value = false;
-
+    // 3. Опционально: сбрасываем прогресс текущего трека в localStorage, если нужно, чтобы при следующем запуске он играл с начала
     const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
     if (activeTrack) {
       this.saveTrackProgress(activeTrack.id, 0);
@@ -219,43 +151,44 @@ export class AudioPodcastService extends AbstractService {
       const updatedQueue = [...currentQueue, track];
       this.queue.value = updatedQueue;
       this.saveQueueToStorage(updatedQueue);
-      
-      // Если это первый трек в пустой очереди — делаем его активным по умолчанию
-      if (!this.currentTrack.value) {
-        this.currentTrack.value = track;
-        this.saveActiveTrackToStorage(track.id);
-      }
     }
     this.isPlayerVisible.value = true;
     this.isPlayerMinimized.value = false;
   }
 
-  public removeFromQueue(trackId: string): void {
+    public removeFromQueue(trackId: string): void {
     const wasPlayingTrack = this.currentTrack.value?.id === trackId || 
-      (!this.currentTrack.value && this.queue.value?.[0].id === trackId);
+      (!this.currentTrack.value && this.queue.value[0]?.id === trackId);
 
+    // 1. Формируем новую очередь БЕЗ удаляемого трека
     const updatedQueue = this.queue.value.filter((t: IAudioTrack) => t.id !== trackId);
     this.queue.value = updatedQueue;
     this.saveQueueToStorage(updatedQueue);
 
+    // 2. Если удалили тот трек, который воспроизводился или стоял на паузе в фокусе прямо сейчас
     if (wasPlayingTrack) {
       if (updatedQueue.length > 0) {
+        // Переключаем стейт на новый ПЕРВЫЙ трек из ОСТАВШЕЙСЯ очереди
         const nextTrack = updatedQueue[0];
         this.currentTrack.value = nextTrack;
-        // ИСПРАВЛЕНО: Обновляем ID активного трека в хранилище при удалении старого
-        this.saveActiveTrackToStorage(nextTrack.id);
+        
+        // ИСПРАВЛЕНО: Принудительно гасим статус воспроизведения в реактивном поле
         this.isPlaying.value = false;
 
         if (this.audioEl) {
+          // Нативно переключаем аудио-тег на новый файл
           this.audioEl.src = nextTrack.url;
-          this.audioEl.load();
+          this.audioEl.load(); // Подгружаем метаданные
+          
+          // Подтягиваем его сохраненный прогресс
           this.currentTime.value = this.getTrackProgress(nextTrack.id);
           this.audioEl.currentTime = this.currentTime.value;
+          
+          // Метод .play() больше НЕ вызывается. Трек просто «встает в гнездо» на паузу.
         }
       } else {
+        // Очередь полностью пуста — глушим всё и очищаем UI
         this.currentTrack.value = null;
-        // ИСПРАВЛЕНО: Очищаем ID активного трека, так как очередь пуста
-        this.saveActiveTrackToStorage(null);
         this.isPlaying.value = false;
         this.currentTime.value = 0;
         this.duration.value = 0;

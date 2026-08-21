@@ -38,5 +38,6 @@ export const useAudioPodcast = () => {
     registerAudioElement: (el: HTMLAudioElement | null) => audioPodcastService.registerAudioElement(el),
     setDurationValue: (v: number) => audioPodcastService.duration.value = v,
     stopTrack: () => audioPodcastService.stopTrack(),
+    playNextTrack: () => audioPodcastService.playNextTrack(),
   }
 }
