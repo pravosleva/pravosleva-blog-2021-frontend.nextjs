@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useAudioPodcast } from './hooks'
 import clsx from 'clsx'
 import { AudioVisualizer } from './components/AudioVisualizer'
+import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 const formatAudioTime = (seconds: number): string => {
   if (isNaN(seconds) || seconds === Infinity) return '00:00'
@@ -16,7 +17,7 @@ export const GlobalAudioPlayer = () => {
     duration: __duration, currentTime,
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
     saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
-    playNextTrack,
+    playNextTrack, seekBackward, seekForward,
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -294,37 +295,58 @@ export const GlobalAudioPlayer = () => {
                             }}>
                             {
                               isPlaying && !isCurrentTrackBroken && (
-                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                  {isPlaying && !isCurrentTrackBroken && (
-                                    <button 
-                                      onClick={() => stopTrack()} 
-                                      className="player-btn-stop"
-                                      style={{
-                                        background: 'rgba(255, 77, 77, 0.1)',
-                                        border: '2px solid rgba(255, 77, 77, 0.2)',
-                                        color: '#ff4d4d',
-                                        // padding: '6px 12px',
-                                        // borderRadius: '12px',
-                                        cursor: 'pointer',
-                                        fontWeight: 500,
-                                        transition: 'all 0.2s ease',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        // padding: '10px 16px',
-                                        padding: '4px 16px',
-                                        fontSize: '1.0rem',
-                                        borderRadius: '8px',
-                                      }}
-                                      title="Полностью остановить и закрыть плеер"
-                                    >
-                                      ⏏️
-                                    </button>
-                                  )}
+                                <div style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}>
+                                  <button 
+                                    onClick={() => stopTrack()} 
+                                    className="player-btn-stop"
+                                    style={{
+                                      background: 'rgba(255, 77, 77, 0.1)',
+                                      border: '2px solid rgba(255, 77, 77, 0.2)',
+                                      color: '#ff4d4d',
+                                      // padding: '6px 12px',
+                                      // borderRadius: '12px',
+                                      cursor: 'pointer',
+                                      fontWeight: 500,
+                                      transition: 'all 0.2s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '8px',
+                                      // padding: '10px 16px',
+                                      // padding: '4px 16px',
+                                      fontSize: '1.0rem',
+                                      // borderRadius: '8px',
+                                    }}
+                                    title="Полностью остановить и закрыть плеер"
+                                  >
+                                    <span>⏏️</span>
+                                    {/* <span style={{ fontSize: '0.6rem' }}>Остановить и закрыть</span> */}
+                                  </button>
+                                  <button 
+                                    onClick={() => seekBackward()} 
+                                    className="player-btn-seek"
+                                    style={{
+                                      background: 'rgba(255, 255, 255, 0.08)',
+                                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                                      // color: 'inherit',
+                                      cursor: 'pointer',
+                                      fontWeight: 500,
+                                      transition: 'all 0.2s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '8px',
+                                      // padding: '4px 16px',
+                                      fontSize: '1.0rem',
+                                      // borderRadius: '8px',
+                                    }}
+                                    title="Назад на 20 секунд"
+                                  >
+                                    <span>⏪</span>
+                                    {/* <span style={{ fontSize: '0.6rem' }}>-20с</span> */}
+                                  </button>
                                 </div>
                               )
                             }
-
+                             
                             {totalPages > 1 && (
                               <div style={{ margin: '0 auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="player-pagination-btn">◀</button>
@@ -335,7 +357,29 @@ export const GlobalAudioPlayer = () => {
 
                             {
                               isPlaying && !isCurrentTrackBroken && (
-                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}>
+                                  <button 
+                                    onClick={() => seekForward()} 
+                                    className="player-btn-seek"
+                                    style={{
+                                      background: 'rgba(255, 255, 255, 0.08)',
+                                      border: '1px solid rgba(255, 255, 255, 0.12)',
+                                      // color: 'inherit',
+                                      cursor: 'pointer',
+                                      fontWeight: 500,
+                                      transition: 'all 0.2s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '8px',
+                                      // padding: '4px 16px',
+                                      fontSize: '1.0rem',
+                                      // borderRadius: '8px',
+                                    }}
+                                    title="Вперед на 20 секунд"
+                                  >
+                                    {/* <span style={{ fontSize: '0.6rem' }}>+20с</span> */}
+                                    <span>⏩</span>
+                                  </button>
                                   <button 
                                     onClick={!!activeTrack ? () => toggleTrack(activeTrack) : undefined} 
                                     className="player-btn-pause"
@@ -353,14 +397,15 @@ export const GlobalAudioPlayer = () => {
                                       transition: 'all 0.2s ease',
                                       display: 'flex',
                                       alignItems: 'center',
-                                      gap: '4px',
-                                      padding: '4px 16px',
+                                      gap: '8px',
+                                      // padding: '4px 16px',
                                       fontSize: '1.0rem',
-                                      borderRadius: '8px',
+                                      // borderRadius: '8px',
                                     }}
-                                    title="Полностью остановить и закрыть плеер"
+                                    title="Поставить текущий трек на паузу"
                                   >
-                                    ⏸️
+                                    <span>⏸️</span>
+                                    {/* <span style={{ fontSize: '0.6rem' }}>Пауза</span> */}
                                   </button>
                                 </div>
                               )

@@ -41,5 +41,7 @@ export const useAudioPodcast = () => {
     stopTrack: () => audioPodcastService.stopTrack(),
     playNextTrack: () => audioPodcastService.playNextTrack(),
     getAnalyser: () => audioPodcastService.getAnalyser(),
+    seekForward: () => audioPodcastService.seekRelative(20),
+    seekBackward: () => audioPodcastService.seekRelative(-20),
   }
 }

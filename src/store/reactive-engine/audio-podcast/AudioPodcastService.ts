@@ -283,4 +283,28 @@ export class AudioPodcastService extends AbstractService {
   public getNativeAudioEl(): HTMLAudioElement | null {
     return this.audioEl;
   }
+
+  /**
+   * ИСПРАВЛЕНО: Метод относительной перемотки трека (вперед/назад на N секунд)
+   * @param seconds Количество секунд (положительное для вперед, отрицательное для назад)
+   */
+  public seekRelative(seconds: number): void {
+    if (!this.audioEl || !this.currentTrack.value) return;
+
+    const duration = this.audioEl.duration || this.duration.value;
+    if (!duration) return;
+
+    // Вычисляем новое время с ограничением от 0 до конца трека
+    let newTime = this.audioEl.currentTime + seconds;
+    if (newTime < 0) newTime = 0;
+    if (newTime > duration) newTime = duration;
+
+    // Применяем нативное изменение времени
+    this.audioEl.currentTime = newTime;
+    this.currentTime.value = newTime;
+
+    // Сразу сохраняем прогресс, чтобы не ждать планового обновления
+    this.saveTrackProgress(this.currentTrack.value.id, newTime);
+    console.log(`⏩ Перемотка: смещение на ${seconds}с. Новое время: ${newTime.toFixed(1)}с.`);
+  }
 }

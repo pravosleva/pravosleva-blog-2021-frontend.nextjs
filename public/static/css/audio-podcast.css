@@ -320,20 +320,6 @@ body main.dark ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
   }
 }
 
-.player-btn-stop:hover {
-  background-color: rgba(255, 77, 77, 0.2) !important;
-  /* transform: scale(1.02); */
-}
-
-body main.light .player-btn-pause {
-  background-color: rgb(255, 255, 255);
-}
-body main.gray .player-btn-pause,
-body main.hard-gray .player-btn-pause,
-body main.dark .player-btn-pause {
-  background-color: rgb(42, 42, 42);
-}
-
 /* Базовый контейнер плеера (всегда в DOM, управляется через GPU) */
 .blog-audio-player-container {
   position: fixed;
@@ -382,4 +368,37 @@ body main.dark .player-btn-pause {
      лучше задать фиксированный max-height или фиксированную высоту */
   height: auto; 
   padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 10px);
+}
+
+.blog-audio-player-container .player-btn-stop,
+.blog-audio-player-container .player-btn-pause,
+.blog-audio-player-container .player-btn-seek {
+  padding: 4px 8px;
+  border-radius: 24px;
+  min-width: 50px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body main.light ~ .blog-audio-player-container .player-btn-pause,
+body main.light ~ .blog-audio-player-container .player-btn-seek {
+  color: #000;
+  background-color: rgb(255, 255, 255);
+}
+body main.gray ~ .blog-audio-player-container .player-btn-pause,
+body main.hard-gray ~ .blog-audio-player-container .player-btn-pause,
+body main.dark ~ .blog-audio-player-container .player-btn-pause,
+
+body main.gray ~ .blog-audio-player-container .player-btn-seek,
+body main.hard-gray ~ .blog-audio-player-container .player-btn-seek,
+body main.dark ~ .blog-audio-player-container .player-btn-seek {
+  color: #fff;
+  background-color: rgb(42, 42, 42);
+}
+
+body main ~ .blog-audio-player-container .player-btn-stop:hover {
+  background-color: rgba(255, 77, 77, 0.2) !important;
+  /* transform: scale(1.02); */
 }
