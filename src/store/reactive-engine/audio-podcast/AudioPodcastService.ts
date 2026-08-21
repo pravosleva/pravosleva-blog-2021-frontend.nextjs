@@ -17,6 +17,7 @@ export class AudioPodcastService extends AbstractService {
   public duration: Signal<number>;
   private audioEl: HTMLAudioElement | null = null;
   public playbackRate: Signal<number>;
+  private audioChannel: BroadcastChannel | null = null;
 
   constructor(...args: any[]) {
     // @ts-ignore
@@ -45,6 +46,56 @@ export class AudioPodcastService extends AbstractService {
     const savedRate = typeof window !== 'undefined' ? localStorage.getItem('blog_audio_playback_rate') : null;
     this.playbackRate = this.engine.signal<number>(savedRate ? parseFloat(savedRate) : 1.0, 'audio:playback-rate');
 
+    // -- MULTITABS_EXP: Внутри constructor инициализируйте канал и подписку на него:
+    if (typeof window !== 'undefined') {
+      this.audioChannel = new BroadcastChannel('blog_podcast_channel');
+      
+      this.audioChannel.onmessage = (event) => {
+        const { type, payload } = event.data || {};
+
+        switch (type) {
+          case 'someone_started_playback':
+            // Если в другой вкладке нажали Play — ставим у себя паузу
+            if (this.audioEl && !this.audioEl.paused) {
+              this.audioEl.pause();
+              this.isPlaying.value = false;
+              console.log('🛑 Аудио поставлено на паузу, так как подкаст запустили в другой вкладке.');
+            }
+            break;
+
+          case 'queue_updated':
+            // ИСПРАВЛЕНО: Синхронизируем очередь в ОЗУ без лишнего чтения localStorage
+            if (payload && Array.isArray(payload)) {
+              this.queue.value = payload;
+            }
+            break;
+
+          case 'active_track_changed':
+            // ИСПРАВЛЕНО: Синхронизируем активный трек и его видимость
+            if (payload) {
+              this.currentTrack.value = payload;
+              this.isPlayerVisible.value = true;
+              // Новая вкладка перехватила фокус, у себя можем мягко свернуть или оставить как есть
+              // Задаем тайминг для этой вкладки
+              this.currentTime.value = this.getTrackProgress(payload.id);
+              if (this.audioEl) {
+                this.audioEl.src = payload.url;
+                this.audioEl.load();
+                this.audioEl.currentTime = this.currentTime.value;
+              }
+            } else {
+              // Если в другой вкладке нажали "Стоп" — у нас плеер тоже закрывается
+              this.currentTrack.value = null;
+              this.isPlayerVisible.value = false;
+              this.isPlaying.value = false;
+              this.currentTime.value = 0;
+              if (this.audioEl) this.audioEl.src = '';
+            }
+            break;
+        }
+      };
+    }
+    // --
   }
 
   private loadQueueFromStorage(): IAudioTrack[] {
@@ -170,6 +221,10 @@ export class AudioPodcastService extends AbstractService {
       const updatedQueue = [...currentQueue, track];
       this.queue.value = updatedQueue;
       this.saveQueueToStorage(updatedQueue);
+
+      // ИСПРАВЛЕНО: Мгновенно обновляем массив очереди во всех параллельных вкладках,
+      // чтобы они знали о существовании этого трека до того, как он подсветится
+      this.broadcast('queue_updated', updatedQueue);
     }
 
     const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
@@ -179,6 +234,9 @@ export class AudioPodcastService extends AbstractService {
       if (this.audioEl.paused) {
         this.audioEl.play().then(() => {
           this.isPlaying.value = true;
+          //  Оповещаем другие вкладки, чтобы они замолчали
+          // if (this.audioChannel) this.audioChannel.postMessage('someone_started_playback');
+          this.broadcast('someone_started_playback'); // Глушим другие вкладки при возобновлении
         }).catch(() => {
           this.isPlaying.value = false;
         });
@@ -187,9 +245,13 @@ export class AudioPodcastService extends AbstractService {
         this.isPlaying.value = false;
       }
     } else {
+      // Чистое переключение на совершенно другой трек
       this.currentTrack.value = track;
-      // ИСПРАВЛЕНО: Сохраняем новый активный трек в localStorage при переключении
       this.saveActiveTrackToStorage(track.id);
+      
+      // ИСПРАВЛЕНО: Оповещаем другие вкладки о смене активного трека
+      // Теперь принимающие вкладки безошибочно найдут его в уже обновленной очереди
+      this.broadcast('active_track_changed', track);
 
       this.isPlayerVisible.value = true;
       this.isPlayerMinimized.value = false;
@@ -205,6 +267,10 @@ export class AudioPodcastService extends AbstractService {
 
       this.audioEl.play().then(() => {
         this.isPlaying.value = true;
+
+        //  Оповещаем другие вкладки, чтобы они замолчали
+        // if (this.audioChannel) this.audioChannel.postMessage('someone_started_playback');
+        this.broadcast('someone_started_playback'); // Глушим другие вкладки при старте нового трека
       }).catch(() => {
         this.isPlaying.value = false;
       });
@@ -225,6 +291,7 @@ export class AudioPodcastService extends AbstractService {
     // ИСПРАВЛЕНО: Стираем активный трек при полной остановке
     this.saveActiveTrackToStorage(null);
     this.isPlayerVisible.value = false;
+    this.broadcast('active_track_changed', null); // Говорим всем закрыть плееры
 
     const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
     if (activeTrack) {
@@ -239,11 +306,12 @@ export class AudioPodcastService extends AbstractService {
       const updatedQueue = [...currentQueue, track];
       this.queue.value = updatedQueue;
       this.saveQueueToStorage(updatedQueue);
-      
+      this.broadcast('queue_updated', updatedQueue); // Синхронизируем очередь
       // Если это первый трек в пустой очереди — делаем его активным по умолчанию
       if (!this.currentTrack.value) {
         this.currentTrack.value = track;
         this.saveActiveTrackToStorage(track.id);
+        this.broadcast('active_track_changed', track); // Синхронизируем первый трек
       }
     }
     this.isPlayerVisible.value = true;
@@ -257,6 +325,7 @@ export class AudioPodcastService extends AbstractService {
     const updatedQueue = this.queue.value.filter((t: IAudioTrack) => t.id !== trackId);
     this.queue.value = updatedQueue;
     this.saveQueueToStorage(updatedQueue);
+    this.broadcast('queue_updated', updatedQueue); // Очередь обновилась у всех
 
     if (wasPlayingTrack) {
       if (updatedQueue.length > 0) {
@@ -264,6 +333,7 @@ export class AudioPodcastService extends AbstractService {
         this.currentTrack.value = nextTrack;
         // ИСПРАВЛЕНО: Обновляем ID активного трека в хранилище при удалении старого
         this.saveActiveTrackToStorage(nextTrack.id);
+        this.broadcast('active_track_changed', nextTrack); // Оповещаем о смене трека на следующий
         this.isPlaying.value = false;
 
         if (this.audioEl) {
@@ -276,6 +346,7 @@ export class AudioPodcastService extends AbstractService {
         this.currentTrack.value = null;
         // ИСПРАВЛЕНО: Очищаем ID активного трека, так как очередь пуста
         this.saveActiveTrackToStorage(null);
+        this.broadcast('active_track_changed', null); // Очередь пуста, закрываем у всех
         this.isPlaying.value = false;
         this.currentTime.value = 0;
         this.duration.value = 0;
@@ -357,5 +428,12 @@ export class AudioPodcastService extends AbstractService {
       this.audioEl.playbackRate = rate;
     }
     console.log(`⏱️ Скорость принудительно изменена на: x${rate}`);
+  }
+
+  // 2. Создадим приватный хелпер для отправки событий в эфир:
+  private broadcast(type: string, payload?: any): void {
+    if (this.audioChannel) {
+      this.audioChannel.postMessage({ type, payload });
+    }
   }
 }
