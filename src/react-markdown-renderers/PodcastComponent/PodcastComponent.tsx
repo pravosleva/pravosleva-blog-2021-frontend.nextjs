@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useEffect } from 'react' // Добавили useState и useEffect
+
 import { ErrorBoundary } from 'react-error-boundary'
 import { useAudioPodcast } from '~/components/GlobalAudioPlayer/hooks';
 import { ErrorFallback } from '~/mui/ErrorFallback'
@@ -8,7 +9,7 @@ type TPodcastProps = {
   title?: string;
   description?: string;
   bg?: string;
-  durationStr?: string; // НОВОЕ: Опциональная длительность трека, заданная автором (например, "12:45")
+  durationStr?: string;
 }
 
 /* NOTE: Usage
@@ -22,7 +23,15 @@ type TPodcastProps = {
 */
 
 const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, durationStr }) => {
+  // Флаг монтирования в DOM браузера
+  const [isMounted, setIsMounted] = useState(false)
+  
   const { queue, currentTrack, isPlaying, toggleTrack, addToQueue } = useAudioPodcast()
+
+  // Переводим флаг в true только на клиенте
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Автоматический фолбек для заголовка
   const trackTitle = useMemo(() => {
@@ -36,16 +45,12 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
     }
   }, [url, title])
 
-  // Формируем объект трека для PWA-системы
-  const trackObject = useMemo(() => ({
-    id: url, 
-    url,
-    title: trackTitle
-  }), [url, trackTitle])
+  const trackObject = useMemo(() => ({ id: url, url, title: trackTitle }), [url, trackTitle])
 
-  const isCurrentActive = currentTrack?.id === url
-  const isPlayingNow = isCurrentActive && isPlaying
-  const isInQueue = queue.some(t => t.id === url)
+  // Расчет состояний (на сервере они всегда будут false)
+  const isCurrentActive = isMounted && currentTrack?.id === url
+  const isPlayingNow = isMounted && isCurrentActive && isPlaying
+  const isInQueue = isMounted && queue.some(t => t.id === url)
 
   if (!url) return <div style={{ color: '#ff4d4d', padding: '10px' }}>⚠️ Ошибка: не указан путь (url) к аудиофайлу подкаста!</div>
 
@@ -55,12 +60,9 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
       style={{
         position: 'relative',
         display: 'flex',
-
         alignItems: 'center',
         justifyContent: 'space-between',
-        // padding: '16px 24px',
         padding: '16px',
-        // margin: '20px 0',
         marginBottom: '1.45rem',
         borderRadius: '16px',
         backgroundColor: bg ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
@@ -71,10 +73,8 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
         overflow: 'hidden',
         color: '#ffffff',
         boxShadow: '0 6px 20px rgba(0,0,0,0.12)'
-        // Свойства transition и transform убраны отсюда в CSS-файл для чистоты и производительности
       }}
     >
-      {/* Левая часть */}
       <div
         style={{
           flex: 1, minWidth: 0, marginRight: '16px', zIndex: 2,
@@ -83,8 +83,6 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
           gap: '8px',
         }}
       >
-        
-        {/* ВЕРХНЯЯ СТРОКА: Статус + Длительность трека */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <span style={{ 
             fontSize: '0.7em', 
@@ -96,7 +94,6 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
             {isPlayingNow ? '🔊 Сейчас играет подкаст' : isCurrentActive ? '⏸️ На паузе' : '📻 Аудио-эпизод'}
           </span>
 
-          {/* ИСПРАВЛЕНО: Компактный бейдж длительности подкаста */}
           {durationStr && durationStr.trim() !== '' && (
             <span style={{
               fontSize: '0.7em',
@@ -106,46 +103,28 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
               borderRadius: '6px',
               fontFamily: 'monospace',
               fontWeight: 600,
-              color: 'rgba(255, 255, 255, 0.85)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px'
+              color: 'rgba(255, 255, 255, 0.85)'
             }}>
               ⏱️ {durationStr}
             </span>
           )}
         </div>
         
-        <h4 style={{ 
-          margin: '6px 0 4px 0', 
-          fontSize: '1.1em', 
-          fontWeight: 600,
-          whiteSpace: 'nowrap', 
-          overflow: 'hidden', 
-          textOverflow: 'ellipsis' 
-        }}>
+        <h4 style={{ margin: '6px 0 4px 0', fontSize: '1.1em', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {trackTitle}
         </h4>
 
         {description && description.trim() !== '' && (
-          <p style={{
-            margin: '0 0 14px 0',
-            fontSize: '0.85em',
-            color: 'rgba(255, 255, 255, 0.7)',
-            lineHeight: '1.4',
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }}>
+          <p style={{ margin: '0 0 14px 0', fontSize: '0.85em', color: 'rgba(255, 255, 255, 0.7)', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {description}
           </p>
         )}
 
-        {/* Группа кнопок */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: description ? '0' : '8px' }}>
+          
+          {/* ИСПРАВЛЕНО: Кнопка Play задизейблена, пока не отработал маунт */}
           <button
+            disabled={!isMounted}
             onClick={() => toggleTrack(trackObject)}
             style={{
               background: isPlayingNow ? '#ff4d4d' : '#FF8E53',
@@ -153,20 +132,23 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
               border: 'none',
               padding: '6px 16px',
               borderRadius: '20px',
-              cursor: 'pointer',
+              cursor: !isMounted ? 'not-allowed' : 'pointer',
               fontSize: '0.85em',
               fontWeight: 600,
               transition: 'all 0.2s ease',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '6px',
+              opacity: !isMounted ? 0.6 : 1 // Визуально приглушаем кнопку во время SSR
             }}
           >
             <span>{isPlayingNow ? '⏸ Пауза' : '▶ Слушать'}</span>
           </button>
 
+          {/* ИСПРАВЛЕНО: Кнопка "В очередь" рендерится декларативно и тоже блокируется при SSR */}
           {!isInQueue && (
             <button
+              disabled={!isMounted}
               onClick={() => addToQueue(trackObject)}
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
@@ -174,16 +156,17 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
                 color: '#ffffff',
                 padding: '5px 14px',
                 borderRadius: '20px',
-                cursor: 'pointer',
+                cursor: !isMounted ? 'not-allowed' : 'pointer',
                 fontSize: '0.8em',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                opacity: !isMounted ? 0.5 : 1
               }}
             >
               ➕ В очередь
             </button>
           )}
           
-          {isInQueue && !isCurrentActive && (
+          {isInQueue && (
             <span style={{ fontSize: '0.75em', color: 'rgba(255,255,255,0.4)', padding: '4px 8px' }}>
               ✓ В очереди
             </span>
@@ -191,7 +174,6 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
         </div>
       </div>
 
-      {/* Правая часть: Анимированный диск */}
       <div style={{ zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '8px' }}>
         <span 
           className={isPlayingNow ? 'rotating-disk' : ''} 

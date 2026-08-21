@@ -283,6 +283,7 @@ export const GlobalAudioPlayer = () => {
                         gap: '16px',
                         width: '100%',
                         justifyContent: 'space-between',
+                        minHeight: '23px',
                       }}>
                         <div className="player-meta-info" style={{ fontSize: '0.75em', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
                           <span>Подкастов в очереди — </span><b className="player-queue-count">{queue.length}</b>
