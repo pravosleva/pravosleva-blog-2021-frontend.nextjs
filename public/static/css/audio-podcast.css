@@ -24,7 +24,10 @@ body main.light ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queu
 }
 body main.light ~ .blog-audio-player-container .player-queue-count { color: #000; }
 body main.light ~ .blog-audio-player-container .player-btn-minimize { color: rgba(0, 0, 0, 0.5); background: none; border: none; cursor: pointer; }
-body main.light ~ .blog-audio-player-container .player-btn-action { background: rgba(0, 0, 0, 0.05); color: #222; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
+body main.light ~ .blog-audio-player-container .player-btn-action {
+  background: rgba(0, 0, 0, 0.05);
+  color: #222; border: none; padding: 4px 12px;
+  borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
 body main.light ~ .blog-audio-player-container .player-progress-track { background: rgba(0, 0, 0, 0.06); }
 body main.light ~ .blog-audio-player-container .player-pagination-btn {
   background: rgba(0, 0, 0, 0.04);
@@ -33,7 +36,11 @@ body main.light ~ .blog-audio-player-container .player-pagination-btn {
 }
 body main.light ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.light ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(0, 0, 0, 0.06); }
-body main.light ~ .blog-audio-player-container .player-queue-item { background-color: rgba(0, 0, 0, 0.02); border: 1px solid transparent; }
+body main.light ~ .blog-audio-player-container .player-queue-item {
+  /* background-color: rgba(0, 0, 0, 0.02); */
+  background-color: rgb(237, 237, 237);
+  border: 1px solid transparent;
+}
 body main.light ~ .blog-audio-player-container .player-queue-item.active {
   background-color: rgba(255, 120, 30, 0.06); border: 1px solid rgba(255, 120, 30, 0.2); }
 body main.light ~ .blog-audio-player-container .player-track-link { color: #333; font-weight: bold; }
@@ -73,7 +80,11 @@ body main.gray ~ .blog-audio-player-container .player-progress-track { backgroun
 body main.gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.gray ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
-body main.gray ~ .blog-audio-player-container .player-queue-item { background-color: rgba(255, 255, 255, 0.01); border: 1px solid transparent; }
+body main.gray ~ .blog-audio-player-container .player-queue-item {
+  /* background-color: rgba(255, 255, 255, 0.01); */
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
+}
 body main.gray ~ .blog-audio-player-container .player-queue-item.active {
   background-color: rgba(255, 142, 83, 0.08); border: 1px solid rgba(255, 142, 83, 0.2); }
 body main.gray ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); font-weight: bold; }
@@ -93,7 +104,7 @@ body main.gray ~ .blog-audio-player-container .player-btn-delete { background: n
 /* ⚫ ТЕМА: HARD-GRAY */
 body main.hard-gray ~ .blog-audio-player-container {
   background-color: rgba(0, 0, 0, 0.6);border-top: 1px solid rgba(255, 255, 255, 0.08);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(20px);
 }
 
 body main.hard-gray ~ .blog-audio-player-container .player-main-title { color: #fff; }
@@ -112,7 +123,11 @@ body main.hard-gray ~ .blog-audio-player-container .player-progress-track { back
 body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.hard-gray ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
-body main.hard-gray ~ .blog-audio-player-container .player-queue-item { background-color: rgba(255, 255, 255, 0.01); border: 1px solid transparent; }
+body main.hard-gray ~ .blog-audio-player-container .player-queue-item {
+  /* background-color: rgba(255, 255, 255, 0.01); */
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
+}
 body main.hard-gray ~ .blog-audio-player-container .player-queue-item.active {
   background-color: rgba(255, 142, 83, 0.08); border: 1px solid rgba(255, 142, 83, 0.2); }
 body main.hard-gray ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); font-weight: bold; }
@@ -132,7 +147,7 @@ body main.hard-gray ~ .blog-audio-player-container .player-btn-delete { backgrou
 /* 🌌 ТЕМА: DARK */
 body main.dark ~ .blog-audio-player-container {
   background-color: rgba(0, 0, 0, 0.2);border-top: 1px solid rgba(255,255,255,.5);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(20px);
 }
 body main.dark ~ .blog-audio-player-container .player-main-title { color: #fff; }
 body main.dark ~ .blog-audio-player-container .player-active-title { color: #ff781e; }
@@ -150,7 +165,11 @@ body main.dark ~ .blog-audio-player-container .player-progress-track { backgroun
 body main.dark ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.dark ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
 body main.dark ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
-body main.dark ~ .blog-audio-player-container .player-queue-item { background-color: rgba(255, 255, 255, 0.01); border: 1px solid transparent; }
+body main.dark ~ .blog-audio-player-container .player-queue-item {
+  /* background-color: rgba(255, 255, 255, 0.01); */
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
+}
 body main.dark ~ .blog-audio-player-container .player-queue-item.active {
   background-color: rgba(255, 120, 30, 0.08); border: 1px solid rgba(255, 120, 30, 0.2); }
 body main.dark ~ .blog-audio-player-container .player-track-link { color: rgba(255, 255, 255, 0.8); font-weight: bold; }

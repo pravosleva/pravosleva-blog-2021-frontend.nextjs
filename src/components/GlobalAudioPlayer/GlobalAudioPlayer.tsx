@@ -150,7 +150,10 @@ export const GlobalAudioPlayer = () => {
                   {activeTrack.title}
                 </div>
               </div>
-              <button onClick={() => setPlayerMinimized(false)} className="player-btn-action">Развернуть 🔼</button>
+              <button
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                onClick={() => setPlayerMinimized(false)} className="player-btn-action">
+                <span>Развернуть</span><span>🔼</span></button>
               <div className="player-progress-track" style={{ position: 'absolute', bottom: 0, left: '-20px', right: '-20px', height: '4px' }}>
                 <div style={{ width: `${progressPercent}%`, height: '100%', background: '#FF8E53', transition: 'width 0.1s linear' }} />
               </div>
@@ -185,17 +188,11 @@ export const GlobalAudioPlayer = () => {
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  
-                  <button
-                    onClick={() => setPlayerMinimized(true)}
-                    className="player-btn-minimize"
-                    style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}
-                  >
-                    <span>✕</span>
-                    <span>Свернуть</span>
-                  </button>
-                </div>
+                <button
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                  onClick={() => setPlayerMinimized(true)} className="player-btn-action">
+                    <span>Свернуть</span><span>🔽</span>
+                </button>
               </div>
 
               <div className="player-queue-section" style={{ paddingTop: '8px' }}>
@@ -241,7 +238,7 @@ export const GlobalAudioPlayer = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div className="player-meta-info" style={{ fontSize: '0.75em', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
-                    <span>Очередь подкастов:</span><b className="player-queue-count">{queue.length}</b>
+                    <span>Подкастов в очереди — </span><b className="player-queue-count">{queue.length}</b>
                   </div>
                   
                   {/* ИСПРАВЛЕНО: Добавлен размер занимаемого кэша PWA */}
@@ -252,7 +249,10 @@ export const GlobalAudioPlayer = () => {
 
                 {
                   ((isPlaying && !isCurrentTrackBroken) || (totalPages > 1)) && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                      }}>
                       {
                         isPlaying && !isCurrentTrackBroken && (
                           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -267,46 +267,19 @@ export const GlobalAudioPlayer = () => {
                                   // padding: '6px 12px',
                                   // borderRadius: '12px',
                                   cursor: 'pointer',
-                                  fontSize: '0.85em',
                                   fontWeight: 500,
                                   transition: 'all 0.2s ease',
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: '4px',
-                                  padding: '10px 16px',
+                                  // padding: '10px 16px',
+                                  padding: '4px 16px',
+                                  fontSize: '1.0rem',
                                   borderRadius: '8px',
                                 }}
                                 title="Полностью остановить и закрыть плеер"
                               >
-                                ⏹️
-                              </button>
-                            )}
-                            {isPlaying && !isCurrentTrackBroken && (
-                              <button 
-                                onClick={!!activeTrack ? () => toggleTrack(activeTrack) : undefined} 
-                                className="player-btn-pause"
-                                style={{
-                                  // background: 'rgba(255, 77, 77, 0.1)',
-                                  // border: '2px solid rgba(255, 77, 77, 0.2)',
-                                  // border: '2px solid rgb(204, 204, 204)',
-                                  background: 'rgba(255, 142, 83, 0.1)',
-                                  border: '2px solid rgba(255, 77, 77, 0.2)',
-                                  // color: '#ff4d4d',
-                                  // padding: '6px 12px',
-                                  // borderRadius: '12px',
-                                  cursor: 'pointer',
-                                  fontSize: '0.85em',
-                                  fontWeight: 500,
-                                  transition: 'all 0.2s ease',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  padding: '10px 16px',
-                                  borderRadius: '8px',
-                                }}
-                                title="Полностью остановить и закрыть плеер"
-                              >
-                                ⏸️
+                                ⏏️
                               </button>
                             )}
                           </div>
@@ -314,12 +287,45 @@ export const GlobalAudioPlayer = () => {
                       }
 
                       {totalPages > 1 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ margin: '0 auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="player-pagination-btn">◀</button>
                           <span className="player-meta-info" style={{ fontSize: 'small' }}>{currentPage} / {totalPages}</span>
                           <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="player-pagination-btn">▶</button>
                         </div>
                       )}
+
+                      {
+                        isPlaying && !isCurrentTrackBroken && (
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <button 
+                              onClick={!!activeTrack ? () => toggleTrack(activeTrack) : undefined} 
+                              className="player-btn-pause"
+                              style={{
+                                // background: 'rgba(255, 77, 77, 0.1)',
+                                // border: '2px solid rgba(255, 77, 77, 0.2)',
+                                // border: '2px solid rgb(204, 204, 204)',
+                                background: 'rgba(255, 142, 83, 0.1)',
+                                border: '2px solid rgba(255, 77, 77, 0.2)',
+                                // color: '#ff4d4d',
+                                // padding: '6px 12px',
+                                // borderRadius: '12px',
+                                cursor: 'pointer',
+                                fontWeight: 500,
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '4px 16px',
+                                fontSize: '1.0rem',
+                                borderRadius: '8px',
+                              }}
+                              title="Полностью остановить и закрыть плеер"
+                            >
+                              ⏸️
+                            </button>
+                          </div>
+                        )
+                      }
                     </div>
                   )
                 }
