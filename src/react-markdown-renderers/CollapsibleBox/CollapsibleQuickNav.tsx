@@ -216,7 +216,7 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
               pointerEvents: item.isVisible ? 'none' : 'auto', 
               cursor: item.isVisible ? 'not-allowed' : 'pointer',
 
-              // fontWeight: item.isVisible ? 'normal' : 'bold',
+              fontFamily: 'Montserrat, system-ui',
               fontWeight : 'bold',
               transition: 'all 0.15s ease',
               // boxShadow: item.isVisible ? 'none' : '0 2px 4px rgba(0,0,0,0.04)',

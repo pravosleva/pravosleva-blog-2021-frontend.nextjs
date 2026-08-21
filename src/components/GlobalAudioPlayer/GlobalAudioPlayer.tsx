@@ -22,7 +22,7 @@ export const GlobalAudioPlayer = () => {
   const lastSavedTimeRef = useRef<number>(0)
   
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const itemsPerPage = 2
+  const itemsPerPage = 3
   const totalPages = Math.ceil(queue.length / itemsPerPage)
 
   const activeTrack = currentTrack || (queue.length > 0 ? queue[0] : null);
