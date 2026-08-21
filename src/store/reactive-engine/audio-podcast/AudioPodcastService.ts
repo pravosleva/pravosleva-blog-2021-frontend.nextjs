@@ -15,8 +15,8 @@ export class AudioPodcastService extends AbstractService {
   public isPlaying: Signal<boolean>;
   public currentTime: Signal<number>;
   public duration: Signal<number>;
-
   private audioEl: HTMLAudioElement | null = null;
+  public playbackRate: Signal<number>;
 
   constructor(...args: any[]) {
     // @ts-ignore
@@ -41,6 +41,10 @@ export class AudioPodcastService extends AbstractService {
     const activeTrackId = savedActiveTrack?.id || (initialQueue[0]?.id || '');
     this.currentTime = this.engine.signal<number>(this.getTrackProgress(activeTrackId), 'audio:current-time');
     this.duration = this.engine.signal<number>(0, 'audio:duration');
+
+    const savedRate = typeof window !== 'undefined' ? localStorage.getItem('blog_audio_playback_rate') : null;
+    this.playbackRate = this.engine.signal<number>(savedRate ? parseFloat(savedRate) : 1.0, 'audio:playback-rate');
+
   }
 
   private loadQueueFromStorage(): IAudioTrack[] {
@@ -137,6 +141,17 @@ export class AudioPodcastService extends AbstractService {
   public registerAudioElement(el: HTMLAudioElement | null): void {
     this.audioEl = el;
     if (el && !el.src) {
+      // -- NOTE: Speed exp
+      el.crossOrigin = 'anonymous';
+      // Устанавливаем сохраненную скорость для аудио-элемента
+      el.defaultPlaybackRate = this.playbackRate.value;
+      el.playbackRate = this.playbackRate.value;
+      // Дополнительно страхуем применение скорости при смене src
+      el.addEventListener('loadedmetadata', () => {
+        if (this.audioEl) this.audioEl.playbackRate = this.playbackRate.value;
+      });
+      // --
+
       const track = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
       if (track) {
         el.src = track.url;
@@ -306,5 +321,41 @@ export class AudioPodcastService extends AbstractService {
     // Сразу сохраняем прогресс, чтобы не ждать планового обновления
     this.saveTrackProgress(this.currentTrack.value.id, newTime);
     console.log(`⏩ Перемотка: смещение на ${seconds}с. Новое время: ${newTime.toFixed(1)}с.`);
+  }
+
+  /**
+   * Изменение скорости воспроизведения по кругу: 1.0 -> 1.25 -> 1.5 -> 2.0 -> 1.0
+   */
+  public togglePlaybackRate(): void {
+    const rates = [1.0, 1.25, 1.5, 2.0];
+    const currentIndex = rates.indexOf(this.playbackRate.value);
+    const nextIndex = (currentIndex + 1) % rates.length;
+    const nextRate = rates[nextIndex];
+
+    this.playbackRate.value = nextRate;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('blog_audio_playback_rate', nextRate.toString());
+    }
+
+    if (this.audioEl) {
+      this.audioEl.playbackRate = nextRate;
+    }
+    console.log(`⏱️ Скорость воспроизведения изменена на: x${nextRate}`);
+  }
+  /**
+   * Прямая установка конкретной скорости воспроизведения
+   */
+  public setPlaybackRate(rate: number): void {
+    if (this.playbackRate.value === rate) return;
+
+    this.playbackRate.value = rate;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('blog_audio_playback_rate', rate.toString());
+    }
+
+    if (this.audioEl) {
+      this.audioEl.playbackRate = rate;
+    }
+    console.log(`⏱️ Скорость принудительно изменена на: x${rate}`);
   }
 }

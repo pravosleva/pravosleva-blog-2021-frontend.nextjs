@@ -18,6 +18,7 @@ export const GlobalAudioPlayer = () => {
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
     saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
     playNextTrack, seekBackward, seekForward,
+    playbackRate, setPlaybackRate,
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -276,10 +277,61 @@ export const GlobalAudioPlayer = () => {
                       
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '16px',
+                        width: '100%',
+                        justifyContent: 'space-between',
+                      }}>
                         <div className="player-meta-info" style={{ fontSize: '0.75em', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
                           <span>Подкастов в очереди — </span><b className="player-queue-count">{queue.length}</b>
                         </div>
+
+                        {
+                          isPlaying && !isCurrentTrackBroken && (
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                              border: '1px solid rgba(255, 255, 255, 0.08)',
+                              borderRadius: '16px',
+                              // padding: '2px',
+                              gap: '8px'
+                            }}>
+                              {[1.0, 1.25, 1.5, 2.0].map((rate) => {
+                                const isSelected = playbackRate === rate; // Проверяем, выбрана ли эта скорость сейчас [2]
+                                
+                                return (
+                                  <button
+                                    key={rate}
+                                    disabled={isSelected} // Текущая скорость становится неактивной для кликов [2]
+                                    onClick={() => setPlaybackRate(rate)}
+                                    className={`player-rate-btn ${isSelected ? 'is-selected' : ''}`}
+                                    style={{
+                                      background: isSelected ? '#FF8E53' : 'transparent', // Выделяем активную [2]
+                                      // color: isSelected ? '#FFFFFF' : 'inherit',
+                                      border: 'none',
+                                      // padding: '4px 8px',
+                                      borderRadius: '10px',
+                                      fontSize: '0.75em',
+                                      fontWeight: 600,
+                                      cursor: isSelected ? 'default' : 'pointer', // Меняем курсор для заблокированной [2]
+                                      opacity: isSelected ? 1 : 0.7,
+                                      transition: 'all 0.15s ease',
+                                      display: 'flex',
+                                      alignItems: 'center'
+                                    }}
+                                    title={isSelected ? `Сейчас установлена скорость x${rate}` : `Переключить скорость на x${rate}`}
+                                  >
+                                    {rate === 1.0 ? 'x1' : `x${rate}`}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )
+                        }
                         
                         {/* ИСПРАВЛЕНО: Добавлен размер занимаемого кэша PWA */}
                         {/* <span style={{ fontSize: '0.7em', padding: '2px 6px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', opacity: 0.8 }} title="Объем аудиофайлов, сохраненных в памяти браузера для оффлайн-доступа">

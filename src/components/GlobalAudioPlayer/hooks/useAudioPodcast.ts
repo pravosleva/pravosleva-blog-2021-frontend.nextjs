@@ -15,6 +15,7 @@ export const useAudioPodcast = () => {
   const isPlaying = useReactiveValue0<boolean>(audioPodcastService.isPlaying)
   const currentTime = useReactiveValue0<number>(audioPodcastService.currentTime)
   const duration = useReactiveValue0<number>(audioPodcastService.duration)
+  const playbackRate = useReactiveValue0<number>(audioPodcastService.playbackRate)
   
   return {
     queue,
@@ -43,5 +44,8 @@ export const useAudioPodcast = () => {
     getAnalyser: () => audioPodcastService.getAnalyser(),
     seekForward: () => audioPodcastService.seekRelative(20),
     seekBackward: () => audioPodcastService.seekRelative(-20),
+    playbackRate,
+    togglePlaybackRate: () => audioPodcastService.togglePlaybackRate(),
+    setPlaybackRate: (rate: number) => audioPodcastService.setPlaybackRate(rate),
   }
 }
