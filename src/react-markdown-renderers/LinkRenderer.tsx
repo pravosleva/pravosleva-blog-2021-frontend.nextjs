@@ -303,9 +303,10 @@ interface LinkRendererProps {
 
 export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, title }) => {
   const { queue, currentTrack, isPlaying, toggleTrack, addToQueue, removeFromQueue, stopTrack } = useAudioPodcast()
-  const isAudioFile = href?.match(/\.(mp3|wav|ogg|m4a)(\?.*)?$/i)
+  // const isAudioFile = href?.match(/\.(mp3|wav|ogg|m4a)(\?.*)?$/i)
+  const isAudioLink = !!href && /\.(?:mp3|wav|ogg|m4a)(?:\?.*)?$/i.test(href);
 
-  if (!isAudioFile || !href) {
+  if (!isAudioLink || !href) {
     return <a href={href} target="_blank" rel="noopener noreferrer" title={title}>{children}</a>
   }
 
