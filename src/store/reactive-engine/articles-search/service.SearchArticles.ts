@@ -103,7 +103,7 @@ export class SearchArticlesService extends AbstractService {
         typeof queryValue !== 'string'
         ? 'queryValue ERR: Expected string!'
         : !(queryValue as string).trim()
-          ? 'queryValue ERR: Expected NOT EMPTY string!'
+          ? false // 'queryValue ERR: Expected NOT EMPTY string!'
           : true
     }
   )

@@ -35,7 +35,9 @@ body main.light ~ .blog-audio-player-container .player-pagination-btn {
   padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer;
 }
 body main.light ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
-body main.light ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(0, 0, 0, 0.06); }
+body main.light ~ .blog-audio-player-container .player-queue-section {
+  /* border-top: 1px solid rgba(0, 0, 0, 0.06); */
+}
 body main.light ~ .blog-audio-player-container .player-queue-item {
   /* background-color: rgba(0, 0, 0, 0.02); */
   background-color: rgb(237, 237, 237);
@@ -79,7 +81,9 @@ body main.gray ~ .blog-audio-player-container .player-btn-action { background: r
 body main.gray ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
 body main.gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
-body main.gray ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
+body main.gray ~ .blog-audio-player-container .player-queue-section {
+  /* border-top: 1px solid rgba(255, 255, 255, 0.05); */
+}
 body main.gray ~ .blog-audio-player-container .player-queue-item {
   /* background-color: rgba(255, 255, 255, 0.01); */
   background-color: rgba(255, 255, 255, 0.1);
@@ -122,7 +126,9 @@ body main.hard-gray ~ .blog-audio-player-container .player-btn-action { backgrou
 body main.hard-gray ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
 body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
-body main.hard-gray ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
+body main.hard-gray ~ .blog-audio-player-container .player-queue-section {
+  /* border-top: 1px solid rgba(255, 255, 255, 0.05); */
+}
 body main.hard-gray ~ .blog-audio-player-container .player-queue-item {
   /* background-color: rgba(255, 255, 255, 0.01); */
   background-color: rgba(255, 255, 255, 0.1);
@@ -164,7 +170,9 @@ body main.dark ~ .blog-audio-player-container .player-btn-action { background: r
 body main.dark ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
 body main.dark ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.dark ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
-body main.dark ~ .blog-audio-player-container .player-queue-section { border-top: 1px solid rgba(255, 255, 255, 0.05); }
+body main.dark ~ .blog-audio-player-container .player-queue-section {
+  /* border-top: 1px solid rgba(255, 255, 255, 0.05); */
+}
 body main.dark ~ .blog-audio-player-container .player-queue-item {
   /* background-color: rgba(255, 255, 255, 0.01); */
   background-color: rgba(255, 255, 255, 0.1);
@@ -324,4 +332,54 @@ body main.gray .player-btn-pause,
 body main.hard-gray .player-btn-pause,
 body main.dark .player-btn-pause {
   background-color: rgb(42, 42, 42);
+}
+
+/* Базовый контейнер плеера (всегда в DOM, управляется через GPU) */
+.blog-audio-player-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 16px 16px 0 0;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.85); /* Подстройте под вашу тему */
+  overflow: hidden;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  
+  /* ХАНДЛЕР ПЛАВНОСТИ: Анимируем трансформацию, высоту и паддинги */
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+              height 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+              padding 0.3s ease;
+  will-change: transform, height;
+}
+
+/* СОСТОЯНИЕ 1: Полностью скрыт (уезжает вниз за экран) */
+.blog-audio-player-container.is-hidden {
+  transform: translateY(100%);
+  pointer-events: none; /* Чтобы скрытый плеер не перехватывал клики */
+}
+
+/* СОСТОЯНИЕ 2: Свернут в тонкую шторку (FAB-режим) */
+.blog-audio-player-container.is-minimized {
+  transform: translateY(0);
+  /* height: calc(44px + env(safe-area-inset-bottom, 16px)); */
+  /* Высота теперь подстраивается под внутренний контент и ваши инлайн-паддинги */
+  height: auto; 
+  /* padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 4px); */
+  padding-bottom: 0 !important;
+}
+
+/* СОСТОЯНИЕ 3: Полностью развернут (показывает очередь и визуализатор) */
+.blog-audio-player-container.is-expanded {
+  transform: translateY(0);
+  /* Высоту можно поставить auto, но для плавной CSS-анимации 
+     лучше задать фиксированный max-height или фиксированную высоту */
+  height: auto; 
+  padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 10px);
 }

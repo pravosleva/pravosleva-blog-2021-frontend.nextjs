@@ -1,9 +1,10 @@
 import { searchEngine } from '~/store/reactive-engine/articles-search/searchEngine'
-import { AudioPodcastService, IAudioTrack } from '~/store/reactive-engine/audio-podcast'
+import { AudioPodcastService, IAudioTrack, AdvancedAudioPodcastService } from '~/store/reactive-engine/audio-podcast'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
 
 export const useAudioPodcast = () => {
-  const audioPodcastService = searchEngine.inject(AudioPodcastService)
+  // const audioPodcastService = searchEngine.inject(AudioPodcastService)
+  const audioPodcastService = searchEngine.inject(AdvancedAudioPodcastService)
 
   const queue = useReactiveValue0<IAudioTrack[]>(audioPodcastService.queue)
   const currentTrack = useReactiveValue0<IAudioTrack | null>(audioPodcastService.currentTrack)
@@ -39,5 +40,6 @@ export const useAudioPodcast = () => {
     setDurationValue: (v: number) => audioPodcastService.duration.value = v,
     stopTrack: () => audioPodcastService.stopTrack(),
     playNextTrack: () => audioPodcastService.playNextTrack(),
+    getAnalyser: () => audioPodcastService.getAnalyser(),
   }
 }
