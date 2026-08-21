@@ -156,7 +156,7 @@ export class AudioPodcastService extends AbstractService {
     this.isPlayerMinimized.value = false;
   }
 
-  public removeFromQueue(trackId: string): void {
+    public removeFromQueue(trackId: string): void {
     const wasPlayingTrack = this.currentTrack.value?.id === trackId || 
       (!this.currentTrack.value && this.queue.value[0]?.id === trackId);
 
@@ -165,26 +165,29 @@ export class AudioPodcastService extends AbstractService {
     this.queue.value = updatedQueue;
     this.saveQueueToStorage(updatedQueue);
 
-    // 2. Если удалили тот трек, который играл прямо сейчас
+    // 2. Если удалили тот трек, который воспроизводился или стоял на паузе в фокусе прямо сейчас
     if (wasPlayingTrack) {
       if (updatedQueue.length > 0) {
-        // ИСПРАВЛЕНО: Переключаем стейт и нативный плеер на новый ПЕРВЫЙ трек из ОСТАВШЕЙСЯ очереди
+        // Переключаем стейт на новый ПЕРВЫЙ трек из ОСТАВШЕЙСЯ очереди
         const nextTrack = updatedQueue[0];
         this.currentTrack.value = nextTrack;
         
+        // ИСПРАВЛЕНО: Принудительно гасим статус воспроизведения в реактивном поле
+        this.isPlaying.value = false;
+
         if (this.audioEl) {
+          // Нативно переключаем аудио-тег на новый файл
           this.audioEl.src = nextTrack.url;
-          this.audioEl.load();
+          this.audioEl.load(); // Подгружаем метаданные
+          
+          // Подтягиваем его сохраненный прогресс
           this.currentTime.value = this.getTrackProgress(nextTrack.id);
           this.audioEl.currentTime = this.currentTime.value;
           
-          // Если плеер играл — продолжаем играть новый трек, если стоял на паузе — оставляем на паузе
-          if (this.isPlaying.value) {
-            this.audioEl.play().catch(() => { this.isPlaying.value = false; });
-          }
+          // Метод .play() больше НЕ вызывается. Трек просто «встает в гнездо» на паузу.
         }
       } else {
-        // Очередь полностью пуста — глушим всё
+        // Очередь полностью пуста — глушим всё и очищаем UI
         this.currentTrack.value = null;
         this.isPlaying.value = false;
         this.currentTime.value = 0;
