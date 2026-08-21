@@ -14,9 +14,10 @@ export class AudioPodcastService extends AbstractService {
   public trackErrors: Signal<Record<string, boolean>>;
   public isPlaying: Signal<boolean>;
   public currentTime: Signal<number>;
-  public duration: Signal<number>;
 
   private audioEl: HTMLAudioElement | null = null;
+  // 1. Добавьте в список сигналов класса:
+  public duration: Signal<number>;
 
   constructor(...args: any[]) {
     // @ts-ignore
@@ -32,6 +33,10 @@ export class AudioPodcastService extends AbstractService {
     
     const firstTrackId = initialQueue[0]?.id || '';
     this.currentTime = this.engine.signal<number>(this.getTrackProgress(firstTrackId), 'audio:current-time');
+
+    // ВСЕ ЭФФЕКТЫ ДВИЖКА (this.engine.effect) ПОЛНОСТЬЮ УДАЛЕНЫ, ЧТОБЫ ИСКЛЮЧИТЬ ЦИКЛЫ И ЗАЕДАНИЯ
+
+    // 2. Внутри constructor инициализируйте его:
     this.duration = this.engine.signal<number>(0, 'audio:duration');
   }
 
@@ -77,8 +82,7 @@ export class AudioPodcastService extends AbstractService {
 
   public toggleTrack(track: IAudioTrack): void {
     if (!this.audioEl) return;
-
-    // Автоматически добавляем трек в очередь, если запустили из статьи
+    // Автоматически добавляем трек в очередь, если пользователь запустил его прямо из текста статьи
     const currentQueue = [...this.queue.value];
     const isDuplicate = currentQueue.some(t => t.id === track.id);
     if (!isDuplicate) {
@@ -88,10 +92,18 @@ export class AudioPodcastService extends AbstractService {
     }
 
     const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
+    console.log(JSON.stringify(activeTrack, null, 2))
+
     const isCurrentActive = activeTrack?.id === track.id;
 
+    // -- EXP
+    if (!!activeTrack && !isCurrentActive) {
+      this.audioEl.src = activeTrack.url;
+      this.audioEl.load();
+    }
+    // --
+
     if (isCurrentActive) {
-      // Клик по текущему треку: играть / пауза
       if (this.audioEl.paused) {
         this.audioEl.play().then(() => {
           this.isPlaying.value = true;
@@ -103,12 +115,13 @@ export class AudioPodcastService extends AbstractService {
         this.isPlaying.value = false;
       }
     } else {
-      // ИСПРАВЛЕНО: Чистое переключение на совершенно другой трек
       this.currentTrack.value = track;
       this.isPlayerVisible.value = true;
       this.isPlayerMinimized.value = false;
-      this.duration.value = 0; 
 
+      // 3. Внутрь метода toggleTrack(), в ветку else (когда включается ДРУГОЙ трек), 
+      // перед или после изменения src добавьте сброс длительности:
+      this.duration.value = 0; 
       this.audioEl.src = track.url;
       this.audioEl.load();
 
@@ -123,6 +136,7 @@ export class AudioPodcastService extends AbstractService {
         this.isPlaying.value = false;
       });
 
+      console.log('- 2.5 | play called')
       const errors = { ...this.trackErrors.value };
       delete errors[track.id];
       this.trackErrors.value = errors;
@@ -137,7 +151,10 @@ export class AudioPodcastService extends AbstractService {
     // 2. Обнуляем реактивные сигналы состояния плеера
     this.isPlaying.value = false;
     this.currentTime.value = 0;
-    // 3. Опционально: сбрасываем прогресс текущего трека в localStorage, если нужно, чтобы при следующем запуске он играл с начала
+    // 3. Закрываем нижнюю шторку управления
+    // this.isPlayerVisible.value = false;
+    // this.isPlayerMinimized.value = false;
+    // 4. Опционально: сбрасываем прогресс текущего трека в localStorage, если нужно, чтобы при следующем запуске он играл с начала
     const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
     if (activeTrack) {
       this.saveTrackProgress(activeTrack.id, 0);
@@ -157,47 +174,26 @@ export class AudioPodcastService extends AbstractService {
   }
 
   public removeFromQueue(trackId: string): void {
-    const wasPlayingTrack = this.currentTrack.value?.id === trackId || 
-      (!this.currentTrack.value && this.queue.value[0]?.id === trackId);
-
-    // 1. Формируем новую очередь БЕЗ удаляемого трека
-    const updatedQueue = this.queue.value.filter((t: IAudioTrack) => t.id !== trackId);
-    this.queue.value = updatedQueue;
-    this.saveQueueToStorage(updatedQueue);
-
-    // 2. Если удалили тот трек, который играл прямо сейчас
-    if (wasPlayingTrack) {
-      if (updatedQueue.length > 0) {
-        // ИСПРАВЛЕНО: Переключаем стейт и нативный плеер на новый ПЕРВЫЙ трек из ОСТАВШЕЙСЯ очереди
-        const nextTrack = updatedQueue[0];
-        this.currentTrack.value = nextTrack;
-        
-        if (this.audioEl) {
-          this.audioEl.src = nextTrack.url;
-          this.audioEl.load();
-          this.currentTime.value = this.getTrackProgress(nextTrack.id);
-          this.audioEl.currentTime = this.currentTime.value;
-          
-          // Если плеер играл — продолжаем играть новый трек, если стоял на паузе — оставляем на паузе
-          if (this.isPlaying.value) {
-            this.audioEl.play().catch(() => { this.isPlaying.value = false; });
-          }
-        }
-      } else {
-        // Очередь полностью пуста — глушим всё
-        this.currentTrack.value = null;
+    const { value: snapshot } = this.currentTrack
+    const { value: currentQueueSnapshot } = this.queue;
+    if (snapshot?.id === trackId) {
+      this.currentTrack.value = currentQueueSnapshot.length > 0 ? currentQueueSnapshot[0] : null;
+      if (!this.currentTrack.value) {
+        console.log('-- 1.1.1')
         this.isPlaying.value = false;
-        this.currentTime.value = 0;
-        this.duration.value = 0;
         if (this.audioEl) {
+          console.log('-- 1.1.1.1 | src will be reset')
           this.audioEl.src = '';
+          this.currentTime.value = 0
         }
       }
     }
+
+    const updatedQueue = this.queue.value.filter((t: IAudioTrack) => t.id !== trackId);
+    this.queue.value = updatedQueue;
+    this.saveQueueToStorage(updatedQueue);
     
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(`track_progress_${trackId}`);
-    }
+    if (typeof window !== 'undefined') localStorage.removeItem(`track_progress_${trackId}`);
   }
 
   public markTrackAsBroken(trackId: string): void {
