@@ -8,14 +8,14 @@ import {
 import { HeadingRenderer } from './HeadingRenderer'
 import { ImageRenderer } from './ImageRenderer'
 import { HtmlRenderer } from './HtmlRenderer'
-import { LinkRenderer } from './LinkRenderer'
+import { LinkRenderer } from './LinkRenderer/LinkRenderer'
 import { TableRenderer } from './TableRenderer'
 
 export * from './BlockquoteRenderer'
 export * from './CodeRenderer'
 export * from './HeadingRenderer'
 export * from './ImageRenderer/ImageRenderer.v0'
-export * from './LinkRenderer'
+export * from './LinkRenderer/LinkRenderer'
 
 export const baseRenderers = {
   blockquote: BlockquoteRenderer,

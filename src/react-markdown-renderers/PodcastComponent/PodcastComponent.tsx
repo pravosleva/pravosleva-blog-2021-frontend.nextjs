@@ -67,7 +67,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
         borderRadius: '16px',
         backgroundColor: bg ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
         border: bg ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
-        backgroundImage: bg ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,0.4) 100%), url(${bg})` : 'none',
+        backgroundImage: bg ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,0.4) 100%), url(${bg})` : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(0, 0, 0, 0.65) 100%)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         overflow: 'hidden',

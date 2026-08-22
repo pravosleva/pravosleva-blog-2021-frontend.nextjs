@@ -68,25 +68,10 @@ export default class MyDocument extends Document {
           <link href="/static/css/min/audio-podcast.css" rel="stylesheet" />
           <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" />
           <link href="/static/css/min/audio-podcast-preview.css" rel="stylesheet" />
+          <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
 
           {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
           {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}
-
-          {/* <link
-            href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
-            rel="preload"
-            as="style"
-            // @ts-ignore
-            fetchpriority="high"
-            integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
-            crossOrigin="anonymous"
-          />
-          <link
-            rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.8.0/css/all.css"
-            integrity="sha384-Mmxa0mLqhmOeaE8vgOSbKacftZcsNYDjQzuCOm6D02luYSzBG8vpaOykv9lFQ51Y"
-            crossOrigin="anonymous"
-          /> */}
 
         </Head>
         <body style={{ fontSize: '0.9em' }}>

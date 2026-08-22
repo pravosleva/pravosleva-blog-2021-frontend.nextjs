@@ -436,4 +436,19 @@ export class AudioPodcastService extends AbstractService {
       this.audioChannel.postMessage({ type, payload });
     }
   }
+
+  /**
+   * Публичный метод для глушения аудио-плеера извне (например, из видеоплеера)
+   */
+  public pauseForExternalMedia(): void {
+    // 1. Ставим на паузу локальный плеер в текущей вкладке
+    if (this.audioEl && !this.audioEl.paused) {
+      this.audioEl.pause();
+      this.isPlaying.value = false;
+    }
+    
+    // 2. Отправляем сигнал в BroadcastChannel, чтобы заглушить подкасты в соседних вкладках
+    this.broadcast('someone_started_playback');
+    console.log('🔇 [Audio Engine]: Подкаст приостановлен из-за запуска внешнего видео.');
+  }
 }

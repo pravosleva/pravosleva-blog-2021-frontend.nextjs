@@ -1,0 +1,22 @@
+/* Делаем фокус на видео при наведении (опционально) */
+.blog-inline-video-container video {
+  transition: filter 0.3s ease;
+}
+
+.blog-inline-video-container video:hover {
+  filter: brightness(1.05); /* Легкое осветление кадра при наведении */
+}
+
+/* Стилизуем полосу прокрутки внутри описания, если текст будет слишком длинным */
+.blog-inline-video-container p {
+  word-break: break-word;
+}
+
+body main.light .blog-inline-video-container {
+  color: #000;
+}
+body main.gray .blog-inline-video-container,
+body main.hard-gray .blog-inline-video-container,
+body main.dark .blog-inline-video-container {
+  color: #fff;
+}

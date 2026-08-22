@@ -47,5 +47,6 @@ export const useAudioPodcast = () => {
     playbackRate,
     togglePlaybackRate: () => audioPodcastService.togglePlaybackRate(),
     setPlaybackRate: (rate: number) => audioPodcastService.setPlaybackRate(rate),
+    pauseForExternalMedia: () => audioPodcastService.pauseForExternalMedia()
   }
 }
