@@ -1,0 +1,23 @@
+body main .controls-box a {
+  border-radius: 16px;
+}
+body main.light .controls-box a {
+  color: #0162c8;
+  background-color: #ededed;
+  box-shadow: none;
+}
+body main.gray .controls-box a {
+  color: #0162c8;
+  background-color: #ededed;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+body main.hard-gray .controls-box a {
+  color: #f9f871;
+  background-color: gray;
+  box-shadow: none;
+}
+body main.dark .controls-box a {
+  color: #ff781e;
+  background-color: rgba(255,255,255,.25);
+  box-shadow: none;
+}

@@ -44,28 +44,28 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
   // }
 
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
-  const linkColor = useMemo(() => {
-    return (
-      currentTheme === 'hard-gray'
-        ? '#fff'
-        : currentTheme === 'dark'
-          ? '#fff' : '#0162c8'
-    )
-  }, [currentTheme])
-  const bgBlurClassName = useMemo(() => {
-    return (
-      currentTheme === 'hard-gray'
-        ? 'backdrop-blur--subdark'
-        : currentTheme === 'dark'
-          ? 'backdrop-blur--lite' : 'backdrop-blur--lite'
-    )
-  }, [currentTheme])
+  // const linkColor = useMemo(() => {
+  //   return (
+  //     currentTheme === 'hard-gray'
+  //       ? '#fff'
+  //       : currentTheme === 'dark'
+  //         ? '#fff' : '#0162c8'
+  //   )
+  // }, [currentTheme])
+  // const bgBlurClassName = useMemo(() => {
+  //   return (
+  //     currentTheme === 'hard-gray'
+  //       ? 'backdrop-blur--subdark'
+  //       : currentTheme === 'dark'
+  //         ? 'backdrop-blur--lite' : 'backdrop-blur--lite'
+  //   )
+  // }, [currentTheme])
   if (!controlsJson) return <div>ERR: Incorrect props</div>
   if (!arePropsValid) return <div>ERR: Incorrect json</div>
 
   return (
     // @ts-ignore
-    <div className={clsx(styles.wrapper)}>
+    <div className={clsx(styles.wrapper, 'controls-box')}>
       {normalizedControls.map(({
         label,
         link,
@@ -151,9 +151,9 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
           // </SelfLinkRenderer>
           <a
             key={`${link}-${i}`}
-            className={bgBlurClassName}
+            // className={bgBlurClassName}
             style={{
-              color: linkColor,
+              // color: linkColor,
               display: 'flex',
               flexDirection: 'column',
               alignItems: isFirst
@@ -165,9 +165,9 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
               textDecoration: 'none',
               // border: '1px solid red',
               width: '100%',
-              borderRadius: '8px',
+              // borderRadius: '8px',
               padding: '16px',
-              boxShadow: '0 3px 7px -1px rgba(0, 0, 0, .1)',
+              // boxShadow: '0 3px 7px -1px rgba(0, 0, 0, .1)',
             }}
             href={link}
             target={isExternalLink ? '_blank' : '_self'}
