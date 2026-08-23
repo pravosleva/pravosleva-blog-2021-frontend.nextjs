@@ -70,14 +70,24 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
           display: 'inline-flex',
           width: 'fit-content',
           alignItems: 'center', gap: '8px', padding: '16px', borderRadius: '32px',
-          backgroundColor: 'rgba(255,142,83,.08)',
-          border: '1px solid rgba(255, 142, 83, 0.15)', verticalAlign: 'middle' }}>
+          // backgroundColor: 'rgba(255,142,83,.08)',
+          // border: '1px solid rgba(255, 142, 83, 0.15)',
+          verticalAlign: 'middle',
+        }}>
         <button
           onClick={() => toggleTrack(trackData)}
           className={`podcast-inline-btn-play ${isThisTrackPlaying ? 'active' : ''}`}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', background: isThisTrackPlaying ? '#FF8E53' : 'rgba(255, 142, 83, 0.1)', color: isThisTrackPlaying ? '#fff' : 'inherit', border: 'none', padding: '6px 14px', borderRadius: '16px', cursor: 'pointer',
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            background: isThisTrackPlaying ? '#FF8E53' : 'rgba(255, 142, 83, 0.1)',
+            color: isThisTrackPlaying ? '#fff' : 'inherit',
+            border: 'none',
+            padding: '6px 14px',
+            borderRadius: '16px', cursor: 'pointer',
             // fontSize: '0.85em',
-            fontWeight: 500, transition: 'all 0.2s ease' }}
+            fontWeight: 'bold',
+            transition: 'all 0.2s ease',
+          }}
         >
           {isThisTrackPlaying
             ? <span style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}><span>⏸</span><span>Слушаю сейчас</span></span>

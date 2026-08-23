@@ -64,7 +64,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
         justifyContent: 'space-between',
         padding: '16px',
         marginBottom: '1.45rem',
-        borderRadius: '16px',
+        borderRadius: '24px',
         backgroundColor: bg ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
         border: bg ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
         backgroundImage: bg ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,0.4) 100%), url(${bg})` : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(0, 0, 0, 0.65) 100%)',
@@ -131,10 +131,10 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
               color: '#ffffff',
               border: 'none',
               padding: '6px 14px',
-              borderRadius: '16px',
+              borderRadius: '24px',
               cursor: !isMounted ? 'not-allowed' : 'pointer',
-              // fontSize: '0.85em',
-              // fontWeight: 600,
+              fontSize: '0.85em',
+              fontWeight: 'bold',
               transition: 'all 0.2s ease',
               opacity: !isMounted ? 0.6 : 1, // Визуально приглушаем кнопку во время SSR
               display: 'inline-flex',
@@ -159,7 +159,8 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
                 padding: '6px 14px',
                 borderRadius: '16px',
                 cursor: !isMounted ? 'not-allowed' : 'pointer',
-                // fontSize: '0.8em',
+                fontSize: '0.85em',
+                fontWeight: 'bold',
                 transition: 'all 0.2s ease',
                 opacity: !isMounted ? 0.5 : 1,
                 display: 'inline-flex',
@@ -176,7 +177,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
           {isInQueue && (
             <span
               style={{
-                // fontSize: '0.75em',
+                fontSize: '0.85em',
                 color: 'rgba(255,255,255,0.4)',
                 // padding: '4px 8px',
                 display: 'inline-flex',
