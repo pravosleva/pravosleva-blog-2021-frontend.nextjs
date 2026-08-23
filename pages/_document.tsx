@@ -55,6 +55,7 @@ export default class MyDocument extends Document {
           
           {/* Наш главный файл темизации — ему точно нужен высокий приоритет */}
           <link rel="stylesheet" href="/static/css/min/global-theming.css" fetchpriority="high" />
+          <link rel="stylesheet" href="/static/css/min/block-quotes.css" fetchpriority="high" />
           
           <link rel="stylesheet" href="/static/css/min/standart-form.css" />
           <link rel="stylesheet" href="/static/css/min/rippled-btn.css" />

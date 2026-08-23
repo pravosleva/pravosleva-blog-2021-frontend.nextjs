@@ -37,26 +37,18 @@ export const useStyles = makeStyles((_theme) => ({
       lineHeight: '1em',
       marginTop: 0,
     },
-    whiteSpace: 'pre-wrap',
-    // fontSize: '0.9em',
+    // whiteSpace: 'pre-wrap', // Оставляем для старого контента из value
     maxWidth: '100%',
-    // maxWidth: '550px',
-    borderRadius: '8px',
+    borderRadius: '16px',
     margin: '0px auto 1.45rem auto',
-    // fontFamily: 'Open Sans',
     fontStyle: 'normal',
     fontSize: '0.9em',
     color: '#555',
-    /* padding: 1.2em 30px 1.2em 75px; */
-    padding: '1.2em 30px 1.2em 50px',
-    // borderLeft: '8px solid #78c0a8',
-    // lineHeight: '1.6',
+    padding: '16px 16px 16px 50px',
     position: 'relative',
     background: '#ededed',
-    // quotes: '"“" "”" "‘" "’"',
     '&::before': {
       fontFamily: 'Arial',
-      // color: '#78c0a8',
       fontStyle: 'normal',
       fontSize: '2em',
       position: 'absolute',
@@ -72,10 +64,46 @@ export const useStyles = makeStyles((_theme) => ({
     '& p': {
       margin: 0,
     },
+
+    /* ==========================================================
+       ИСПРАВЛЕНО: ЖЕСТКИЙ СБРОС ДЛЯ ПОДДЕРЖКИ НОВОГО СИНТАКСИСА КОДА
+       Отключаем pre-wrap для элементов кода, чтобы они не дробились 
+       посимвольно, и возвращаем им стандартный скролл
+       ========================================================== */
+    // '& pre, & code, & span': {
+    //   whiteSpace: 'pre !important', /* Запрещаем перенос инлайн-элементов кода */
+    // },
+    // '& pre': {
+    //   overflowX: 'auto !important', /* Включаем горизонтальный скролл для длинных строк */
+    //   width: '100% !important',
+    //   display: 'block !important',
+    // },
+    /* Для обычных абзацев внутри нового синтаксиса возвращаем нормальный перенос текста */
+    '& .alert-content-nodes p': {
+      whiteSpace: 'normal !important',
+      margin: '0 0 1em 0 !important',
+    },
+    '& .alert-content-nodes p:last-child': {
+      margin: '0 !important',
+    },
+
+    whiteSpace: 'pre-wrap',
+    
+    // ГАРАНТИРОВАННЫЙ СБРОС ЛЕСЕНКИ ДЛЯ КОДА
+    '& pre, & code, & span': {
+      whiteSpace: 'pre !important',
+      wordBreak: 'normal !important',
+      wordWrap: 'normal !important'
+    },
+    '& pre': {
+      overflowX: 'auto !important',
+      display: 'block !important',
+      width: '100% !important'
+    }
   },
   likeBlockuote_success: {
     quotes: `"${getIconByType(EType.success)}" "”" "${getIconByType(EType.success)}" "’"`,
-    borderLeft: '8px solid rgba(255,255,255,0.35)',
+    borderLeft: '16px solid rgba(255,255,255,0.35)',
     // background: 'rgba(120,192,168,1)',
     background: 'linear-gradient(180deg, #00b273 15%, #009e82 90%)',
     color: '#FFF',
@@ -89,7 +117,7 @@ export const useStyles = makeStyles((_theme) => ({
   },
   likeBlockuote_warning: {
     quotes: `"${getIconByType(EType.warning)}" "”" "${getIconByType(EType.warning)}" "’"`,
-    borderLeft: '8px solid rgba(255,255,255,0.35)',
+    borderLeft: '16px solid rgba(255,255,255,0.35)',
     // background: 'rgba(255,142,83,1)',
     background: 'linear-gradient(180deg, #ff6c52 15%, #ff8a53 90%)',
     color: '#FFF',
@@ -103,7 +131,7 @@ export const useStyles = makeStyles((_theme) => ({
   },
   likeBlockuote_danger: {
     quotes: `"${getIconByType(EType.danger)}" "”" "${getIconByType(EType.danger)}" "’"`,
-    borderLeft: '8px solid rgba(255,255,255,0.35)',
+    borderLeft: '16px solid rgba(255,255,255,0.35)',
     // background: 'rgba(244,67,44,1)',
     background: 'linear-gradient(180deg, #d63435 15%, #fd5951 90%)',
     color: '#FFF',
@@ -117,8 +145,8 @@ export const useStyles = makeStyles((_theme) => ({
   },
   likeBlockuote_info: {
     quotes: `"${getIconByType(EType.info)}" "”" "${getIconByType(EType.info)}" "’"`,
-    borderLeft: '8px solid rgba(255,255,255,0.35)',
-    // borderLeft: '8px solid #3FAEFD',
+    borderLeft: '16px solid rgba(255,255,255,0.35)',
+    // borderLeft: '16px solid #3FAEFD',
     // background: 'rgba(56,130,196,1)',
     background: 'linear-gradient(180deg, #0095fa 15%, #00b7ff 90%)',
     color: '#FFF',
@@ -132,7 +160,7 @@ export const useStyles = makeStyles((_theme) => ({
   },
   likeBlockuote_default: {
     quotes: `"${getIconByType(EType.default)}" "”" "${getIconByType(EType.default)}" "’"`,
-    borderLeft: '8px solid rgba(255,255,255,0.4)',
+    borderLeft: '16px solid rgba(255,255,255,0.4)',
     background: 'rgba(222,222,222,1)',
     color: '#000',
     '&::before': {
@@ -148,7 +176,7 @@ export const useStyles = makeStyles((_theme) => ({
   },
   likeBlockuote_draft: {
     quotes: `"${getIconByType(EType.draft)}" "”" "${getIconByType(EType.draft)}" "’"`,
-    borderLeft: '8px solid rgba(255,255,255,0.5)',
+    borderLeft: '16px solid rgba(255,255,255,0.5)',
     background: '#00e6b8',
     color: '#000',
     '&::before': {

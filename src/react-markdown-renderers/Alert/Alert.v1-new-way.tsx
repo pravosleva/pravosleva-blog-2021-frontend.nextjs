@@ -11,12 +11,18 @@ interface IProps {
   header?: string
 }
 
-// const Icon = ({ children, type }: { children: React.FC; type: EType }) => {
-//   return <div>{children}</div>
-// }
-
 export const Alert = ({ type, text, header }: IProps) => {
   const classes = useStyles()
+
+  // ИСПРАВЛЕНО: Безопасно склеиваем текст в единую строку, 
+  // если парсер разбил его на массив из-за переносов строк
+  const cleanText = React.useMemo(() => {
+    if (!text) return ''
+    if (Array.isArray(text)) {
+      return text.join('')
+    }
+    return String(text)
+  }, [text])
 
   return (
     // @ts-ignore
@@ -27,14 +33,14 @@ export const Alert = ({ type, text, header }: IProps) => {
           plugins={[gfm, { singleTilde: false }]}
           renderers={theNotePageRenderers}
           children={`## ${header}`}
-          // className={classes.header}
         />
       )}
       <ReactMarkdown
         // @ts-ignore
         plugins={[gfm, { singleTilde: false }]}
         renderers={theNotePageRenderers}
-        children={text}
+        // Передаем очищенный нормализованный текст
+        children={cleanText} 
       />
     </div>
   )

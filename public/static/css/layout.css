@@ -570,8 +570,8 @@ fieldset {
   margin-bottom: 1.45rem;
 }
 blockquote {
-  margin-left: 1.45rem;
-  margin-right: 1.45rem;
+  margin-left: 16px;
+  margin-right: 16px;
   margin-top: 0;
   padding-bottom: 0;
   padding-left: 0;

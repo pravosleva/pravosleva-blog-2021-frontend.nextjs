@@ -14,7 +14,28 @@ import { Podcast } from './PodcastComponent'
 // import { StickyHeader } from './StickyHeader'
 
 const componentTransforms = {
+  // -- NEW: Забираем текст из children, а не из атрибута value
+  // Alert: (props: any) => <Alert text={props.children || props.value} {...props} />,
+  // ИСПРАВЛЕНО: передаем и value, и children. Компонент сам разберется с приоритетом
   Alert: (props: any) => <Alert text={props.value} {...props} />,
+  // Alert: (props: any) => {
+  //   let textContent = props.value || ''
+    
+  //   // Если есть children, пытаемся вытащить текст из HTML-комментария
+  //   if (props.children) {
+  //     const rawChildren = Array.isArray(props.children) ? props.children.join('') : String(props.children)
+  //     // Вырезаем текст, находящийся между <!-- и -->
+  //     const match = rawChildren.match(/<!--([\s\S]*?)-->/)
+  //     if (match && match[1]) {
+  //       textContent = match[1]
+  //     } else {
+  //       textContent = rawChildren
+  //     }
+  //   }
+
+  //   return <Alert text={textContent} {...props} />
+  // },
+  // --
   ControlsBox: (props: any) => <ControlsBox {...props} />,
   React: (props: any) => <>{props.children}</>,
   YoutubeGrid,
