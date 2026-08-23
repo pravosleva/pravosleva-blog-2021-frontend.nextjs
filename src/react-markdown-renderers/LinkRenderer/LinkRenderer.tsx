@@ -43,7 +43,7 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
   }
 
   // КЕЙС 3: Обычная стандартная ссылка на статью или внешний ресурс
-  if (!href || !isVideoLink || !isAudioLink)
+  if (!href || (!isAudioLink && !isVideoLink))
     return (
       <a href={href} title={title} target="_blank" rel="noopener noreferrer">
         {children}

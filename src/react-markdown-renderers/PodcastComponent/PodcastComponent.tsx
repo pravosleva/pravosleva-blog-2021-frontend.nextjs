@@ -130,19 +130,21 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
               background: isPlayingNow ? '#ff4d4d' : '#FF8E53',
               color: '#ffffff',
               border: 'none',
-              padding: '6px 16px',
-              borderRadius: '20px',
+              padding: '6px 14px',
+              borderRadius: '16px',
               cursor: !isMounted ? 'not-allowed' : 'pointer',
-              fontSize: '0.85em',
-              fontWeight: 600,
+              // fontSize: '0.85em',
+              // fontWeight: 600,
               transition: 'all 0.2s ease',
+              opacity: !isMounted ? 0.6 : 1, // Визуально приглушаем кнопку во время SSR
               display: 'inline-flex',
+              flexDirection: 'row',
               alignItems: 'center',
-              gap: '6px',
-              opacity: !isMounted ? 0.6 : 1 // Визуально приглушаем кнопку во время SSR
+              gap: '8px',
             }}
           >
-            <span>{isPlayingNow ? '⏸ Пауза' : '▶ Слушать'}</span>
+            <span>{isPlayingNow ? '⏸' : '▶'}</span>
+            <span>{isPlayingNow ? 'Пауза' : 'Слушать'}</span>
           </button>
 
           {/* ИСПРАВЛЕНО: Кнопка "В очередь" рендерится декларативно и тоже блокируется при SSR */}
@@ -154,21 +156,37 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
                 background: 'rgba(255, 255, 255, 0.08)',
                 border: '1px solid rgba(255, 255, 255, 0.18)',
                 color: '#ffffff',
-                padding: '5px 14px',
-                borderRadius: '20px',
+                padding: '6px 14px',
+                borderRadius: '16px',
                 cursor: !isMounted ? 'not-allowed' : 'pointer',
-                fontSize: '0.8em',
+                // fontSize: '0.8em',
                 transition: 'all 0.2s ease',
-                opacity: !isMounted ? 0.5 : 1
+                opacity: !isMounted ? 0.5 : 1,
+                display: 'inline-flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '8px',
               }}
             >
-              ➕ В очередь
+              <span>➕</span>
+              <span>В очередь</span>
             </button>
           )}
           
           {isInQueue && (
-            <span style={{ fontSize: '0.75em', color: 'rgba(255,255,255,0.4)', padding: '4px 8px' }}>
-              ✓ В очереди
+            <span
+              style={{
+                // fontSize: '0.75em',
+                color: 'rgba(255,255,255,0.4)',
+                // padding: '4px 8px',
+                display: 'inline-flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span>✓</span>
+              <span>В очереди</span>
             </span>
           )}
         </div>
