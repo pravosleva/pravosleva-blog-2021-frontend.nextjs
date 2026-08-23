@@ -79,7 +79,7 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
           className={`podcast-inline-btn-play ${isThisTrackPlaying ? 'active' : ''}`}
           style={{
             display: 'flex', alignItems: 'center', gap: '8px',
-            background: isThisTrackPlaying ? '#FF8E53' : 'rgba(255, 142, 83, 0.1)',
+            background: isThisTrackPlaying ? '#FF8E53' : 'rgba(255, 142, 83, 0.5)',
             color: isThisTrackPlaying ? '#fff' : 'inherit',
             border: 'none',
             padding: '6px 14px',

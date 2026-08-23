@@ -20,7 +20,7 @@ class CustomErudaSingletone {
     this.document.body.appendChild(script)
     script.onload = function () {
       eruda.init()
-      eruda.position({ x: 80, y: 20 })
+      eruda.position({ x: 130, y: 20 })
     }
     script.onerror = function(err) {
       console.log(err)
