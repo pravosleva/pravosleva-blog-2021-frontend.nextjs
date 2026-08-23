@@ -171,7 +171,7 @@ export const GlobalAudioPlayer = () => {
         <div className={clsx('blog-audio-player-container', playerStateClass)} style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 2000,
           maxWidth: '600px', margin: '0 auto', borderRadius: '20px 20px 0 0',
-          transition: 'all 0.2s ease-out', overflow: 'hidden', paddingLeft: '20px', paddingRight: '20px',
+          transition: 'all 0.2s ease-out', overflow: 'hidden', paddingLeft: '16px', paddingRight: '16px',
           paddingTop: '10px',
           display: 'flex', flexDirection: 'column',
           // paddingBottom: isPlayerMinimized ? '0px' : 'calc(env(safe-area-inset-bottom, 16px) + 10px)',
@@ -190,7 +190,6 @@ export const GlobalAudioPlayer = () => {
                       </div>
                     </div>
                     <button
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                       onClick={() => setPlayerMinimized(false)} className="player-btn-action">
                       <span>Развернуть</span><span>🔼</span></button>
                     <div className="player-progress-track" style={{ position: 'absolute', bottom: 0, left: '-20px', right: '-20px', height: '4px' }}>
@@ -228,8 +227,9 @@ export const GlobalAudioPlayer = () => {
                       </div>
                       
                       <button
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                        onClick={() => setPlayerMinimized(true)} className="player-btn-action">
+                        onClick={() => setPlayerMinimized(true)}
+                        className="player-btn-action hide-desktop-action"
+                      >
                           <span>Свернуть</span><span>🔽</span>
                       </button>
                     </div>

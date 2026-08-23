@@ -3,8 +3,9 @@
 .limitedHeight {
   box-sizing: border-box;
 }
+
 .footerMainBox {
-  padding: 16px 0 16px 0;
+  padding: 16px 0 calc(16px + 50px + 16px) 0;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -12,10 +13,12 @@
   align-items: flex-start;
   gap: 16px;
 }
+
 @media (max-width: #{$sm}px) {
   .limitedHeight {
     min-height: calc(100svh - 40px);
   }
+
   .footerSiteInfoBox {
     display: flex;
     flex-wrap: wrap;
@@ -23,10 +26,12 @@
     gap: 4px;
   }
 }
+
 @media (min-width: calc(#{$sm}px + 1px)) {
   .limitedHeight {
     min-height: calc(100svh - 50px);
   }
+
   .footerSiteInfoBox {
     display: flex;
     flex-wrap: wrap;
@@ -35,7 +40,7 @@
   }
 }
 
-.footerSiteSocialBox{
+.footerSiteSocialBox {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;

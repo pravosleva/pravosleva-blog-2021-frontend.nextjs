@@ -17,13 +17,10 @@ export const InlineVideoPlayer: React.FC<TVideoProps> = ({ url, linkText, descri
     <div 
       className="blog-inline-video-container"
       style={{
-        // margin: '24px 0',
         marginBottom: '1.45rem',
         padding: '16px',
         borderRadius: '16px',
-        backgroundColor: 'rgba(255, 255, 255, 0.03)',
         border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
         display: 'flex',
         flexDirection: 'column',
         gap: '16px'

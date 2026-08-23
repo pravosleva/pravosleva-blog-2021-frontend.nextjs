@@ -14,9 +14,21 @@
 
 body main.light .blog-inline-video-container {
   color: #000;
+  background-color: #ededed;
+  box-shadow: none;
 }
-body main.gray .blog-inline-video-container,
-body main.hard-gray .blog-inline-video-container,
+body main.gray .blog-inline-video-container {
+  color: inherit;
+  background-color: #ededed;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+body main.hard-gray .blog-inline-video-container {
+  color: inherit;
+  background-color: gray;
+  box-shadow: none;
+}
 body main.dark .blog-inline-video-container {
   color: #fff;
+  background-color: rgba(255,255,255,.25);
+  box-shadow: none;
 }

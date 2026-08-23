@@ -164,7 +164,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
           {/* Облако тегов внизу статьи */}
           {tagList.length > 0 && (
-            <ResponsiveBlock isLimited isPaddedMobile style={{ paddingTop: '16px' }}>
+            <ResponsiveBlock isLimited isPaddedMobile style={{ paddingTop: '1.45rem' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
                 {tagList.map((tag) => (
                   <a
@@ -196,7 +196,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               </DesktopOnly>
               <MobileOnly
                 style={{
-                  margin: '16px 0px 0px 0px',
+                  margin: '1.45rem 0px 0px 0px',
                   paddingLeft: '16px',
                   position: 'sticky',
                   bottom: '76px',

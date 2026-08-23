@@ -11,7 +11,7 @@ body main.light ~ .blog-audio-player-container {
   backdrop-filter: blur(8px);
   background-color: rgba(255, 255, 255, 1);
   /* border-top: 1px solid rgba(0, 0, 0, 0.08); */
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
 }
 body main.light ~ .blog-audio-player-container .player-main-title { color: #111; }
 body main.light ~ .blog-audio-player-container .player-active-title { color: #ff781e; }
@@ -22,6 +22,17 @@ body main.light ~ .blog-audio-player-container .player-meta-info ~ span {
 body main.light ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue {
   color: #ff781e;
 }
+.player-btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 768px) {
+  .player-btn-action.hide-desktop-action {
+    display: none;
+  }
+}
+@media (min-width: 769px) {}
 body main.light ~ .blog-audio-player-container .player-queue-count { color: #000; }
 body main.light ~ .blog-audio-player-container .player-btn-minimize { color: rgba(0, 0, 0, 0.5); background: none; border: none; cursor: pointer; }
 body main.light ~ .blog-audio-player-container .player-btn-action {
@@ -60,7 +71,9 @@ body main.light ~ .blog-audio-player-container .player-btn-delete {
 
 /* 🔘 ТЕМА: GRAY */
 body main.gray ~ .blog-audio-player-container {
-  background-color: rgba(0, 0, 0, 0.6); border-top: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(20px);
 }
 body main.gray ~ .blog-audio-player-container .player-main-title {
@@ -107,7 +120,9 @@ body main.gray ~ .blog-audio-player-container .player-btn-delete { background: n
 
 /* ⚫ ТЕМА: HARD-GRAY */
 body main.hard-gray ~ .blog-audio-player-container {
-  background-color: rgba(0, 0, 0, 0.6);border-top: 1px solid rgba(255, 255, 255, 0.08);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(20px);
 }
 
@@ -152,7 +167,9 @@ body main.hard-gray ~ .blog-audio-player-container .player-btn-delete { backgrou
 
 /* 🌌 ТЕМА: DARK */
 body main.dark ~ .blog-audio-player-container {
-  background-color: rgba(0, 0, 0, 0.2);border-top: 1px solid rgba(255,255,255,.5);box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255,255,255,.5);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(20px);
 }
 body main.dark ~ .blog-audio-player-container .player-main-title { color: #fff; }

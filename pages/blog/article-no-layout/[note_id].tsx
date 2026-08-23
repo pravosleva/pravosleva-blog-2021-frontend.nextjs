@@ -28,7 +28,7 @@ const defaultBg = {
     w: 400,
     h: 400,
   },
-  type: 'image/webp',
+  type: 'image/png',
 }
 
 const BlogArticleSlug = ({ _pageService, article }: { _pageService: TPageService, article: TArticle }) => {
