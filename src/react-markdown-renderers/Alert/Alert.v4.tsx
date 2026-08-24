@@ -69,14 +69,14 @@ export const Alert = ({ type, text, header, rawChildren }: IProps) => {
               background-color: rgba(0, 0, 0, 0.6) !important;
               border-radius: 6px;
               padding: 16px !important;
-              margin: 0px !important;
               transform: none !important;
             }
             .article-alert p {
               white-space: normal !important;
               margin: 0 0 1em 0 !important;
             }
-            .article-alert p:last-child {
+            .article-alert p:last-child,
+            .article-alert pre:last-child {
               margin-bottom: 0 !important;
             }
           `}</style>

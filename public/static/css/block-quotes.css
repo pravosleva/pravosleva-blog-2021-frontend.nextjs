@@ -10,3 +10,12 @@ body main.hard-gray .description-markdown .blog-standard-blockquote {
 body main.dark .description-markdown .blog-standard-blockquote {
   border-left: 4px solid #fff;
 }
+
+@media (max-width: 768px) {
+  .description-markdown .blog-standard-blockquote pre {
+    transform: translateX(-16px) !important;
+    width: calc(100% + 32px + 16px) !important;
+    padding: 16px !important;
+    border-radius: 0px !important;
+  }
+}

@@ -98,7 +98,8 @@ export const useStyles = makeStyles((_theme) => ({
     '& pre': {
       overflowX: 'auto !important',
       display: 'block !important',
-      width: '100% !important'
+      width: '100% !important',
+      padding: '16px !important',
     }
   },
   likeBlockuote_success: {
