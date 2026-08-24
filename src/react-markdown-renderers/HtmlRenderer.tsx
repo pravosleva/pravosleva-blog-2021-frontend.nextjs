@@ -11,6 +11,7 @@ import { JSONComparison } from './JSONComparison'
 import { CollapsibleBox } from './CollapsibleBox'
 import { CardsExample } from './CardsExample'
 import { Podcast } from './PodcastComponent'
+import { EdnaExp } from './EdnaExp'
 // import { StickyHeader } from './StickyHeader'
 
 const componentTransforms = {
@@ -78,6 +79,7 @@ const componentTransforms = {
     </ErrorBoundary>
   ),
   Podcast: (props: any) => <Podcast {...props} />,
+  EdnaExp: (props: any) => <EdnaExp {...props} />,
 }
 
 // @ts-ignore
