@@ -53,13 +53,8 @@ const materialOceanicTheme: { [key: string]: React.CSSProperties } = {
 // Универсальные базовые стили для кнопки копирования
 const copyButtonStyle: React.CSSProperties = {
   position: 'absolute',
-  // top: '16px',
-  // right: '16px',
   zIndex: 1,
-  padding: '4px 12px',
-  borderRadius: '16px',
-  fontSize: 'small',
-  fontWeight: 600,
+  fontWeight: 'bold',
   fontFamily: 'system-ui, -apple-system, sans-serif',
   cursor: 'pointer',
   backdropFilter: 'blur(4px)',
