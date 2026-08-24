@@ -11,7 +11,10 @@ import { JSONComparison } from './JSONComparison'
 import { CollapsibleBox } from './CollapsibleBox'
 import { CardsExample } from './CardsExample'
 import { Podcast } from './PodcastComponent'
-import { EdnaExp } from './EdnaExp'
+const DynamicEdnaExp = dynamic(
+  () => import('~/react-markdown-renderers/EdnaExp/EdnaExp').then(mod => mod.EdnaExp),
+  { ssr: false } // Отключение SSR полностью разгрузит серверный бандл и гидратацию
+)
 import dynamic from 'next/dynamic'
 
 const DynamicAlert = dynamic(
@@ -84,7 +87,7 @@ const componentTransforms = {
     </ErrorBoundary>
   ),
   Podcast: (props: any) => <Podcast {...props} />,
-  EdnaExp: (props: any) => <EdnaExp {...props} />,
+  EdnaExp: DynamicEdnaExp,
 }
 
 // @ts-ignore
