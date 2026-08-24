@@ -53,7 +53,7 @@ export const ImageRenderer = ({ alt, src, title }: IProps) => {
 
   return (
     <img 
-      className="small" 
+      className="small"
       alt={alt} 
       src={src} 
       onClick={handleClick} 

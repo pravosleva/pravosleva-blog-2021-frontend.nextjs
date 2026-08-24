@@ -21,7 +21,7 @@ import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/use
 import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
 import { GlobalArticleLightbox } from '~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox'
-// import { GlobalArticleLightbox } from '~/components/Gallery/GlobalArticleLightbox'; // Созданный на прошлом шаге синглтон
+import Image from 'next/image'
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
@@ -37,13 +37,18 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
   }, [article?.original?.title, article?.brief])
 
   // Динамический расчет цвета ссылок под тему
-  const linkColor = useMemo(() => {
-    return currentTheme === 'hard-gray'
-      ? '#fff'
-      : currentTheme === 'dark'
-        ? '#FF9000' 
-        : '#0162c8'
-  }, [currentTheme])
+  const linkColor = useMemo(() => currentTheme === 'hard-gray' ? '#fff' : currentTheme === 'dark' ? '#FF9000': '#0162c8', [currentTheme])
+
+  const MemoizedArticleMarkdown = useMemo(() => {
+    return (
+      <ReactMarkdown
+        renderers={baseRenderers}
+        // @ts-ignore
+        plugins={[gfm, { singleTilde: false }]}
+        children={article.original.description}
+      />
+    )
+  }, [article.original.description])
 
   // Реф для отслеживания положения главного баннера
   const bannerRef = useRef<HTMLDivElement>(null)
@@ -68,11 +73,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
         bannerRef={bannerRef}
       />
 
-      {/* 
-        Универсальный поиск по сайту.
-        ИСПРАВЛЕНО: Убрали typeof window. Хук isDesktop гарантирует, 
-        что код выполнится только на клиенте и не сломает гидратацию Next.js.
-      */}
+      {/* Универсальный поиск по сайту */}
       <DesktopOnly>
         <ArticlesSearchDesktop currentTheme={currentTheme} />
       </DesktopOnly>
@@ -135,26 +136,62 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                       {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
                     </small>
                   </div>
+                  {/* =========================================================================
+                     КРИТИЧЕСКИ ДЛЯ LCP: Нативный priority-импорт обложки вместо CSS-background
+                     ========================================================================= */}
+                  {/* <Image
+                    src={article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'}
+                    alt={article.original.title || 'Hero Background'}
+                    layout="fill"
+                    objectFit="cover"
+                    objectPosition="center"
+                    priority={true} // Принудительно заставляет браузер качать картинку в ПЕРВУЮ очередь
+                    loading="eager" // Отключает Lazy Loading для первого экрана
+                  /> */}
+
+                  {/* 
+                    Контентный блок накладывается ПОВЕРХ картинки. 
+                    Добавляем position: relative и z-index, чтобы текст и backdrop-filter легли ровно.
+                  */}
+                  {/* <div
+                    className={clsx(
+                      'tiles-grid-item-in-article',
+                      'white',
+                      'article-wrapper__big-image-as-container'
+                    )}
+                    style={{ 
+                      position: 'relative', 
+                      zIndex: 2, 
+                      backdropFilter: 'grayscale(1)',
+                      background: 'rgba(0, 0, 0, 0.2)' // Легкая полупрозрачная подложка, если картинка слишком светлая
+                    }}
+                  >
+                    <h1 className='article-page-title'>
+                      {article.original.title}
+                    </h1>
+                    {article.brief && (
+                      <div
+                        className='article-wrapper__big-image-as-container__brief'
+                        style={{ fontSize: '0.8em', maxWidth: '550px' }}
+                      >
+                        <ReactMarkdown children={article.brief} />
+                      </div>
+                    )}
+                    <small className={clsx("inactive", 'article-wrapper__big-image-as-container__date')}>
+                      {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
+                    </small>
+                  </div> */}
                 </article>
               </div>
             </ResponsiveBlock>
           )}
 
-          {/* 
-            Тело статьи (Текст в формате Markdown)
-            ИСПРАВЛЕНО: Убран деструктивный useMemo. Теперь при смене темы 
-            оформление кода и блоков контента мгновенно и корректно перерисовывается.
-          */}
+          {/* Тело статьи */}
           <ResponsiveBlock isLimited isPaddedMobile>
             <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
               {!!article.original.description ? (
                 <div className="description-markdown">
-                  <ReactMarkdown
-                    renderers={baseRenderers}
-                    // @ts-ignore
-                    plugins={[gfm, { singleTilde: false }]}
-                    children={article.original.description}
-                  />
+                  {MemoizedArticleMarkdown}
                 </div>
               ) : (
                 'No body'
@@ -169,11 +206,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                 {tagList.map((tag) => (
                   <a
                     className={clsx('truncate')}
-                    style={{
-                      whiteSpace: 'pre',
-                      color: linkColor,
-                      WebkitTapHighlightColor: 'transparent',
-                    }}
+                    style={{ whiteSpace: 'pre', color: linkColor, WebkitTapHighlightColor: 'transparent' }}
                     key={tag}
                     href={`/blog/q/${tag.substring(1)}`}
                   >
@@ -196,20 +229,14 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               </DesktopOnly>
               <MobileOnly
                 style={{
-                  margin: '1.45rem 0px 0px 0px',
-                  paddingLeft: '16px',
-                  position: 'sticky',
-                  bottom: '76px',
-                  zIndex: 10,
-                  width: 'fit-content',
+                  margin: '1.45rem 0px 0px 0px', paddingLeft: '16px',
+                  position: 'sticky', bottom: '76px', zIndex: 10, width: 'fit-content',
                 }}
               >
                 <div
                   style={{
                     boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 7px -1px',
-                    padding: '8px',
-                    borderRadius: '24px',
-                    width: 'fit-content',
+                    padding: '8px', borderRadius: '24px', width: 'fit-content',
                   }}
                   className={clsx({ 'backdrop-blur--lite': true })}
                 >

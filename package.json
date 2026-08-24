@@ -1,6 +1,6 @@
 {
   "name": "frontend.nextjs",
-  "version": "5.0.3",
+  "version": "5.0.4",
   "private": true,
   "engines": {
     "node": ">=16.18.0 <=18.x.x",
@@ -53,8 +53,10 @@
     "axios-retry": "^3.3.1",
     "babel-plugin-prismjs": "^2.1.0",
     "babel-plugin-styled-components": "^2.1.4",
+    "baseline-browser-mapping": "^2.11.19",
     "better-module-alias": "^1.2.1",
     "body-parser": "^1.20.2",
+    "caniuse-lite": "^1.0.30001809",
     "change-case": "^5.4.4",
     "clsx": "^1.1.1",
     "css-loader": "^6.8.1",
@@ -150,7 +152,7 @@
     "@types/react-html-parser": "^2.0.3",
     "@types/react-infinite-calendar": "^2.3.7",
     "@types/react-recaptcha-v3": "^1.1.2",
-    "@types/react-syntax-highlighter": "^15.5.7",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@types/recompose": "^0.30.11",
     "@types/redux-persist": "^4.3.1",
     "clean-css": "^5.3.3",

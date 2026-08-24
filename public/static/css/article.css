@@ -41,6 +41,7 @@
 
 .description-markdown {
   transition: ease 0.5s all;
+  font-display: swap;
 }
 
 /* NEW 2020.12 */
@@ -523,6 +524,7 @@ code,
   margin-top: auto;
   line-height: 1em;
   font-family: Montserrat;
+  font-display: swap;
   font-style: italic;
 }
 .article-wrapper__big-image-as-container__date {

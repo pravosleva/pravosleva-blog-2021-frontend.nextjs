@@ -1,10 +1,10 @@
-// import { Alert } from './Alert'
+import dynamic from 'next/dynamic'
 import { BlockquoteRenderer } from './BlockquoteRenderer'
-import {
-  // CodeRendererSynthwave84,
-  CodeRendererMaterialOceanic,
-  // CodeRendererMaterialDark,
-} from './CodeRenderer'
+// import {
+//   // CodeRendererSynthwave84,
+//   CodeRendererMaterialOceanic,
+//   // CodeRendererMaterialDark,
+// } from './CodeRenderer'
 import { HeadingRenderer } from './HeadingRenderer'
 import { ImageRenderer } from './ImageRenderer'
 import { HtmlRenderer } from './HtmlRenderer'
@@ -12,14 +12,25 @@ import { LinkRenderer } from './LinkRenderer/LinkRenderer'
 import { TableRenderer } from './TableRenderer'
 
 export * from './BlockquoteRenderer'
-export * from './CodeRenderer'
+// export * from './CodeRenderer'
 export * from './HeadingRenderer'
 export * from './ImageRenderer/ImageRenderer.v0'
 export * from './LinkRenderer/LinkRenderer'
 
+/* =========================================================================
+   ИСПРАВЛЕНО: Динамический импорт изолированного рендерера кода с SSR
+   ========================================================================= */
+const DynamicCodeRenderer = dynamic(
+  () => import('./CodeRenderer').then(mod => mod.CodeRendererMaterialOceanic),
+  { 
+    ssr: true, // Оставляем true, чтобы поисковые роботы видели код для SEO
+    loading: () => <pre style={{ background: '#263238', padding: '1em' }}><code style={{ color: '#fff' }}>Загрузка парсера кода...</code></pre>
+  }
+)
+
 export const baseRenderers = {
   blockquote: BlockquoteRenderer,
-  code: CodeRendererMaterialOceanic,
+  code: DynamicCodeRenderer,
   heading: HeadingRenderer,
   html: HtmlRenderer,
   image: ImageRenderer,
@@ -37,7 +48,7 @@ export const baseRenderers = {
 export const theNotePageRenderers = {
   blockquote: BlockquoteRenderer,
   // code: CodeRendererMaterialDark,
-  code: CodeRendererMaterialOceanic,
+  code: DynamicCodeRenderer,
   heading: HeadingRenderer,
   html: HtmlRenderer,
   image: ImageRenderer,
@@ -46,7 +57,7 @@ export const theNotePageRenderers = {
 
 export const dialogRenderers = {
   blockquote: BlockquoteRenderer,
-  code: CodeRendererMaterialOceanic,
+  code: DynamicCodeRenderer,
   heading: HeadingRenderer,
   html: HtmlRenderer,
   image: ImageRenderer,
