@@ -72,6 +72,7 @@ export default class MyDocument extends Document {
           <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
           <link href="/static/css/min/controls-box.css" rel="stylesheet" />
           <link rel="stylesheet" href="/static/css/min/edna-exp-container.css" fetchpriority="high" />
+          <link rel="stylesheet" href="/static/css/min/code.css" fetchpriority="high" />
 
           {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
           {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}

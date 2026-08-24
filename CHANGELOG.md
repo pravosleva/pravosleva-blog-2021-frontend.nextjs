@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ---
 
+## - [5.0.5] 2026-08-24
+
+### Added
+- **Кнопка копирования сниппетов:** В компонент `CodeRenderer` интегрирована полупрозрачная Glassmorphism-кнопка «Копировать» с поддержкой `navigator.clipboard` и изоляцией клика (`stopPropagation`) для безопасного использования внутри спойлеров.
+
+---
+
 ## - [5.0.4] 2026-08-24
 
 ### Added
@@ -24,7 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - **Обновление окружения сборки:** Актуализирована база данных поддерживаемых браузеров `caniuse-lite` с помощью встроенных инструментов Yarn, что устранило предупреждение `Browserslist: caniuse-lite is outdated` на этапе минимизации CSS.
 
 ---
-
 
 ## - [5.0.3] 2026-08-24
 
