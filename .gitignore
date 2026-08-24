@@ -31,3 +31,4 @@ deploy-app-config.json
 # pwa
 /public/service-worker.*
 /public/workbox-*
+/public/static/analyze/*

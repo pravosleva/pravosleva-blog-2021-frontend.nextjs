@@ -17,7 +17,7 @@
     "deploy:prod:build-send-restart-front": "deploy-app -d prod:build-send-restart-front",
     "deploy:prod:send-restart-front": "deploy-app -d prod:send-restart-front",
     "dev": "yarn build && NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) NODE_ENV=development node server.dist/run.js",
-    "build": "yarn transpile-server && NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) next build",
+    "build": "yarn transpile-server && BUNDLE_ANALYZE=both NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) next build",
     "start": "NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) NODE_ENV=production node server.dist/run.js",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "transpile-server": "node_modules/.bin/tsc --downlevelIteration --project tsconfig.server.json",
@@ -133,6 +133,7 @@
     "yarn": "^1.22.22"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.3.2",
     "@types/express": "^4.17.17",
     "@types/html-to-text": "^9.0.2",
     "@types/js-cookie": "^2.2.7",

@@ -1,6 +1,15 @@
 import React from 'react'
-import { Alert } from '../Alert'
+// import { Alert } from '../Alert/Alert.v4'
 import { EType } from '../Alert/styles'
+
+// Inside BlockquoteRenderer.tsx
+import dynamic from 'next/dynamic'
+
+// Удаляем обычный import { Alert } ...
+const DynamicAlert = dynamic(
+  () => import('../Alert/Alert.v4').then(mod => mod.Alert),
+  { ssr: true }
+)
 
 // Рекурсивный хелпер для извлечения сырого текста (нужен только для проверки регулярным выражением)
 const stringifyChildren = (node: any): string => {
@@ -65,7 +74,7 @@ export const BlockquoteRenderer = ({ children }: any) => {
     }).filter(Boolean)
 
     return (
-      <Alert 
+      <DynamicAlert 
         type={alertType} 
         rawChildren={updatedChildren} 
       />

@@ -3,7 +3,7 @@ import JsxParser from 'react-jsx-parser'
 import Gist from 'react-gist'
 import { ErrorBoundary } from 'react-error-boundary'
 import { ErrorFallback } from '~/mui/ErrorFallback'
-import { Alert } from './Alert'
+// import { Alert } from './Alert'
 import { ControlsBox } from './ControlsBox'
 import { ImageInNewTab } from './ImageRenderer'
 import { ImagesGalleryBox, ImagesGalleryBox2, TProps as TImagesGalleryBoxProps } from './ImagesGalleryBox'
@@ -12,13 +12,18 @@ import { CollapsibleBox } from './CollapsibleBox'
 import { CardsExample } from './CardsExample'
 import { Podcast } from './PodcastComponent'
 import { EdnaExp } from './EdnaExp'
-// import { StickyHeader } from './StickyHeader'
+import dynamic from 'next/dynamic'
+
+const DynamicAlert = dynamic(
+  () => import('~/react-markdown-renderers/Alert/Alert.v4').then(mod => mod.Alert),
+  { ssr: true }
+)
 
 const componentTransforms = {
   // -- NEW: Забираем текст из children, а не из атрибута value
   // Alert: (props: any) => <Alert text={props.children || props.value} {...props} />,
   // ИСПРАВЛЕНО: передаем и value, и children. Компонент сам разберется с приоритетом
-  Alert: (props: any) => <Alert text={props.value} {...props} />,
+  Alert: DynamicAlert, // (props: any) => <Alert text={props.value} {...props} />,
   // Alert: (props: any) => {
   //   let textContent = props.value || ''
     

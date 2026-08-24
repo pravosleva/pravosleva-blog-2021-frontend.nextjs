@@ -6,6 +6,10 @@ const CleanCSS = require('clean-css')
 
 const fs = require('fs')
 const dotenv = require('dotenv')
+// const withBundleAnalyzer = require('@next/bundle-analyzer')
+// NOTE: v2 Импортируем сам Webpack-плагин напрямую (он гарантированно установлен внутри @next/bundle-analyzer)
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+
 const isProduction = process.env.NODE_ENV === 'production'
 const envFileName = isProduction ? '.env.production' : '.env.dev'
 const env = dotenv.parse(fs.readFileSync(envFileName))
@@ -58,6 +62,14 @@ minifyStaticCSS()
 // Создаем кастомные правила кэширования, расширяя стандартные от next-pwa
 // Создаем кастомные правила кэширования
 const customRuntimeCaching = [
+  // 0. ЖЕСТКОЕ ИСКЛЮЧЕНИЕ ДЛЯ ENTERPRISE ВИДЖЕТОВ
+  {
+    urlPattern: /^https:\/\/pravosleva\.ru\/.*$/i, 
+    handler: 'NetworkOnly', // Сервис-воркер вообще не будет трогать этот запрос
+    options: {
+      // Исключаем попадание в какие-либо плагины кэширования
+    }
+  },
   // 1. ПРАВИЛО ДЛЯ АУДИО (ПОДКАСТЫ): Жесткий CacheFirst с поддержкой Range Requests
   {
     urlPattern: /\.(?:mp3|wav|ogg|m4a)(?:\?.*)?$/i,
@@ -106,6 +118,14 @@ const customRuntimeCaching = [
   ...runtimeCaching,
 ]
 
+// -- NOTE: v1
+// const bundleAnalyzer = withBundleAnalyzer({
+//   enabled: ['both', 'server', 'browser'].includes(process.env.BUNDLE_ANALYZE),
+//   openAnalyzer: false, // Автоматически НЕ откроет отчеты в браузере после билда
+//   analyzerMode: 'static',
+// })
+// --
+
 const nextConfig = {
   productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
   pwa: {
@@ -123,9 +143,29 @@ const nextConfig = {
       '/': { page: '/' },
     }
   },
-  webpack(config) {
+  webpack(config, { isServer }) {
     config.resolve.alias['~'] = `${path.resolve(__dirname)}/`
     config.plugins.push(new webpack.EnvironmentPlugin(['NODE_ENV']))
+
+    // -- NOTE: v2 Проверяем, передан ли флаг запуска анализатора
+    const shouldAnalyze = ['both', 'server', 'browser'].includes(process.env.BUNDLE_ANALYZE)
+
+    if (shouldAnalyze) {
+      // Вычисляем АБСОЛЮТНЫЙ путь до целевой папки .next/static/analyze
+      const targetDir = path.resolve(process.cwd(), 'public/static/analyze')
+
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          // Разделяем имена файлов в зависимости от текущего процесса компиляции Next.js
+          reportFilename: isServer 
+            ? path.join(targetDir, 'server.html') 
+            : path.join(targetDir, 'client.html'),
+        })
+      )
+    }
+    // --
 
     // SASS support
     // Оптимизация 3: Безопасное добавление SASS/CSS правил в Next.js 11
@@ -166,19 +206,11 @@ const nextConfig = {
     NEXT_APP_GIT_SHA1,
     ...env,
   },
-  // analyzeServer: ['server', 'both'].includes(process.env.BUNDLE_ANALYZE),
-  // analyzeBrowser: ['browser', 'both'].includes(process.env.BUNDLE_ANALYZE),
-  // bundleAnalyzerConfig: {
-  //   server: {
-  //     analyzerMode: 'static',
-  //     reportFilename: '../analyze/server.html', // Относительно .next/server/
-  //   },
-  //   browser: {
-  //     analyzerMode: 'static',
-  //     reportFilename: './analyze/client.html', // Относительно .next/
-  //   },
-  // },
 }
 
-// module.exports = withPWA(withBundleAnalyzer(nextConfig))
+// -- NOTE: v1
+// module.exports = withPWA(bundleAnalyzer(nextConfig))
+// --
+// -- NOTE: v2 
 module.exports = withPWA(nextConfig)
+// --
