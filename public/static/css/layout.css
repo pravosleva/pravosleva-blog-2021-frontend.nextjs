@@ -539,7 +539,17 @@ pre {
   border-radius: 8px;
   overflow: auto;
   word-wrap: normal;
-  padding: 1.45rem;
+}
+
+@media (max-width: 768px) {
+  pre {
+    padding: 1.45rem 16px 1.45rem 16px;
+  }
+}
+@media (min-width: 769px) {
+  pre {
+    padding: 16px;
+  }
 }
 
 pre.text-wrap {
@@ -570,14 +580,14 @@ fieldset {
   margin-bottom: 1.45rem;
 }
 blockquote {
-  margin-left: 16px;
+  margin-top: 0px;
   margin-right: 16px;
-  margin-top: 0;
+  margin-bottom: 1.45rem;
+  margin-left: 0px;
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
   padding-top: 0;
-  margin-bottom: 1.45rem;
 }
 form {
   margin-left: 0;

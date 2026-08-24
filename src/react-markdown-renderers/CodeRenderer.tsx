@@ -8,8 +8,15 @@ const codeFont = { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Con
    ИСПРАВЛЕНО: Полностью валидный и строго типизированный объект темы Material Oceanic
    ========================================================================= */
 const materialOceanicTheme: { [key: string]: React.CSSProperties } = {
-  'code[class*="language-"]': { color: '#b0bec5', background: 'none', textShadow: 'none', fontFamily: codeFont.fontFamily, textAlign: 'left', whiteSpace: 'pre', wordBreak: 'normal', wordSpacing: 'normal', lineHeight: '1.5', tabSize: '4', hyphens: 'none' },
-  'pre[class*="language-"]': { color: '#b0bec5', background: '#263238', textShadow: 'none', fontFamily: codeFont.fontFamily, textAlign: 'left', whiteSpace: 'pre', wordBreak: 'normal', wordSpacing: 'normal', lineHeight: '1.5', tabSize: '4', hyphens: 'none', padding: '1em', margin: '.5em 0', overflow: 'auto' },
+  'code[class*="language-"]': {
+    color: '#b0bec5', background: 'none', textShadow: 'none', fontFamily: codeFont.fontFamily, textAlign: 'left', whiteSpace: 'pre', wordBreak: 'normal', wordSpacing: 'normal', lineHeight: '1.5', tabSize: '4', hyphens: 'none',
+  },
+  'pre[class*="language-"]': {
+    color: '#b0bec5', background: '#263238', textShadow: 'none',
+    fontFamily: codeFont.fontFamily, textAlign: 'left', whiteSpace: 'pre', wordBreak: 'normal', wordSpacing: 'normal',
+    lineHeight: '1.5', tabSize: '4', hyphens: 'none', margin: '0 0 1.45rem 0', overflow: 'auto',
+    // padding: '1.45rem 16px 1.45rem 16px',
+  },
   'comment': { color: '#546e7a', fontStyle: 'italic' },
   'prolog': { color: '#546e7a', fontStyle: 'italic' },
   'doctype': { color: '#546e7a', fontStyle: 'italic' },
