@@ -4,6 +4,7 @@ import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/Headin
 import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';
+import { slugMap } from '~/constants/blog/slugMap';
 
 
 interface ArticlesSearchMobileProps {
@@ -46,6 +47,16 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
   useEffect(() => {
     if (!query) setLocalInput('')
   }, [query])
+
+  const getLink = (id: string) => {
+    // 1. Формируем полную абсолютную ссылку для QR-кода
+    const articleSlug = slugMap.get(id)?.slug || id
+    
+    // Важно: QR-код должен содержать полный URL с доменом, чтобы телефон его распознал
+    // const host = typeof window !== 'undefined' ? window.location.origin : 'https://pravosleva.pro'
+    const fullArticleUrl = `/p/${articleSlug}`
+    return fullArticleUrl
+  }
 
   if (!isMobile) return null
 
@@ -164,7 +175,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
               data.map((note: any) => (
                 <a
                   key={note._id}
-                  href={`/p/${note._id}`}
+                  href={getLink(note._id)}
                   target='_blank'
                   style={{
                     display: 'flex',

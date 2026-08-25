@@ -65,120 +65,131 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
       <div>
         <ReactMarkdown plugins={[gfm]} renderers={theNotePageRenderers} children={documentationMd} />
       </div>
+      
+      <div><strong>Абсолютный URL скрипта:</strong> <code>{scriptUrl}</code></div>
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <strong>Текущий статус:</strong>
+        <span style={{ padding: '4px 10px', borderRadius: '16px', fontSize: 'small', fontWeight: 'bold', backgroundColor: getStatusColor(status), color: '#fff', textTransform: 'uppercase' }}>
+          {status}
+        </span>
+      </div>
 
-      <div
-        className='widget-adapter-content'
-        style={{ padding: '16px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '16px' }}
-      >
-        <div><strong>Абсолютный URL скрипта:</strong> <code>{scriptUrl}</code></div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <strong>Текущий статус:</strong>
-          <span style={{ padding: '4px 10px', borderRadius: '16px', fontSize: 'small', fontWeight: 'bold', backgroundColor: getStatusColor(status), color: '#fff', textTransform: 'uppercase' }}>
-            {status}
-          </span>
+      {warning && (
+        <div style={{ padding: '8px', backgroundColor: 'rgba(255,165,0,0.15)', borderLeft: '4px solid #ffa500', color: '#ffa500', fontSize: '13px', borderRadius: '4px' }}>
+          {warning}
         </div>
+      )}
 
-        {warning && (
-          <div style={{ padding: '8px', backgroundColor: 'rgba(255,165,0,0.15)', borderLeft: '4px solid #ffa500', color: '#ffa500', fontSize: '13px', borderRadius: '4px' }}>
-            {warning}
-          </div>
+      {error && (
+        <div style={{ padding: '8px', backgroundColor: 'rgba(214,52,53,0.15)', borderLeft: '4px solid #d63435', color: '#ff6b6b', fontSize: '13px', borderRadius: '4px' }}>
+          <strong>🚨 Ошибка:</strong> {error}
+        </div>
+      )}
+
+      <div>
+        <strong>Статус <code>window.ThreadsWidget.isReady</code> 👉 </strong>{' '}
+        {isWidgetApiReady ? (
+          <span style={{ color: '#00b273', fontWeight: 'bold' }}>Готов к работе (isReady: true) ✅</span>
+        ) : status === 'polling-api' ? (
+          <span style={{ color: '#ff8a53' }}>Поллинг переменной (интервал 2с...) 🔄</span>
+        ) : (
+          <span style={{ opacity: 0.5 }}>Спит / Ожидает загрузки 😴</span>
         )}
+      </div>
 
-        {error && (
-          <div style={{ padding: '8px', backgroundColor: 'rgba(214,52,53,0.15)', borderLeft: '4px solid #d63435', color: '#ff6b6b', fontSize: '13px', borderRadius: '4px' }}>
-            <strong>🚨 Ошибка:</strong> {error}
-          </div>
-        )}
-
-        <div>
-          <strong>Статус <code>window.ThreadsWidget.isReady</code> 👉 </strong>{' '}
-          {isWidgetApiReady ? (
-            <span style={{ color: '#00b273', fontWeight: 'bold' }}>Готов к работе (isReady: true) ✅</span>
-          ) : status === 'polling-api' ? (
-            <span style={{ color: '#ff8a53' }}>Поллинг переменной (интервал 2с...) 🔄</span>
-          ) : (
-            <span style={{ opacity: 0.5 }}>Спит / Ожидает загрузки 😴</span>
-          )}
-        </div>
-
-        {/* Кнопки жизненного цикла загрузки */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button
-            onClick={handleStartInitialization}
-            disabled={isActionDisabled}
-            style={{ padding: '8px 14px', borderRadius: '24px', border: 'none', backgroundColor: '#ff8a53',
-              color: '#fff', fontSize: 'small', fontWeight: 'bold', cursor: isActionDisabled ? 'not-allowed' : 'pointer', opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s' }}
-          >
-            Инициализировать подгрузку
-          </button>
-
-          <button
-            onClick={logic.reset}
-            style={{ padding: '8px 14px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'transparent',
-              color: '#ccc', fontSize: 'small', cursor: 'pointer' }}
-          >
-            Сбросить состояние
-          </button>
-        </div>
-
-        <div 
-          style={{ 
-            paddingTop: '16px',
-            borderTop: '1px solid rgba(255,255,255,0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-          }}
-        >
-          <div style={{ opacity: isWidgetApiReady ? 1 : 0.4 }}>🎮 Пульт управления API виджета (из React в window):</div>
-          
-          {/* Отображение прочитанного из window состояния */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '8px', fontSize: 'small', opacity: isWidgetApiReady ? 1 : 0.4 }}>
-            <div>Текущий счетчик в виджете: <code>{widgetBadge}</code></div>
-            <div>Текущая тема виджета: <code>{widgetTheme.toUpperCase()}</code></div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      {/* Кнопки жизненного цикла загрузки */}
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        {
+          isActionDisabled ? (
             <button
-              onClick={logic.callWidgetIncrement}
-              disabled={!isWidgetApiReady}
+              onClick={logic.reset}
               style={{
-                padding: '8px 14px',
-                borderRadius: '24px',
-                border: 'none',
-                backgroundColor: '#00b7ff',
-                color: '#fff',
-                fontSize: 'small',
-                fontWeight: 'bold',
-                cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
-                opacity: isWidgetApiReady ? 1 : 0.4
-              }}
-            >
-              ➕ Добавить уведомление (API)
-            </button>
-
-            <button
-              onClick={logic.callWidgetToggleTheme}
-              disabled={!isWidgetApiReady}
-              style={{
-                padding: '8px 14px',
-                borderRadius: '24px',
+                padding: '6px 14px', borderRadius: '24px',
                 border: '1px solid #00b7ff',
                 backgroundColor: 'transparent',
                 color: '#00b7ff',
-                fontSize: 'small',
                 fontWeight: 'bold',
-                cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
-                opacity: isWidgetApiReady ? 1 : 0.4
+                cursor: 'pointer',
+                fontSize: '0.85em',
+                fontFamily: 'Montserrat, system-ui',
               }}
             >
-              🌗 Переключить тему виджета (API)
+              Сбросить состояние
             </button>
-          </div>
+          ) : (
+            <button
+              onClick={handleStartInitialization}
+              disabled={isActionDisabled}
+              style={{ padding: '6px 14px', borderRadius: '24px', border: 'none', backgroundColor: '#ff8a53',
+                color: '#fff', fontSize: '0.85em', fontWeight: 'bold', cursor: isActionDisabled ? 'not-allowed' : 'pointer', opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s',
+                fontFamily: 'Montserrat, system-ui',
+              }}
+            >
+              Инициализировать подгрузку
+            </button>
+          )
+        }
+      </div>
+
+      <div 
+        style={{ 
+          paddingTop: '16px',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+        }}
+      >
+        <div style={{ opacity: isWidgetApiReady ? 1 : 0.4 }}>🎮 Пульт управления API виджета (из React в window):</div>
+        
+        {/* Отображение прочитанного из window состояния */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '8px', fontSize: 'small', opacity: isWidgetApiReady ? 1 : 0.4 }}>
+          <div>Текущий счетчик в виджете: <code>{widgetBadge}</code></div>
+          <div>Текущая тема виджета: <code>{widgetTheme.toUpperCase()}</code></div>
         </div>
 
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            onClick={logic.callWidgetIncrement}
+            disabled={!isWidgetApiReady}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '24px',
+              border: 'none',
+              backgroundColor: '#00b7ff',
+              color: '#fff',
+              fontSize: '0.85em',
+              fontWeight: 'bold',
+              cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
+              opacity: isWidgetApiReady ? 1 : 0.4,
+              fontFamily: 'Montserrat, system-ui',
+            }}
+          >
+            ➕ Добавить уведомление (API)
+          </button>
+
+          <button
+            onClick={logic.callWidgetToggleTheme}
+            disabled={!isWidgetApiReady}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '24px',
+              border: '1px solid #00b7ff',
+              backgroundColor: 'transparent',
+              color: '#00b7ff',
+              fontSize: '0.85em',
+              fontWeight: 'bold',
+              cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
+              opacity: isWidgetApiReady ? 1 : 0.4,
+              fontFamily: 'Montserrat, system-ui',
+            }}
+          >
+            🌗 Переключить тему виджета (API)
+          </button>
+        </div>
       </div>
+
     </div>
   )
 }

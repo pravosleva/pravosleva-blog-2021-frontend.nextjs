@@ -75,7 +75,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
                     <div>
                       Bundle analyzer 👉 <a
                         style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
-                        href='/static/analyze/server.html' target='_blank'>Server</a> <a
+                        href='/static/analyze/server.html' target='_blank'>Server</a> | <a
                         style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
                         href='/static/analyze/client.html' target='_blank'>Client</a>
                     </div>

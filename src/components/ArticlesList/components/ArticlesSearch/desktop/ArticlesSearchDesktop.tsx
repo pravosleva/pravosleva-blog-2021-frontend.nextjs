@@ -11,6 +11,7 @@ import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByT
 import { pluralize } from '~/utils/string-tools/pluralize' // Наша функция склонений
 import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { getCounterBadgeBgColor, getCounterBadgeTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { slugMap } from '~/constants/blog/slugMap'
 
 const getTextColorByThemeName = (themeName: TThemeName) => {
   switch (themeName) {
@@ -213,6 +214,16 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
   ? `Поиск активен. Найдено заметок: ${totalNotes} по запросу "${query}"`
   : "Открыть поиск по заметкам"
 
+  const getLink = (id: string) => {
+    // 1. Формируем полную абсолютную ссылку для QR-кода
+    const articleSlug = slugMap.get(id)?.slug || id
+    
+    // Важно: QR-код должен содержать полный URL с доменом, чтобы телефон его распознал
+    // const host = typeof window !== 'undefined' ? window.location.origin : 'https://pravosleva.pro'
+    const fullArticleUrl = `/p/${articleSlug}`
+    return fullArticleUrl
+  }
+
   // Если это мобилка — хук вернет false, и компонент безопасно проигнорирует рендер десктопной разметки
   if (!isDesktop) return null
 
@@ -309,7 +320,7 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
               {results.map((note) => (
                 <a
                   key={note._id}
-                  href={`/p/${note._id}`}
+                  href={getLink(note._id)}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
