@@ -56,7 +56,7 @@ const copyButtonStyle: React.CSSProperties = {
   position: 'absolute',
   zIndex: 1,
   fontWeight: 'bold',
-  fontFamily: 'system-ui, -apple-system, sans-serif',
+  // fontFamily: 'system-ui, -apple-system, sans-serif',
   cursor: 'pointer',
   backdropFilter: 'blur(4px)',
   WebkitBackdropFilter: 'blur(4px)',
