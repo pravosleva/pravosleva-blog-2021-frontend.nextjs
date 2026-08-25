@@ -12,7 +12,8 @@ const materialOceanicTheme: { [key: string]: React.CSSProperties } = {
   'pre[class*="language-"]': {
     color: '#b0bec5', background: '#263238', textShadow: 'none',
     fontFamily: codeFont.fontFamily, textAlign: 'left', whiteSpace: 'pre', wordBreak: 'normal', wordSpacing: 'normal',
-    lineHeight: '1.5', tabSize: '4', hyphens: 'none', margin: '0 0 1.45rem 0', overflow: 'auto',
+    lineHeight: '1.5', tabSize: '4', hyphens: 'none',
+    margin: '0.9rem 0 1.45rem 0', overflow: 'auto',
     // padding: '1.45rem 16px 1.45rem 16px',
   },
   'comment': { color: '#546e7a', fontStyle: 'italic' },

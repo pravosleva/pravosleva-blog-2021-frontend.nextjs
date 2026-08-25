@@ -72,6 +72,13 @@ export const Layout = ({ children, noFooter }: TProps) => {
                     <div><code>{NEXT_APP_VERSION}</code> 2018 – {fullYear}</div>
                     <div>Last build {NEXT_APP_BUILD_DATE}</div>
                     <div>GIT SHA1 <code>{NEXT_APP_GIT_SHA1}</code></div>
+                    <div>
+                      Bundle analyzer 👉 <a
+                        style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
+                        href='/static/analyze/server.html' target='_blank'>Server</a> <a
+                        style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
+                        href='/static/analyze/client.html' target='_blank'>Client</a>
+                    </div>
                   </div>
                   {/* <div className={classes.footerSiteSocialBox}>
                     <a
