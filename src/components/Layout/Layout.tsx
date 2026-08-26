@@ -70,8 +70,8 @@ export const Layout = ({ children, noFooter }: TProps) => {
                         href='https://t.me/pravosleva'
                       >@pravosleva</a>
                     </div>
-                    <div><code>{NEXT_APP_VERSION}</code> 2018 – {fullYear}</div>
-                    <div>Last build {NEXT_APP_BUILD_DATE}</div>
+                    <div>2018 – {fullYear}</div>
+                    <div>Ver. <code>{NEXT_APP_VERSION}</code> Last build {NEXT_APP_BUILD_DATE}</div>
                     <div>GIT SHA1 <code>{NEXT_APP_GIT_SHA1}</code></div>
                     <div>
                       Bundle analyzer 👉 <a
