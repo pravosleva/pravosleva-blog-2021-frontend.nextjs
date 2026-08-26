@@ -69,7 +69,7 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
       <div><strong>Абсолютный URL скрипта:</strong> <code>{scriptUrl}</code></div>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <strong>Текущий статус:</strong>
+        <strong>Текущий статус виджета:</strong>
         <span style={{ padding: '4px 10px', borderRadius: '16px', fontSize: 'small', fontWeight: 'bold', backgroundColor: getStatusColor(status), color: '#fff', textTransform: 'uppercase' }}>
           {status}
         </span>
@@ -144,7 +144,7 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
         <div style={{ opacity: isWidgetApiReady ? 1 : 0.4 }}>🎮 Пульт управления API виджета (из React в window):</div>
         
         {/* Отображение прочитанного из window состояния */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '8px', fontSize: 'small', opacity: isWidgetApiReady ? 1 : 0.4 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', gap: '8px', opacity: isWidgetApiReady ? 1 : 0.4 }}>
           <div>Текущий счетчик в виджете: <code>{widgetBadge}</code></div>
           <div>Текущая тема виджета: <code>{widgetTheme.toUpperCase()}</code></div>
         </div>

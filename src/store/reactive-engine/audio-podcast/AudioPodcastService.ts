@@ -6,6 +6,9 @@ export interface IAudioTrack {
   title: string;
 }
 
+// const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'no'
+// const getFreshUrl = (url: string) => `${url}?gitSHA1=${NEXT_APP_GIT_SHA1}`
+
 export class AudioPodcastService extends AbstractService {
   public queue: Signal<IAudioTrack[]>;
   public currentTrack: Signal<IAudioTrack | null>;
@@ -71,12 +74,9 @@ export class AudioPodcastService extends AbstractService {
             break;
 
           case 'active_track_changed':
-            // ИСПРАВЛЕНО: Синхронизируем активный трек и его видимость
             if (payload) {
               this.currentTrack.value = payload;
               this.isPlayerVisible.value = true;
-              // Новая вкладка перехватила фокус, у себя можем мягко свернуть или оставить как есть
-              // Задаем тайминг для этой вкладки
               this.currentTime.value = this.getTrackProgress(payload.id);
               if (this.audioEl) {
                 this.audioEl.src = payload.url;
@@ -84,12 +84,17 @@ export class AudioPodcastService extends AbstractService {
                 this.audioEl.currentTime = this.currentTime.value;
               }
             } else {
-              // Если в другой вкладке нажали "Стоп" — у нас плеер тоже закрывается
               this.currentTrack.value = null;
               this.isPlayerVisible.value = false;
               this.isPlaying.value = false;
               this.currentTime.value = 0;
-              if (this.audioEl) this.audioEl.src = '';
+              /* =========================================================================
+                ИСПРАВЛЕНО: Безопасное нативное размонтирование аудио-потока в табах
+                ========================================================================= */
+              if (this.audioEl) {
+                this.audioEl.removeAttribute('src');
+                this.audioEl.load();
+              }
             }
             break;
         }
@@ -113,8 +118,7 @@ export class AudioPodcastService extends AbstractService {
     localStorage.setItem('blog_audio_queue', JSON.stringify(queue));
   }
 
-  // ИСПРАВЛЕНО: Методы для работы с активным треком в localStorage
-    private loadActiveTrackFromStorage(currentQueue: IAudioTrack[]): IAudioTrack | null {
+  private loadActiveTrackFromStorage(currentQueue: IAudioTrack[]): IAudioTrack | null {
     if (typeof window === 'undefined') return null;
     try {
       const savedId = localStorage.getItem('blog_audio_active_track_id');
@@ -137,9 +141,7 @@ export class AudioPodcastService extends AbstractService {
     }
   }
 
-  /**
-   * ИСПРАВЛЕНО: Автопереход на следующий трек с обязательным обнулением прогресса завершившегося!
-   */
+  // Автопереход на следующий трек с обязательным обнулением прогресса завершившегося!
   public playNextTrack(): void {
     if (!this.audioEl) return;
 
@@ -191,17 +193,16 @@ export class AudioPodcastService extends AbstractService {
 
   public registerAudioElement(el: HTMLAudioElement | null): void {
     this.audioEl = el;
-    if (el && !el.src) {
-      // -- NOTE: Speed exp
-      el.crossOrigin = 'anonymous';
-      // Устанавливаем сохраненную скорость для аудио-элемента
+    
+    // Проверка el.src теперь учитывает зануленные атрибуты
+    if (el && (!el.getAttribute('src') || el.src.includes(window.location.host) && !el.src.includes('.'))) {
+      // el.crossOrigin = 'anonymous';
       el.defaultPlaybackRate = this.playbackRate.value;
       el.playbackRate = this.playbackRate.value;
-      // Дополнительно страхуем применение скорости при смене src
+
       el.addEventListener('loadedmetadata', () => {
         if (this.audioEl) this.audioEl.playbackRate = this.playbackRate.value;
       });
-      // --
 
       const track = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
       if (track) {
@@ -257,6 +258,10 @@ export class AudioPodcastService extends AbstractService {
       this.isPlayerMinimized.value = false;
       this.duration.value = 0; 
 
+      const errors = { ...this.trackErrors.value };
+      delete errors[track.id];
+      this.trackErrors.value = errors; // Очищаем ошибку ДО попытки запуска
+
       this.audioEl.src = track.url;
       this.audioEl.load();
 
@@ -274,10 +279,6 @@ export class AudioPodcastService extends AbstractService {
       }).catch(() => {
         this.isPlaying.value = false;
       });
-
-      const errors = { ...this.trackErrors.value };
-      delete errors[track.id];
-      this.trackErrors.value = errors;
     }
   }
 
@@ -318,22 +319,21 @@ export class AudioPodcastService extends AbstractService {
     this.isPlayerMinimized.value = false;
   }
 
-  public removeFromQueue(trackId: string): void {
+    public removeFromQueue(trackId: string): void {
     const wasPlayingTrack = this.currentTrack.value?.id === trackId || 
-      (!this.currentTrack.value && this.queue.value?.[0].id === trackId);
+      (!this.currentTrack.value && this.queue.value?.[0]?.id === trackId);
 
     const updatedQueue = this.queue.value.filter((t: IAudioTrack) => t.id !== trackId);
     this.queue.value = updatedQueue;
     this.saveQueueToStorage(updatedQueue);
-    this.broadcast('queue_updated', updatedQueue); // Очередь обновилась у всех
+    this.broadcast('queue_updated', updatedQueue);
 
     if (wasPlayingTrack) {
       if (updatedQueue.length > 0) {
         const nextTrack = updatedQueue[0];
         this.currentTrack.value = nextTrack;
-        // ИСПРАВЛЕНО: Обновляем ID активного трека в хранилище при удалении старого
         this.saveActiveTrackToStorage(nextTrack.id);
-        this.broadcast('active_track_changed', nextTrack); // Оповещаем о смене трека на следующий
+        this.broadcast('active_track_changed', nextTrack);
         this.isPlaying.value = false;
 
         if (this.audioEl) {
@@ -343,21 +343,31 @@ export class AudioPodcastService extends AbstractService {
           this.audioEl.currentTime = this.currentTime.value;
         }
       } else {
+        // Если в другой вкладке нажали "Стоп" — у нас плеер тоже закрывается
         this.currentTrack.value = null;
-        // ИСПРАВЛЕНО: Очищаем ID активного трека, так как очередь пуста
         this.saveActiveTrackToStorage(null);
-        this.broadcast('active_track_changed', null); // Очередь пуста, закрываем у всех
+        this.broadcast('active_track_changed', null);
         this.isPlaying.value = false;
         this.currentTime.value = 0;
         this.duration.value = 0;
+        
+        // Безопасное стирание ресурсов при пустой очереди ( DRY + No Error )
         if (this.audioEl) {
-          this.audioEl.src = '';
+          this.audioEl.removeAttribute('src');
+          this.audioEl.load();
         }
       }
     }
     
     if (typeof window !== 'undefined') {
       localStorage.removeItem(`track_progress_${trackId}`);
+    }
+
+    // Принудительно вычищаем ошибки удаленного трека из реактивного стейта
+    const errors = { ...this.trackErrors.value };
+    if (errors[trackId]) {
+      delete errors[trackId];
+      this.trackErrors.value = errors;
     }
   }
 
@@ -371,7 +381,7 @@ export class AudioPodcastService extends AbstractService {
   }
 
   /**
-   * ИСПРАВЛЕНО: Метод относительной перемотки трека (вперед/назад на N секунд)
+   * Метод относительной перемотки трека (вперед/назад на N секунд)
    * @param seconds Количество секунд (положительное для вперед, отрицательное для назад)
    */
   public seekRelative(seconds: number): void {

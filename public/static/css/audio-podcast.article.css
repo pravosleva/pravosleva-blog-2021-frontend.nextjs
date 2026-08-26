@@ -8,6 +8,13 @@
   color: #ff781e !important;
 }
 
+.article-podcast-inline-wrapper {
+  margin-top: 2rem;
+}
+.article-podcast-inline-wrapper h2 {
+  margin-top: 0px !important;
+}
+
 /* ⚪ ТЕМА: LIGHT */
 body main.light .article-podcast-inline-control {
   background-color: #ededed;

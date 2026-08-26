@@ -1,6 +1,14 @@
+.code-block-wrapper {
+  margin: 0.9rem 0px 1.45rem 0px;
+}
+.code-block-wrapper:last-child {
+  margin-bottom: 0;
+}
+
 .code-block-wrapper button {
   font-family: Montserrat, system-ui;
 }
+
 @media (max-width: 768px) {
   .code-block-wrapper button {
     top: 8px;

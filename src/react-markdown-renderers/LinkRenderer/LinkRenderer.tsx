@@ -61,7 +61,7 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
   const isThisTrackPlaying = isCurrentActiveTrack && isPlaying
 
   return (
-    <div style={{ fontWeight: 500, fontSize: 'small', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div className='article-podcast-inline-wrapper' style={{ fontWeight: 500, fontSize: 'small', display: 'flex', flexDirection: 'column', gap: '8px' }}>
       <h2>{`🎙️ ${trackData.title}`}</h2>
       
       <div
@@ -79,11 +79,11 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
           className={`podcast-inline-btn-play ${isThisTrackPlaying ? 'active' : ''}`}
           style={{
             display: 'flex', alignItems: 'center', gap: '8px',
-            background: isThisTrackPlaying ? '#FF8E53' : 'rgba(255, 142, 83, 0.5)',
+            background: isThisTrackPlaying ? '#FF8E53' : 'transparent', // 'rgba(255, 142, 83, 0.5)',
             color: isThisTrackPlaying ? '#fff' : 'inherit',
-            border: 'none',
+            border: isThisTrackPlaying ? '2px solid transparent' : '2px solid #FF8E53',
             padding: '6px 14px',
-            borderRadius: '16px', cursor: 'pointer',
+            borderRadius: '24px', cursor: 'pointer',
             // fontSize: '0.85em',
             fontWeight: 'bold',
             transition: 'all 0.2s ease',

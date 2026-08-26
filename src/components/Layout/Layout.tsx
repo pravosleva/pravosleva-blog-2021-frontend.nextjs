@@ -11,6 +11,7 @@ import { ScrollTopBtn } from './components/ScrollTopBtn'
 // import TelegramIcon from '@mui/icons-material/Telegram'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
+// import { ClearPwaCacheBtn } from '../ClearPwaCacheBtn'
 
 const NEXT_APP_BUILD_DATE = process.env.NEXT_APP_BUILD_DATE || 'No env'
 const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'No env'
@@ -79,6 +80,7 @@ export const Layout = ({ children, noFooter }: TProps) => {
                         style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
                         href='/static/analyze/client.html' target='_blank'>Client</a>
                     </div>
+                    {/* <ClearPwaCacheBtn /> */}
                   </div>
                   {/* <div className={classes.footerSiteSocialBox}>
                     <a

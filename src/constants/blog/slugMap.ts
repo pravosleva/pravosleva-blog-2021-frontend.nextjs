@@ -249,6 +249,30 @@ export const slugMapping: { [key: string]: TArticleTools } = {
       type: 'image/webp',
     },
   },
+  'reactive-engine-ssr-vue3-nuxt4': {
+    id: '6a8d539ef7929b4140542047',
+    brief: 'Tutorial',
+    bg: {
+      src: '/static/img/blog/nuxt4-logo-dark.webp',
+      size: {
+        w: 300,
+        h: 300,
+      },
+      type: 'image/webp',
+    },
+  },
+  'reactive-engine-ssr-react-next': {
+    id: '6a803917f7929b414054203a',
+    brief: 'Tutorial',
+    bg: {
+      src: '/static/img/blog/nextjs-logo-dark.webp',
+      size: {
+        w: 1176,
+        h: 1056,
+      },
+      type: 'image/webp',
+    },
+  },
   // {
   //   id: 1,
   //   title: 'AuditList 2023',

@@ -24,6 +24,10 @@ body main.dark .description-markdown .blog-standard-blockquote {
     padding: 16px !important;
     border-radius: 0px !important;
   }
+
+  .description-markdown .blog-standard-blockquote .code-block-wrapper button {
+    display: none;
+  }
 }
 @media (min-width: 769px) {
   blockquote {

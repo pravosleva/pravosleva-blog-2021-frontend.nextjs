@@ -73,7 +73,8 @@ const customRuntimeCaching = [
   // 1. ПРАВИЛО ДЛЯ АУДИО (ПОДКАСТЫ): Жесткий CacheFirst с поддержкой Range Requests
   {
     urlPattern: /\.(?:mp3|wav|ogg|m4a)(?:\?.*)?$/i,
-    handler: 'CacheFirst',
+    // handler: 'CacheFirst',
+    handler: 'StaleWhileRevalidate',
     options: {
       cacheName: 'podcast-audio-cache',
       expiration: {

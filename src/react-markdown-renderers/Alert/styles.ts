@@ -86,7 +86,9 @@ export const useStyles = makeStyles((_theme) => ({
     '& .alert-content-nodes p:last-child': {
       margin: '0 !important',
     },
-
+    '& .alert-content-nodes .code-block-wrapper button': {
+      display: 'none',
+    },
     whiteSpace: 'pre-wrap',
     
     // ГАРАНТИРОВАННЫЙ СБРОС ЛЕСЕНКИ ДЛЯ КОДА
