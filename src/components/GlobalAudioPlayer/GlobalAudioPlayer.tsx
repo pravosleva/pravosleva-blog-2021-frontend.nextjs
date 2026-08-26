@@ -180,11 +180,9 @@ export const GlobalAudioPlayer = () => {
         <div className={clsx('blog-audio-player-container', playerStateClass)} style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 2000,
           maxWidth: '600px', margin: '0 auto', borderRadius: '20px 20px 0 0',
-          transition: 'all 0.2s ease-out', overflow: 'hidden', paddingLeft: '16px', paddingRight: '16px',
-          paddingTop: '10px',
+          transition: 'all 0.2s ease-out', overflow: 'hidden',
+          paddingLeft: '16px', paddingRight: '16px', paddingTop: '10px', paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 10px)',
           display: 'flex', flexDirection: 'column',
-          // paddingBottom: isPlayerMinimized ? '0px' : 'calc(env(safe-area-inset-bottom, 16px) + 10px)',
-          paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 10px)',
           gap: isPlayerMinimized ? '0px' : '8px',
         }}>
           {

@@ -200,36 +200,28 @@ export class AudioPodcastService extends AbstractService {
   public registerAudioElement(el: HTMLAudioElement | null): void {
     this.audioEl = el;
     
-    // Проверка el.src учитывает зануленные атрибуты
-    if (el && (!el.getAttribute('src') || el.src.includes(window.location.host) && !el.src.includes('.'))) {
+    if (el && !el.dataset.initialized) {
+      // Помечаем элемент, чтобы слушатели никогда не навешивались повторно
+      el.dataset.initialized = 'true';
+      
       el.defaultPlaybackRate = this.playbackRate.value;
       el.playbackRate = this.playbackRate.value;
 
       // -- Системные слушатели буферизации сети:
       // Слушатели буферизации медиа-потока (Защита от зависания UI)
       // Браузер ждет байты из сети — включаем лоадер
-      el.addEventListener('waiting', () => {
-        this.isBuffering.value = true;
-      });
-
+      el.addEventListener('waiting', () => { this.isBuffering.value = true; });
       // Звук пошел, или трек снят с паузы — выключаем лоадер
-      el.addEventListener('playing', () => {
-        this.isBuffering.value = false;
-      });
-
+      el.addEventListener('playing', () => { this.isBuffering.value = false; });
       // Если пользователь нажал паузу вручную — лоадер точно не нужен
-      el.addEventListener('pause', () => {
-        this.isBuffering.value = false;
-      });
-
+      el.addEventListener('pause', () => { this.isBuffering.value = false; });
       // Метаданные загрузились — сбрасываем, если трек готов
-      el.addEventListener('canplay', () => {
-        this.isBuffering.value = false;
-      });
+      el.addEventListener('canplay', () => { this.isBuffering.value = false; });
       // --
 
       el.addEventListener('loadedmetadata', () => {
-        if (this.audioEl) this.audioEl.playbackRate = this.playbackRate.value;
+        if (!this.audioEl) return;
+        this.audioEl.playbackRate = this.playbackRate.value;
       });
 
       const track = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
@@ -274,8 +266,7 @@ export class AudioPodcastService extends AbstractService {
       this.queue.value = updatedQueue;
       this.saveQueueToStorage(updatedQueue);
 
-      // ИСПРАВЛЕНО: Мгновенно обновляем массив очереди во всех параллельных вкладках,
-      // чтобы они знали о существовании этого трека до того, как он подсветится
+      // Мгновенно обновляем массив очереди во всех параллельных вкладках
       this.broadcast('queue_updated', updatedQueue);
     }
 
@@ -286,8 +277,6 @@ export class AudioPodcastService extends AbstractService {
       if (this.audioEl.paused) {
         this.audioEl.play().then(() => {
           this.isPlaying.value = true;
-          //  Оповещаем другие вкладки, чтобы они замолчали
-          // if (this.audioChannel) this.audioChannel.postMessage('someone_started_playback');
           this.broadcast('someone_started_playback'); // Глушим другие вкладки при возобновлении
         }).catch(() => {
           this.isPlaying.value = false;
@@ -297,24 +286,26 @@ export class AudioPodcastService extends AbstractService {
         this.isPlaying.value = false;
       }
     } else {
-      // Чистое переключение на совершенно другой трек
+      // Чистое переключение на совершенно другой трек подкаста
       this.currentTrack.value = track;
       this.saveActiveTrackToStorage(track.id);
       
-      // ИСПРАВЛЕНО: Оповещаем другие вкладки о смене активного трека
-      // Теперь принимающие вкладки безошибочно найдут его в уже обновленной очереди
+      // Оповещаем другие вкладки о смене активного трека
       this.broadcast('active_track_changed', track);
 
       this.isPlayerVisible.value = true;
       this.isPlayerMinimized.value = false;
       this.duration.value = 0;
 
-      this.isBuffering.value = true; // Loader enabled...
+      // Мгновенное включение индикатора буферизации
+      this.isBuffering.value = true; 
 
+      // Упреждающая очистка ошибок до физического старта воспроизведения
       const errors = { ...this.trackErrors.value };
       delete errors[track.id];
-      this.trackErrors.value = errors; // Очищаем ошибку ДО попытки запуска
+      this.trackErrors.value = errors; 
 
+      // Возвращаемся к стандартному, стабильному нативному HTML5 аудио-потоку
       this.audioEl.src = track.url;
       this.audioEl.load();
 
@@ -325,12 +316,10 @@ export class AudioPodcastService extends AbstractService {
 
       this.audioEl.play().then(() => {
         this.isPlaying.value = true;
-
-        //  Оповещаем другие вкладки, чтобы они замолчали
-        // if (this.audioChannel) this.audioChannel.postMessage('someone_started_playback');
         this.broadcast('someone_started_playback'); // Глушим другие вкладки при старте нового трека
       }).catch(() => {
         this.isPlaying.value = false;
+        this.isBuffering.value = false; // Страховка: тушим лоадер, если промис play отклонен
       });
     }
   }
@@ -345,7 +334,7 @@ export class AudioPodcastService extends AbstractService {
     this.isPlaying.value = false;
     this.currentTime.value = 0;
     
-    // ИСПРАВЛЕНО: Стираем активный трек при полной остановке
+    // Стираем активный трек при полной остановке
     this.saveActiveTrackToStorage(null);
     this.isPlayerVisible.value = false;
     this.broadcast('active_track_changed', null); // Говорим всем закрыть плееры
@@ -375,7 +364,7 @@ export class AudioPodcastService extends AbstractService {
     this.isPlayerMinimized.value = false;
   }
 
-    public removeFromQueue(trackId: string): void {
+  public removeFromQueue(trackId: string): void {
     const wasPlayingTrack = this.currentTrack.value?.id === trackId || 
       (!this.currentTrack.value && this.queue.value?.[0]?.id === trackId);
 
@@ -393,13 +382,13 @@ export class AudioPodcastService extends AbstractService {
         this.isPlaying.value = false;
 
         if (this.audioEl) {
+          // Здесь мы просто меняем src на новый.
           this.audioEl.src = nextTrack.url;
           this.audioEl.load();
           this.currentTime.value = this.getTrackProgress(nextTrack.id);
           this.audioEl.currentTime = this.currentTime.value;
         }
       } else {
-        // Если в другой вкладке нажали "Стоп" — у нас плеер тоже закрывается
         this.currentTrack.value = null;
         this.saveActiveTrackToStorage(null);
         this.broadcast('active_track_changed', null);
@@ -484,6 +473,7 @@ export class AudioPodcastService extends AbstractService {
     }
     console.log(`⏱️ Скорость воспроизведения изменена на: x${nextRate}`);
   }
+
   /**
    * Прямая установка конкретной скорости воспроизведения
    */
