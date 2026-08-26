@@ -32,3 +32,6 @@ deploy-app-config.json
 /public/service-worker.*
 /public/workbox-*
 /public/static/analyze/*
+
+# tmp
+**/*/__vx.tsx

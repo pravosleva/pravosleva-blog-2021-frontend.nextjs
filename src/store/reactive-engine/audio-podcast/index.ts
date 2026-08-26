@@ -1,2 +1,2 @@
 export * from './AudioPodcastService'
-export * from './AdvancedAudioPodcastService'
+export * from './AdvancedAudioPodcastServiceExperimental'

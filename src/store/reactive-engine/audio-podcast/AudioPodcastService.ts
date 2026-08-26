@@ -119,7 +119,7 @@ export class AudioPodcastService extends AbstractService {
     }
   }
 
-  private saveQueueToStorage(queue: IAudioTrack[]): void {
+  public saveQueueToStorage(queue: IAudioTrack[]): void {
     if (typeof window === 'undefined') return;
     localStorage.setItem('blog_audio_queue', JSON.stringify(queue));
   }
@@ -138,7 +138,7 @@ export class AudioPodcastService extends AbstractService {
     }
   }
 
-  private saveActiveTrackToStorage(trackId: string | null): void {
+  protected saveActiveTrackToStorage(trackId: string | null): void {
     if (typeof window === 'undefined') return;
     if (trackId) {
       localStorage.setItem('blog_audio_active_track_id', trackId);
@@ -247,7 +247,7 @@ export class AudioPodcastService extends AbstractService {
 
         this.markTrackAsBroken(track.id, detailedMessage);
       });
-      
+
       if (track) {
         el.src = track.url;
         const savedTime = this.getTrackProgress(track.id);
@@ -492,7 +492,7 @@ export class AudioPodcastService extends AbstractService {
   }
 
   // 2. Создадим приватный хелпер для отправки событий в эфир:
-  private broadcast(type: string, payload?: any): void {
+  protected broadcast(type: string, payload?: any): void {
     if (this.audioChannel) {
       this.audioChannel.postMessage({ type, payload });
     }

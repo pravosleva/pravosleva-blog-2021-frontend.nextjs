@@ -1,10 +1,10 @@
 import { searchEngine } from '~/store/reactive-engine/articles-search/searchEngine'
-import { AudioPodcastService, IAudioTrack, AdvancedAudioPodcastService } from '~/store/reactive-engine/audio-podcast'
+import { IAudioTrack, AdvancedAudioPodcastServiceExperimental } from '~/store/reactive-engine/audio-podcast'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
 
 export const useAudioPodcast = () => {
   // const audioPodcastService = searchEngine.inject(AudioPodcastService)
-  const audioPodcastService = searchEngine.inject(AdvancedAudioPodcastService)
+  const audioPodcastService = searchEngine.inject(AdvancedAudioPodcastServiceExperimental)
 
   const queue = useReactiveValue0<IAudioTrack[]>(audioPodcastService.queue)
   const currentTrack = useReactiveValue0<IAudioTrack | null>(audioPodcastService.currentTrack)
@@ -18,6 +18,8 @@ export const useAudioPodcast = () => {
   const playbackRate = useReactiveValue0<number>(audioPodcastService.playbackRate)
   // const currentTrackErrorReason = currentTrack ? trackErrors[currentTrack.id] : null;
   const isBuffering = useReactiveValue0<boolean>(audioPodcastService.isBuffering);
+  const isLife = useReactiveValue0<boolean>(audioPodcastService.isLive);
+  const isCurrentTrackLiveStream = useReactiveValue0<boolean>(audioPodcastService.isCurrentTrackLiveStream);
   
   return {
     queue,
@@ -30,6 +32,8 @@ export const useAudioPodcast = () => {
     currentTime,
     duration,
     isBuffering,
+    isLife,
+    isCurrentTrackLiveStream,
     toggleTrack: (track: IAudioTrack) => audioPodcastService.toggleTrack(track), // ИСПРАВЛЕНО
     addToQueue: (track: IAudioTrack) => audioPodcastService.addToQueue(track),
     removeFromQueue: (trackId: string) => audioPodcastService.removeFromQueue(trackId),

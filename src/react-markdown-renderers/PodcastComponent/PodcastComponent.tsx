@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react' // Добавили useState и useEffect
 
 import { ErrorBoundary } from 'react-error-boundary'
-import { useAudioPodcast } from '~/components/GlobalAudioPlayer/hooks';
+import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks';
 import { ErrorFallback } from '~/mui/ErrorFallback'
 
 type TPodcastProps = {
@@ -12,7 +12,7 @@ type TPodcastProps = {
   durationStr?: string;
 }
 
-/* NOTE: Usage
+/* NOTE: Usage in markdown
 <Podcast 
   url="/audio/episode-15.mp3" 
   title="Эпизод 15: Архитектура микросервисов" 

@@ -7,6 +7,11 @@
 yarn upgrade caniuse-lite
 ```
 
+### HLS Exp
+```bash
+yarn add hls.js --ignore-engines
+```
+
 Yarn Classic перечитает дерево зависимостей, найдет пакет `caniuse-lite` (который тянут за собой Next.js и Autoprefixer) и накатит на него самую свежую минорную версию из реестра npm. Предупреждение `Browserslist: caniuse-lite is outdated `гарантированно исчезнет при следующем билде.
 
 ### 📝 Архитектурная сводка: Оптимизация Markdown-рендереров и Code Splitting

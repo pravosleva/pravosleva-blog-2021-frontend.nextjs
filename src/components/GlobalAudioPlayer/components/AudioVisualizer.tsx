@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { useAudioPodcast } from '../hooks/useAudioPodcast'
+import { useAudioPodcast } from '../../../store/reactive-engine/audio-podcast/hooks/useAudioPodcast'
 
 export const AudioVisualizer: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)

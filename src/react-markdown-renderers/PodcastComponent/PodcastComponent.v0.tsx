@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-import { useAudioPodcast } from '~/components/GlobalAudioPlayer/hooks';
+import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks';
 import { ErrorFallback } from '~/mui/ErrorFallback'
 
 type TPodcastProps = {

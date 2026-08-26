@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useAudioPodcast } from '~/components/GlobalAudioPlayer/hooks/useAudioPodcast'
+import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks/useAudioPodcast'
 import { registerGalleryItems } from '~/store/reactive-engine/reactiveGalleryEngine'
 
 interface IProps {

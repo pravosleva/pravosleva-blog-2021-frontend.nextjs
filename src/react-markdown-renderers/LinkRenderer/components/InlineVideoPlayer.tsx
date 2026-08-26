@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAudioPodcast } from '~/components/GlobalAudioPlayer/hooks'
+import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks'
 
 type TVideoProps = {
   url: string

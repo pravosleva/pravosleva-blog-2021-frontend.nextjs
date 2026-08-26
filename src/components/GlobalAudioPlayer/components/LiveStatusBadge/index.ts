@@ -1,2 +1,1 @@
-export * from './AudioVisualizer'
 export * from './LiveStatusBadge'

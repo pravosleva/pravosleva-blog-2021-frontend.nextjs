@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAudioPodcast } from '../GlobalAudioPlayer/hooks'
+import { useAudioPodcast } from '../../store/reactive-engine/audio-podcast/hooks'
 
 export const GlobalPodcastSidebarButton = () => {
   const { queue, isPlayerVisible, setPlayerVisible } = useAudioPodcast()

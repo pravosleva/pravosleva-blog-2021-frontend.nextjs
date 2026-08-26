@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { useAudioPodcast } from './hooks'
+import { useAudioPodcast } from '../../store/reactive-engine/audio-podcast/hooks'
 
 export const GlobalAudioPlayer = () => {
   const { 

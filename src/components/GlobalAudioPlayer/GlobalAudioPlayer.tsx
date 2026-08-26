@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useAudioPodcast } from './hooks'
+import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks'
 import clsx from 'clsx'
 import { AudioVisualizer } from './components/AudioVisualizer'
 import { getTechnicalErrorText } from './utils/getTechnicalErrorText'
+import { LiveStatusBadge } from './components'
 // import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 const formatAudioTime = (seconds: number): string => {
@@ -19,7 +20,7 @@ export const GlobalAudioPlayer = () => {
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
     saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
     playNextTrack, seekBackward, seekForward,
-    playbackRate, setPlaybackRate, isBuffering,
+    playbackRate, setPlaybackRate, isBuffering, isLife, isCurrentTrackLiveStream
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -210,35 +211,47 @@ export const GlobalAudioPlayer = () => {
                 ) : (
                   <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{
-                        flex: 1, minWidth: 0,
-                        // marginRight: '10px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '6px',
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                          <span
-                            className="player-meta-info"
-                            style={{ fontSize: '0.75em', textTransform: 'uppercase', display: 'inline-flex', gap: '8px', alignItems: 'center' }}
-                          >
-                            <span>Сейчас играет</span><span>{queue.indexOf(activeTrack) + 1} / {queue.length}</span>
-                          </span>
-                          
-                          {/* ИСПРАВЛЕНО: Добавлен текущий тайминг и общая длительность трека в заголовок шторки */}
-                          <span style={{ fontSize: 'small', fontWeight: 'bold', color: '#FF8E53', fontFamily: 'monospace' }}>
-                            [ {formatAudioTime(currentTime)} / {formatAudioTime(__duration)} ]
-                          </span>
-
-                          {/* isCurrentTrackBroken && (
-                            <span style={{ color: '#ff4d4d', fontSize: '0.75em' }}>⚠️ Файл недоступен</span>
-                          ) */}
-                        </div>
-                        <div className="player-active-title" style={{ fontWeight: 'bold', fontSize: 'small', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {activeTrack.title}
-                        </div>
+                      <div
+                        style={{
+                          flex: 1, minWidth: 0,
+                          // marginRight: '10px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                        }}
+                      >
+                        {
+                          isCurrentTrackLiveStream
+                          ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                              <LiveStatusBadge />
+                              <span className="player-meta-info" style={{ fontSize: '0.75em', textTransform: 'uppercase' }}>
+                                {isPlaying ? 'Live / Прямой Эфир' : 'Live'}
+                              </span>
+                            </div>
+                          )
+                          : (
+                            <>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                <span
+                                  className="player-meta-info"
+                                  style={{ fontSize: '0.75em', textTransform: 'uppercase', display: 'inline-flex', gap: '8px', alignItems: 'center' }}
+                                >
+                                  <span>Сейчас играет</span><span>{queue.indexOf(activeTrack) + 1} / {queue.length}</span>
+                                </span>
+                                
+                                <span style={{ fontSize: 'small', fontWeight: 'bold', color: '#FF8E53', fontFamily: 'monospace' }}>
+                                  [ {formatAudioTime(currentTime)} / {formatAudioTime(__duration)} ]
+                                </span>
+                              </div>
+                              <div className="player-active-title" style={{ fontWeight: 'bold', fontSize: 'small', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {activeTrack.title}
+                              </div>
+                            </>
+                          )
+                        }
                       </div>
-                      
+                          
                       <button
                         onClick={() => setPlayerMinimized(true)}
                         className="player-btn-action hide-desktop-action"
@@ -288,7 +301,14 @@ export const GlobalAudioPlayer = () => {
                                 }}
                               >
                                 <span style={{ fontFamily: 'monospace, system-ui, Courier' }}>{isTrackPlayingNow ? '⏸' : (isTrackActiveInPlayer ? '▶' : '💤')}</span>
-                                <span style={{ fontFamily: 'monospace, system-ui, Courier' }}>{track.title}</span>
+                                <span
+                                  style={{
+                                    fontFamily: 'monospace, system-ui, Courier',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >{track.title}</span>
                               </span>
                               <button onClick={() => removeFromQueue(track.id)} className="player-btn-delete">Удалить</button>
                             </div>
@@ -303,7 +323,7 @@ export const GlobalAudioPlayer = () => {
                         alignItems: 'center',
                         gap: '16px',
                         width: '100%',
-                        justifyContent: 'space-between',
+                        justifyContent: isLife ? 'flex-start' : 'space-between',
                         minHeight: '23px',
                       }}>
                         <div className="player-meta-info" style={{ fontSize: '0.75em', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
@@ -311,7 +331,7 @@ export const GlobalAudioPlayer = () => {
                         </div>
 
                         {
-                          isPlaying && !isCurrentTrackBroken && (
+                          !isLife && isPlaying && !isCurrentTrackBroken && (
                             <div style={{
                               display: 'flex',
                               justifyContent: 'space-between',
@@ -395,28 +415,32 @@ export const GlobalAudioPlayer = () => {
                                     <span>⏏️</span>
                                     {/* <span style={{ fontSize: '0.6rem' }}>Остановить и закрыть</span> */}
                                   </button>
-                                  <button 
-                                    onClick={() => seekBackward()} 
-                                    className="player-btn-seek"
-                                    style={{
-                                      background: 'rgba(255, 255, 255, 0.08)',
-                                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                                      // color: 'inherit',
-                                      cursor: 'pointer',
-                                      fontWeight: 500,
-                                      transition: 'all 0.2s ease',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '8px',
-                                      // padding: '4px 16px',
-                                      fontSize: '1.0rem',
-                                      // borderRadius: '8px',
-                                    }}
-                                    title="Назад на 20 секунд"
-                                  >
-                                    <span>⏪</span>
-                                    {/* <span style={{ fontSize: '0.6rem' }}>-20с</span> */}
-                                  </button>
+                                  {
+                                    !isLife && (
+                                      <button 
+                                        onClick={() => seekBackward()} 
+                                        className="player-btn-seek"
+                                        style={{
+                                          background: 'rgba(255, 255, 255, 0.08)',
+                                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                                          // color: 'inherit',
+                                          cursor: 'pointer',
+                                          fontWeight: 500,
+                                          transition: 'all 0.2s ease',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '8px',
+                                          // padding: '4px 16px',
+                                          fontSize: '1.0rem',
+                                          // borderRadius: '8px',
+                                        }}
+                                        title="Назад на 20 секунд"
+                                      >
+                                        <span>⏪</span>
+                                        {/* <span style={{ fontSize: '0.6rem' }}>-20с</span> */}
+                                      </button>
+                                    )
+                                  }
                                 </div>
                               )
                             }
@@ -432,28 +456,32 @@ export const GlobalAudioPlayer = () => {
                             {
                               isPlaying && !isCurrentTrackBroken && (
                                 <div style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}>
-                                  <button 
-                                    onClick={() => seekForward()} 
-                                    className="player-btn-seek"
-                                    style={{
-                                      background: 'rgba(255, 255, 255, 0.08)',
-                                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                                      // color: 'inherit',
-                                      cursor: 'pointer',
-                                      fontWeight: 500,
-                                      transition: 'all 0.2s ease',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '8px',
-                                      // padding: '4px 16px',
-                                      fontSize: '1.0rem',
-                                      // borderRadius: '8px',
-                                    }}
-                                    title="Вперед на 20 секунд"
-                                  >
-                                    {/* <span style={{ fontSize: '0.6rem' }}>+20с</span> */}
-                                    <span>⏩</span>
-                                  </button>
+                                  {
+                                    !isLife && (
+                                      <button 
+                                        onClick={() => seekForward()} 
+                                        className="player-btn-seek"
+                                        style={{
+                                          background: 'rgba(255, 255, 255, 0.08)',
+                                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                                          // color: 'inherit',
+                                          cursor: 'pointer',
+                                          fontWeight: 500,
+                                          transition: 'all 0.2s ease',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '8px',
+                                          // padding: '4px 16px',
+                                          fontSize: '1.0rem',
+                                          // borderRadius: '8px',
+                                        }}
+                                        title="Вперед на 20 секунд"
+                                      >
+                                        {/* <span style={{ fontSize: '0.6rem' }}>+20с</span> */}
+                                        <span>⏩</span>
+                                      </button>
+                                    )
+                                  }
                                   <button 
                                     onClick={!!activeTrack ? () => toggleTrack(activeTrack) : undefined} 
                                     className="player-btn-pause"
