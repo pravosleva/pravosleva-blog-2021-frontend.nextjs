@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useAudioPodcast } from './hooks'
 import clsx from 'clsx'
 import { AudioVisualizer } from './components/AudioVisualizer'
-import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getTechnicalErrorText } from './utils/getTechnicalErrorText'
+// import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 const formatAudioTime = (seconds: number): string => {
   if (isNaN(seconds) || seconds === Infinity) return '00:00'
@@ -18,7 +19,7 @@ export const GlobalAudioPlayer = () => {
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
     saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
     playNextTrack, seekBackward, seekForward,
-    playbackRate, setPlaybackRate,
+    playbackRate, setPlaybackRate, isBuffering,
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -149,6 +150,8 @@ export const GlobalAudioPlayer = () => {
     playerStateClass = isPlayerMinimized ? 'is-minimized' : 'is-expanded'
   }
 
+  const currentTrackErrorReason = currentTrack ? trackErrors[currentTrack.id] : null;
+
   return (
     <>
       {/* Нативный тег audio теперь живет в DOM постоянно и скрыт от пользователя */}
@@ -159,10 +162,16 @@ export const GlobalAudioPlayer = () => {
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={handleTimeUpdate} 
-        onError={() => activeTrack && markTrackAsBroken(activeTrack.id)}
+        // Извлекаем нативный код и технический текст ошибки браузера
+        onError={(e) => {
+          if (activeTrack) {
+            // Накатываем утилиту, скармливая ей e.currentTarget.error
+            const errorText = getTechnicalErrorText(e.currentTarget.error, activeTrack);
+            markTrackAsBroken(activeTrack.id, errorText);
+          }
+        }}
         // Привязываем триггер окончания трека к автопереходу сервиса
         onEnded={() => playNextTrack()}
-
         crossOrigin="anonymous"
       />
 
@@ -190,8 +199,12 @@ export const GlobalAudioPlayer = () => {
                       </div>
                     </div>
                     <button
-                      onClick={() => setPlayerMinimized(false)} className="player-btn-action">
-                      <span>Развернуть</span><span>🔼</span></button>
+                      onClick={() => setPlayerMinimized(false)} className="player-btn-action"
+                    >
+                      {isBuffering ? <span>⏳</span> : currentTrackErrorReason ? <span>⛔</span> : null}
+                      <span>Развернуть</span>
+                      <span>🔼</span>
+                    </button>
                     <div className="player-progress-track" style={{ position: 'absolute', bottom: 0, left: '-20px', right: '-20px', height: '4px' }}>
                       <div style={{ width: `${progressPercent}%`, height: '100%', background: '#FF8E53', transition: 'width 0.1s linear' }} />
                     </div>
@@ -215,11 +228,13 @@ export const GlobalAudioPlayer = () => {
                           </span>
                           
                           {/* ИСПРАВЛЕНО: Добавлен текущий тайминг и общая длительность трека в заголовок шторки */}
-                          <span style={{ fontSize: '0.8em', fontWeight: 'bold', color: '#FF8E53', fontFamily: 'monospace' }}>
+                          <span style={{ fontSize: 'small', fontWeight: 'bold', color: '#FF8E53', fontFamily: 'monospace' }}>
                             [ {formatAudioTime(currentTime)} / {formatAudioTime(__duration)} ]
                           </span>
 
-                          {isCurrentTrackBroken && <span style={{ color: '#ff4d4d', fontSize: '0.75em' }}>⚠️ Файл недоступен</span>}
+                          {/* isCurrentTrackBroken && (
+                            <span style={{ color: '#ff4d4d', fontSize: '0.75em' }}>⚠️ Файл недоступен</span>
+                          ) */}
                         </div>
                         <div className="player-active-title" style={{ fontWeight: 'bold', fontSize: 'small', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {activeTrack.title}
@@ -230,9 +245,17 @@ export const GlobalAudioPlayer = () => {
                         onClick={() => setPlayerMinimized(true)}
                         className="player-btn-action hide-desktop-action"
                       >
-                          <span>Свернуть</span><span>🔽</span>
+                        {isBuffering && <span>⏳</span>}
+                        <span>Свернуть</span>
+                        <span>🔽</span>
                       </button>
                     </div>
+
+                    {currentTrackErrorReason && (
+                      <div>
+                        <span style={{ color: '#ff4d4d', fontSize: 'small', fontWeight: 'bold' }}>⚠️ {currentTrackErrorReason}</span>
+                      </div>
+                    )}
 
                     <AudioVisualizer />
 

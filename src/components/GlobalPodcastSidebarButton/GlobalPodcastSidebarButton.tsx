@@ -11,7 +11,10 @@ export const GlobalPodcastSidebarButton = () => {
     setPlayerMinimized, 
     isPlaying,
     currentTime,
-    duration
+    duration,
+    currentTrack,
+    trackErrors,
+    isBuffering,
   } = useAudioPodcast()
   // const [progressPercent, setProgressPercent] = useState(0)
   // const [isPlaying, setIsPlaying] = useState(false)
@@ -92,6 +95,7 @@ export const GlobalPodcastSidebarButton = () => {
   // Показываем круговой прогресс, только если плеер активен и свернут в шторку
   // const showCircularProgress = isPlayerVisible && isPlayerMinimized && progressPercent > 0
   const showCircularProgress = progressPercent > 0
+  const currentTrackErrorReason = currentTrack ? trackErrors[currentTrack.id] : null;
 
   return (
     <div 
@@ -151,13 +155,19 @@ export const GlobalPodcastSidebarButton = () => {
 
       {/* Иконка внутри кнопки */}
       <div style={{ zIndex: 2, fontSize: '1.2em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {isPlayerVisible && !isPlayerMinimized ? (
-          <span style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1em' }}>✕</span>
-        ) : isPlaying ? (
-          <span className="rotating-disk-mobile">💿</span>
-        ) : (
-          <span>🎧</span>
-        )}
+        {
+          isBuffering
+          ? <span className="rotating-disk-mobile">⏳</span>
+          : isPlayerVisible && !isPlayerMinimized
+          ? <span style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1em' }}>✕</span>
+          : isPlaying
+            ? currentTrackErrorReason
+              ? <span>⛔</span>
+              : <span className="rotating-disk-mobile">💿</span>
+            : currentTrackErrorReason
+              ? <span>⛔</span>
+              : <span>🎧</span>
+        }
       </div>
     </div>
   )

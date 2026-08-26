@@ -225,7 +225,7 @@ export const GlobalAudioPlayer = () => {
         onPause={() => setIsPlaying(false)}
         onLoadedData={handleLoadedData} 
         onTimeUpdate={handleTimeUpdate} 
-        onError={() => markTrackAsBroken(activeTrack.id)}
+        onError={() => markTrackAsBroken(activeTrack.id, 'ERR')}
       />
     </div>
   )

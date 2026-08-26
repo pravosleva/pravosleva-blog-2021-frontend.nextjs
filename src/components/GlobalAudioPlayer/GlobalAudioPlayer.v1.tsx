@@ -194,7 +194,7 @@ export const GlobalAudioPlayer = () => {
         controls={!isPlayerMinimized}
         style={{ width: '100%', height: '36px', display: isPlayerMinimized ? 'none' : 'block' }} 
         onTimeUpdate={handleTimeUpdate}
-        onError={() => markTrackAsBroken(activeTrack.id)}
+        onError={() => markTrackAsBroken(activeTrack.id, 'ERR')}
       />
 
       <style jsx global>{`

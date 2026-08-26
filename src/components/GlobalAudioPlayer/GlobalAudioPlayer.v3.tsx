@@ -182,7 +182,7 @@ export const GlobalAudioPlayer = () => {
         style={{ width: '100%', height: '36px', display: isPlayerMinimized ? 'none' : 'block' }} 
         onLoadedData={handleLoadedData}
         onTimeUpdate={handleTimeUpdate}
-        onError={() => markTrackAsBroken(activeTrack.id)}
+        onError={() => markTrackAsBroken(activeTrack.id, 'ERR')}
       />
 
       {/* ─── НАВЕДЕНИЕ СТИЛЕЙ ЧЕРЕЗ РОДИТЕЛЬСКИЙ ТЕГ MAIN ТЕМАТИЗАЦИИ ─── */}

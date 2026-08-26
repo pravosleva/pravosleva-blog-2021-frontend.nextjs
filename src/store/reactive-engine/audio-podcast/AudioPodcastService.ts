@@ -1,4 +1,5 @@
 import { AbstractService, Signal } from '@pravosleva/reactive-engine'
+import { getTechnicalErrorText } from '~/components/GlobalAudioPlayer/utils/getTechnicalErrorText';
 
 export interface IAudioTrack {
   id: string;
@@ -9,18 +10,21 @@ export interface IAudioTrack {
 // const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'no'
 // const getFreshUrl = (url: string) => `${url}?gitSHA1=${NEXT_APP_GIT_SHA1}`
 
+type TAudioTrackErrorText = string;
+type TAudioTrackId = string;
 export class AudioPodcastService extends AbstractService {
   public queue: Signal<IAudioTrack[]>;
   public currentTrack: Signal<IAudioTrack | null>;
   public isPlayerVisible: Signal<boolean>;
   public isPlayerMinimized: Signal<boolean>;
-  public trackErrors: Signal<Record<string, boolean>>;
+  public trackErrors: Signal<Record<TAudioTrackId, TAudioTrackErrorText>>;
   public isPlaying: Signal<boolean>;
   public currentTime: Signal<number>;
   public duration: Signal<number>;
   private audioEl: HTMLAudioElement | null = null;
   public playbackRate: Signal<number>;
   private audioChannel: BroadcastChannel | null = null;
+  public isBuffering: Signal<boolean>;
 
   constructor(...args: any[]) {
     // @ts-ignore
@@ -28,6 +32,8 @@ export class AudioPodcastService extends AbstractService {
 
     const initialQueue = this.loadQueueFromStorage();
     this.queue = this.engine.signal<IAudioTrack[]>(initialQueue, 'audio:queue');
+
+    this.isBuffering = this.engine.signal<boolean>(false, 'audio:is-buffering');
     
     // 1. Загружаем последний активный трек из localStorage
     const savedActiveTrack = this.loadActiveTrackFromStorage(initialQueue);
@@ -38,7 +44,7 @@ export class AudioPodcastService extends AbstractService {
     this.isPlayerVisible = this.engine.signal<boolean>(hasSavedTrack, 'audio:player-ui-visible');
     this.isPlayerMinimized = this.engine.signal<boolean>(hasSavedTrack, 'audio:player-ui-minimized');
     
-    this.trackErrors = this.engine.signal<Record<string, boolean>>({}, 'audio:track-errors');
+    this.trackErrors = this.engine.signal<Record<TAudioTrackId, TAudioTrackErrorText>>({}, 'audio:track-errors');
     this.isPlaying = this.engine.signal<boolean>(false, 'audio:is-playing');
     
     // ИСПРАВЛЕНО: Безопасное обращение к ID через первый элемент массива initialQueue[0]
@@ -194,17 +200,62 @@ export class AudioPodcastService extends AbstractService {
   public registerAudioElement(el: HTMLAudioElement | null): void {
     this.audioEl = el;
     
-    // Проверка el.src теперь учитывает зануленные атрибуты
+    // Проверка el.src учитывает зануленные атрибуты
     if (el && (!el.getAttribute('src') || el.src.includes(window.location.host) && !el.src.includes('.'))) {
-      // el.crossOrigin = 'anonymous';
       el.defaultPlaybackRate = this.playbackRate.value;
       el.playbackRate = this.playbackRate.value;
+
+      // -- Системные слушатели буферизации сети:
+      // Слушатели буферизации медиа-потока (Защита от зависания UI)
+      // Браузер ждет байты из сети — включаем лоадер
+      el.addEventListener('waiting', () => {
+        this.isBuffering.value = true;
+      });
+
+      // Звук пошел, или трек снят с паузы — выключаем лоадер
+      el.addEventListener('playing', () => {
+        this.isBuffering.value = false;
+      });
+
+      // Если пользователь нажал паузу вручную — лоадер точно не нужен
+      el.addEventListener('pause', () => {
+        this.isBuffering.value = false;
+      });
+
+      // Метаданные загрузились — сбрасываем, если трек готов
+      el.addEventListener('canplay', () => {
+        this.isBuffering.value = false;
+      });
+      // --
 
       el.addEventListener('loadedmetadata', () => {
         if (this.audioEl) this.audioEl.playbackRate = this.playbackRate.value;
       });
 
       const track = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
+
+      el.addEventListener('error', async () => {
+        if (!this.currentTrack.value) return;
+        const track = this.currentTrack.value;
+        
+        let detailedMessage = getTechnicalErrorText(el.error, track);
+
+        // Если браузер выдал размытый код 4, делаем точечный сетевой прострел
+        if (el.error?.code === 4) {
+          try {
+            const response = await fetch(track.url, { method: 'HEAD' });
+            if (response.status === 404) {
+              detailedMessage = `[404 Not Found] Файл подкаста полностью отсутствует на сервере по адресу: ${track.url}`;
+            }
+          } catch (netErr) {
+            // Если fetch упал на чужом домене — это 100% железная CORS блокировка сети
+            detailedMessage = `[CORS Блокировка] Сторонний сервер отклонил запрос. Отсутствует заголовок Access-Control-Allow-Origin для домена ${window.location.host}`;
+          }
+        }
+
+        this.markTrackAsBroken(track.id, detailedMessage);
+      });
+      
       if (track) {
         el.src = track.url;
         const savedTime = this.getTrackProgress(track.id);
@@ -256,7 +307,9 @@ export class AudioPodcastService extends AbstractService {
 
       this.isPlayerVisible.value = true;
       this.isPlayerMinimized.value = false;
-      this.duration.value = 0; 
+      this.duration.value = 0;
+
+      this.isBuffering.value = true; // Loader enabled...
 
       const errors = { ...this.trackErrors.value };
       delete errors[track.id];
@@ -284,6 +337,9 @@ export class AudioPodcastService extends AbstractService {
 
   public stopTrack(): void {
     if (!this.audioEl) return;
+
+    this.isBuffering.value = false;
+
     this.audioEl.pause();
     this.audioEl.currentTime = 0;
     this.isPlaying.value = false;
@@ -371,9 +427,14 @@ export class AudioPodcastService extends AbstractService {
     }
   }
 
-  public markTrackAsBroken(trackId: string): void {
-    this.trackErrors.value = { ...this.trackErrors.value, [trackId]: true };
+  public markTrackAsBroken(trackId: string, technicalReason: string): void {
+    this.trackErrors.value = { 
+      ...this.trackErrors.value, 
+      [trackId]: technicalReason || 'Unknown Media Error' 
+    };
     this.isPlaying.value = false;
+    
+    console.error(`🚨 [Audio Engine] Трек ${trackId} заблокирован. Причина: ${technicalReason}`);
   }
 
   public getNativeAudioEl(): HTMLAudioElement | null {

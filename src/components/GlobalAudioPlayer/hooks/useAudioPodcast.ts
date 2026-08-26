@@ -10,12 +10,14 @@ export const useAudioPodcast = () => {
   const currentTrack = useReactiveValue0<IAudioTrack | null>(audioPodcastService.currentTrack)
   const isPlayerVisible = useReactiveValue0<boolean>(audioPodcastService.isPlayerVisible)
   const isPlayerMinimized = useReactiveValue0<boolean>(audioPodcastService.isPlayerMinimized)
-  const trackErrors = useReactiveValue0<Record<string, boolean>>(audioPodcastService.trackErrors)
+  const trackErrors = useReactiveValue0<Record<string, string>>(audioPodcastService.trackErrors)
   // const playTrigger = useReactiveValue0<number>(audioPodcastService.playTrigger)
   const isPlaying = useReactiveValue0<boolean>(audioPodcastService.isPlaying)
   const currentTime = useReactiveValue0<number>(audioPodcastService.currentTime)
   const duration = useReactiveValue0<number>(audioPodcastService.duration)
   const playbackRate = useReactiveValue0<number>(audioPodcastService.playbackRate)
+  // const currentTrackErrorReason = currentTrack ? trackErrors[currentTrack.id] : null;
+  const isBuffering = useReactiveValue0<boolean>(audioPodcastService.isBuffering);
   
   return {
     queue,
@@ -27,11 +29,12 @@ export const useAudioPodcast = () => {
     isPlaying,
     currentTime,
     duration,
+    isBuffering,
     toggleTrack: (track: IAudioTrack) => audioPodcastService.toggleTrack(track), // ИСПРАВЛЕНО
     addToQueue: (track: IAudioTrack) => audioPodcastService.addToQueue(track),
     removeFromQueue: (trackId: string) => audioPodcastService.removeFromQueue(trackId),
     // playTrack: (track: IAudioTrack) => audioPodcastService.playTrack(track),
-    markTrackAsBroken: (trackId: string) => audioPodcastService.markTrackAsBroken(trackId),
+    markTrackAsBroken: (trackId: string, reason: string) => audioPodcastService.markTrackAsBroken(trackId, reason),
     setPlayerVisible: (visible: boolean) => audioPodcastService.isPlayerVisible.value = visible,
     setPlayerMinimized: (minimized: boolean) => audioPodcastService.isPlayerMinimized.value = minimized,
     setIsPlaying: (playing: boolean) => audioPodcastService.isPlaying.value = playing, // Изменение стейта плеера
@@ -47,6 +50,6 @@ export const useAudioPodcast = () => {
     playbackRate,
     togglePlaybackRate: () => audioPodcastService.togglePlaybackRate(),
     setPlaybackRate: (rate: number) => audioPodcastService.setPlaybackRate(rate),
-    pauseForExternalMedia: () => audioPodcastService.pauseForExternalMedia()
+    pauseForExternalMedia: () => audioPodcastService.pauseForExternalMedia(),
   }
 }

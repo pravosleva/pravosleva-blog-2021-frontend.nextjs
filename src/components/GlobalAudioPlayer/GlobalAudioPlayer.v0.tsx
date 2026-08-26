@@ -111,7 +111,7 @@ export const GlobalAudioPlayer = () => {
           src={activeTrack.url} 
           controls 
           style={{ width: '100%', height: '36px' }} // Фиксированная уменьшенная высота плеера
-          onError={() => markTrackAsBroken(activeTrack.id)}
+          onError={() => markTrackAsBroken(activeTrack.id, 'ERR')}
         />
       )}
 
