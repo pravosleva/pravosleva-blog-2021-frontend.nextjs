@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useAudioPodcast } from '../../store/reactive-engine/audio-podcast/hooks'
+import clsx from 'clsx'
+import liveStatusBadgeStyles from '~/components/GlobalAudioPlayer/components/LiveStatusBadge/LiveStatusBadge.module.scss'
 
 export const GlobalPodcastSidebarButton = () => {
   // const { queue, isPlayerVisible, isPlayerMinimized, setPlayerVisible, setPlayerMinimized, currentTrack } = useAudioPodcast()
@@ -15,6 +17,7 @@ export const GlobalPodcastSidebarButton = () => {
     currentTrack,
     trackErrors,
     isBuffering,
+    isCurrentTrackLiveStream,
   } = useAudioPodcast()
   // const [progressPercent, setProgressPercent] = useState(0)
   // const [isPlaying, setIsPlaying] = useState(false)
@@ -97,6 +100,25 @@ export const GlobalPodcastSidebarButton = () => {
   const showCircularProgress = progressPercent > 0
   const currentTrackErrorReason = currentTrack ? trackErrors[currentTrack.id] : null;
 
+  const liveStatus = useMemo<'ok' | 'buffering' | 'error' | 'idle'>(() => {
+    switch (true) {
+      case !currentTrack:
+        return 'idle' // Радио на паузе
+      case !!currentTrack && !!trackErrors[currentTrack.id]:
+        // Если по текущему активному треку радио зафиксирован текстовый лог ошибки
+        return 'error'
+      case isBuffering:
+        // Если идет процесс ожидания байт из сети
+        return 'buffering'
+      case isPlaying:
+        // Если поток успешно воспроизводится без сбоев
+        return 'ok'
+      case !currentTrack:
+      default:
+        return 'idle' // Радио на паузе
+    }
+  }, [currentTrack, isPlaying, isBuffering, trackErrors])
+
   return (
     <div 
       className="mobile-podcast-fab-trigger"
@@ -122,7 +144,7 @@ export const GlobalPodcastSidebarButton = () => {
     >
       {/* Круговой SVG прогресс-бар */}
       {/* ИСПРАВЛЕНО: SVG центрирован идеально через абсолютные координаты и transform */}
-      {showCircularProgress && (
+      {showCircularProgress && !isCurrentTrackLiveStream && (
         <svg 
           style={{ 
             position: 'absolute', 
@@ -157,15 +179,29 @@ export const GlobalPodcastSidebarButton = () => {
       <div style={{ zIndex: 2, fontSize: '1.2em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {
           isBuffering
-          ? <span className="rotating-disk-mobile">⏳</span>
+          ? (
+            <span 
+              className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--buffering'])} 
+            />
+          )
           : isPlayerVisible && !isPlayerMinimized
           ? <span style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1em' }}>✕</span>
           : isPlaying
             ? currentTrackErrorReason
-              ? <span>⛔</span>
-              : <span className="rotating-disk-mobile">💿</span>
+              ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
+              : isCurrentTrackLiveStream
+                ? (
+                  <span 
+                    className={clsx(liveStatusBadgeStyles.statusDot, {
+                      [liveStatusBadgeStyles['statusDot--ok']]: liveStatus === 'ok',
+                      [liveStatusBadgeStyles['statusDot--buffering']]: liveStatus === 'buffering',
+                      [liveStatusBadgeStyles['statusDot--error']]: liveStatus === 'error',
+                    })} 
+                  />
+                )
+                : <span className="rotating-disk-mobile">💿</span>
             : currentTrackErrorReason
-              ? <span>⛔</span>
+              ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
               : <span>🎧</span>
         }
       </div>

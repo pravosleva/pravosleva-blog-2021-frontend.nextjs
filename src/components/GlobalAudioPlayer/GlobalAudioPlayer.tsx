@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks'
 import clsx from 'clsx'
 import { AudioVisualizer } from './components/AudioVisualizer'
 import { getTechnicalErrorText } from './utils/getTechnicalErrorText'
 import { LiveStatusBadge } from './components'
 // import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import liveStatusBadgeStyles from './components/LiveStatusBadge/LiveStatusBadge.module.scss'
 
 const formatAudioTime = (seconds: number): string => {
   if (isNaN(seconds) || seconds === Infinity) return '00:00'
@@ -20,7 +21,7 @@ export const GlobalAudioPlayer = () => {
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
     saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
     playNextTrack, seekBackward, seekForward,
-    playbackRate, setPlaybackRate, isBuffering, isLife, isCurrentTrackLiveStream
+    playbackRate, setPlaybackRate, isBuffering, isLife, isCurrentTrackLiveStream,
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -153,6 +154,25 @@ export const GlobalAudioPlayer = () => {
 
   const currentTrackErrorReason = currentTrack ? trackErrors[currentTrack.id] : null;
 
+  const liveStatus = useMemo<'ok' | 'buffering' | 'error' | 'idle'>(() => {
+    switch (true) {
+      case !currentTrack:
+        return 'idle' // Радио на паузе
+      case !!currentTrack && !!trackErrors[currentTrack.id]:
+        // Если по текущему активному треку радио зафиксирован текстовый лог ошибки
+        return 'error'
+      case isBuffering:
+        // Если идет процесс ожидания байт из сети
+        return 'buffering'
+      case isPlaying:
+        // Если поток успешно воспроизводится без сбоев
+        return 'ok'
+      case !currentTrack:
+      default:
+        return 'idle' // Радио на паузе
+    }
+  }, [currentTrack, isPlaying, isBuffering, trackErrors])
+
   return (
     <>
       {/* Нативный тег audio теперь живет в DOM постоянно и скрыт от пользователя */}
@@ -191,9 +211,22 @@ export const GlobalAudioPlayer = () => {
               <>
                 {isPlayerMinimized ? (
                   <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 10px)' }}>
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className="rotating-disk" style={{ display: 'inline-block' }}>💿</span>
-                      <div className="player-main-title" style={{ fontSize: '0.88em', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      {
+                        isPlaying && isCurrentTrackLiveStream ? (
+                          <span
+                            style={{ marginLeft: '4px' }}
+                            className={clsx(liveStatusBadgeStyles.statusDot, {
+                              [liveStatusBadgeStyles['statusDot--ok']]: liveStatus === 'ok',
+                              [liveStatusBadgeStyles['statusDot--buffering']]: liveStatus === 'buffering',
+                              [liveStatusBadgeStyles['statusDot--error']]: liveStatus === 'error',
+                            })} 
+                          />
+                        ) : (
+                          <span className="rotating-disk" style={{ display: 'inline-block' }}>💿</span>
+                        )
+                      }
+                      <div className="player-main-title" style={{ fontSize: '0.88em', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {activeTrack.title}
                       </div>
                     </div>
@@ -223,10 +256,10 @@ export const GlobalAudioPlayer = () => {
                         {
                           isCurrentTrackLiveStream
                           ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                              <LiveStatusBadge />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', transform: 'translateX(-6px)' }}>
+                              {isPlaying && <LiveStatusBadge />}
                               <span className="player-meta-info" style={{ fontSize: '0.75em', textTransform: 'uppercase' }}>
-                                {isPlaying ? 'Live / Прямой Эфир' : 'Live'}
+                                {isPlaying ? 'Live' : 'Live'}
                               </span>
                             </div>
                           )
@@ -264,7 +297,9 @@ export const GlobalAudioPlayer = () => {
 
                     {currentTrackErrorReason && (
                       <div>
-                        <span style={{ color: '#ff4d4d', fontSize: 'small', fontWeight: 'bold' }}>⚠️ {currentTrackErrorReason}</span>
+                        <span style={{ color: '#ff4d4d', fontSize: 'small', fontWeight: 'bold' }}>
+                          ⚠️ {currentTrackErrorReason}
+                        </span>
                       </div>
                     )}
 
