@@ -213,7 +213,7 @@ export const GlobalAudioPlayer = () => {
                   <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 10px)' }}>
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
                       {
-                        isPlaying && isCurrentTrackLiveStream ? (
+                        (isBuffering || (isPlaying && isCurrentTrackLiveStream)) ? (
                           <span
                             style={{ marginLeft: '4px' }}
                             className={clsx(liveStatusBadgeStyles.statusDot, {
@@ -254,7 +254,7 @@ export const GlobalAudioPlayer = () => {
                         }}
                       >
                         {
-                          isCurrentTrackLiveStream
+                          (isCurrentTrackLiveStream || isBuffering)
                           ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', transform: 'translateX(-6px)' }}>
                               {isPlaying && <LiveStatusBadge />}

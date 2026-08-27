@@ -180,29 +180,27 @@ export const GlobalPodcastSidebarButton = () => {
         {
           isBuffering
           ? (
-            <span 
-              className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--buffering'])} 
-            />
+            <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--buffering'])} />
           )
-          : isPlayerVisible && !isPlayerMinimized
-          ? <span style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1em' }}>✕</span>
-          : isPlaying
-            ? currentTrackErrorReason
-              ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
-              : isCurrentTrackLiveStream
-                ? (
-                  <span 
-                    className={clsx(liveStatusBadgeStyles.statusDot, {
-                      [liveStatusBadgeStyles['statusDot--ok']]: liveStatus === 'ok',
-                      [liveStatusBadgeStyles['statusDot--buffering']]: liveStatus === 'buffering',
-                      [liveStatusBadgeStyles['statusDot--error']]: liveStatus === 'error',
-                    })} 
-                  />
-                )
-                : <span className="rotating-disk-mobile">💿</span>
-            : currentTrackErrorReason
-              ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
-              : <span>🎧</span>
+          : (isPlayerVisible && !isPlayerMinimized)
+            ? <span style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1em' }}>✕</span>
+            : isPlaying
+              ? currentTrackErrorReason
+                ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
+                : isCurrentTrackLiveStream
+                  ? (
+                    <span 
+                      className={clsx(liveStatusBadgeStyles.statusDot, {
+                        [liveStatusBadgeStyles['statusDot--ok']]: liveStatus === 'ok',
+                        [liveStatusBadgeStyles['statusDot--buffering']]: liveStatus === 'buffering',
+                        [liveStatusBadgeStyles['statusDot--error']]: liveStatus === 'error',
+                      })} 
+                    />
+                  )
+                  : <span className="rotating-disk-mobile">💿</span>
+              : currentTrackErrorReason
+                ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
+                : <span>🎧</span>
         }
       </div>
     </div>
