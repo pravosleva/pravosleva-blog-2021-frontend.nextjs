@@ -253,10 +253,10 @@ export const slugMapping: { [key: string]: TArticleTools } = {
     id: '6a8d539ef7929b4140542047',
     brief: 'Tutorial',
     bg: {
-      src: '/static/img/blog/nuxt4-logo-dark.webp',
+      src: '/static/img/blog/nuxt4-logo.webp',
       size: {
-        w: 300,
-        h: 300,
+        w: 512,
+        h: 512,
       },
       type: 'image/webp',
     },
@@ -323,6 +323,18 @@ export const slugMapping: { [key: string]: TArticleTools } = {
       type: 'image/webp',
     },
   },
+  'internet-radio-streaming': {
+      id: '6a90263cf7929b4140542048',
+      brief: 'Список радиостанций',
+      bg: {
+        src: '/static/img/blog/radio.webp',
+        size: {
+          w: 740,
+          h: 415,
+        },
+        type: 'image/webp',
+      },
+    },
 }
 
 const _slugMap = new Map<string, TArticleTools & {
