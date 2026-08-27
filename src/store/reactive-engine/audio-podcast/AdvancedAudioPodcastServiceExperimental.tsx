@@ -46,6 +46,41 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
     if (typeof window !== 'undefined') {
       this.isLive.value = this.isCurrentTrackLiveStream.value;
     }
+
+    /* =========================================================================
+   ИСПРАВЛЕНО: Расширяем BroadcastChannel с жесткой привязкой контекста .call()
+   ========================================================================= */
+    if (typeof window !== 'undefined' && !!this.audioChannel) {
+      const baseOnMessage = this.audioChannel.onmessage;
+
+      this.audioChannel.onmessage = (event) => {
+        // Вызываем базовый обработчик, принудительно прокидывая оригинальный this (BroadcastChannel)
+        if (baseOnMessage) {
+          baseOnMessage.call(this.audioChannel as BroadcastChannel, event); // <-- ИСПРАВЛЕНО ЗДЕСЬ!
+        }
+
+        const { type } = event.data || {};
+
+        if (type === 'someone_started_playback') {
+          if (this.radioEl && !this.radioEl.paused) {
+            this.radioEl.pause();
+            
+            if (this.hlsInstance) {
+              this.hlsInstance.destroy();
+              this.hlsInstance = null;
+            }
+            
+            this.radioEl.removeAttribute('src');
+            this.radioEl.load();
+            
+            this.isPlaying.value = false;
+            this.isBuffering.value = false;
+            console.log('🛑 [Advanced Engine]: Радио-стрим принудительно заглушен из соседней вкладки.');
+          }
+        }
+      };
+    }
+
   }
 
   // Регистрируем базовый элемент подкастов

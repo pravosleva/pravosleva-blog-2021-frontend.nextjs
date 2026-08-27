@@ -23,7 +23,7 @@ export class AudioPodcastService extends AbstractService {
   public duration: Signal<number>;
   private audioEl: HTMLAudioElement | null = null;
   public playbackRate: Signal<number>;
-  private audioChannel: BroadcastChannel | null = null;
+  public audioChannel: BroadcastChannel | null = null;
   public isBuffering: Signal<boolean>;
 
   constructor(...args: any[]) {
