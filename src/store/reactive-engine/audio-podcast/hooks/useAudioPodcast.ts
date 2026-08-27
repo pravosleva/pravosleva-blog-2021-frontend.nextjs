@@ -18,7 +18,7 @@ export const useAudioPodcast = () => {
   const playbackRate = useReactiveValue0<number>(audioPodcastService.playbackRate)
   // const currentTrackErrorReason = currentTrack ? trackErrors[currentTrack.id] : null;
   const isBuffering = useReactiveValue0<boolean>(audioPodcastService.isBuffering);
-  const isLife = useReactiveValue0<boolean>(audioPodcastService.isLive);
+  const isLive = useReactiveValue0<boolean>(audioPodcastService.isLive);
   const isCurrentTrackLiveStream = useReactiveValue0<boolean>(audioPodcastService.isCurrentTrackLiveStream);
   
   return {
@@ -32,7 +32,7 @@ export const useAudioPodcast = () => {
     currentTime,
     duration,
     isBuffering,
-    isLife,
+    isLive,
     isCurrentTrackLiveStream,
     toggleTrack: (track: IAudioTrack) => audioPodcastService.toggleTrack(track), // ИСПРАВЛЕНО
     addToQueue: (track: IAudioTrack) => audioPodcastService.addToQueue(track),

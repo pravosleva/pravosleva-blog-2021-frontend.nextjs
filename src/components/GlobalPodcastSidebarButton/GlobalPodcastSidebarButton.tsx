@@ -194,13 +194,12 @@ export const GlobalPodcastSidebarButton = () => {
                         [liveStatusBadgeStyles['statusDot--ok']]: liveStatus === 'ok',
                         [liveStatusBadgeStyles['statusDot--buffering']]: liveStatus === 'buffering',
                         [liveStatusBadgeStyles['statusDot--error']]: liveStatus === 'error',
+                        [liveStatusBadgeStyles['statusDot--idle']]: liveStatus === 'idle',
                       })} 
                     />
                   )
                   : <span className="rotating-disk-mobile">💿</span>
-              : currentTrackErrorReason
-                ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
-                : <span>🎧</span>
+              : <span>🎧</span>
         }
       </div>
     </div>

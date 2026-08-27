@@ -53,6 +53,13 @@
   animation: live-pulse-red 0.6s infinite ease-in-out; // Частая пульсация сигнализирует о сбое
 }
 
+/* 🔘 МУТНЫЙ МОДИФИКАТОР: НЕАКТИВЕН / ПАУЗА (Спокойный серый пульс без неона) */
+.statusDot--idle {
+  background: #707a8a;
+  box-shadow: 0 0 4px rgba(112, 122, 138, 0.4);
+  animation: live-pulse-gray 2.5s infinite ease-in-out; // Медленная, ненавязчивая пульсация
+}
+
 // --- НИЗКОУРОВНЕВЫЕ НЕОНОВЫЕ АНИМАЦИИ ПОТОКОВ ---
 
 @keyframes live-pulse-green {
@@ -112,5 +119,23 @@
     transform: scale(0.85);
     opacity: 0.5;
     box-shadow: 0 0 4px #ff5370;
+  }
+}
+
+@keyframes live-pulse-gray {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+    box-shadow: 0 0 6px rgba(112, 122, 138, 0.6);
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
   }
 }

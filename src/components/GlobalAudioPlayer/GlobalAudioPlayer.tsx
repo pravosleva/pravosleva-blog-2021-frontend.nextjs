@@ -21,7 +21,7 @@ export const GlobalAudioPlayer = () => {
     removeFromQueue, toggleTrack, markTrackAsBroken, setPlayerMinimized, setIsPlaying,
     saveTrackProgress, getTrackProgress, registerAudioElement, setDurationValue, stopTrack,
     playNextTrack, seekBackward, seekForward,
-    playbackRate, setPlaybackRate, isBuffering, isLife, isCurrentTrackLiveStream,
+    playbackRate, setPlaybackRate, isBuffering, isLive, isCurrentTrackLiveStream,
   } = useAudioPodcast()
   
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -210,16 +210,18 @@ export const GlobalAudioPlayer = () => {
             hasTracks && (
               <>
                 {isPlayerMinimized ? (
+                  // ПЛЕЕР СВЕРНУТ
                   <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 10px)' }}>
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
                       {
-                        (isBuffering || (isPlaying && isCurrentTrackLiveStream)) ? (
+                        (isBuffering || isCurrentTrackLiveStream) ? (
                           <span
                             style={{ marginLeft: '4px' }}
                             className={clsx(liveStatusBadgeStyles.statusDot, {
                               [liveStatusBadgeStyles['statusDot--ok']]: liveStatus === 'ok',
                               [liveStatusBadgeStyles['statusDot--buffering']]: liveStatus === 'buffering',
                               [liveStatusBadgeStyles['statusDot--error']]: liveStatus === 'error',
+                              [liveStatusBadgeStyles['statusDot--idle']]: liveStatus === 'idle',
                             })} 
                           />
                         ) : (
@@ -242,6 +244,7 @@ export const GlobalAudioPlayer = () => {
                     </div>
                   </div>
                 ) : (
+                  // ПЛЕЕР РАЗВЕРНУТ
                   <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div
@@ -254,12 +257,12 @@ export const GlobalAudioPlayer = () => {
                         }}
                       >
                         {
-                          (isCurrentTrackLiveStream || isBuffering)
+                          isCurrentTrackLiveStream
                           ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', transform: 'translateX(-6px)' }}>
-                              {isPlaying && <LiveStatusBadge />}
+                              <LiveStatusBadge />
                               <span className="player-meta-info" style={{ fontSize: '0.75em', textTransform: 'uppercase' }}>
-                                {isPlaying ? 'Live' : 'Live'}
+                                {isPlaying ? 'Live Stream' : 'Live'}
                               </span>
                             </div>
                           )
@@ -358,7 +361,7 @@ export const GlobalAudioPlayer = () => {
                         alignItems: 'center',
                         gap: '16px',
                         width: '100%',
-                        justifyContent: isLife ? 'flex-start' : 'space-between',
+                        justifyContent: isLive ? 'flex-start' : 'space-between',
                         minHeight: '23px',
                       }}>
                         <div className="player-meta-info" style={{ fontSize: '0.75em', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
@@ -366,7 +369,7 @@ export const GlobalAudioPlayer = () => {
                         </div>
 
                         {
-                          !isLife && isPlaying && !isCurrentTrackBroken && (
+                          !isLive && isPlaying && !isCurrentTrackBroken && (
                             <div style={{
                               display: 'flex',
                               justifyContent: 'space-between',
@@ -451,7 +454,7 @@ export const GlobalAudioPlayer = () => {
                                     {/* <span style={{ fontSize: '0.6rem' }}>Остановить и закрыть</span> */}
                                   </button>
                                   {
-                                    !isLife && (
+                                    !isLive && (
                                       <button 
                                         onClick={() => seekBackward()} 
                                         className="player-btn-seek"
@@ -492,7 +495,7 @@ export const GlobalAudioPlayer = () => {
                               isPlaying && !isCurrentTrackBroken && (
                                 <div style={{ display: 'flex', gap: '8px', flexDirection: 'row' }}>
                                   {
-                                    !isLife && (
+                                    !isLive && (
                                       <button 
                                         onClick={() => seekForward()} 
                                         className="player-btn-seek"
