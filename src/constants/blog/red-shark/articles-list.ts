@@ -1,12 +1,12 @@
 import { TArticleTools } from '../types'
 
 export const bg = {
-  src: 'https://pravosleva.pro/static/img/blog/red-shark.jpg',
+  src: 'https://pravosleva.pro/static/img/blog/red-shark.webp',
   size: {
     w: 1000,
     h: 562,
   },
-  type: 'image/jpg',
+  type: 'image/webp',
 }
 
 const bgKaz = {

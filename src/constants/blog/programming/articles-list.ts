@@ -1,12 +1,12 @@
 import { TArticleTools } from '../types'
 
 const bgSolid = {
-  src: 'https://pravosleva.pro/static/img/blog/solid.jpg',
+  src: 'https://pravosleva.pro/static/img/blog/solid.webp',
   size: {
     w: 634,
     h: 634,
   },
-  type: 'image/jpg',
+  type: 'image/webp',
 }
 const bgCoding = {
   src: 'https://pravosleva.pro/static/img/blog/joker.webp',

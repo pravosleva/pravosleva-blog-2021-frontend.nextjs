@@ -152,7 +152,7 @@ const projects: TProject[] = [
     title: 'RedShark 2022',
     description: 'RED_SHARK_PROJECT_DESCR',
     img: {
-      src: '/static/img/blog/red-shark.jpg',
+      src: '/static/img/blog/red-shark.webp',
       alt: 'loading...',
       color: {
         average: '#7a665e',

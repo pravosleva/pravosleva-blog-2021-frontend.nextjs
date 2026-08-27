@@ -9,12 +9,12 @@ import { TArticleTools } from '../types'
 //   type: 'image/jpg',
 // }
 const bg2 = {
-  src: 'https://pravosleva.pro/static/img/blog/logo-js-850x478.jpeg',
+  src: 'https://pravosleva.pro/static/img/blog/logo-js-850x478.webp',
   size: {
     w: 850,
     h: 478,
   },
-  type: 'image/jpg',
+  type: 'image/webp',
 }
 
 export const list: { [key: string]: TArticleTools } = {

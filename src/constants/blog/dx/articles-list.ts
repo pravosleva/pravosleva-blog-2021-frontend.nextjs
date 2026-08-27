@@ -1,12 +1,12 @@
 import { TArticleTools } from '../types'
 
 const madDeveloperBg = {
-  src: 'https://pravosleva.pro/static/img/blog/mad-developer.jpg',
+  src: 'https://pravosleva.pro/static/img/blog/mad-developer.webp',
   size: {
     w: 612,
     h: 408,
   },
-  type: 'image/jpg',
+  type: 'image/webp',
 }
 const dxBg = {
   src: 'https://pravosleva.pro/static/img/blog/joker.webp',

@@ -148,12 +148,12 @@ export const list: {[key: string]: TArticleTools} = {
     id: '66cc9d93d9a7126af852ebf9',
     brief: 'Interested by toggl.com',
     bg: {
-      src: 'https://pravosleva.pro/static/img/blog/terrible-clients.jpg',
+      src: 'https://pravosleva.pro/static/img/blog/terrible-clients.webp',
       size: {
         w: 1172,
         h: 584,
       },
-      type: 'image/jpg',
+      type: 'image/webp',
     },
   },
 }

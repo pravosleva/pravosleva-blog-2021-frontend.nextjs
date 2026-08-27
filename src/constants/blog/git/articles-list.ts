@@ -6,12 +6,12 @@ const bg = {
   //   w: 850,
   //   h: 300,
   // },
-  src: 'https://pravosleva.pro/static/img/blog/git-transparent-2.png',
+  src: 'https://pravosleva.pro/static/img/blog/git-transparent-2.webp',
   size: {
     w: 512,
     h: 512,
   },
-  type: 'image/png',
+  type: 'image/webp',
 }
 
 export const list: { [key: string]: TArticleTools } = {

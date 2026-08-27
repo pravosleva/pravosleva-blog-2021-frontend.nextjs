@@ -1,13 +1,7 @@
 import { TArticleTools } from '../types'
 
 export const bg = {
-  // src: 'https://pravosleva.pro/static/img/blog/logo-js.jpg',
-  // size: {
-  //   w: 1200,
-  //   h: 630,
-  // },
-  // type: 'image/jpg',
-  src: 'https://pravosleva.pro/static/img/blog/logo-js-2.webp',
+  src: 'static/img/blog/logo-js-2.webp',
   size: {
     w: 640,
     h: 360,
@@ -15,7 +9,7 @@ export const bg = {
   type: 'image/webp',
 }
 export const bgReactivity = {
-  src: 'https://pravosleva.pro/static/img/blog/reactive-5.webp',
+  src: '/static/img/blog/reactive-5.webp',
   size: {
     w: 1344,
     h: 768,
