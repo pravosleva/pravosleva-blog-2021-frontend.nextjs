@@ -128,6 +128,10 @@ const customRuntimeCaching = [
 // --
 
 const nextConfig = {
+  images: {
+    formats: ['image/avif', 'image/webp'], // Сначала сервер попробует отдать AVIF, если браузер старый — отдаст WebP
+    domains: ['pravosleva.ru', 'pravosleva.pro'], // Зарегистрируйте ваши медиа-домены, если обложки летят из CDN
+  },
   productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
   pwa: {
     dest: 'public', // NOTE: By default to .next

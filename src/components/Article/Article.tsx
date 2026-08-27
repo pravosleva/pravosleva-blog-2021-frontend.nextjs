@@ -1,4 +1,5 @@
-import { useMemo, memo, useRef, useEffect } from 'react'
+import { useMemo, memo, useRef, useEffect, useState } from 'react'
+import dynamic from 'next/dynamic' // Импортируем утилиту динамических импортов Next.js
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
 import { withTranslator } from '~/hocs/withTranslator'
@@ -13,32 +14,56 @@ import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
-import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
-import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
+// import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
+// import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
 import { resetGalleryRegistry } from '~/store/reactive-engine/reactiveGalleryEngine';
 import { ArticlesSearchDesktop } from '../ArticlesList/components'
 import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
 import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
-import { GlobalArticleLightbox } from '~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox'
-import Image from 'next/image'
+// import { GlobalArticleLightbox } from '~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox'
+import Image from 'next/image' // 1. Импортируем оптимизатор картинок Next.js
+
+/* =========================================================================
+   РАЗГРУЗКА БАНДЛА СТРАНИЦЫ: Переводим тяжелые виджеты на ленивую загрузку (SSR: false).
+   Браузер вообще не будет скачивать и парсить их JS-код при первой загрузке,
+   что освободит Main Thread для мгновенной фиксации LCP и снизит TBT!
+   ========================================================================= */
+const DynamicCollapsibleQuickNav = dynamic(
+  () => import('~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav').then(m => m.CollapsibleQuickNav),
+  { ssr: false }
+)
+const DynamicHeadingsQuickNav = dynamic(
+  () => import('~/react-markdown-renderers/HeadingsQuickNav').then(m => m.HeadingsQuickNav),
+  { ssr: false }
+)
+const DynamicHeadingsQuickNavMobile = dynamic(
+  () => import('~/react-markdown-renderers/HeadingsQuickNav').then(m => m.HeadingsQuickNavMobile),
+  { ssr: false }
+)
+const DynamicGlobalArticleLightbox = dynamic(
+  () => import('~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox').then(m => m.GlobalArticleLightbox),
+  { ssr: false }
+)
 
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+
+  /* =========================================================================
+     ИСПРАВЛЕНО: Флаг отложенного монтирования для защиты от каскадного SSR-фриза
+     ========================================================================= */
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true) // Сработает строго на клиенте после полной отрисовки первого экрана
+  }, [])
+
   const { slug } = article
-  const { isSearchPanelOpen } = useArticlesSearch() // Глобальный реактивный стейт шторки
-
-  // 1. Оптимизация тегов: собираем список один раз при изменении статьи
-  const tagList = useMemo(() => {
-    return getTagList({ 
+  const { isSearchPanelOpen } = useArticlesSearch()
+  const tagList = useMemo(() => getTagList({ 
       originalMsgList: [clsx(article?.original?.title, article?.brief)] 
-    }).sortedList
-  }, [article?.original?.title, article?.brief])
-
-  // Динамический расчет цвета ссылок под тему
+  }).sortedList, [article?.original?.title, article?.brief])
   const linkColor = useMemo(() => currentTheme === 'hard-gray' ? '#fff' : currentTheme === 'dark' ? '#FF9000': '#0162c8', [currentTheme])
-
   const MemoizedArticleMarkdown = useMemo(() => {
     return (
       <ReactMarkdown
@@ -49,11 +74,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       />
     )
   }, [article.original.description])
-
-  // Реф для отслеживания положения главного баннера
   const bannerRef = useRef<HTMLDivElement>(null)
-
-  // КРИТИЧЕСКИ ВАЖНО: Атомарный сброс сквозной галереи при переключении статей
   useEffect(() => {
     resetGalleryRegistry();
     return () => resetGalleryRegistry();
@@ -61,32 +82,22 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
   return (
     <>
-      {/* 
-        СЖАТАЯ КОПИЯ ЗАГОЛОВКА (Показывается только на десктопе при скролле): Рендерим изолированную шапку и передаем ей реф.
-        Теперь при скролле обновляется ТОЛЬКО этот изолированный компонент,
-        а ReactMarkdown ниже остается неподвижным и не ререндерится!
-      */}
       <StickyArticleHeaderComponent 
         currentTheme={currentTheme}
         linkColor={linkColor}
         article={article}
         bannerRef={bannerRef}
       />
-
-      {/* Универсальный поиск по сайту */}
       <DesktopOnly>
         <ArticlesSearchDesktop currentTheme={currentTheme} />
       </DesktopOnly>
-      
-      {/* Правая панель экстренных блоков */}
-      <CollapsibleQuickNav pageLimit={5} />
-      
-      {/* Левая панель содержания (десктоп) */}
-      <HeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} actualSlug={slug} />
-      
-      {/* Мобильная шторка содержания (автоматически < 800px) */}
-      <HeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} actualSlug={slug} />
-
+      {isMounted && (
+        <>
+          <DynamicCollapsibleQuickNav pageLimit={5} />
+          <DynamicHeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} actualSlug={slug} />
+          <DynamicHeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} actualSlug={slug} />
+        </>
+      )}
       {!!article ? (
         <>
           {/* Хлебные крошки */}
@@ -106,27 +117,36 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               <div ref={bannerRef} className={styles['external-article-wrapper']}>
                 <article
                   className='article-wrapper'
-                  style={{
-                    background: `url(${article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
+                  style={{ position: 'relative', overflow: 'hidden', marginBottom: '50px' }} // Контекст позиционирования для layout="fill"
                 >
+                  {/* =========================================================================
+                    ИСПРАВЛЕНО ДЛЯ NEXT 11 (ТИПЫ): Убран проп style. 
+                    Обертка div гарантирует z-index: 0 без генерации ошибок компиляции!
+                    ========================================================================= */}
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
+                    <Image
+                      src={article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'}
+                      alt={article.original.title}
+                      layout="fill" // Адаптивное растягивание по спецификации Next.js 11
+                      objectFit="cover" // Эквивалент background-size: cover
+                      objectPosition="center" // Эквивалент background-position: center
+                      priority // Критический preload-приоритет в <head> для разгона LCP
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+                    />
+                  </div>
+
+                  {/* Контент баннера поверх картинки (поднимаем z-index выше картинки) */}
                   <div
                     className={clsx(
                       'tiles-grid-item-in-article',
                       'white',
                       'article-wrapper__big-image-as-container'
                     )}
-                    style={{ backdropFilter: 'grayscale(1)' }}
+                    style={{ backdropFilter: 'grayscale(1)', position: 'relative', zIndex: 1 }}
                   >
-                    <h1 className='article-page-title'>
-                      {article.original.title}
-                    </h1>
+                    <h1 className='article-page-title'>{article.original.title}</h1>
                     {article.brief && (
-                      <div
-                        className='article-wrapper__big-image-as-container__brief'
+                      <div className='article-wrapper__big-image-as-container__brief'
                         style={{ fontSize: '0.8em', maxWidth: '550px' }}
                       >
                         <ReactMarkdown children={article.brief} />
@@ -136,51 +156,6 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                       {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
                     </small>
                   </div>
-                  {/* =========================================================================
-                     КРИТИЧЕСКИ ДЛЯ LCP: Нативный priority-импорт обложки вместо CSS-background
-                     ========================================================================= */}
-                  {/* <Image
-                    src={article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'}
-                    alt={article.original.title || 'Hero Background'}
-                    layout="fill"
-                    objectFit="cover"
-                    objectPosition="center"
-                    priority={true} // Принудительно заставляет браузер качать картинку в ПЕРВУЮ очередь
-                    loading="eager" // Отключает Lazy Loading для первого экрана
-                  /> */}
-
-                  {/* 
-                    Контентный блок накладывается ПОВЕРХ картинки. 
-                    Добавляем position: relative и z-index, чтобы текст и backdrop-filter легли ровно.
-                  */}
-                  {/* <div
-                    className={clsx(
-                      'tiles-grid-item-in-article',
-                      'white',
-                      'article-wrapper__big-image-as-container'
-                    )}
-                    style={{ 
-                      position: 'relative', 
-                      zIndex: 2, 
-                      backdropFilter: 'grayscale(1)',
-                      background: 'rgba(0, 0, 0, 0.2)' // Легкая полупрозрачная подложка, если картинка слишком светлая
-                    }}
-                  >
-                    <h1 className='article-page-title'>
-                      {article.original.title}
-                    </h1>
-                    {article.brief && (
-                      <div
-                        className='article-wrapper__big-image-as-container__brief'
-                        style={{ fontSize: '0.8em', maxWidth: '550px' }}
-                      >
-                        <ReactMarkdown children={article.brief} />
-                      </div>
-                    )}
-                    <small className={clsx("inactive", 'article-wrapper__big-image-as-container__date')}>
-                      {!!article.original.createdAt ? getFormatedDate2(new Date(article.original.createdAt)) : 'No date'}
-                    </small>
-                  </div> */}
                 </article>
               </div>
             </ResponsiveBlock>
@@ -189,17 +164,9 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
           {/* Тело статьи */}
           <ResponsiveBlock isLimited isPaddedMobile>
             <div className={clsx("article-body", baseClasses.customizableListingWrapper)}>
-              {!!article.original.description ? (
-                <div className="description-markdown">
-                  {MemoizedArticleMarkdown}
-                </div>
-              ) : (
-                'No body'
-              )}
+              {!!article.original.description ? <div className="description-markdown">{MemoizedArticleMarkdown}</div> : 'No body'}
             </div>
           </ResponsiveBlock>
-
-          {/* Облако тегов внизу статьи */}
           {tagList.length > 0 && (
             <ResponsiveBlock isLimited isPaddedMobile style={{ paddingTop: '1.45rem' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
@@ -216,8 +183,6 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               </div>
             </ResponsiveBlock>
           )}
-
-          {/* Блок шаринга статьи (Адаптивный виджет) */}
           {!!article.slug && (
             <>
               <DesktopOnly>
@@ -234,23 +199,14 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                 }}
               >
                 <div
-                  style={{
-                    boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 7px -1px',
-                    padding: '8px', borderRadius: '24px', width: 'fit-content',
-                  }}
+                  style={{ boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 7px -1px', padding: '8px', borderRadius: '24px', width: 'fit-content' }}
                   className={clsx({ 'backdrop-blur--lite': true })}
                 >
-                  <WebShareBtn
-                    url={`https://pravosleva.pro/p/${article.slug}`}
-                    title={article.original.title}
-                    text={clsx('Pravo$leva', '|', article.brief)}
-                  />
+                  <WebShareBtn url={`https://pravosleva.pro/p/${article.slug}`} title={article.original.title} text={clsx('Pravo$leva', '|', article.brief)} />
                 </div>
               </MobileOnly>
             </>
           )}
-
-          {/* Кнопка "На главную" */}
           <ResponsiveBlock
             isLimited
             style={{ paddingTop: '50px', paddingBottom: '50px' }}
@@ -260,9 +216,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
           </ResponsiveBlock>
         </>
       ) : null}
-
-      {/* Единственный глобальный инстанс модалки на всю страницу */}
-      <GlobalArticleLightbox />
+      {isMounted && <DynamicGlobalArticleLightbox />}
     </>
   )
 }))
