@@ -1,32 +1,31 @@
-import { metrics } from '~/constants/metrics'
+// src/utils/googleAnalitycs.ts
+// import { metrics } from '~/constants/metrics'
 
-// log the pageview with their URL
+// Вспомогательный хелпер для отправки события через CustomEvent
+const dispatchToWorker = (eventType: 'pageview' | 'event', payload: any) => {
+  if (typeof window === 'undefined') return;
+  
+  const customEvent = new CustomEvent('blog_analytics_event', {
+    detail: { type: eventType, payload }
+  });
+  
+  window.dispatchEvent(customEvent);
+};
+
+// 1. Логирование просмотра страниц (Оставляем старую сигнатуру!)
 export const pageview = (url: string): void => {
   try {
-    // @ts-ignore
-    if (!!window) window.gtag('config', metrics.GA_TRACKING_ID, {
-      page_path: url,
-    })
+    dispatchToWorker('pageview', { url });
   } catch (err) {
-    console.log(err)
+    console.error('Ошибка отправки pageview в воркер:', err);
   }
-}
+};
 
-// log specific events happening.
-export const event = ({ action, params }: any): void => {
+// 2. Логирование кастомных событий (Оставляем старую сигнатуру!)
+export const event = ({ action, params }: { action: string; params?: any }): void => {
   try {
-    // @ts-ignore
-    if (!!window) window.gtag('event', action, params)
+    dispatchToWorker('event', { action, params: params || {} });
   } catch (err) {
-    console.log(err)
+    console.error('Ошибка отправки event в воркер:', err);
   }
-}
-
-/* USAGE:
-ga.event({
-  action: "search",
-  params : {
-    search_term: query
-  }
-})
-*/
+};

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import App, { AppContext, AppProps } from 'next/app'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -6,7 +6,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react'
 import theme from '~/mui/theme'
 import createEmotionCache from '~/createEmotionCache'
 import { wrapper } from '~/store'
-import { pageview } from '~/utils/googleAnalitycs'
+// import { pageview } from '~/utils/googleAnalitycs'
 import { useRouter } from 'next/router'
 // @ts-ignore
 import { PersistGate } from 'redux-persist/integration/react'
@@ -25,9 +25,15 @@ import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
 import { setTheme } from '~/store/reducers/globalTheme'
 import { GlobalAudioPlayer } from '~/components/GlobalAudioPlayer'
 import { GlobalPodcastSidebarButton } from '~/components/GlobalPodcastSidebarButton'
+import { metrics } from '~/constants'
+import { pageview } from '~/utils/googleAnalitycs'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+
+const isProd = process.env.NODE_ENV === 'production'
+// const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
+const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -42,20 +48,20 @@ function AppWithRedux(props: MyAppProps) {
 
   const router = useRouter()
 
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      pageview(url)
-    }
-    // When the component is mounted, subscribe to router changes
-    // and log those page views
-    router.events.on('routeChangeComplete', handleRouteChange)
+  // useEffect(() => {
+  //   const handleRouteChange = (url: string) => {
+  //     pageview(url)
+  //   }
+  //   // When the component is mounted, subscribe to router changes
+  //   // and log those page views
+  //   router.events.on('routeChangeComplete', handleRouteChange)
 
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.events])
+  //   // If the component is unmounted, unsubscribe
+  //   // from the event with the `off` method
+  //   return () => {
+  //     router.events.off('routeChangeComplete', handleRouteChange)
+  //   }
+  // }, [router.events])
 
   // -- NOTE: Optimization
   useEffect(() => {
@@ -66,6 +72,69 @@ function AppWithRedux(props: MyAppProps) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
+  // --
+
+  // -- NOTE: Вариант Б. Честный изолированный Web Worker (Для отправки кастомных ивентов)
+  const workerRef = useRef<Worker | null>(null);
+  useEffect(() => {
+    const GA_ID = metrics.GA_TRACKING_ID;
+    if (process.env.NODE_ENV !== 'production' || !GA_ID || typeof window === 'undefined') return;
+
+    // 1. Поднимаем Web Worker
+    const worker = new Worker('/static/analytics/analytics-worker.js');
+    workerRef.current = worker;
+
+    // Генерируем или восстанавливаем clientId сессии
+    let clientId = localStorage.getItem('blog_ga_client_id');
+    if (!clientId) {
+      clientId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem('blog_ga_client_id', clientId);
+    }
+
+    // 2. Инициализируем воркер токеном
+    worker.postMessage({ type: 'init', payload: { gaId: GA_ID } });
+
+    /* =========================================================================
+       ЦЕНТРАЛЬНЫЙ МОСТ: Ловим кастомные события из утилиты и шлем их в Worker
+       ========================================================================= */
+    const handleAnalyticsEvent = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const { type, payload } = customEvent.detail || {};
+
+      if (type === 'pageview') {
+        worker.postMessage({
+          type: 'track_pageview',
+          payload: { url: payload.url, clientId }
+        });
+      }
+
+      if (type === 'event') {
+        worker.postMessage({
+          type: 'track_event',
+          payload: { action: payload.action, params: payload.params, clientId }
+        });
+      }
+    };
+
+    window.addEventListener('blog_analytics_event', handleAnalyticsEvent);
+
+    // 3. Логируем первый просмотр страницы при холодном старте через утилиту
+    pageview(window.location.pathname);
+
+    // 4. Логируем просмотры при SPA-переходах Next.js
+    const handleRouteChange = (url: string) => {
+      pageview(url);
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+    
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+      window.removeEventListener('blog_analytics_event', handleAnalyticsEvent);
+      worker.terminate();
+      workerRef.current = null;
+    };
+  }, [router.events]);
   // --
 
   const store = useStore()

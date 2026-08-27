@@ -1,6 +1,6 @@
 {
   "name": "frontend.nextjs",
-  "version": "5.0.8",
+  "version": "5.0.11",
   "private": true,
   "engines": {
     "node": ">=16.18.0 <=18.x.x",
@@ -36,6 +36,7 @@
     }
   },
   "dependencies": {
+    "@builder.io/partytown": "^0.10.3",
     "@dr.pogodin/babel-plugin-react-css-modules": "^6.11.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.4.1",

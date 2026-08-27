@@ -3,15 +3,16 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 // import theme from '~/mui/theme';
 import createEmotionCache from '~/createEmotionCache';
-import { metrics } from '~/constants'
+// import { metrics } from '~/constants'
 import { ServerStyleSheet } from 'styled-components'
 // import { Partytown } from '@builder.io/partytown/react'
 import { ServerStyleSheets } from '@mui/styles' // Для MUI v5 legacy styles (JSS)
 // Примечание: Если вы используете MUI v4, импортируйте из '@mui/core/styles' или '@mui/styles'
+// import { Partytown } from '@builder.io/partytown/react'; // Импортируем React-компонент конфигурации
 
-const isProd = process.env.NODE_ENV === 'production'
+// const isProd = process.env.NODE_ENV === 'production'
 // const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
-const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
+// const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 
 export default class MyDocument extends Document {
   render() {
@@ -169,27 +170,27 @@ MyDocument.getInitialProps = async (ctx) => {
         dangerouslySetInnerHTML={{ __html: style.css }}
       />
     ));
-    const gMetrica = isProd && !!GA_TRACKING_ID ? (
-      <>
-        {/* <Partytown debug forward={['dataLayer.push']} lib='/static/~partytown/' */}
-        <script
-          async
-          type='text/javascript'
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-        />
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{
-            __html: `
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
-        `,
-          }}
-        />
-      </>
-    ) : null
+    //     const gMetrica = isProd && !!GA_TRACKING_ID ? (
+    //       <>
+    //         {/* <Partytown debug forward={['dataLayer.push']} lib='/static/~partytown/' */}
+    //         <script
+    //           async
+    //           type='text/javascript'
+    //           src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+    //         />
+    //         <script
+    //           type="text/javascript"
+    //           dangerouslySetInnerHTML={{
+    //             __html: `
+    // window.dataLayer = window.dataLayer || [];
+    // function gtag(){dataLayer.push(arguments);}
+    // gtag('js', new Date());
+    // gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
+    //         `,
+    //           }}
+    //         />
+    //       </>
+    //     ) : null
 
     // 5. Формируем единый массив стилей для инжекции в <head>
     const styles = [
@@ -204,7 +205,7 @@ gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
       // Извлекаем теги Emotion
       ...emotionStyleTags,
 
-      gMetrica,
+      // gMetrica,
     ];
 
     return {
