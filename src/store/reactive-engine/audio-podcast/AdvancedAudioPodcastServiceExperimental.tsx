@@ -1,6 +1,6 @@
 import { getTechnicalErrorText } from '~/components/GlobalAudioPlayer/utils/getTechnicalErrorText';
 import { AudioPodcastService, IAudioTrack } from './AudioPodcastService'
-import { Signal, Computed } from '@pravosleva/reactive-engine'
+import { Signal, Computed, withLongPolling } from '@pravosleva/reactive-engine'
 
 export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService {
   public isLive: Signal<boolean>;
@@ -20,6 +20,15 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
   private hlsInstance: any = null;
 
   public isCurrentTrackLiveStream: Computed<boolean>;
+
+  // ИНФРАСТРУКТУРА АВТО-ВОССТАНОВЛЕНИЯ СЕТИ (Long Polling v2 Options API)
+  public recoveryTick = this.engine.signal<number>(0, 'audio:advanced:recovery-tick');
+  // Вычисляемый кортеж зависимостей ресурса: опрашиваем, пока есть активный трек и тикают часы
+  private recoveryDeps = this.engine.computed<[IAudioTrack | null, number, Record<string, string>]>(() => [
+    this.currentTrack.value,
+    this.recoveryTick.value,
+    this.trackErrors.value,
+  ], 'audio:advanced:computed:recovery-deps');
 
   constructor(...args: any[]) {
     super(...args);
@@ -48,8 +57,8 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
     }
 
     /* =========================================================================
-   ИСПРАВЛЕНО: Расширяем BroadcastChannel с жесткой привязкой контекста .call()
-   ========================================================================= */
+      ИСПРАВЛЕНО: Расширяем BroadcastChannel с жесткой привязкой контекста .call()
+      ========================================================================= */
     if (typeof window !== 'undefined' && !!this.audioChannel) {
       const baseOnMessage = this.audioChannel.onmessage;
 
@@ -80,7 +89,106 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
         }
       };
     }
+    /* =========================================================================
+       ДЕКЛАРАТИВНЫЙ РЕСУРС ЛОНГ-ПОЛЛИНГА СЕТЕВЫХ СБОЕВ
+       ========================================================================= */
+    this.engine.resource<boolean, [IAudioTrack | null, number, Record<string, string>]>(
+      withLongPolling(
+        async (deps, abortSignal) => {
+          const [currentTrackValue] = deps;
+          // const track = this.currentTrack.value;
+          // if (!currentTrackValue || currentTrackValue.id !== trackId) return false;
+          if (!currentTrackValue) return false
 
+          console.log(`📡 [Авто-восстановление] Проверяем связь с сервером для трека: ${currentTrackValue.title}`);
+
+          try {
+            // Делаем легкий HEAD запрос без скачивания аудио-байтов (0 КБ трафика)
+            const response = await fetch(currentTrackValue.url, {
+              method: 'HEAD',
+              signal: abortSignal
+            });
+
+            // Если сервер ответил успехом — сеть полностью восстановилась!
+            return response.ok || response.status === 206;
+          } catch (err) {
+            // Если сеть всё ещё лежит или VPN оборвал CORS — прокидываем ошибку дальше в экспоненту декоратора
+            if (err instanceof DOMException && err.name === 'AbortError') throw err;
+            return false;
+          }
+        },
+        {
+          // Декларативно продвигаем тактер вперед для легитимного открытия следующего шага
+          onNextTick: () => { this.recoveryTick.value += 1; },
+          onError: () => undefined,
+          delay: 4000,           // Интервал опроса сервера при поиске сети (4 секунды)
+          errorInitialDelay: 3000, 
+          errorMaxDelay: 10000
+        }
+      ),
+      this.recoveryDeps,
+      {
+        name: 'audio:advanced:resource:network-recovery',
+        resetDataOnSourceChange: true,
+        
+        // РУБИЛЬНИК (Заслонка): Ресурс просыпается ТОЛЬКО если текущий трек лежит в ошибке!
+        validateBeforeFetch: ([currentTrackValue, _recoveryTickValue, trackErrorsValue]) => {
+          // const track = this.currentTrack.value;
+          return !!currentTrackValue && !!trackErrorsValue[currentTrackValue.id] // && !!currentTrackVale[track.id];
+        },
+
+        // БИЗНЕС-ВАЛИДАЦИЯ УСПЕХА: Вызывается на уровне ядра при успешном fetch
+        responseValidate: (isServerOnline) => {
+          const track = this.currentTrack.value;
+          if (!track) return 'Нет активного трека для восстановления';
+
+          if (isServerOnline === true) {
+            /* =========================================================================
+               СЕТЬ ВОССТАНОВЛЕНА: Намертво вычищаем ошибку из реактивного стейта!
+               ========================================================================= */
+            const errors = { ...this.trackErrors.value };
+            if (errors[track.id]) {
+              delete errors[track.id];
+              this.trackErrors.value = errors; // Оживляем кнопку в списке треков!
+              
+              // Переводим плеер обратно в статус ОЖИДАНИЕ (серый бейдж) вместо КРАСНОГО сбоя
+              this.isBuffering.value = false;
+              this.isPlaying.value = false;
+
+              console.log(`⚡ [Авто-восстановление]: Связь с сервером восстановлена! Ошибка по треку "${track.title}" успешно сброшена.`);
+            
+              /* =========================================================================
+                УМНАЯ РЕАНИМАЦИЯ ЗВУКА: 
+                Пытаемся мягко возобновить подкаст, если это НЕ живое радио 
+                (для радио лучше оставить серую кнопку ожидания ради экономии трафика)
+                ========================================================================= */
+              if (!this.isLive.value) {
+                const baseEl = this.getNativeAudioEl();
+                if (baseEl) {
+                  // Заново инициируем команду load, чтобы подтолкнуть застрявший сетевой буфер
+                  baseEl.load(); 
+                  
+                  // Пробуем запустить, перехватывая любые блокировки Autoplay браузера
+                  baseEl.play()
+                    .then(() => {
+                      this.isPlaying.value = true;
+                      console.log('▶️ [Авто-восстановление]: Воспроизведение подкаста успешно продолжено автоматически.');
+                    })
+                    .catch((autoplayErr) => {
+                      // Если браузер заблокировал автоплей — не паникуем, плеер просто останется на паузе готовым к клику
+                      console.warn('⚠️ [Авто-восстановление]: Браузер запретил автоматический старт звука:', autoplayErr.message);
+                    });
+                }
+              }
+            }
+            return true;
+          }
+
+          // Если fetch прошел, но сервер вернул bad status — лонг-поллинг продолжается
+          return 'Сервер всё ещё недоступен...';
+        }
+      }
+    );
   }
 
   // Регистрируем базовый элемент подкастов
