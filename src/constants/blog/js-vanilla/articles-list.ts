@@ -15,12 +15,12 @@ export const bg = {
   type: 'image/webp',
 }
 export const bgReactivity = {
-  src: 'https://pravosleva.pro/static/img/blog/reactive-5.jpeg',
+  src: 'https://pravosleva.pro/static/img/blog/reactive-5.webp',
   size: {
     w: 1344,
     h: 768,
   },
-  type: 'image/jpeg',
+  type: 'image/webp',
 }
 
 export const list: { [key: string]: TArticleTools } = {
