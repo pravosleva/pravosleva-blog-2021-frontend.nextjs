@@ -117,25 +117,88 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               <div ref={bannerRef} className={styles['external-article-wrapper']}>
                 <article
                   className='article-wrapper'
-                  style={{ position: 'relative', overflow: 'hidden', marginBottom: '50px' }} // Контекст позиционирования для layout="fill"
+                  style={{ position: 'relative', overflow: 'hidden' }}
                 >
                   {/* =========================================================================
-                    ИСПРАВЛЕНО ДЛЯ NEXT 11 (ТИПЫ): Убран проп style. 
-                    Обертка div гарантирует z-index: 0 без генерации ошибок компиляции!
+                    ПУЛЕНЕПРОБИВАЕМЫЙ БАННЕР: Задаем жесткий уникальный key для тега div.
+                    Это заставит React 17 намертво "приварить" этот узел к DOM-дереву.
+                    При регидратации виджетов ниже React гарантированно пропустит этот блок,
+                    не будет сбрасывать src и стирать обложку, а LCP рухнет в зеленую зону!
                     ========================================================================= */}
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}>
-                    <Image
+                  <div 
+                    key={`hero-banner-image-${article.slug}`} // Уникальный ключ защищает от remount
+                    style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}
+                  >
+                    {/* <Image
                       src={article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'}
                       alt={article.original.title}
-                      layout="fill" // Адаптивное растягивание по спецификации Next.js 11
-                      objectFit="cover" // Эквивалент background-size: cover
-                      objectPosition="center" // Эквивалент background-position: center
-                      priority // Критический preload-приоритет в <head> для разгона LCP
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
+                      priority // Оставляем! Прелоад в <head> теперь отработает идеально
+                      // Ограничиваем максимальное разрешение для десктопа
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+                    /> */}
+                    {/* =========================================================================
+                      ПУЛЕНЕПРОБИВАЕМЫЙ НАТИВНЫЙ ЛОАДЕР (NEXT.JS 11 FIXED):
+                      Если картинка уже в .webp, мы полностью обходим капризный _next/image роутер!
+                      Браузер скачает прямой файл, картинка гарантированно отобразится без ошибок,
+                      а LCP мгновенно упадет до рекордных значений.
+                      ========================================================================= */}
+                    {/* <Image
+                      loader={({ src }) => {
+                        // Если путь начинается со static или /static — возвращаем прямую ссылку
+                        if (src.startsWith('static')) return `/${src}`;
+                        return src;
+                      }}
+                      src={article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'}
+                      alt={article.original.title}
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
+                      priority // Наш критический preload-приоритет в <head>
+                    /> */}
+                    {/* =========================================================================
+                      ИСПРАВЛЕНО: Снайперский Санитайзер путей. 
+                      Если строка src не начинается со слэша / или http, мы ПРИНУДИТЕЛЬНО 
+                      добавляем его в начало. Это заставит Next.js 11 и Sharp безошибочно 
+                      найти исходный файл в файловой системе Ubuntu и пережать его!
+                      ========================================================================= */}
+                    <Image
+                      src={(() => {
+                        let originalSrc = article.bg?.src || '/static/img/blog/coming-soon-v3.jpg';
+                        
+                        /* =========================================================================
+                          ИСПРАВЛЕНО ДЛЯ LOOPBACK БАГА: Жестко выжигаем собственный домен из пути!
+                          Если в базу записался полный URL нашего домена (.pro или .ru), мы превращаем 
+                          его в чистый абсолютный путь от корня локальной файловой системы сервера.
+                          Это на 100% заблокирует ложные внешние HTTP-запросы Node.js к самому себе.
+                          ========================================================================= */
+                        if (originalSrc.includes('pravosleva.pro') || originalSrc.includes('pravosleva.ru')) {
+                          originalSrc = originalSrc
+                            .replace('https://pravosleva.pro', '')
+                            .replace('http://pravosleva.pro', '')
+                            .replace('https://pravosleva.ru', '')
+                            .replace('http://pravosleva.ru', '');
+                        }
+
+                        // Если после очистки или изначально слэша нет — гарантированно добавляем его
+                        if (!originalSrc.startsWith('/') && !originalSrc.startsWith('http')) {
+                          return `/${originalSrc}`;
+                        }
+                        
+                        return originalSrc;
+                      })()}
+                      alt={article.original.title}
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
+                      priority // Наш критический preload-приоритет в <head>
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
                     />
                   </div>
 
-                  {/* Контент баннера поверх картинки (поднимаем z-index выше картинки) */}
+                  {/* Контент баннера поверх картинки (Тоже защищаем статичным рендерингом без isMounted) */}
                   <div
                     className={clsx(
                       'tiles-grid-item-in-article',

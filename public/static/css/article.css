@@ -482,6 +482,21 @@ code,
   flex-direction: column;
   justify-content: space-between;
 }
+
+.article-wrapper {
+  position: relative;
+  width: 100%;
+  /* height: 450px; // <-- ИЛИ ТА ВЫСОТА, КОТОРАЯ БЫЛА У ВАС ДЛЯ БАННЕРА РАНЕЕ */
+  overflow: hidden;
+  margin-bottom: 50px;
+}
+/* .article-wrapper .article-wrapper__big-image-as-container {
+  border-radius: 8px;
+} */
+.article-wrapper .article-wrapper__big-image-as-container h1 {
+  margin-top: 0px;
+}
+
 @media (min-width: 961px) {
   .article-wrapper {
     border-radius: 8px;
@@ -489,6 +504,14 @@ code,
   .article-wrapper__big-image-as-container {
     /* margin: 50px 0 50px 0; */
     border-radius: 8px;
+  }
+}
+@media (max-width: 960px) {
+  .article-wrapper {
+    border-radius: 0px;
+  }
+  .article-wrapper__big-image-as-container {
+    border-radius: 0px;
   }
 }
 .article-wrapper__big-image-as-container > * {

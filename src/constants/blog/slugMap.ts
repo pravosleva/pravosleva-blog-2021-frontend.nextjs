@@ -324,17 +324,29 @@ export const slugMapping: { [key: string]: TArticleTools } = {
     },
   },
   'internet-radio-streaming': {
-      id: '6a90263cf7929b4140542048',
-      brief: 'Список радиостанций',
-      bg: {
-        src: '/static/img/blog/radio.webp',
-        size: {
-          w: 740,
-          h: 415,
-        },
-        type: 'image/webp',
+    id: '6a90263cf7929b4140542048',
+    brief: 'Список радиостанций',
+    bg: {
+      src: '/static/img/blog/radio.webp',
+      size: {
+        w: 740,
+        h: 415,
       },
+      type: 'image/webp',
     },
+  },
+  'next-seo': {
+    id: '6a907696f7929b414054204a',
+    brief: 'Успешная реанимация трупа в 2026. Реальный опыт штурма производительности в Next.js 11 (Webpack 5): как мы опустили TBT в 3.5 раза, ускорили LCP на 15 секунд и победили CORS-блокировки, loopback-петли и штормы гидратации',
+    bg: {
+      src: '/static/img/blog/FB_IMG_1786890976656.jpg',
+      size: {
+        w: 1856,
+        h: 1856,
+      },
+      type: 'image/jpg',
+    },
+  },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

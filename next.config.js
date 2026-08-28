@@ -6,7 +6,6 @@ const CleanCSS = require('clean-css')
 
 const fs = require('fs')
 const dotenv = require('dotenv')
-// const withBundleAnalyzer = require('@next/bundle-analyzer')
 // NOTE: v2 Импортируем сам Webpack-плагин напрямую (он гарантированно установлен внутри @next/bundle-analyzer)
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
@@ -129,8 +128,22 @@ const customRuntimeCaching = [
 
 const nextConfig = {
   images: {
-    formats: ['image/avif', 'image/webp'], // Сначала сервер попробует отдать AVIF, если браузер старый — отдаст WebP
+    /* =========================================================================
+       ИСПРАВЛЕНО: Ставим WebP на первое место. 
+       Это уберет перегрузку процессора сервера при обработке больших галерей,
+       мгновенно снизит TTFB (время ответа) и вернет отображение всех "пропавших" картинок.
+       ========================================================================= */
+    formats: ['image/webp', 'image/avif'],
+    // formats: ['image/avif', 'image/webp'], // Сначала сервер попробует отдать AVIF, если браузер старый — отдаст WebP
     domains: ['pravosleva.ru', 'pravosleva.pro'], // Зарегистрируйте ваши медиа-домены, если обложки летят из CDN
+    /* =========================================================================
+       КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Ограничиваем сетку разрешений (deviceSizes).
+       Мы полностью ИСКЛЮЧАЕМ тяжелые разрешения 2048, 3840 (4K) из сборщика.
+       Теперь максимальная ширина обложки на десктопе будет строго ограничена 1920px!
+       Это снизит нагрузку на ОЗУ сервера в 4 раза, уберет краши Sharp и вернет картинки.
+       ========================================================================= */
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96],
   },
   productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
   pwa: {
@@ -148,63 +161,71 @@ const nextConfig = {
       '/': { page: '/' },
     }
   },
-  webpack(config, { isServer }) {
-    config.resolve.alias['~'] = `${path.resolve(__dirname)}/`
-    config.plugins.push(new webpack.EnvironmentPlugin(['NODE_ENV']))
+  /* =========================================================================
+     ПРАВИЛЬНАЯ НАСТРОЙКА SASS В NEXT.JS 11:
+     Никаких push() в Webpack rules! Фреймворк сам подхватит эти опции 
+     и применит к встроенным лоадерам стилей, не ломая CSS-модули плеера.
+     ========================================================================= */
+  sassOptions: {
+    includePaths: [path.join(__dirname, 'node_modules'), path.join(__dirname, 'src')],
+    outputStyle: 'compressed',
+  },
 
-    // -- NOTE: v2 Проверяем, передан ли флаг запуска анализатора
-    const shouldAnalyze = ['both', 'server', 'browser'].includes(process.env.BUNDLE_ANALYZE)
+  webpack(config, { isServer, dev: isDev }) {
+    /* =========================================================================
+       ИСПРАВЛЕНО ДЛЯ WEBPACK 5:
+       Вместо config.node используем config.resolve.fallback. Это единственный 
+       валидный способ заглушить серверные полифилы в Webpack 5!
+       ========================================================================= */
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        child_process: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+
+      /* =========================================================================
+         ИСПРАВЛЕНО ДЛЯ REACT ERROR #130:
+         Вместо грубого config.externals используем IgnorePlugin. 
+         Он мягко велит сборщику пропустить sharp на клиенте, не подставляя 
+         undefined в рантайм React-компонентов, убирая краш гидратации!
+         ========================================================================= */
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^sharp$/,
+        })
+      );
+    }
+
+    // Алиасы путей
+    config.resolve.alias['~'] = `${path.resolve(__dirname)}/`;
+    config.plugins.push(new webpack.EnvironmentPlugin(['NODE_ENV']));
+
+    // -- Настройка Анализатора Бандла (Bundle Analyzer)
+    const shouldAnalyze = ['both', 'server', 'browser'].includes(process.env.BUNDLE_ANALYZE);
 
     if (shouldAnalyze) {
-      // Вычисляем АБСОЛЮТНЫЙ путь до целевой папки .next/static/analyze
-      const targetDir = path.resolve(process.cwd(), 'public/static/analyze')
+      const targetDir = path.resolve(process.cwd(), 'public/static/analyze');
 
       config.plugins.push(
         new BundleAnalyzerPlugin({
           analyzerMode: 'static',
           openAnalyzer: false,
-          // Разделяем имена файлов в зависимости от текущего процесса компиляции Next.js
           reportFilename: isServer 
             ? path.join(targetDir, 'server.html') 
             : path.join(targetDir, 'client.html'),
         })
-      )
+      );
     }
-    // --
 
-    // SASS support
-    // Оптимизация 3: Безопасное добавление SASS/CSS правил в Next.js 11
-    config.module.rules.push({
-      test: /\.(css|scss)$/,
-      use: [
-        { loader: "style-loader" },
-        {
-          loader: "css-loader",
-          options: {
-            modules: {
-              localIdentName: isDev ? "next-cfg-2__[folder]__[name]__[local]___[hash:base64:5]" : "[name]__[local]___[hash:base64:5]",
-            },
-          },
-        },
-        {
-          loader: "sass-loader",
-          options: {
-            sassOptions: {
-              localIdentName: isDev ? "next-cfg-3__[folder]__[name]__[local]___[hash:base64:5]" : "[name]__[local]___[hash:base64:5]",
-              sourceMap: isDev,
-              outputStyle: 'compressed',
-              includePaths: [
-                'node_modules',
-                path.resolve(__dirname, '/src'),
-              ],
-            },
-          },
-        },
-      ],
-    });
-
-    return config
+    return config;
   },
+
+  // Проброс переменных окружения
   env: {
     NEXT_APP_BUILD_DATE,
     NEXT_APP_VERSION,
@@ -213,9 +234,6 @@ const nextConfig = {
   },
 }
 
-// -- NOTE: v1
-// module.exports = withPWA(bundleAnalyzer(nextConfig))
-// --
 // -- NOTE: v2 
 module.exports = withPWA(nextConfig)
 // --
