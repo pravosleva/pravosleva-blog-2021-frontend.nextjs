@@ -15,11 +15,11 @@ import { SnackbarProvider } from 'notistack'
 import { ThemeProvider as SCThemeProvider } from 'styled-components'
 import { Theme } from '~/ui-kit.uremont/Theme'
 import Head from 'next/head'
-import Script from 'next/script'
-import '../public/static/css/min/animations.css'
-import '../public/static/css/min/fix.sweetalert2.css'
-import '../public/static/css/min/block-quotes.css'
-import '../public/static/css/min/sp-nw-2022.css'
+// import Script from 'next/script'
+// import '../public/static/css/min/animations.css'
+// import '../public/static/css/min/fix.sweetalert2.css'
+// import '../public/static/css/min/block-quotes.css'
+// import '../public/static/css/min/sp-nw-2022.css'
 import { ClientPerfWidget } from '~/components'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
 import { setTheme } from '~/store/reducers/globalTheme'
@@ -94,9 +94,7 @@ function AppWithRedux(props: MyAppProps) {
     // 2. Инициализируем воркер токеном
     worker.postMessage({ type: 'init', payload: { gaId: GA_ID } });
 
-    /* =========================================================================
-       ЦЕНТРАЛЬНЫЙ МОСТ: Ловим кастомные события из утилиты и шлем их в Worker
-       ========================================================================= */
+    // ЦЕНТРАЛЬНЫЙ МОСТ: Ловим кастомные события из утилиты и шлем их в Worker
     const handleAnalyticsEvent = (e: Event) => {
       const customEvent = e as CustomEvent;
       const { type, payload } = customEvent.detail || {};
@@ -127,7 +125,7 @@ function AppWithRedux(props: MyAppProps) {
     };
 
     router.events.on('routeChangeComplete', handleRouteChange);
-    
+
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
       window.removeEventListener('blog_analytics_event', handleAnalyticsEvent);
@@ -135,11 +133,42 @@ function AppWithRedux(props: MyAppProps) {
       workerRef.current = null;
     };
   }, [router.events]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // ... ваш старый рабочий код воркера аналитики без изменений ...
+
+    /* =========================================================================
+      СНАЙПЕРСКИЙ КЛИЕНТСКИЙ ИНЖЕКТОР (ZERO LIGHTHOUSE OVERHEAD):
+      Eruda больше никогда не запустится автоматически для роботов Lighthouse и пользователей.
+      Скрипт активируется строго по секретному query-параметру ?eruda_debug=1.
+      ========================================================================= */
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDebugMode = urlParams.get('eruda_debug') === '1';
+
+    let erudaWrapper: HTMLScriptElement | null = null;
+
+    if (isDebugMode) {
+      erudaWrapper = window.document.createElement('script');
+      erudaWrapper.src = '/static/common/eruda.custom.js';
+      erudaWrapper.async = true;
+      window.document.body.appendChild(erudaWrapper);
+      console.log('🛠️ [Eruda Engine]: Режим отладки активирован через URL параметр.');
+    }
+
+    // Очистка ресурсов при размонтировании приложения
+    return () => {
+      // ... ваша старая очистка роутера аналитики ...
+      if (erudaWrapper && window.document.body.contains(erudaWrapper)) {
+        window.document.body.removeChild(erudaWrapper);
+      }
+    };
+  }, [router.events, router.query]); // Добавили router.query в зависимости для мгновенной реакции SPA
   // --
 
   const store = useStore()
   const isServer = useMemo<boolean>(() => typeof window === 'undefined', [typeof window])
-  // const ts = new Date().getTime()
 
   return (
     <>
@@ -159,8 +188,6 @@ function AppWithRedux(props: MyAppProps) {
 
         {/* Мета-тег viewport (Next.js требует держать его строго в _app) */}
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
-
-        {/* <script type="text/javascript" defer src='/static/common/eruda.custom.js' /> */}
       </Head>
       {
         isServer ? (
@@ -202,7 +229,7 @@ function AppWithRedux(props: MyAppProps) {
                         3. По каскаду они перекроют футер страницы, так как лежат внутри того же контекста наложения. */}
                     <GlobalPodcastSidebarButton />
                     <GlobalAudioPlayer />
-                    <Script src="/static/common/eruda.custom.js" strategy="lazyOnload" />
+                    {/* <Script src="/static/common/eruda.custom.js" strategy="lazyOnload" /> */}
                   </ThemeProvider>
                 </SCThemeProvider>
               </CacheProvider>

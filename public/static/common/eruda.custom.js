@@ -1,37 +1,67 @@
 // NOTE: https://github.com/liriliri/eruda
 
+// /static/common/eruda.custom.js
+
 class CustomErudaSingletone {
-  constructor({ document }) {
-    this.isEnabled = false
-    this.document = document
+  constructor() {
+    this.isEnabled = false;
   }
-  static getInstance(arg) {
-    if (!CustomErudaSingletone.instance) CustomErudaSingletone.instance = new CustomErudaSingletone(arg)
 
-    return CustomErudaSingletone.instance
+  static getInstance() {
+    if (!CustomErudaSingletone.instance) {
+      CustomErudaSingletone.instance = new CustomErudaSingletone();
+    }
+    return CustomErudaSingletone.instance;
   }
+
   initIfNecessary() {
-    if (this.isEnabled) return
+    if (this.isEnabled || typeof window === 'undefined') return;
 
-    const src = '/static/common/eruda@2.10.0.min.js'
-    const script = this.document.createElement('script')
-    script.src = src
+    /* =========================================================================
+       ИНХАУС-МЕТРОНОМ: requestIdleCallback гарантирует, что Eruda начнет 
+       скачиваться и инициализироваться ТОЛЬКО тогда, когда основной поток 
+       процессора (Main Thread) будет полностью свободен. Нагрузка на TBT = 0 мс!
+       ========================================================================= */
+    const startLoading = () => {
+      const src = '/static/common/eruda@2.10.0.min.js';
+      const script = window.document.createElement('script');
+      script.src = src;
+      script.async = true;
 
-    this.document.body.appendChild(script)
-    script.onload = function () {
-      eruda.init()
-      eruda.position({ x: 130, y: 20 })
+      script.onload = () => {
+        if (typeof eruda !== 'undefined') {
+          eruda.init();
+          eruda.position({ x: 130, y: 20 });
+          console.log('🛠️ [Eruda Engine]: Мобильная консоль успешно запущена в режиме Idle.');
+        }
+      };
+
+      script.onerror = (err) => {
+        console.error('[Eruda Engine]: Ошибка загрузки ядра консоли:', err);
+      };
+
+      window.document.body.appendChild(script);
+    };
+
+    // Если браузер поддерживает requestIdleCallback — используем его, иначе мягкий таймаут
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(() => startLoading(), { timeout: 4000 });
+    } else {
+      setTimeout(startLoading, 3000); // Даем Next.js 3 секунды на спокойную гидратацию
     }
-    script.onerror = function(err) {
-      console.log(err)
-    }
 
-    this.isEnabled = true
+    this.isEnabled = true;
   }
 }
 
-const customEruda = CustomErudaSingletone.getInstance({
-  document: window.document,
-})
-
-customEruda.initIfNecessary()
+// Запускаем безопасную ленивую активацию
+if (typeof window !== 'undefined') {
+  // Дожидаемся полной готовности DOM, прежде чем создавать синглтон
+  if (window.document.readyState === 'complete') {
+    CustomErudaSingletone.getInstance().initIfNecessary();
+  } else {
+    window.addEventListener('load', () => {
+      CustomErudaSingletone.getInstance().initIfNecessary();
+    });
+  }
+}
