@@ -3,6 +3,8 @@ import React, { useMemo, useState, useEffect } from 'react' // Добавили 
 import { ErrorBoundary } from 'react-error-boundary'
 import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks';
 import { ErrorFallback } from '~/mui/ErrorFallback'
+import { IRootState } from '~/store/IRootState';
+import { useSelector } from 'react-redux';
 
 type TPodcastProps = {
   url: string;
@@ -52,6 +54,38 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
   const isPlayingNow = isMounted && isCurrentActive && isPlaying
   const isInQueue = isMounted && queue.some(t => t.id === url)
 
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  const bgImageCSS = useMemo(() => {
+    switch (currentTheme) {
+      case 'light': return bg
+        ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,.4) 100%), url(${bg})`
+        : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,1) 100%)'
+      case 'gray': return bg
+        ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,.4) 100%), url(${bg})`
+        : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,1) 100%)'
+      case 'hard-gray': return bg
+        ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,.4) 100%), url(${bg})`
+        : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,.1) 100%)'
+      case 'dark': return bg
+        ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,.4) 100%), url(${bg})`
+        : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(255,255,255,.25) 100%)' 
+      default:
+        return 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,1) 100%)'
+    }
+  }, [currentTheme, bg])
+  const borderCSS = useMemo(() => {
+    if (isPlayingNow) {
+      switch (currentTheme) {
+        case 'light': return '2px solid rgb(255, 142, 83)'
+        case 'gray': return '2px solid rgb(57, 229, 172)'
+        case 'hard-gray': return '2px solid rgb(57, 229, 172)'
+        case 'dark': return '2px solid rgb(255, 142, 83)'
+        default: return '2px solid rgb(255, 142, 83)'
+      }
+    }
+    return '2px solid rgba(255, 255, 255, 1)'
+  }, [isPlayingNow, currentTheme])
+
   if (!url) return <div style={{ color: '#ff4d4d', padding: '10px' }}>⚠️ Ошибка: не указан путь (url) к аудиофайлу подкаста!</div>
 
   return (
@@ -64,10 +98,12 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
         justifyContent: 'space-between',
         padding: '16px',
         marginBottom: '1.45rem',
+        border: borderCSS,
         borderRadius: '24px',
         backgroundColor: bg ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
-        border: bg ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
-        backgroundImage: bg ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,0.4) 100%), url(${bg})` : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(0, 0, 0, 0.65) 100%)',
+        // border: bg ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+        // backgroundImage: bg ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,0.4) 100%), url(${bg})` : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(0, 0, 0, 0.65) 100%)',
+        backgroundImage: bgImageCSS,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         overflow: 'hidden',

@@ -29,3 +29,22 @@
     transform: rotate(360deg);
   }
 }
+
+/* -- TODO: Вынести в css */
+body main.light .description-markdown .blog-podcast-card {
+  /* border: 2px solid rgba(255, 255, 255, 1); */
+  /* background-image: linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,1) 100%); */
+}
+body main.gray .description-markdown .blog-podcast-card {
+  /* border: 2px solid rgba(255, 255, 255, 1); */
+  /* background-image: linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,1) 100%); */
+}
+body main.hard-gray .description-markdown .blog-podcast-card {
+  /* border: 2px solid rgba(255, 255, 255, 1); */
+  /* background-image: linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,.1) 100%); */
+}
+body main.dark .description-markdown .blog-podcast-card {
+  /* border: 2px solid rgba(255, 255, 255, 1); */
+  /* background-image: linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(255,255,255,.25) 100%); */
+}
+/* -- */

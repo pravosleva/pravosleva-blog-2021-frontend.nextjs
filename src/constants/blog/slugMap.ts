@@ -313,7 +313,7 @@ export const slugMapping: { [key: string]: TArticleTools } = {
   },
   'edna-trash-2026': {
     id: '6a8c0c6bf7929b4140542046',
-    brief: 'Фронтенд треш-кейс',
+    brief: 'Фронтенд треш-кейс с разбором',
     bg: {
       src: '/static/img/blog/FB_IMG_1787205276491.webp',
       size: {
