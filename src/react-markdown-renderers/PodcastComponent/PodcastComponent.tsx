@@ -146,7 +146,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
           )}
         </div>
         
-        <h4 style={{ margin: '6px 0 4px 0', fontSize: '1.1em', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <h4 style={{ margin: '6px 0 4px 0', fontSize: '1.1em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {trackTitle}
         </h4>
 
@@ -156,7 +156,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
           </p>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: description ? '0' : '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: description ? '0' : '8px' }}>
           
           {/* ИСПРАВЛЕНО: Кнопка Play задизейблена, пока не отработал маунт */}
           <button
@@ -215,12 +215,14 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
             <span
               style={{
                 fontSize: '0.85em',
+                fontWeight: 'bold',
                 color: 'rgba(255,255,255,0.4)',
                 // padding: '4px 8px',
                 display: 'inline-flex',
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: '8px',
+                padding: '6px 14px',
               }}
             >
               <span>✓</span>

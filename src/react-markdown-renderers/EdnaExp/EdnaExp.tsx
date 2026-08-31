@@ -51,10 +51,6 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
         marginBottom: '1.45rem',
         padding: '16px',
         borderRadius: '16px',
-        // backgroundColor: '#1e1e24',
-        // border: '1px solid rgba(255,255,255,0.1)',
-        // color: '#fff',
-        // fontFamily: 'system-ui, sans-serif',
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
@@ -121,8 +117,10 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
             <button
               onClick={handleStartInitialization}
               disabled={isActionDisabled}
-              style={{ padding: '6px 14px', borderRadius: '24px', border: 'none', backgroundColor: '#ff8a53',
-                color: '#fff', fontSize: '0.85em', fontWeight: 'bold', cursor: isActionDisabled ? 'not-allowed' : 'pointer', opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s',
+              style={{ padding: '6px 14px', borderRadius: '24px', border: 'none',
+                backgroundColor: '#00b7ff',
+                color: '#fff',
+                fontSize: '0.85em', fontWeight: 'bold', cursor: isActionDisabled ? 'not-allowed' : 'pointer', opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s',
                 fontFamily: 'Montserrat, system-ui',
               }}
             >
