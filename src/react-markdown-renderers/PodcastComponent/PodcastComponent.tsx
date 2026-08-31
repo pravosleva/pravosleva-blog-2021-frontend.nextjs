@@ -156,7 +156,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
           </p>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: description ? '0' : '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: description ? '0' : '8px' }}>
           
           {/* ИСПРАВЛЕНО: Кнопка Play задизейблена, пока не отработал маунт */}
           <button
