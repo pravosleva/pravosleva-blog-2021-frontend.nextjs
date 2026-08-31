@@ -186,6 +186,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
           {/* ИСПРАВЛЕНО: Кнопка "В очередь" рендерится декларативно и тоже блокируется при SSR */}
           {!isInQueue && (
             <button
+              className='backdrop-blur--lite'
               disabled={!isMounted}
               onClick={() => addToQueue(trackObject)}
               style={{
@@ -193,7 +194,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
                 border: '1px solid rgba(255, 255, 255, 0.18)',
                 color: '#ffffff',
                 padding: '6px 14px',
-                borderRadius: '16px',
+                borderRadius: '24px',
                 cursor: !isMounted ? 'not-allowed' : 'pointer',
                 fontSize: '0.85em',
                 fontWeight: 'bold',

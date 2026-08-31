@@ -1,6 +1,7 @@
-// public/analytics-worker.js
-
 let currentGaId = null;
+// ⚠️ Для GA4 Measurement Protocol ОГОВОРКА: строго необходим api_secret.
+// Получить его нужно в админке GA4 (Потоки данных -> Твой поток -> Секретные ключи Measurement Protocol)
+let gaApiSecret = null
 
 self.onmessage = function(event) {
   const { type, payload } = event.data || {};
@@ -9,55 +10,41 @@ self.onmessage = function(event) {
     case 'init':
       if (payload && payload.gaId) {
         currentGaId = payload.gaId;
-        console.log(`📡 [Analytics Worker]: Инициализирован для ID: ${currentGaId}`);
+        gaApiSecret = payload.gaApiSecret;
+        console.log(`📡 [Analytics Worker]: Инициализирован для GA4 ID: ${currentGaId}`);
       }
       break;
 
-    /* =========================================================================
-       ОБРАБОТКА: Просмотр страниц (Pageview)
-       ========================================================================= */
     case 'track_pageview':
       if (!currentGaId) return;
       
-      const pvParams = new URLSearchParams({
-        v: '1',
-        tid: currentGaId,
-        cid: payload.clientId,
-        t: 'pageview',
-        dp: payload.url
+      sendGA4Event({
+        client_id: payload.clientId,
+        events: [{
+          name: 'page_view', // В GA4 это стандартное событие
+          params: {
+            page_location: payload.url,
+            engagement_time_msec: '100' // Желательно для корректных сессий
+          }
+        }]
       });
-
-      sendHit(pvParams.toString());
       break;
 
-    /* =========================================================================
-       НОВОЕ: Обработка кастомных событий (ga.event) через REST API
-       ========================================================================= */
     case 'track_event':
       if (!currentGaId) return;
 
       const { action, params, clientId } = payload;
       
-      // Формируем базовый пакет ивента по спецификации Measurement Protocol v1
-      const eventParams = {
-        v: '1',
-        tid: currentGaId,
-        cid: clientId,
-        t: 'event',            // Тип хита — строго event
-        ea: action,            // Event Action (например, 'search' или 'play_podcast')
-        ec: 'Рантайм Блога',    // Категория по умолчанию
-      };
-
-      // Если в params передали дополнительные свойства (например, search_term, track_id)
-      // мы можем зашить их в Event Label (el) в виде JSON строки, чтобы не терять контекст
-      if (params && Object.keys(params).length > 0) {
-        // @ts-ignore
-        eventParams.el = JSON.stringify(params);
-      }
-
-      const bodyPayload = new URLSearchParams(eventParams);
-
-      sendHit(bodyPayload.toString());
+      sendGA4Event({
+        client_id: clientId,
+        events: [{
+          name: action, // В GA4 имя события (action) идет в поле name (например, 'generate_lead')
+          params: {
+            ...params, // Все кастомные параметры передаются плоским объектом, JSON.stringify больше не нужен!
+            traffic_type: 'Рантайм Блога' 
+          }
+        }]
+      });
       break;
 
     default:
@@ -65,11 +52,25 @@ self.onmessage = function(event) {
   }
 };
 
-// Выделенная функция отправки HTTP POST запроса
-function sendHit(queryString) {
-  fetch('https://google-analytics.com', {
+// Функция отправки для GA4
+function sendGA4Event(bodyObject) {
+  if (!currentGaId) return;
+
+  const url = new URL('https://www.google-analytics.com/mp/collect');
+  url.searchParams.set('measurement_id', currentGaId);
+  url.searchParams.set('api_secret', gaApiSecret);
+
+  const endpoint = url.toString();
+  const jsonBody = JSON.stringify(bodyObject);
+
+  // Используем Blob, чтобы гарантировать отправку чистого текста без искажений браузера
+  const blob = new Blob([jsonBody], { type: 'text/plain;charset=UTF-8' });
+
+  fetch(endpoint, {
     method: 'POST',
-    body: queryString,
-    mode: 'no-cors'
-  }).catch(err => console.warn('❌ Ошибка отправки ивента из воркера:', err));
+    mode: 'no-cors', // Возвращаем no-cors, чтобы избежать OPTIONS-запросов
+    body: blob
+  })
+  .then(() => console.log('✅ Событие отправлено из воркера (статус скрыт no-cors)'))
+  .catch(err => console.error('❌ Ошибка отправки из воркера:', err));
 }

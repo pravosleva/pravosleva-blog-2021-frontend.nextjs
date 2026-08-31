@@ -33,7 +33,8 @@ const clientSideEmotionCache = createEmotionCache();
 
 const isProd = process.env.NODE_ENV === 'production'
 // const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
-const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
+// const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
+const GA_API_SECRET = process.env.GA_API_SECRET || 'changeit'
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -81,7 +82,7 @@ function AppWithRedux(props: MyAppProps) {
     if (process.env.NODE_ENV !== 'production' || !GA_ID || typeof window === 'undefined') return;
 
     // 1. Поднимаем Web Worker
-    const worker = new Worker('/static/analytics/analytics-worker.js');
+    const worker = new Worker(`/static/analytics/analytics-worker.js?t=${Date.now()}`);
     workerRef.current = worker;
 
     // Генерируем или восстанавливаем clientId сессии
@@ -92,7 +93,7 @@ function AppWithRedux(props: MyAppProps) {
     }
 
     // 2. Инициализируем воркер токеном
-    worker.postMessage({ type: 'init', payload: { gaId: GA_ID } });
+    worker.postMessage({ type: 'init', payload: { gaId: GA_ID, gaApiSecret: GA_API_SECRET } });
 
     // ЦЕНТРАЛЬНЫЙ МОСТ: Ловим кастомные события из утилиты и шлем их в Worker
     const handleAnalyticsEvent = (e: Event) => {

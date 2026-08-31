@@ -5,5 +5,6 @@ type TMetrics = {
 
 export const metrics: TMetrics = {
   YANDEX_COUNTER_ID: 64844911,
-  GA_TRACKING_ID: 'UA-169297642-1',
+  // GA_TRACKING_ID: 'UA-169297642-1',
+  GA_TRACKING_ID: 'G-GGX34FMX69',
 }

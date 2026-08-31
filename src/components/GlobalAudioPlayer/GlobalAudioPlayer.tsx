@@ -29,7 +29,7 @@ export const GlobalAudioPlayer = () => {
   const lastSavedTimeRef = useRef<number>(0)
   
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const itemsPerPage = 3
+  const itemsPerPage = 5
   const totalPages = Math.ceil(queue.length / itemsPerPage)
 
   const activeTrack = currentTrack || (queue.length > 0 ? queue[0] : null);
@@ -484,7 +484,7 @@ export const GlobalAudioPlayer = () => {
                             }
                              
                             {totalPages > 1 && (
-                              <div style={{ margin: '0 auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div style={{ margin: '0 auto', display: 'flex', alignItems: 'center', gap: '16px' }}>
                                 <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="player-pagination-btn">◀</button>
                                 <span className="player-meta-info" style={{ fontSize: 'small' }}>{currentPage} / {totalPages}</span>
                                 <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="player-pagination-btn">▶</button>

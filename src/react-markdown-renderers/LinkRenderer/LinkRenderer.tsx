@@ -69,7 +69,7 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
         style={{
           display: 'inline-flex',
           width: 'fit-content',
-          alignItems: 'center', gap: '8px', padding: '16px', borderRadius: '32px',
+          alignItems: 'center', gap: '6px', padding: '16px', borderRadius: '32px',
           // backgroundColor: 'rgba(255,142,83,.08)',
           // border: '1px solid rgba(255, 142, 83, 0.15)',
           verticalAlign: 'middle',
@@ -121,7 +121,7 @@ export const LinkRenderer: React.FC<LinkRendererProps> = ({ href, children, titl
                 ? '#39e5ac'
                 : 'inherit',
             opacity: isInQueue ? 1 : 0.6,
-            padding: '6px 8px', cursor: 'pointer',
+            padding: '6px 14px', cursor: 'pointer',
             // fontSize: '0.85em',
             fontWeight: 500, transition: 'all 0.2s ease' }}
         >
