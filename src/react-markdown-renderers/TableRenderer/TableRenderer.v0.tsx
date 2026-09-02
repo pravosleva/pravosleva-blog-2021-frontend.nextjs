@@ -81,7 +81,7 @@ export const TableRenderer = ({ children }: { children: React.ReactNode }) => {
             gap: '8px',
             padding: '10px 20px',
             pointerEvents: 'none',
-            zIndex: 50,
+            // zIndex: 50,
             boxSizing: 'border-box'
           }}
         >

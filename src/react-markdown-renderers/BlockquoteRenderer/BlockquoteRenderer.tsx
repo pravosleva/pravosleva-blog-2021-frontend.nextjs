@@ -87,7 +87,7 @@ export const BlockquoteRenderer = ({ children }: any) => {
       className="blog-standard-blockquote"
       style={{
         // borderLeft: '4px solid #ccc',
-        paddingLeft: '16px',
+        paddingLeft: '1.45rem',
         // color: '#666',
         fontSize: '0.9em',
       }}

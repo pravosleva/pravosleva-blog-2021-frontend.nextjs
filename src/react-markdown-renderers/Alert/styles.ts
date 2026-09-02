@@ -83,11 +83,17 @@ export const useStyles = makeStyles((_theme) => ({
       whiteSpace: 'normal !important',
       margin: '0 0 1em 0 !important',
     },
-    '& .alert-content-nodes p:last-child': {
-      margin: '0 !important',
-    },
     '& .alert-content-nodes .code-block-wrapper button': {
       display: 'none',
+    },
+    '& .alert-content-nodes ul, & .alert-content-nodes ol': {
+      marginLeft: '16px',
+    },
+    '& .alert-content-nodes .code-block-wrapper': {
+      marginBottom: '1em !important',
+    },
+    '& .alert-content-nodes *:last-child': {
+      marginBottom: '0 !important',
     },
     whiteSpace: 'pre-wrap',
     
@@ -122,7 +128,7 @@ export const useStyles = makeStyles((_theme) => ({
     quotes: `"${getIconByType(EType.warning)}" "”" "${getIconByType(EType.warning)}" "’"`,
     borderLeft: '16px solid rgba(255,255,255,0.35)',
     // background: 'rgba(255,142,83,1)',
-    background: 'linear-gradient(180deg, #ff6c52 15%, #ff8a53 90%)',
+    background: 'linear-gradient(180deg, #ff6c52 15%, #FD8C69 90%)',
     color: '#FFF',
     '&::before': {
       content: 'open-quote',
