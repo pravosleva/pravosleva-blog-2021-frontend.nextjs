@@ -253,10 +253,10 @@ export const slugMapping: { [key: string]: TArticleTools } = {
     id: '6a8d539ef7929b4140542047',
     brief: 'Tutorial',
     bg: {
-      src: '/static/img/blog/nuxt4-logo.webp',
+      src: '/static/img/blog/nuxt4-logo-black.webp',
       size: {
-        w: 512,
-        h: 512,
+        w: 1600,
+        h: 1600,
       },
       type: 'image/webp',
     },
@@ -265,10 +265,10 @@ export const slugMapping: { [key: string]: TArticleTools } = {
     id: '6a803917f7929b414054203a',
     brief: 'Tutorial',
     bg: {
-      src: '/static/img/blog/nextjs-logo-dark.webp',
+      src: '/static/img/blog/nextjs-logo.webp',
       size: {
-        w: 1176,
-        h: 1056,
+        w: 563,
+        h: 563,
       },
       type: 'image/webp',
     },
