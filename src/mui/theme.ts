@@ -44,6 +44,7 @@ const theme = createTheme({
         root: {
           // Some CSS
           borderRadius: '8px',
+          padding: '6px 16px',
         },
         sizeSmall: {
           lineHeight: 1.7,
