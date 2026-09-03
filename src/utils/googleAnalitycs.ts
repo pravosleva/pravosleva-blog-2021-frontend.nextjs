@@ -1,6 +1,3 @@
-// src/utils/googleAnalitycs.ts
-// import { metrics } from '~/constants/metrics'
-
 // Вспомогательный хелпер для отправки события через CustomEvent
 const dispatchToWorker = (eventType: 'pageview' | 'event', payload: any) => {
   if (typeof window === 'undefined') return;
@@ -12,16 +9,19 @@ const dispatchToWorker = (eventType: 'pageview' | 'event', payload: any) => {
   window.dispatchEvent(customEvent);
 };
 
-// 1. Логирование просмотра страниц (Оставляем старую сигнатуру!)
+// 1. Логирование просмотра страниц (Старая сигнатура сохранена!)
 export const pageview = (url: string): void => {
   try {
-    dispatchToWorker('pageview', { url });
+    // Автоматически берем текущий заголовок вкладки из DOM
+    const title = typeof document !== 'undefined' ? document.title : '';
+    
+    dispatchToWorker('pageview', { url, title });
   } catch (err) {
     console.error('Ошибка отправки pageview в воркер:', err);
   }
 };
 
-// 2. Логирование кастомных событий (Оставляем старую сигнатуру!)
+// 2. Логирование кастомных событий (Оставляем без изменений)
 export const event = ({ action, params }: { action: string; params?: any }): void => {
   try {
     dispatchToWorker('event', { action, params: params || {} });

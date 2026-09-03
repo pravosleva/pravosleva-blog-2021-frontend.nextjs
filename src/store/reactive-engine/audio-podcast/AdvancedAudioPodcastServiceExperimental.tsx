@@ -134,7 +134,7 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
         // РУБИЛЬНИК (Заслонка): Ресурс просыпается ТОЛЬКО если текущий трек лежит в ошибке!
         validateBeforeFetch: ([currentTrackValue, _recoveryTickValue, trackErrorsValue]) => {
           // const track = this.currentTrack.value;
-          return !!currentTrackValue && !!trackErrorsValue[currentTrackValue.id] // && !!currentTrackVale[track.id];
+          return !!currentTrackValue && !!trackErrorsValue[currentTrackValue?.id] ? true : false // && !!currentTrackVale[track.id];
         },
 
         // БИЗНЕС-ВАЛИДАЦИЯ УСПЕХА: Вызывается на уровне ядра при успешном fetch
@@ -143,9 +143,7 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
           if (!track) return 'Нет активного трека для восстановления';
 
           if (isServerOnline === true) {
-            /* =========================================================================
-               СЕТЬ ВОССТАНОВЛЕНА: Намертво вычищаем ошибку из реактивного стейта!
-               ========================================================================= */
+            // СЕТЬ ВОССТАНОВЛЕНА: Намертво вычищаем ошибку из реактивного стейта!
             const errors = { ...this.trackErrors.value };
             if (errors[track.id]) {
               delete errors[track.id];
@@ -157,11 +155,9 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
 
               console.log(`⚡ [Авто-восстановление]: Связь с сервером восстановлена! Ошибка по треку "${track.title}" успешно сброшена.`);
             
-              /* =========================================================================
-                УМНАЯ РЕАНИМАЦИЯ ЗВУКА: 
-                Пытаемся мягко возобновить подкаст, если это НЕ живое радио 
-                (для радио лучше оставить серую кнопку ожидания ради экономии трафика)
-                ========================================================================= */
+              // УМНАЯ РЕАНИМАЦИЯ ЗВУКА: 
+              // Пытаемся мягко возобновить подкаст, если это НЕ живое радио 
+              // (для радио лучше оставить серую кнопку ожидания ради экономии трафика)
               if (!this.isLive.value) {
                 const baseEl = this.getNativeAudioEl();
                 if (baseEl) {

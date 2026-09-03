@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useAudioPodcast } from '~/store/reactive-engine/audio-podcast/hooks'
 import clsx from 'clsx'
+import { event } from '~/utils/googleAnalitycs'
 import { AudioVisualizer } from './components/AudioVisualizer'
 import { getTechnicalErrorText } from './utils/getTechnicalErrorText'
 import { LiveStatusBadge } from './components'
@@ -180,19 +181,66 @@ export const GlobalAudioPlayer = () => {
         ref={audioRef} 
         controls={false}
         style={{ display: 'none' }} 
-        onPlay={() => setIsPlaying(true)}
+        onPlay={(e) => {
+          setIsPlaying(true)
+
+          // Формируем безопасное имя трека для аналитики
+          const trackName = activeTrack ? `${activeTrack.url || 'Unknown'} - ${activeTrack.title || 'Untitled'}` : 'Unknown Track';
+          const trackId = activeTrack?.id ? String(activeTrack.id) : 'no_id';
+
+          event({
+            action: 'audio_tag_onPlay',
+            params: {
+              action_name: 'Audio Tag played',
+              // 👇 Достаем и передаем данные о треке
+              track_name: trackName,
+              track_id: trackId,
+              // Опционально: можно сохранить оригинальный URL файла из самого тега
+              track_src: e.currentTarget.currentSrc || 'unknown_src',
+              count: 1,
+            }
+          })
+        }}
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={handleTimeUpdate} 
         // Извлекаем нативный код и технический текст ошибки браузера
         onError={(e) => {
+          const trackName = activeTrack ? `${activeTrack.url || 'Unknown'} - ${activeTrack.title || 'Untitled'}` : 'Unknown Track';
+          
           if (activeTrack) {
-            // Накатываем утилиту, скармливая ей e.currentTarget.error
             const errorText = getTechnicalErrorText(e.currentTarget.error, activeTrack);
             markTrackAsBroken(activeTrack.id, errorText);
           }
+          
+          event({
+            action: 'audio_tag_onError', 
+            params: {
+              action_name: 'Audio Tag Error',
+              // 👇 Добавляем контекст трека к ошибке
+              track_name: trackName, 
+              descr: !!activeTrack
+                ? getTechnicalErrorText(e.currentTarget.error, activeTrack)
+                : e.currentTarget.error?.message || 'No e.currentTarget.error?.message',
+              count: 1,
+            }
+          })
         }}
         // Привязываем триггер окончания трека к автопереходу сервиса
-        onEnded={() => playNextTrack()}
+        onEnded={() => {
+          const trackName = activeTrack ? `${activeTrack.url || 'Unknown'} - ${activeTrack.title || 'Untitled'}` : 'Unknown Track';
+
+          event({
+            action: 'audio_tag_onEnded',
+            params: {
+              action_name: 'Audio Tag ended',
+              // 👇 Добавляем трек, который успешно дослушали до конца
+              track_name: trackName,
+              count: 1,
+            }
+          })
+
+          playNextTrack()
+        }}
         crossOrigin="anonymous"
       />
 
@@ -219,7 +267,7 @@ export const GlobalAudioPlayer = () => {
                             style={{ marginLeft: '4px' }}
                             className={clsx(liveStatusBadgeStyles.statusDot, {
                               [liveStatusBadgeStyles['statusDot--ok']]: liveStatus === 'ok',
-                              [liveStatusBadgeStyles['statusDot--buffering']]: liveStatus === 'buffering',
+                              [liveStatusBadgeStyles['statusDot--buffering']]: isBuffering || liveStatus === 'buffering',
                               [liveStatusBadgeStyles['statusDot--error']]: liveStatus === 'error',
                               [liveStatusBadgeStyles['statusDot--idle']]: liveStatus === 'idle',
                             })} 
@@ -273,7 +321,7 @@ export const GlobalAudioPlayer = () => {
                                   className="player-meta-info"
                                   style={{ fontSize: '0.75em', textTransform: 'uppercase', display: 'inline-flex', gap: '8px', alignItems: 'center' }}
                                 >
-                                  <span>Сейчас играет</span><span>{queue.indexOf(activeTrack) + 1} / {queue.length}</span>
+                                  {isBuffering ? <span>Буферизация...</span> : <><span>Сейчас играет</span><span>{queue.indexOf(activeTrack) + 1} / {queue.length}</span></>}
                                 </span>
                                 
                                 <span style={{ fontSize: 'small', fontWeight: 'bold', color: '#FF8E53', fontFamily: 'monospace' }}>

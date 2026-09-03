@@ -54,7 +54,8 @@ export const slugMapping: { [key: string]: TArticleTools } = {
     },
   },
   'team-scoring': {
-    id: '653053616917cd0d733cddb9',
+    // id: '653053616917cd0d733cddb9',
+    id: '6a994d39f7929b4140542059',
     brief: 'По мотивам статьи Joel Spolsky',
     bg: {
       // size: {

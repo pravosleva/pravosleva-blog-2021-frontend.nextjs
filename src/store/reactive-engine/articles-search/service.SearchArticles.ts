@@ -58,8 +58,10 @@ export class SearchArticlesService extends AbstractService {
   public searchResource = this.engine.resource(
     withDebounce(
       async ([queryValue, page, limit], _abortSignal) => {
-        if (!queryValue || typeof queryValue !== 'string')
+        if (!queryValue || typeof queryValue !== 'string') {
           throw new Error('Empty queryValue!')
+          // return []
+        }
 
         /**
          * НОВАЯ ЛОГИКА НОРМАЛИЗАЦИИ:

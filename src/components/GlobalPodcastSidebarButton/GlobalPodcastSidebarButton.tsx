@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { useAudioPodcast } from '../../store/reactive-engine/audio-podcast/hooks'
 import clsx from 'clsx'
 import liveStatusBadgeStyles from '~/components/GlobalAudioPlayer/components/LiveStatusBadge/LiveStatusBadge.module.scss'
+import { event } from '~/utils/googleAnalitycs'
 
 export const GlobalPodcastSidebarButton = () => {
   // const { queue, isPlayerVisible, isPlayerMinimized, setPlayerVisible, setPlayerMinimized, currentTrack } = useAudioPodcast()
@@ -49,9 +50,6 @@ export const GlobalPodcastSidebarButton = () => {
   //   return () => clearTimeout(timer)
   // }, [isPlayerVisible, currentTrack?.id])
 
-  // ИСПРАВЛЕНО: Кнопка должна рендериться ВСЕГДА, если в очереди есть треки!
-  if (queue.length === 0) return null
-
   // Расчет кругового прогресса для SVG (2 * pi * 18 = 113.09)
   // ИСПРАВЛЕНО: Оптимальные параметры круга для SVG 46x46 пикселей.
   // Центр строго в точке 23, радиус 20. Длина окружности = 2 * pi * 20 = 125.66
@@ -82,6 +80,14 @@ export const GlobalPodcastSidebarButton = () => {
   //   }
   // }
   const handleFabClick = () => {
+    event({
+      action: 'player_fab_click', // Название события для GA4
+      params: {
+        action_name: 'Player Fab clicked',
+        count: 1,
+      }
+    });
+
     if (!isPlayerVisible) {
       setPlayerVisible(true)
       setPlayerMinimized(false)
@@ -118,6 +124,9 @@ export const GlobalPodcastSidebarButton = () => {
         return 'idle' // Радио на паузе
     }
   }, [currentTrack, isPlaying, isBuffering, trackErrors])
+
+  // ИСПРАВЛЕНО: Кнопка должна рендериться ВСЕГДА, если в очереди есть треки!
+  if (queue.length === 0) return null
 
   return (
     <div 

@@ -88,9 +88,11 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
         article={article}
         bannerRef={bannerRef}
       />
-      <DesktopOnly>
-        <ArticlesSearchDesktop currentTheme={currentTheme} />
-      </DesktopOnly>
+      {isMounted &&
+        <DesktopOnly>
+          <ArticlesSearchDesktop currentTheme={currentTheme} />
+        </DesktopOnly>
+      }
       {isMounted && (
         <>
           <DynamicCollapsibleQuickNav pageLimit={5} />

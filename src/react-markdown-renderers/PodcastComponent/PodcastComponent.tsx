@@ -28,7 +28,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
   // Флаг монтирования в DOM браузера
   const [isMounted, setIsMounted] = useState(false)
   
-  const { queue, currentTrack, isPlaying, toggleTrack, addToQueue } = useAudioPodcast()
+  const { queue, currentTrack, isPlaying, toggleTrack, addToQueue, isBuffering } = useAudioPodcast()
 
   // Переводим флаг в true только на клиенте
   useEffect(() => {
@@ -127,7 +127,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
             color: isCurrentActive ? '#FF8E53' : 'rgba(255,255,255,0.45)',
             fontWeight: 600
           }}>
-            {isPlayingNow ? '🔊 Сейчас играет подкаст' : isCurrentActive ? '⏸️ На паузе' : '📻 Аудио-эпизод'}
+            {isBuffering ? '⏳ Буферизация...' : isPlayingNow ? '🔊 Сейчас играет подкаст' : isCurrentActive ? '⏸️ На паузе' : '📻 Аудио-эпизод'}
           </span>
 
           {durationStr && durationStr.trim() !== '' && (

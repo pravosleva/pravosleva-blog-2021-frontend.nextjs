@@ -1,7 +1,8 @@
 let currentGaId = null;
 // ⚠️ Для GA4 Measurement Protocol ОГОВОРКА: строго необходим api_secret.
 // Получить его нужно в админке GA4 (Потоки данных -> Твой поток -> Секретные ключи Measurement Protocol)
-let gaApiSecret = null
+let gaApiSecret = null;
+let isDebugMode = false;
 
 self.onmessage = function(event) {
   const { type, payload } = event.data || {};
@@ -11,21 +12,35 @@ self.onmessage = function(event) {
       if (payload && payload.gaId) {
         currentGaId = payload.gaId;
         gaApiSecret = payload.gaApiSecret;
+        isDebugMode = !!payload.isDebug;
         console.log(`📡 [Analytics Worker]: Инициализирован для GA4 ID: ${currentGaId}`);
+      }
+      break;
+
+    // Опциональный кейс: если нужно обновлять режим отладки на лету при SPA переходах
+    case 'update_debug':
+      if (payload) {
+        isDebugMode = !!payload.isDebug;
       }
       break;
 
     case 'track_pageview':
       if (!currentGaId) return;
       
+      const pageViewParams = {
+        page_location: payload.url,
+        page_title: payload.title, // Наше предыдущее исправление заголовка
+        engagement_time_msec: '100'
+      };
+
+      // 👇 Если включен дебаг, подмешиваем параметр во внутренний объект params
+      if (isDebugMode) pageViewParams.debug_mode = 1;
+      
       sendGA4Event({
         client_id: payload.clientId,
         events: [{
-          name: 'page_view', // В GA4 это стандартное событие
-          params: {
-            page_location: payload.url,
-            engagement_time_msec: '100' // Желательно для корректных сессий
-          }
+          name: 'page_view',
+          params: pageViewParams
         }]
       });
       break;
@@ -35,14 +50,19 @@ self.onmessage = function(event) {
 
       const { action, params, clientId } = payload;
       
+      const customEventParams = {
+        ...params,
+        traffic_type: 'Рантайм Блога'
+      };
+
+      // Если включен дебаг, подмешиваем параметр к кастомному событию
+      if (isDebugMode) customEventParams.debug_mode = 1;
+
       sendGA4Event({
         client_id: clientId,
         events: [{
           name: action, // В GA4 имя события (action) идет в поле name (например, 'generate_lead')
-          params: {
-            ...params, // Все кастомные параметры передаются плоским объектом, JSON.stringify больше не нужен!
-            traffic_type: 'Рантайм Блога' 
-          }
+          params: customEventParams, // Все кастомные параметры передаются плоским объектом, JSON.stringify больше не нужен!
         }]
       });
       break;

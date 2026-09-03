@@ -1,10 +1,10 @@
 import { searchEngine } from '~/store/reactive-engine/articles-search/searchEngine'
-import { IAudioTrack, AdvancedAudioPodcastServiceExperimental } from '~/store/reactive-engine/audio-podcast'
+import { IAudioTrack, AdvancedAudioPodcastServiceExperimental, podcastEngine } from '~/store/reactive-engine/audio-podcast'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
 
 export const useAudioPodcast = () => {
   // const audioPodcastService = searchEngine.inject(AudioPodcastService)
-  const audioPodcastService = searchEngine.inject(AdvancedAudioPodcastServiceExperimental)
+  const audioPodcastService = podcastEngine.inject(AdvancedAudioPodcastServiceExperimental)
 
   const queue = useReactiveValue0<IAudioTrack[]>(audioPodcastService.queue)
   const currentTrack = useReactiveValue0<IAudioTrack | null>(audioPodcastService.currentTrack)

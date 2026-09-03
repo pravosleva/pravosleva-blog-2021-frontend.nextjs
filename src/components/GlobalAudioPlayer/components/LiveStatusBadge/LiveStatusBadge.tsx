@@ -22,8 +22,8 @@ export const LiveStatusBadge = () => {
   // Динамический текст в зависимости от рантайм-состояния
   const getBadgeText = () => {
     switch (status) {
-      case 'buffering': return 'БУФЕРИЗАЦИЯ... ⏳'
-      case 'error': return 'ЭФИР СОРВАН ❌'
+      case 'buffering': return 'БУФЕРИЗАЦИЯ...'
+      case 'error': return 'ЭФИР СОРВАН'
       case 'idle': return 'ОЖИДАНИЕ ⏸' // Текст для режима паузы радио
       default: return 'ПРЯМОЙ ЭФИР'
     }

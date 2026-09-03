@@ -101,9 +101,9 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
         <GoHomeSection t={t} currentLang={currentLang} />
       </ResponsiveBlock>
 
-      {typeof window !== 'undefined' && <ArticlesSearchMobile currentTheme={currentTheme} />}
+      <ArticlesSearchMobile currentTheme={currentTheme} />
 
-      {typeof window !== 'undefined' && <ArticlesSearchDesktop currentTheme={currentTheme} />}
+      <ArticlesSearchDesktop currentTheme={currentTheme} />
     </>
   )
 })

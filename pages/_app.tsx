@@ -75,6 +75,7 @@ function AppWithRedux(props: MyAppProps) {
   }, []);
   // --
 
+
   // -- NOTE: Вариант Б. Честный изолированный Web Worker (Для отправки кастомных ивентов)
   const workerRef = useRef<Worker | null>(null);
   useEffect(() => {
@@ -92,8 +93,10 @@ function AppWithRedux(props: MyAppProps) {
       localStorage.setItem('blog_ga_client_id', clientId);
     }
 
+    const isDebugMode = new URLSearchParams(window.location.search).get('ga4_debug') === '1';
+
     // 2. Инициализируем воркер токеном
-    worker.postMessage({ type: 'init', payload: { gaId: GA_ID, gaApiSecret: GA_API_SECRET } });
+    worker.postMessage({ type: 'init', payload: { gaId: GA_ID, gaApiSecret: GA_API_SECRET, isDebug: isDebugMode } });
 
     // ЦЕНТРАЛЬНЫЙ МОСТ: Ловим кастомные события из утилиты и шлем их в Worker
     const handleAnalyticsEvent = (e: Event) => {
@@ -103,7 +106,8 @@ function AppWithRedux(props: MyAppProps) {
       if (type === 'pageview') {
         worker.postMessage({
           type: 'track_pageview',
-          payload: { url: payload.url, clientId }
+          // Добавляем title в payload для воркера
+          payload: { url: payload.url, title: payload.title, clientId } 
         });
       }
 
@@ -114,15 +118,21 @@ function AppWithRedux(props: MyAppProps) {
         });
       }
     };
-
     window.addEventListener('blog_analytics_event', handleAnalyticsEvent);
 
-    // 3. Логируем первый просмотр страницы при холодном старте через утилиту
+    // 3. Логируем первый просмотр страницы при холодном старте
     pageview(window.location.pathname);
 
     // 4. Логируем просмотры при SPA-переходах Next.js
     const handleRouteChange = (url: string) => {
-      pageview(url);
+      // В SPA-переходах query параметр может сохраниться или исчезнуть. 
+      // Если вам нужно динамически обновлять флаг дебага при переходах, 
+      // раскомментируйте строку ниже для повторной отправки флага в воркер:
+      const updatedDebug = new URLSearchParams(window.location.search).get('ga4_debug') === '1';
+      worker.postMessage({ type: 'update_debug', payload: { isDebug: updatedDebug } });
+      
+      // Небольшой таймаут дает Next.js (Head/NextSeo) время обновить document.title в DOM
+      setTimeout(() => pageview(url), 50);
     };
 
     router.events.on('routeChangeComplete', handleRouteChange);

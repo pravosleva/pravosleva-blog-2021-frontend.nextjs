@@ -23,58 +23,45 @@
 
 /* Десктоп и планшеты (от 768px) */
 @media (min-width: 768px) {
-  /* Включаем журнальную асимметричную сетку */
-  .articleListWrapper.--magazine-layout {
-    max-width: 800px;
-    /* Делим 800px на 3 равные колонки (~256px каждая с учетом gap) */
-    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Запирает фракции */
-    box-sizing: border-box;
-  }
-
-  /* По умолчанию все карточки занимают 1 колонку */
-  .articleListWrapper.--magazine-layout .gridItemBg {
-    grid-column: span 1;
-    /* min-height: 260px; */
-  }
-
-  /* ----------------------------------------------------
-     СТРОКА 1: Делаем акцент на самой первой статье (на всю ширину)
+    /* ----------------------------------------------------
+     ПЕРВЫЕ 6 ЭЛЕМЕНТОВ (Стартовый блок)
      ---------------------------------------------------- */
-  .articleListWrapper.--magazine-layout .gridItemBg:first-child {
-    grid-column: span 3; /* На все 3 колонки (800px) */
-    /* min-height: 340px;   Повышенная высота для главного баннера */
+  
+  /* 1-я статья: на всю ширину */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(1) {
+    grid-column: span 3;
   }
-
-  /* ----------------------------------------------------
-     СТРОКА 2: Левая — широкая (2), Правая — узкая (1)
-     Это 2-я и 3-я статьи в массиве.
-     ---------------------------------------------------- */
+  /* 2-я статья: широкая левая (2/3) */
   .articleListWrapper.--magazine-layout .gridItemBg:nth-child(2) {
-    grid-column: span 2; /* 2/3 ширины */
+    grid-column: span 2;
   }
-
-  /* ----------------------------------------------------
-     СТРОКА 3: Левая — узкая (1), Правая — широкая (2)
-     Это 4-я и 5-я статьи в массиве.
-     ---------------------------------------------------- */
+  /* 5-я статья: широкая правая (2/3) */
   .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5) {
-    grid-column: span 2; /* 2/3 ширины */
+    grid-column: span 2;
+  }
+  /* 6-я статья: на всю ширину */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(6) {
+    grid-column: span 3;
   }
 
   /* ----------------------------------------------------
-     ЦИКЛИЧЕСКОЕ ЧЕРЕДОВАНИЕ ДЛЯ ВСЕХ ПОСЛЕДУЮЩИХ СТРОК (Паттерн)
-     Формула каждые 4 элемента зацикливает логику 2:1 и 1:2 до бесконечности,
-     если статей в блоге очень много.
+     БЕСКОНЕЧНЫЙ ЦИКЛ (Повторение паттерна каждые 5 элементов)
+     Формула: 5n + стартовая позиция в блоке
      ---------------------------------------------------- */
-  
-  /* Широкие карточки для четных строк паттерна */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(4n + 6) {
+
+  /* Все широкие левые карточки (2-я, 7-я, 12-я, 17-я...) */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 2) {
     grid-column: span 2;
   }
-  
-  /* Широкие карточки для нечетных строк паттерна */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(4n + 9) {
+
+  /* Все широкие правые карточки (5-я, 10-я, 15-я, 20-я...) */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 5) {
     grid-column: span 2;
+  }
+
+  /* Все карточки на всю полосу (1-я, 6-я, 11-я, 16-я, 21-я...) */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 1) {
+    grid-column: span 3;
   }
 }
 
