@@ -9044,6 +9044,11 @@ react-web-share@^2.0.2:
   resolved "https://registry.yarnpkg.com/react-web-share/-/react-web-share-2.0.2.tgz#ed0f08fd07ec28777b8fc7290bd59f0be78f1410"
   integrity sha512-bGm1TJc6xtC0MhAnYFsrzT4En7l2oAdLTgCK7nk7b4xGTg3L5gOldiPrmYQ8a/dEXNydgekvOj/tfjduIlIRVA==
 
+react-window@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-window/-/react-window-2.3.0.tgz#92fefee75b7de56a31204dfffc492b84136e4783"
+  integrity sha512-FW6TIpaOH646k51X7yE+LSCWGkt5Pfsnc1fVyq/sCI9h0pTqmMiBXM04pzFKg3Bt7NGkeV6kqbU8d/QjmFS7Ug==
+
 react-youtube@7.13.x:
   version "7.13.1"
   resolved "https://registry.yarnpkg.com/react-youtube/-/react-youtube-7.13.1.tgz#3b327599a687bf22e071468818522920b36bcb57"

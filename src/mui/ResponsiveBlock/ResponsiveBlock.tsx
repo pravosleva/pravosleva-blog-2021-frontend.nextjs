@@ -1,9 +1,7 @@
-import { memo } from 'react'
+import React, { memo } from 'react'
 import { useBaseStyles } from '~/mui/useBaseStyles'
 import clsx from 'clsx'
-// import classes from './ResponsiveBlock.module.scss'
 import { useStyles } from './useStyles'
-// import { Container } from '@mui/material'
 import { Container } from './components'
 import classes from './ResponsiveBlock.module.scss'
 
@@ -11,12 +9,11 @@ type TProps = {
   isLimited?: boolean;
   isPaddedMobile?: boolean;
   style?: React.CSSProperties;
-  className?: any;
+  className?: string; // Оптимизация 1: Заменяем any на строковый тип
   hasDesktopFrame?: boolean;
   children: React.ReactNode;
   zeroPaddingMobile?: boolean;
   isLimitedForDesktop?: boolean;
-  // isLastSection?: boolean;
 }
 
 export const ResponsiveBlock = memo(({
@@ -28,124 +25,45 @@ export const ResponsiveBlock = memo(({
   className,
   hasDesktopFrame,
   isLimitedForDesktop,
-  // isLastSection
 }: TProps) => {
   const baseStyles = useBaseStyles()
   const styles = useStyles()
 
-  switch (true) {
-    case isLimitedForDesktop:
-      return (
-        <div
-          className={clsx(
-            // { [classes.isLastSection]: isLastSection },
-            classes.limitedWidth,
-            classes.centered,
-          )}
-          style={{
-            ...style,
-            // border: '1px dashed red',
-            }}
-        >
-          <Container
-            maxWidth='md'
-            isPaddedMobile={isPaddedMobile}
-            // isLastSection={isLastSection}
-            className={clsx(
-              styles.responsiveBlock,
-              classes.centered,
-              className,
-              { [classes.isLimitedForDesktop]: isLimitedForDesktop },
-            )}>{children}</Container>
-        </div>
-      )
-    case isLimited && !isPaddedMobile && !hasDesktopFrame:
-    case isLimited && !isPaddedMobile:
-      return (
-        <div
-          className={clsx(
-            // { [classes.isLastSection]: isLastSection },
-            classes.limitedWidth,
-            classes.centered,
-          )}
-          // className={clsx({ [classes.isLastSection]: isLastSection })}
-          style={{
-            ...style,
-            // border: '1px dashed red',
-          }}
-        >
-          <Container
-            maxWidth='md'
-            isPaddedMobile={isPaddedMobile}
-            // isLastSection={isLastSection}
-            className={clsx(
-              styles.responsiveBlock,
-              classes.centered,
-              className,
-              { 'zero-pad-mob': zeroPaddingMobile, [classes.isLimited]: isLimited }
-            )}>{children}</Container>
-        </div>
-      )
-    case isLimited && hasDesktopFrame:
-      return (
-        <div
-          style={style}
-          className={
-            clsx(
-              // { [classes.isLastSection]: isLastSection },
-              classes.limitedWidth,
-              classes.centered,
-            )
-          }
-          // style={{ border: '1px dashed black' }}
-        >
-          <Container
-            maxWidth='md'
-            isPaddedMobile={isPaddedMobile}
-            // isLastSection={isLastSection}
-            className={clsx(
-              styles.responsiveBlock,
-              classes.centered,
-              baseStyles.noPaddedMobile,
-              className,
-              { 'zero-pad-mob': zeroPaddingMobile, [classes.isLimited]: isLimited }
-            )}>{children}</Container>
-        </div>
-      )
-    default:
-      return (
-        <div
-          style={{
-            ...style,
-            // border: '1px dashed black',
-          }}
-          className={
-            clsx(
-              // { [classes.isLastSection]: isLastSection },
-              classes.centered,
-            )
-          }
-        >
-          <Container
-            maxWidth='md'
-            isPaddedMobile={isPaddedMobile}
-            // isLastSection={isLastSection}
-            // style={style}
-            className={
-              clsx(
-                styles.responsiveBlock,
-                classes.centered,
-                className,
-                {
-                  [classes.isPaddedMobile]: isPaddedMobile,
-                  'zero-pad-mob': zeroPaddingMobile,
-                  // [classes.isLastSection]: isLastSection
-                },
-              )
-            }
-          >
-          {children}</Container>
-        </div>
-      )
-  }
+  // Оптимизация 2: Собираем классы внешнего div в одном месте на основе флагов.
+  // Это заменяет весь громоздкий switch (true)
+  const isWrapperLimited = isLimitedForDesktop || isLimited
+
+  const wrapperClassName = clsx(
+    classes.centered,
+    { [classes.limitedWidth]: isWrapperLimited }
+  )
+
+  // Оптимизация 3: Собираем классы для внутреннего Container
+  const containerClassName = clsx(
+    styles.responsiveBlock,
+    classes.centered,
+    className,
+    {
+      [classes.isLimitedForDesktop]: isLimitedForDesktop,
+      [classes.isLimited]: isLimited,
+      [classes.isPaddedMobile]: isPaddedMobile,
+      [baseStyles.noPaddedMobile]: isLimited && hasDesktopFrame,
+      'zero-pad-mob': zeroPaddingMobile,
+    }
+  )
+
+  // Оптимизация 4: Защищаем инлайновые стили от создания лишних ссылок в памяти
+  return (
+    <div className={wrapperClassName} style={style}>
+      <Container
+        maxWidth="md"
+        isPaddedMobile={isPaddedMobile}
+        className={containerClassName}
+      >
+        {children}
+      </Container>
+    </div>
+  )
 })
+
+ResponsiveBlock.displayName = 'ResponsiveBlock'

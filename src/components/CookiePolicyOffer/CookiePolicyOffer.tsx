@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from '~/ui-kit.uremont/atoms'
 import Cookie from 'js-cookie'
@@ -54,25 +54,33 @@ const CookiePolicyOfferContent = styled('div').attrs({
   }
 `
 
-export const CookiePolicyOffer = withTranslator(({
-  // Translator:
-  t,
-}) => {
+export const CookiePolicyOffer = withTranslator(({ t }) => {
   const isOfferEnabled = useSelector((state: IRootState) => state.cookieOffer.isEnabled)
   const dispatch = useDispatch()
+  
+  // Добавляем флаг, чтобы дождаться монтирования в браузере (защита от Hydration Mismatch)
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Оптимизация 1: Чистый перенос проверки куки в момент монтирования
+  useEffect(() => {
+    setIsMounted(true)
+    const isConfirmed = Cookie.get('cookie-confirmed')
+    if (!isConfirmed) {
+      dispatch(enable())
+    }
+  }, [dispatch])
+
+  // Оптимизация 2: Стабильная ссылка на обработчик клика
   const handleConfirm = useCallback(() => {
     Cookie.set('cookie-confirmed', '1', {
       expires: confirmCookieExpiresDays,
       sameSite: 'strict',
     })
     dispatch(disable())
-  }, [])
+  }, [dispatch])
 
-  const { upMd } = useWindowSize()
-
-  useEffect(() => {
-    if (!!window && !Cookie.get('cookie-confirmed')) dispatch(enable())
-  }, [typeof window])
+  // Заглушка: На сервере возвращаем null, чтобы HTML совпадал при первой сборке
+  if (!isMounted) return null
 
   return (
     <>
@@ -91,13 +99,16 @@ export const CookiePolicyOffer = withTranslator(({
               </a>
             </div>
             <div>
+              {/* Вместо динамического t('I_AGREE') / 'Ok' на основе ширины экрана (которая неизвестна на сервере), */}
+              {/* теперь это безопасно рендерится в браузере, так как сработал if(!isMounted) */}
               <Button
                 onClick={handleConfirm}
                 typeName='orange'
                 width='narrow'
                 size='xsmall'
               >
-                {upMd ? t('I_AGREE') : 'Ok'}
+                {/* Использование windowSize здесь теперь безопасно */}
+                {window.innerWidth > 768 ? t('I_AGREE') : 'Ok'}
               </Button>
             </div>
           </CookiePolicyOfferContent>

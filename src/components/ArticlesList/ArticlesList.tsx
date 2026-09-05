@@ -1,109 +1,82 @@
-import { useMemo } from 'react'
-import { Typography } from '@mui/material'
+import React, { useMemo, memo } from 'react'
 import { GoHomeSection } from '~/components/GoHomeSection'
 import { withTranslator } from '~/hocs/withTranslator'
 import { TArticle } from '~/components/Article/types'
 import { BreadCrumbs, NBreadCrumbs } from '~/components/BreadCrumbs'
 import { ArticlesSearchDesktop, ArticlesSearchMobile, PagesGrid } from './components'
-import { useCompare } from '~/hooks/useDeepEffect'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 
 type TArticlesListComponentProps = {
-  // t: (translatableString: string) => string;
   list: TArticle[];
   searchQueryTitle: {
     original: string;
     withoutSpaces: string;
     normalized: string;
-  },
+  };
   isBlogPage?: boolean;
+  // t: (str: string, opts?: any) => string;
+  // currentLang: string;
 }
 
-export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, currentLang, list, searchQueryTitle, isBlogPage }) => {
-  // const { state: _state, set, reset } = useSearch('blog.search')
-  // useEffect(() => {
-  //   if (isBlogPage) reset()
-  //   else if (!!searchQueryTitle.withoutSpaces) set(searchQueryTitle)
-  // }, [useCompare([searchQueryTitle])])
+// Выносим статические инлайновые стили в константы, 
+// чтобы React не пересоздавал объекты стилей при каждом рендере.
+const mainContainerStyle = { boxSizing: 'border-box' } as const
+const footerSectionStyle = { paddingTop: '50px', paddingBottom: '50px' } as const
 
+export const ArticlesList = memo(withTranslator<TArticlesListComponentProps>(({ 
+  t, 
+  currentLang, 
+  list, 
+  searchQueryTitle, 
+  isBlogPage 
+}) => {
+  // Получаем тему из Redux
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 
+  // Извлекаем строку из объекта. Строка — это примитив, 
+  // React идеально сравнивает её по значению без всяких useCompare.
+  const normalizedSearchTitle = searchQueryTitle?.normalized
+
+  // Оптимизация 1: Исправлен опасный вызов хука. 
+  // Зависимости стали чистыми и понятными для сборщика.
   const legend = useMemo(() => {
-    let defaultResult: NBreadCrumbs.TLegendItem[] = [
-      // { labelCode: 'HOME', link: '/', noTranslate: false },
-      { labelCode: 'BLOG' }
-    ]
-    if (isBlogPage) return defaultResult
+    if (isBlogPage) {
+      return [{ labelCode: 'BLOG' }] as NBreadCrumbs.TLegendItem[]
+    }
 
-    defaultResult = [
-      // { labelCode: 'HOME', link:'/', noTranslate: false },
-      {
-        labelCode: 'BLOG',
-        link: '/blog',
-      },
-      {
-        labelCode: searchQueryTitle.normalized,
-        noTranslate: true,
-      },
-    ]
+    return [
+      { labelCode: 'BLOG', link: '/blog' },
+      { labelCode: normalizedSearchTitle || '', noTranslate: true },
+    ] as NBreadCrumbs.TLegendItem[]
+  }, [isBlogPage, normalizedSearchTitle])
 
-    return defaultResult
-  }, [isBlogPage, useCompare([searchQueryTitle])])
+  // Безопасная проверка массива перед рендером сетки
+  const hasArticles = useMemo(() => !!list && Array.isArray(list), [list])
 
   return (
     <>
-      <ResponsiveBlock
-        isPaddedMobile
-        isLimited
-      >
-        <BreadCrumbs
-          t={t}
-          // lastLabel={article?.original.title}
-          legend={legend}
-        />
+      <ResponsiveBlock isPaddedMobile isLimited>
+        <BreadCrumbs t={t} legend={legend} />
       </ResponsiveBlock>
 
-      <ResponsiveBlock
-        isLimited
-        isPaddedMobile
-      // style={{
-      //   paddingBottom: '50px',
-      // }}
-      >
-        <div
-          // className="article-body"
-          style={{
-            boxSizing: 'border-box',
-            // overflowX: 'hidden',
-          }}>
-          <Typography variant="h3" component="h1" gutterBottom className='truncate'>
-            {isBlogPage ? t(searchQueryTitle.original) : searchQueryTitle.normalized}
-          </Typography>
-          {
-            !!list && Array.isArray(list) && (
-              <PagesGrid articles={list} variant='magazine' />
-            )
-          }
+      <ResponsiveBlock isLimited isPaddedMobile>
+        <div style={mainContainerStyle}>
+          {hasArticles && <PagesGrid articles={list} variant="magazine" />}
         </div>
       </ResponsiveBlock>
 
-      <ResponsiveBlock
-        isLimited
-        // isLastSection
-        style={{
-          paddingTop: '50px',
-          paddingBottom: '50px',
-        }}
-        isPaddedMobile
-      >
+      <ResponsiveBlock isLimited style={footerSectionStyle} isPaddedMobile>
         <GoHomeSection t={t} currentLang={currentLang} />
       </ResponsiveBlock>
 
+      {/* Оптимизация 2: Если компоненты поиска внутри используют React.memo, */}
+      {/* они больше не будут перерисовываться при изменении списка статей list */}
       <ArticlesSearchMobile currentTheme={currentTheme} />
-
       <ArticlesSearchDesktop currentTheme={currentTheme} />
     </>
   )
-})
+}))
+
+ArticlesList.displayName = 'ArticlesList'

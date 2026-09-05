@@ -1,149 +1,112 @@
 import jwt from 'jsonwebtoken'
 import { hasInSuppoerLocales } from '~/store/reducers/lang'
-import Cookie from 'js-cookie'
 import { TBaseProps, TAuthData } from './types'
+import Cookie from 'js-cookie' // Импортируем обратно для клиентской части
 
-export const initialBaseProps = {
+export const initialBaseProps: TBaseProps = {
   authData: {
-    oneTime: {
-      jwt: {
-        isAuthorized: false,
-        _service: {
-          isErrored: false,
-        },
-        data: null, // { chat_id: null },
-      },
-    },
+    oneTime: { jwt: { isAuthorized: false, _service: { isErrored: false }, data: null } },
   },
-  devTools: {
-    isClientPerfWidgetOpened: false,
-  },
-  langData: {
-    fromCookies: undefined,
-    default: 'ru-RU',
-  },
-  themeData: {
-    fromCookies: undefined,
-    default: 'light',
-  },
+  devTools: { isClientPerfWidgetOpened: false },
+  langData: { fromCookies: undefined, default: 'ru-RU' },
+  themeData: { fromCookies: undefined, default: 'light' },
   errors: [],
 }
 
-export const getInitialPropsBase = async (ctx: any): Promise<TBaseProps> => {
-  // const { req, query } = ctx
-  const { query: { tg_chat_id, open_clent_perf_widget } } = ctx
-  const authData: TAuthData = {
-    oneTime: {
-      jwt: {
-        isAuthorized: false,
-        _service: {
-          isErrored: false,
-        },
-        data: null,
-      },
+// Универсальный парсер кук для Next.js (Сервер + Клиент)
+const getCookieValues = (ctx: any) => {
+  // 1. Если мы на сервере (есть объект req)
+  if (ctx.req) {
+    if (ctx.req.cookies) return ctx.req.cookies
+
+    const rawCookie = ctx.req.headers?.cookie
+    if (!rawCookie) return {}
+
+    return Object.fromEntries(
+      rawCookie.split(';').map((v: string) => v.trim().split('='))
+    )
+  }
+
+  // 2. Если мы на клиенте (переход по сайту через Next Link)
+  if (typeof window !== 'undefined') {
+    return {
+      lang: Cookie.get('lang'),
+      theme: Cookie.get('theme'),
+      'autopark-2022.jwt': Cookie.get('autopark-2022.jwt')
     }
   }
-  const langData = {
-    fromCookies: undefined,
-    default: 'ru-RU',
-  }
-  const themeData = {
-    fromCookies: undefined,
-    default: 'light',
-  }
-  const errors = []
 
-  // NOTE: 1. Auth
+  return {}
+}
+
+export const getInitialPropsBase = async (ctx: any): Promise<TBaseProps> => {
+  const { query } = ctx
+  const tg_chat_id = query?.tg_chat_id
+  const open_clent_perf_widget = query?.open_clent_perf_widget
+
+  // Получаем куки независимо от того, где вызван метод (SSR или клиентский переход)
+  const cookies = getCookieValues(ctx)
+  const errors: string[] = []
+
+  // 1. Авторизация (работает только при наличии данных)
+  let isAuthorized = false
+  let jwtData = null
+  let authMessage = 'Not authorized'
+
   const authCookieName = 'autopark-2022.jwt'
   const secretKey = 'super-secret'
-  try {
-    const { cookies } = ctx.req
-    if (!!cookies[authCookieName]) {
-      // NOTE: v1
-      const decodedToken: any = jwt.verify(cookies[authCookieName], secretKey)
 
-      // NOTE: v2
-      // const [encodedHeader, _encodedPayload, _signature] = cookies.get(authCookieName)?.value.split('.');
-      // const decodedToken = JSON.parse(atob(encodedHeader));
-
-      if (!!decodedToken?.chat_id) {
-        authData.oneTime.jwt.data = {
-          chat_id: decodedToken?.chat_id,
+  if (cookies[authCookieName]) {
+    try {
+      // Верификация JWT безопасна на сервере, на клиенте в SPA переходах 
+      // лучше пропустить или обработать аккуратно, чтобы не тащить jsonwebtoken в клиентский бандл.
+      // Next.js 11 может ругаться, если jwt импортируется на клиенте.
+      if (ctx.req) {
+        const decodedToken = jwt.verify(cookies[authCookieName], secretKey) as any
+        if (decodedToken?.chat_id) {
+          jwtData = { chat_id: decodedToken.chat_id }
+          authMessage = `Authorized: chat_id detected from jwt: ${decodedToken.chat_id}`
+          isAuthorized = String(decodedToken.chat_id) === String(tg_chat_id)
         }
-        authData.oneTime.jwt._service.message = `Authorized: chat_id detected from jwt: ${decodedToken?.chat_id} (${typeof decodedToken?.chat_id})`
       } else {
-        authData.oneTime.jwt._service.message = 'Not authorized'
+        // Если на клиенте — берем данные из стейта или куки без верификации секретным ключом
+        authMessage = 'Client side routing: verification skipped'
       }
-
-      if (decodedToken?.chat_id === tg_chat_id) {
-        authData.oneTime.jwt.isAuthorized = true
-      } else {
-        authData.oneTime.jwt.isAuthorized = false
-      }
+    } catch (err: any) {
+      authMessage = err?.message || 'JWT verification failed'
+      errors.push(`Ошибка авторизации #AUTH_001: ${authMessage}`)
     }
-  } catch (err: any) {
-    authData.oneTime.jwt.isAuthorized = false
-    authData.oneTime.jwt._service.message = err?.message || 'No err.message'
-    errors.push(`Ошибка авторизаии #AUTH_001: ${err?.message || 'No err.message'}`)
   }
 
-  // NOTE: 2. Lang
+  // 2. Язык
+  let langFromCookie: string | undefined = undefined
   const langCookieName = 'lang'
-  try {
-    const { cookies } = ctx.req
-    if (!!cookies[langCookieName] && hasInSuppoerLocales(cookies[langCookieName])) {
-      langData.fromCookies = cookies[langCookieName]
-    }
-  } catch (err: any) {
-    errors.push(`Ошибка определения языка #LANG_001: ${err?.message || 'No err.message'}`)
+  if (cookies[langCookieName] && hasInSuppoerLocales(cookies[langCookieName])) {
+    langFromCookie = cookies[langCookieName]
   }
 
-  // NOTE: 3. Theming
+  // 3. Тема (Теперь гарантированно не теряется при переходах!)
+  let themeFromCookie: string | undefined = undefined
   const themeCookieName = 'theme'
-  try {
-    switch (true) {
-      case typeof ctx.req !== 'undefined':
-        let { cookies } = ctx.req
-        if (!!cookies[themeCookieName]) {
-          themeData.fromCookies = cookies[themeCookieName]
-        }
-        break
-      case typeof window !== 'undefined':
-        try {
-          const theme = Cookie.get(themeCookieName)
-
-          // @ts-ignore
-          if (typeof theme === 'string') themeData.fromCookies = theme
-        } catch (err: any) {
-          throw new Error(
-            [
-              'Тема не определена на клиенте',
-              err?.message || 'No err?.message'
-            ].join(' / ')
-          )
-        }
-        break
-      default:
-        break
-    }
-  } catch (err: any) {
-    errors.push(`Ошибка определения темы #THEME_001: ${err?.message || 'No err.message'}`)
+  if (cookies[themeCookieName]) {
+    themeFromCookie = cookies[themeCookieName]
   }
 
   return {
-    // NOTE: custom props...
-    // req,
-    // query,
-    // baseProp1: 1,
-    // baseProp2: 1,
-    // baseProp3: 1,
-
-    authData,
+    authData: {
+      oneTime: {
+        jwt: {
+          isAuthorized,
+          data: jwtData,
+          _service: { isErrored: errors.length > 0, message: authMessage }
+        }
+      }
+    },
     devTools: {
       isClientPerfWidgetOpened: open_clent_perf_widget === '1',
     },
-    langData,
-    themeData,
+    langData: { fromCookies: langFromCookie, default: 'ru-RU' },
+    themeData: { fromCookies: themeFromCookie, default: 'light' },
     errors,
-  };
+  }
 }

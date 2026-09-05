@@ -1,20 +1,14 @@
-import React, { useEffect, useCallback, useMemo } from 'react'
+import React, { useEffect, useCallback, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
-import { compose, withStateHandlers, withProps } from 'recompose'
 import styled, { css } from 'styled-components'
 import Link from 'next/link'
 import { add, remove } from '@/store/reducers/scrollDisablingComponents'
 import { withScrollDisabler } from '@/hocs/withScrollDisabler'
 import { isCurrentPath } from '@/utils/routing/isCurrentPath'
-// import { logout } from '@/helpers/services/restService'
-import { useDebouncedCallback } from '@/hooks/useDebouncedCallback'
-// import { showAsyncToast } from '@/actions'
 import { withTranslator } from '@/hocs/withTranslator'
 import { breakpoints } from '~/mui/theme'
-// import { userInfoActions } from '@/store/reducers/user-info'
 import { abSort } from '~/utils/string-tools/abSort'
-// import { IRootState } from '~/store/IRootState'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -38,8 +32,7 @@ const Sidebar = styled.div`
     display: none;
   }
   @media (max-width: ${breakpoints.md}px) {
-    padding: 10px 20px 10px 20px;
-
+    padding: 10px 20px;
     min-height: calc(100vh - 40px);
     height: 100%;
     min-width: 100%;
@@ -47,13 +40,13 @@ const Sidebar = styled.div`
     transform: translateX(0);
     transition: transform 0.5s ease-in-out, opacity 0.7s ease-in-out;
     background-color: #0162c8;
+    
     > ul {
       margin: 0;
       padding: 0;
     }
     > ul > li {
       margin: 0;
-      
       list-style-type: none;
     }
     > ul > li > * {
@@ -64,9 +57,6 @@ const Sidebar = styled.div`
       letter-spacing: 0.1em;
     }
     > ul > li > a.active {
-      /* outline: 2px solid #fff;
-      padding: 4px;
-      border-radius: 8px; */
       color: #ff781e;
       font-weight: bold;
     }
@@ -76,8 +66,8 @@ const Sidebar = styled.div`
     }
 
     ${(p) =>
-    !p.opened &&
-    css`
+      !p.opened &&
+      css`
         transform: translateX(-100%);
         opacity: 0;
       `}
@@ -89,319 +79,152 @@ const Sidebar = styled.div`
   z-index: 3;
 `
 
-/* TODO:
-const items = [
-  // { path: '/cabinet', label: 'Личный кабинет', id: 0, accessForRoles: ['public', 'authenticated'] },
-  { path: '/profile', label: 'Profile', id: 1, accessForRoles: ['authenticated'] }, // 'public', 'authenticated', 'free'
-  // { path: '/login', label: 'Login', id: 2, accessForRoles: ['unauthenticated'] },
-  // { path: '/graphql-sample', label: 'GraphQL', id: 3, accessForRoles: ['free'] },
-]
-*/
+const STATIC_TAGS = [...['сетевые_протоколы', 'краснаяАкула', 'bash', 'git', 'nginx', 'рабочие_моменты']].sort(abSort)
 
-export const withMobileMenu = (ComposedComponent) =>
-  compose(
-    withTranslator,
-    withProps({
-      topDocRef: React.createRef(),
-    }),
-    withStateHandlers(
-      { isSidebarOpened: false },
-      {
-        sidebarToggler: ({ isSidebarOpened }, props) => (val) => {
-          // Need to scroll top:
-          if (typeof window !== 'undefined') window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-          })
+export const withMobileMenu = (ComposedComponent) => {
+  // 1. Создаем внутренний чистый компонент со всей логикой
+  const MenuWrapperComponent = (props) => {
+    const dispatch = useDispatch()
+    const router = useRouter()
+    const topDocRef = useRef(null)
+    const [isSidebarOpened, setIsSidebarOpened] = useState(false)
 
-          return {
-            isSidebarOpened: val === true || val === false ? val : !isSidebarOpened,
-          }
-        },
+    const sidebarToggler = useCallback((val) => {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
-    ),
-    withScrollDisabler
-  )(
-    ({
-      // Sidebar hoc:
-      isSidebarOpened,
-      topDocRef,
-      sidebarToggler,
+      setIsSidebarOpened((prev) => (typeof val === 'boolean' ? val : !prev))
+    }, [])
 
-      // Scroll disabler hoc (topDocRef used there):
-      scrollToRef,
+    useEffect(() => {
+      const MENU_KEY = 'Layout_Header_Mobile_hocs_with-mobile-menu'
+      if (isSidebarOpened) {
+        dispatch(add(MENU_KEY))
+      } else {
+        dispatch(remove(MENU_KEY))
+      }
+    }, [isSidebarOpened, dispatch])
 
-      // Translator:
-      t,
-      setLang,
-      suppoerLocales, // Array like this: [{ label, name, value }]
-      currentLang,
+    const handleCloseSidebar = useCallback(() => {
+      sidebarToggler(false)
+    }, [sidebarToggler])
 
-      ...props
-    }) => {
-      // const usersConnected = useSelector((state) => state.users?.items)
-      const isAuthenticated = !!useSelector((state) => state.userInfo?.fromServer?.id)
-      const dispatch = useDispatch()
-      const handleLogoutCb = useCallback(async () => {
-        // const result = await logout()
-        //   .then(() => {
-        //     router.push('/auth/login')
-        //   })
-        //   .catch((text) => {
-        //     // dispatch(showAsyncToast({ text, delay: 20000, type: 'error' }))
-        //   })
-        // return result
-        return Promise.reject({ message: 'In progress...' })
-      }, [])
-      const handleLogout = useDebouncedCallback(() => {
-        handleLogoutCb()
-          .then(() => {
-            // dispatch(userInfoActions.fillDelta({ fromServer: null, isLoadedSuccessfully: true }))
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-      }, 500)
+    const oneTimePasswordServiceMessage = useSelector((state) => state.baseProps?.authData?.oneTime?.jwt?._service?.message)
+    const oneTimePasswordChatId = useSelector((state) => state.baseProps?.authData?.oneTime?.jwt?.data?.chat_id)
 
-      useEffect(() => {
-        if (isSidebarOpened)
-          dispatch(add('Layout_Header_Mobile_hocs_with-mobile-menu'))
-        else
-          dispatch(remove('Layout_Header_Mobile_hocs_with-mobile-menu'))
-      }, [
-        isSidebarOpened,
-        // scrollToRef,
-        dispatch,
-        topDocRef,
-      ])
+    const checkActive = useCallback((targetPath) => {
+      return isCurrentPath(router.pathname, targetPath) || isCurrentPath(decodeURIComponent(router.asPath), targetPath) ? 'active' : ''
+    }, [router.pathname, router.asPath])
 
-      const router = useRouter()
-      const isCurrentPathCb = useCallback(isCurrentPath, [router.pathname, router.asPath, isCurrentPath])
+    const tagLinksListItems = useMemo(() => {
+      return STATIC_TAGS.map((tag) => {
+        const path = `/blog/q/${tag}`
+        return (
+          <li key={tag}>
+            <Link href={path}>
+              <a onClick={handleCloseSidebar} className={checkActive(path)}>
+                #{tag}
+              </a>
+            </Link>
+          </li>
+        )
+      })
+    }, [handleCloseSidebar, checkActive])
 
-      const handleCloseSidebar = useCallback(() => {
-        sidebarToggler(false)
-      }, [])
-      const TagLinksListItems = useMemo(() => {
-        return [
-          'сетевые_протоколы',
-          'краснаяАкула',
-          'bash',
-          'git',
-          // 'jsVanilla',
-          'reactHook',
-          // 'mongodb',
-          'nginx',
-          // 'ssl',
-          'рабочие_моменты',
-        ]
-          .sort(abSort)
-          .map((tag, i) => (
-            <li key={tag}>
-              <Link href={`/blog/q/${tag}`}>
-                <a
-                  onClick={handleCloseSidebar}
-                  className={isCurrentPathCb(router.pathname, `/blog/q/${tag}`) || isCurrentPathCb(decodeURIComponent(router.asPath), `/blog/q/${tag}`) ? 'active' : ''}
-                >
-                  #{tag}
+    return (
+      <Wrapper opened={isSidebarOpened}>
+        <Sidebar opened={isSidebarOpened}>
+          <ul className="bold" style={{ margin: '8px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <li>
+              <Link href="/blog">
+                <a onClick={handleCloseSidebar} className={checkActive('/blog')}>{props.t('BLOG')}</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/p/estimate-corrector-2024">
+                <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/estimate-corrector-2024') ? 'active' : ''}>
+                  About Estimate Corrector 2024
                 </a>
               </Link>
             </li>
-          ))
-      }, [router.pathname, isCurrentPathCb, router.asPath])
-
-      // const isOneTimePasswordCorrect = useSelector((state) => state.autopark.isOneTimePasswordCorrect)
-      const oneTimePasswordServiceMessage = useSelector((state) => state.baseProps.authData.oneTime.jwt._service.message)
-      const oneTimePasswordChatId = useSelector((state) => state.baseProps.authData.oneTime.jwt.data?.chat_id)
-
-      return (
-        <Wrapper opened={isSidebarOpened}>
-          <Sidebar opened={isSidebarOpened}>
-            <ul
-              className="bold"
-              style={{
-                margin: '8px 0 8px 0',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-              }}
-            >
-              <li>
-                <Link href="/blog">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog') ? 'active' : ''}>{t('BLOG')}</a>
-                </Link>
-              </li>
-              {/*<li>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9em', fontWeight: '500' }}>
-                  <span>{t('ONLINE')}</span>
-                  <i className="fas fa-globe" style={{ marginLeft: '15px', marginRight: '15px' }}></i>
-                  usersConnected?.length
-                </span>
-              </li>
-              */}
-              {/* !isAuthenticated && (
+            <li>
+              <Link href="/p/protocols">
+                <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/protocols') ? 'active' : ''}>
+                  {props.t('NETWORK_PROTOCOLS')}
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blog/q/MartVirkus">
+                <a onClick={handleCloseSidebar} className={checkActive('/blog/q/MartVirkus')}>Comic by Mart Virkus</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/feedback">
+                <a onClick={handleCloseSidebar} className={checkActive('/feedback')}>{props.t('FEEDBACK')}</a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/p/cv-ru">
+                <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/cv-ru') ? 'active' : ''}>
+                  {props.t('CV')}
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/p/what-where-when">
+                <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/what-where-when') ? 'active' : ''}>
+                  {props.t('WHAT_WHERE_WHEN_EXTERNAL_LINK')}
+                </a>
+              </Link>
+            </li>
+          </ul>
+          
+          <div style={{ borderTop: '1px solid #FFF' }} />
+          
+          <ul style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', gap: '8px', margin: '8px 0' }}>
+            {tagLinksListItems}
+          </ul>
+          
+          {!!oneTimePasswordChatId && (
+            <>
+              <div style={{ borderTop: '1px solid #FFF' }} />
+              <ul>
                 <li>
-                  <Link href="/auth/login" as="/auth/login">
-                    <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/auth/login') ? 'active' : ''}>{t('LOGIN')}</a>
+                  <Link href={`/autopark-2022/${oneTimePasswordChatId}`}>
+                    <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, `/autopark-2022/${oneTimePasswordChatId}`) ? 'active' : ''}>
+                      🔓 Logged in Autopark
+                    </a>
                   </Link>
                 </li>
-              ) */}
+              </ul>
+            </>
+          )}
+          
+          {!!oneTimePasswordServiceMessage && (
+            <>
+              <div style={{ borderTop: '1px solid #FFF' }} />
+              <ul style={{ fontSize: 'small' }}>
+                <li><b>⚠️ {oneTimePasswordServiceMessage}</b></li>
+              </ul>
+            </>
+          )}
+        </Sidebar>
 
-              {/* 
-              {isAuthenticated && (
-                <li>
-                  <Link href='/profile' as='/profile'>
-                    <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/profile') ? 'active' : ''}>{t('PROFILE')}</a>
-                  </Link>
-                </li>
-              )}
-              {isAuthenticated && (
-                <li onClick={handleLogout}>
-                  <a
-                    className={isCurrentPathCb(router.pathname, '/auth/login') ? 'active' : ''}
-                    style={{ cursor: 'pointer' }}
-                    onClick={handleCloseSidebar}
-                  >
-                    {t('LOGOUT')}
-                  </a>
-                </li>
-              )}
-              */}
+        <ComposedComponent
+          {...props}
+          topDocRef={topDocRef}
+          isSidebarOpened={isSidebarOpened}
+          sidebarToggler={sidebarToggler}
+        />
+      </Wrapper>
+    )
+  }
 
-              {/*
-              <li>
-                <Link href="/subprojects/audit-list">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/subprojects/audit-list') ? 'active' : ''}>{t('AUDITLIST_OFFLINE')} 2023</a>
-                </Link>
-              </li>
-              */}
-              {/* <li>
-                <Link href="/blog/article/team-scoring">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/blog/article/team-scoring') ? 'active' : ''}>About Team Scoring 2019</a>
-                </Link>
-              </li> */}
+  // 2. Оборачиваем созданный компонент в другие HOC-и по очереди, чтобы не запутаться в скобках
+  const EnhancedComponent = withTranslator(withScrollDisabler(MenuWrapperComponent))
 
-              <li>
-                <Link href='/p/estimate-corrector-2024'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/estimate-corrector-2024') ? 'active' : ''}>About Estimate Corrector 2024</a>
-                </Link>
-              </li>
-              <li>
-                <Link href='/p/protocols'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/protocols') ? 'active' : ''}>{t('NETWORK_PROTOCOLS')}</a>
-                </Link>
-              </li>
-
-              {/* <li>
-                <Link href="/blog/article/ubuntu-first-steps">
-                  <a className={isCurrentPathCb(router.pathname, '/blog/article/[slug]') ? 'active' : ''}>Ubuntu first steps</a>
-                </Link>
-              </li> */}
-
-              {/* -- NOTE: Target Article*/}
-              {/* <li>
-                <Link href="/blog/article/tires-how-to-choose">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/tires-how-to-choose') || isCurrentPathCb(router.asPath, '/blog/article/tires-how-to-choose') ? 'active' : ''}>Шины и диски</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog/article/nginx-logs">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/nginx-logs') || isCurrentPathCb(router.asPath, '/blog/article/nginx-logs') ? 'active' : ''}>NGINX logs</a>
-                </Link>
-              </li> */}
-              {/* <li>
-                <Link href="/blog/article/limp-bizkit-video">
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/article/limp-bizkit-video') || isCurrentPathCb(router.asPath, '/blog/article/limp-bizkit-video') ? 'active' : ''}>Limp Bizkit</a>
-                </Link>
-              </li> */}
-              {/* -- */}
-
-              {/* -- NOTE: Target search by title */}
-              <li>
-                <Link href='/blog/q/MartVirkus'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/blog/q/MartVirkus') || isCurrentPathCb(router.asPath, '/blog/q/MartVirkus') ? 'active' : ''}>Comic by Mart Virkus</a>
-                </Link>
-              </li>
-              <li>
-                <Link href='/feedback'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.pathname, '/feedback') ? 'active' : ''}>{t('FEEDBACK')}</a>
-                </Link>
-              </li>
-              <li>
-                <Link href='/p/cv-ru'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/cv-ru') ? 'active' : ''}>{t('CV')}</a>
-                </Link>
-              </li>
-              {/* <li>
-                <a target='_self' href='/dist.hacker-news-2024'>Hacker News Client</a>
-              </li> */}
-              <li>
-                <Link href='/p/what-where-when'>
-                  <a onClick={handleCloseSidebar} className={isCurrentPathCb(router.asPath, '/p/what-where-when') ? 'active' : ''}>{t('WHAT_WHERE_WHEN_EXTERNAL_LINK')}</a>
-                </Link>
-              </li>
-            </ul>
-            <div
-              style={{
-                borderTop: '1px solid #FFF',
-              }}
-            />
-            <ul
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                flexDirection: 'row',
-                gap: '8px',
-                margin: '8px 0 8px 0',
-              }}
-            >
-              {TagLinksListItems}
-            </ul>
-            {
-              !!oneTimePasswordChatId && (
-                <>
-                  <div
-                    style={{
-                      borderTop: '1px solid #FFF',
-                    }}
-                  />
-                  <ul>
-                    <li>
-                      <Link href={`/autopark-2022/${oneTimePasswordChatId}`}>
-                        <a
-                          onClick={handleCloseSidebar}
-                          className={isCurrentPathCb(router.asPath, `/autopark-2022/${oneTimePasswordChatId}`) ? 'active' : ''}
-                        >🔓 Logged in Autopark</a>
-                      </Link>
-                    </li>
-                  </ul>
-                </>
-              )
-            }
-            {
-              !!oneTimePasswordServiceMessage && (
-                <>
-                  <div
-                    style={{
-                      borderTop: '1px solid #FFF',
-                    }}
-                  />
-                  <ul style={{ fontSize: 'small' }}>
-                    <li>
-                      <b>⚠️ {oneTimePasswordServiceMessage}</b>
-                    </li>
-                  </ul>
-                </>
-              )
-            }
-
-          </Sidebar>
-          <ComposedComponent
-            {...props}
-            isSidebarOpened={isSidebarOpened}
-            sidebarToggler={sidebarToggler}
-          // scrollToRef={scrollToRef}
-          />
-        </Wrapper>
-      )
-    }
-  )
+  EnhancedComponent.displayName = `withMobileMenu(${ComposedComponent.displayName || ComposedComponent.name || 'Component'})`
+  
+  return EnhancedComponent
+}

@@ -1,5 +1,5 @@
-import { useCallback, memo } from 'react'
-import styled, { css } from 'styled-components'
+import React, { useCallback, memo } from 'react'
+import styled from 'styled-components'
 import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByThemeName'
 import { useScrollPosition } from '~/hooks/useScrollPosition'
 import { useGlobalTheming, TThemeName } from '~/hooks/useGlobalTheming'
@@ -17,12 +17,12 @@ const getTextColorByThemeName = (themeName: TThemeName) => {
   }
 }
 
-type TProps = {
-  themeName: TThemeName;
-  isShowed: boolean;
+type TStyledProps = {
+  $themeName: TThemeName;
 }
 
-export const StyledScrollTopBtn = styled('div')<TProps>`
+// 1. Явно передаем интерфейс TStyledProps в дженерик styled.div
+const StyledScrollTopBtn = styled.div<TStyledProps>`
   position: fixed;
   z-index: 3;
   right: 32px;
@@ -34,53 +34,44 @@ export const StyledScrollTopBtn = styled('div')<TProps>`
   text-align: center;
   width: 56px;
   height: 56px;
-  ${({ themeName }: any) =>
-    themeName &&
-    css`
-      color: ${getLoaderColorByThemeName(themeName)};
-      background-color: ${getTextColorByThemeName(themeName)};
-    `}
-  &:active {
-    ${({ themeName }: any) =>
-      themeName &&
-      css`
-        background-color: ${getLoaderColorByThemeName(themeName)};
-        color: ${getTextColorByThemeName(themeName)};
-      `}
-  }
   outline: none;
-
-  transform: translateX(100px);
-  transition: all 0.3s ease-out;
-  ${(p: any) =>
-    p.isShowed &&
-    css`
-      transform: translateX(0px);
-    `}
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  transition: transform 0.3s ease-out, background-color 0.2s ease, color 0.2s ease;
+
+  /* 2. Исправление ошибки: Явно типизируем входящие пропсы (props: TStyledProps) перед вызовом функций */
+  color: ${(props: TStyledProps) => getLoaderColorByThemeName(props.$themeName)};
+  background-color: ${(props: TStyledProps) => getTextColorByThemeName(props.$themeName)};
+
+  &:active {
+    background-color: ${(props: TStyledProps) => getLoaderColorByThemeName(props.$themeName)};
+    color: ${(props: TStyledProps) => getTextColorByThemeName(props.$themeName)};
+  }
 `
 
 export const ScrollTopBtn = memo(() => {
   const { isMoreThan2Screens } = useScrollPosition()
   const { currentTheme } = useGlobalTheming()
-  const goTop = useCallback((px: number = 0) => {
+
+  const handleScrollTop = useCallback(() => {
     if (typeof window !== 'undefined') {
-      window.scrollTo({ top: px, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }, [])
-  const scrollTop = useCallback(() => {
-    goTop()
-  }, [goTop])
 
   return (
     <StyledScrollTopBtn
-      onClick={scrollTop}
-      isShowed={isMoreThan2Screens}
-      themeName={currentTheme}
+      onClick={handleScrollTop}
+      $themeName={currentTheme}
+      style={{
+        transform: isMoreThan2Screens ? 'translateX(0px)' : 'translateX(100px)',
+      }}
     >
-      <ArrowUpwardIcon fontSize='medium' />
+      <ArrowUpwardIcon fontSize="medium" />
     </StyledScrollTopBtn>
   )
 })
+
+ScrollTopBtn.displayName = 'ScrollTopBtn'

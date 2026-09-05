@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Modal } from '~/ui-kit.uremont'
 import { FooterRow } from '~/ui-kit.uremont/molecules/Modal/FooterRow'
 import { Button } from '~/ui-kit.uremont/atoms'
@@ -8,11 +8,8 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { withTranslator } from '@/hocs/withTranslator'
 import Cookie from 'js-cookie'
-// import { logout } from '@/helpers/services/restService'
 import { useDispatch } from 'react-redux'
-// import { showAsyncToast } from '@/actions'
 import { useDebouncedCallback } from '~/hooks/useDebouncedCallback'
-// import { userInfoActions } from '@/store/reducers/user-info'
 import { useGlobalTheming } from '~/hooks/useGlobalTheming'
 import { enable } from '~/store/reducers/cookieOffer'
 import { ESize } from '~/ui-kit.uremont/organisms/Modal/components/ModalContent'
@@ -21,193 +18,73 @@ interface IProps {
   isOpened: boolean
   onHideModal: () => void
   isAuthenticated: boolean
-  // t: (text: string) => string
-  // resetLang: () => void
 }
 
-const Wrapper = styled('div')`
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
 `
 
-const menuItems = ({ isCurrentPathCb, isAuthenticated, t, onHideModal }: any) => (
-  <Wrapper>
-    <h5 style={{ margin: '0 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_MAIN')}</h5>
-    {!isCurrentPathCb('/blog') && (
-      <Link href="/blog" as="/blog">
-        <a onClick={onHideModal}>{t('BLOG')}</a>
-      </Link>
-    )}
-    {/* !isCurrentPathCb('/subprojects/audit-list') && (
-      <Link href="/subprojects/audit-list" as="/subprojects/audit-list">
-        <a onClick={onHideModal}>{t('AUDITLIST_OFFLINE')} 2023</a>
-      </Link>
-    ) */}
-    {/* !isCurrentPathCb('/blog/article/team-scoring') && (
-      <Link href="/blog/article/team-scoring" as="/blog/article/team-scoring">
-        <a onClick={onHideModal}>About Team Scoring 2019</a>
-      </Link>
-    ) */}
-    {!isCurrentPathCb('/p/protocols') && (
-      <Link href='/p/protocols' as='/p/protocols'>
-        <a onClick={onHideModal}>{t('NETWORK_PROTOCOLS')}</a>
-      </Link>
-    )}
-    {/* !isCurrentPathCb('/') && (
-      <Link href="/" as="/">
-        <a onClick={onHideModal}>{t('HOME')}</a>
-      </Link>
-    ) */}
-    {!isCurrentPathCb('/feedback') && (
-      <Link href='/feedback' as='/feedback'>
-        <a onClick={onHideModal}>{t('FEEDBACK')} & reCAPTCHA v3 testing</a>
-      </Link>
-    )}
-    {/* !isAuthenticated && !isCurrentPathCb('/auth/login') && (
-      <Link href="/auth/login" as="/auth/login">
-        <a onClick={onHideModal}>{t('LOGIN')}</a>
-      </Link>
-    ) */}
-    {!isCurrentPathCb('/p/hacker-news-client-2024') && (
-      <Link href='/p/hacker-news-client-2024' as='/p/hacker-news-client-2024'>
-        <a onClick={onHideModal}>Hacker News Client</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/p/estimate-corrector-2024') && (
-      <Link href='/p/estimate-corrector-2024' as='/p/estimate-corrector-2024'>
-        <a onClick={onHideModal}>Estimate Corrector 2024</a>
-      </Link>
-    )}
-    {!isCurrentPathCb('/p/cv-ru') && (
-      <Link href='/p/cv-ru' as='/p/cv-ru'>
-        <a onClick={onHideModal}>{t('CV')}</a>
-      </Link>
-    )}
+const TagsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+`
 
-    <h5 style={{ margin: '8px 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_TAGS')}</h5>
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '8px',
-        flexWrap: 'wrap',
-      }}
-    >
-      {/* -- NOTE: Target Articles */}
-      {/* !isCurrentPathCb('/blog/article/nginx-logs') && (
-        <Link href="/blog/article/nginx-logs" as="/blog/article/nginx-logs">
-          <a onClick={onHideModal}>How to see NGINX logs</a>
-        </Link>
-      ) */}
-      {/* !isCurrentPathCb('/blog/article/limp-bizkit-video') && (
-        <Link href="/blog/article/limp-bizkit-video" as="/blog/article/limp-bizkit-video">
-          <a onClick={onHideModal}>Клипы Limp Bizkit</a>
-        </Link>
-      ) */}
-      {/* -- */}
+// Оптимизация 1: Выносим структуры данных в статичные массивы.
+// Это разгружает память и убирает тонны дублирующего кода.
+const MAIN_MENU_ITEMS = [
+  { href: '/blog', translationKey: 'BLOG' },
+  { href: '/p/protocols', translationKey: 'NETWORK_PROTOCOLS' },
+  { href: '/feedback', translationKey: 'FEEDBACK', labelSuffix: ' & reCAPTCHA v3 testing' },
+  { href: '/p/hacker-news-client-2024', label: 'Hacker News Client' },
+  { href: '/p/estimate-corrector-2024', label: 'Estimate Corrector 2024' },
+  { href: '/p/cv-ru', translationKey: 'CV' },
+]
 
-      {/* -- NOTE: Target search by title */}
-      {!isCurrentPathCb('/blog/q/сетевые_протоколы') && (
-        <Link href="/blog/q/сетевые_протоколы" as="/blog/q/сетевые_протоколы">
-          <a onClick={onHideModal}>#сетевые_протоколы</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/краснаяАкула') && (
-        <Link href="/blog/q/краснаяАкула" as="/blog/q/краснаяАкула">
-          <a onClick={onHideModal}>#краснаяАкула</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/bash') && (
-        <Link href="/blog/q/bash" as="/blog/q/bash">
-          <a onClick={onHideModal}>#bash</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/git') && (
-        <Link href="/blog/q/git" as="/blog/q/git">
-          <a onClick={onHideModal}>#git</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/jsVanilla') && (
-        <Link href="/blog/q/jsVanilla" as="/blog/q/jsVanilla">
-          <a onClick={onHideModal}>#jsVanilla</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/reactHook') && (
-        <Link href="/blog/q/reactHook" as="/blog/q/reactHook">
-          <a onClick={onHideModal}>#reactHook</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/mongodb') && (
-        <Link href="/blog/q/mongodb" as="/blog/q/mongodb">
-          <a onClick={onHideModal}>#mongodb</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/nginx') && (
-        <Link href="/blog/q/nginx" as="/blog/q/nginx">
-          <a onClick={onHideModal}>#nginx</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/ssl') && (
-        <Link href="/blog/q/ssl" as="/blog/q/ssl">
-          <a onClick={onHideModal}>#ssl</a>
-        </Link>
-      )}
-      {!isCurrentPathCb('/blog/q/рабочие_моменты') && (
-        <Link href='/blog/q/рабочие_моменты' as='/blog/q/рабочие_моменты'>
-          <a onClick={onHideModal}>#рабочие_моменты</a>
-        </Link>
-      )}
-      {/* !isCurrentPathCb('/blog/q/telegram') && (
-        <Link href="/blog/q/telegram" as="/blog/q/telegram">
-          <a onClick={onHideModal}>#telegram</a>
-        </Link>
-      ) */}
-      {/* -- */}
-
-      {isAuthenticated && !isCurrentPathCb('/profile') && (
-        <Link href="/profile" as="/profile">
-          <a>{t('PROFILE')}</a>
-        </Link>
-      )}
-      {/* <a href="http://pravosleva.ru/storybook/index.html" rel="noreferrer" target="_blank">
-        Storybook
-      </a> */}
-    </div>
-  </Wrapper>
-)
+const TAG_ITEMS = [
+  'сетевые_протоколы',
+  'краснаяАкула',
+  'bash',
+  'git',
+  'jsVanilla',
+  'reactHook',
+  'mongodb',
+  'nginx',
+  'ssl',
+  'рабочие_моменты'
+]
 
 export const MenuModal = withTranslator<IProps>(({
-  isOpened, onHideModal, isAuthenticated,
+  isOpened,
+  onHideModal,
+  isAuthenticated,
   t,
   resetLang,
 }) => {
   const router = useRouter()
-  // console.log(router)
-  const isCurrentPathCb = useCallback((path) => isCurrentPath(router.pathname, path) || isCurrentPath(router.asPath, path), [router.pathname, router.asPath])
   const dispatch = useDispatch()
+
+  // Мемоизируем проверку путей. 
+  const isCurrentPathCb = useCallback((path: string) => {
+    return isCurrentPath(router.pathname, path) || isCurrentPath(router.asPath, path)
+  }, [router.pathname, router.asPath])
+
   const handleLogoutCb = useCallback(async () => {
-    // const result = await logout()
-    //   .then(() => {
-    //     router.push('/auth/login')
-    //   })
-    //   .catch((text) => {
-    //     dispatch(showAsyncToast({ text, delay: 20000, type: 'error' }))
-    //   })
-    // return result
     return Promise.reject({ message: 'In progress...' })
   }, [])
+
   const handleLogout = useDebouncedCallback(() => {
-    handleLogoutCb()
-      .then(() => {
-        // dispatch(userInfoActions.fillDelta({ fromServer: null, isLoadedSuccessfully: true }))
-      })
-      .catch((err) => {
-        console.warn(err)
-      })
+    handleLogoutCb().catch((err) => console.warn(err))
   }, 500)
+
   const { onReset: resetTheme } = useGlobalTheming()
+
   const removeAllCookie = useCallback(() => {
+    if (typeof window === 'undefined') return
+    
     const isConfirmed = window.confirm(`⚡ ${t('QN_SURE')}`)
     if (isConfirmed) {
       Cookie.remove('lang')
@@ -218,26 +95,73 @@ export const MenuModal = withTranslator<IProps>(({
       if (isAuthenticated) handleLogout()
       onHideModal()
     }
-  }, [])
+  }, [t, resetLang, resetTheme, dispatch, isAuthenticated, handleLogout, onHideModal])
+
+  // Оптимизация 2: Мемоизируем рендер контента body. 
+  // Теперь функция рендера не пересоздается, защищая внутренности Modal от лишних перерисовок.
+  const renderBody = useCallback(() => {
+    return (
+      <Wrapper>
+        <h5 style={{ margin: '0 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_MAIN')}</h5>
+        {MAIN_MENU_ITEMS.map((item) => {
+          if (isCurrentPathCb(item.href)) return null
+          
+          return (
+            <Link key={item.href} href={item.href}>
+              <a onClick={onHideModal}>
+                {item.translationKey ? t(item.translationKey) : item.label}
+                {item.labelSuffix || ''}
+              </a>
+            </Link>
+          )
+        })}
+
+        <h5 style={{ margin: '8px 0 8px 0', fontFamily: 'Montserrat' }}>{t('MENU_TAGS')}</h5>
+        <TagsContainer>
+          {TAG_ITEMS.map((tag) => {
+            const path = `/blog/q/${tag}`
+            if (isCurrentPathCb(path)) return null
+            
+            return (
+              <Link key={tag} href={path}>
+                <a onClick={onHideModal}>#{tag}</a>
+              </Link>
+            )
+          })}
+
+          {isAuthenticated && !isCurrentPathCb('/profile') && (
+            <Link href="/profile">
+              <a onClick={onHideModal}>{t('PROFILE')}</a>
+            </Link>
+          )}
+        </TagsContainer>
+      </Wrapper>
+    )
+  }, [t, isCurrentPathCb, onHideModal, isAuthenticated])
+
+  // Мемоизируем рендер футера
+  const renderFooter = useCallback(() => {
+    return (
+      <FooterRow>
+        <Button typeName="secondary" size="small" width="responsive" onClick={removeAllCookie}>
+          {t('REMOVE_ALL_COOKIE_AND_CLOSE')}
+        </Button>
+      </FooterRow>
+    )
+  }, [removeAllCookie, t])
+
+  // Если модалка закрыта, не пускаем код ниже и ничего не рендерим в виртуальный DOM
+  if (!isOpened) return null
 
   return (
-    <>
-      {isOpened && (
-        <Modal
-          size={ESize.SMALL}
-          modalTitle={t('MENU')}
-          // modalSubtitle="process.env"
-          closeModal={onHideModal}
-          renderBodyContent={() => menuItems({ isCurrentPathCb, isAuthenticated, t, onHideModal })}
-          renderFooterContent={() => (
-            <FooterRow>
-              <Button typeName='secondary' size="small" width="responsive" onClick={removeAllCookie}>
-                {t('REMOVE_ALL_COOKIE_AND_CLOSE')}
-              </Button>
-            </FooterRow>
-          )}
-        />
-      )}
-    </>
+    <Modal
+      size={ESize.SMALL}
+      modalTitle={t('MENU')}
+      closeModal={onHideModal}
+      renderBodyContent={renderBody}
+      renderFooterContent={renderFooter}
+    />
   )
 })
+
+MenuModal.displayName = 'MenuModal'

@@ -102,14 +102,14 @@
   .articleListWrapper.--magazine-layout .gridItemBg:first-child,
   .articleListWrapper.--magazine-layout .gridItemBg:first-child .gridItemBox {
     /* polygon(Сверху-слева-X Сверху-слева-Y, Сверху-справа-X ...) */
-    clip-path: polygon(
-      16px 0%,           /* Срез сверху-слева */
-      calc(100% - 16px) 0%, /* Срез сверху-справа */
+    /* clip-path: polygon(
+      16px 0%,
+      calc(100% - 16px) 0%,
       100% 16px, 
       100% 100%, 
       0% 100%, 
       0% 16px
-    );
+    ); */
   }
 
   /* ----------------------------------------------------
