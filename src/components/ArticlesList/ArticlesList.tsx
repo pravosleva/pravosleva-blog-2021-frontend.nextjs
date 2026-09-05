@@ -78,7 +78,7 @@ export const ArticlesList = withTranslator<TArticlesListComponentProps>(({ t, cu
             boxSizing: 'border-box',
             // overflowX: 'hidden',
           }}>
-          <Typography variant="h2" component="h1" gutterBottom className='truncate'>
+          <Typography variant="h3" component="h1" gutterBottom className='truncate'>
             {isBlogPage ? t(searchQueryTitle.original) : searchQueryTitle.normalized}
           </Typography>
           {

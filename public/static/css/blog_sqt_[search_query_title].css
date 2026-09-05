@@ -12,6 +12,9 @@
 @media (max-width: 767px) {
   .articleListWrapper {
     grid-template-columns: minmax(250px, 1fr);
+    row-gap: 2px;
+    width: calc(100% + 32px);
+    transform: translateX(-16px);
   }
 }
 
@@ -70,10 +73,6 @@
   background-size: cover;
   background-position: center;
   /* min-height: 240px; Задаем базовую высоту для обычных карточек */
-
-  animation: fadeUp linear;
-  animation-timeline: view();
-  animation-range: entry 0% cover 30%;
 }
 
 .gridItemBox {
@@ -93,6 +92,57 @@
   background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
 }
 
+@media (max-width: 767px) {
+  .gridItemBg, .gridItemBox {
+    border-radius: 0px;
+  }
+  /* ----------------------------------------------------
+     ПЕРВАЯ СТАТЬЯ: Скошенные верхние углы
+     ---------------------------------------------------- */
+  .articleListWrapper.--magazine-layout .gridItemBg:first-child,
+  .articleListWrapper.--magazine-layout .gridItemBg:first-child .gridItemBox {
+    /* polygon(Сверху-слева-X Сверху-слева-Y, Сверху-справа-X ...) */
+    clip-path: polygon(
+      16px 0%,           /* Срез сверху-слева */
+      calc(100% - 16px) 0%, /* Срез сверху-справа */
+      100% 16px, 
+      100% 100%, 
+      0% 100%, 
+      0% 16px
+    );
+  }
+
+  /* ----------------------------------------------------
+     ПОСЛЕДНЯЯ СТАТЬЯ: Скошенные нижние углы
+     ---------------------------------------------------- */
+  .articleListWrapper.--magazine-layout .gridItemBg:last-child,
+  .articleListWrapper.--magazine-layout .gridItemBg:last-child .gridItemBox {
+    clip-path: polygon(
+      0% 0%, 
+      100% 0%, 
+      100% calc(100% - 16px), /* Срез снизу-справа */
+      calc(100% - 16px) 100%, 
+      16px 100%,             /* Срез снизу-слева */
+      0% calc(100% - 16px)
+    );
+  }
+  .gridItemBox {
+    padding: 24px 16px 24px 16px;
+  }
+  .gridItemBg {
+    animation: fadeIn linear;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+@media (min-width: 768px) {
+  .gridItemBg {
+    animation: fadeUp linear;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -101,6 +151,14 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
