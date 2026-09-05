@@ -104,6 +104,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'pre',
+              // whiteSpace: 'break-spaces',
               fontFamily: 'monospace, Courier, Courier New, monospace',
             }}>
             {heading.prefix}{heading.text}

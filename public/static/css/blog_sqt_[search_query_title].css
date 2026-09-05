@@ -22,46 +22,43 @@
 }
 
 /* Десктоп и планшеты (от 768px) */
+/* Десктоп и планшеты (от 768px) */
 @media (min-width: 768px) {
-    /* ----------------------------------------------------
-     ПЕРВЫЕ 6 ЭЛЕМЕНТОВ (Стартовый блок)
-     ---------------------------------------------------- */
   
-  /* 1-я статья: на всю ширину */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(1) {
-    grid-column: span 3;
-  }
-  /* 2-я статья: широкая левая (2/3) */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(2) {
-    grid-column: span 2;
-  }
-  /* 5-я статья: широкая правая (2/3) */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5) {
-    grid-column: span 2;
-  }
-  /* 6-я статья: на всю ширину */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(6) {
-    grid-column: span 3;
+  /* СЕТКА ИЗ 7 КОЛОНОК */
+  .articleListWrapper.--magazine-layout {
+    grid-template-columns: repeat(7, minmax(0, 1fr)); 
+    box-sizing: border-box;
   }
 
   /* ----------------------------------------------------
-     БЕСКОНЕЧНЫЙ ЦИКЛ (Повторение паттерна каждые 5 элементов)
-     Формула: 5n + стартовая позиция в блоке
+     БЕСКОНЕЧНЫЙ ЦИКЛ (Шаг — 5 элементов)
+     Явно задаем размеры для каждой из 5 позиций в паттерне
      ---------------------------------------------------- */
 
-  /* Все широкие левые карточки (2-я, 7-я, 12-я, 17-я...) */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 2) {
-    grid-column: span 2;
-  }
-
-  /* Все широкие правые карточки (5-я, 10-я, 15-я, 20-я...) */
-  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 5) {
-    grid-column: span 2;
-  }
-
-  /* Все карточки на всю полосу (1-я, 6-я, 11-я, 16-я, 21-я...) */
+  /* ПОЗИЦИЯ 1 (1-я, 6-я, 11-я, 16-я...) — Во всю ширину */
   .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 1) {
-    grid-column: span 3;
+    grid-column: span 7;
+  }
+
+  /* ПОЗИЦИЯ 2 (2-я, 7-я, 12-я, 17-я...) — Широкая левая */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 2) {
+    grid-column: span 4;
+  }
+
+  /* ПОЗИЦИЯ 3 (3-я, 8-я, 13-я, 18-я...) — Узкая правая (дополнение к позиции 2) */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 3) {
+    grid-column: span 3; /* Жестко задаем 3 колонки, чтобы не сужалась */
+  }
+
+  /* ПОЗИЦИЯ 4 (4-я, 9-я, 14-я, 19-я...) — Узкая левая */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 4) {
+    grid-column: span 3; /* Жестко задаем 3 колонки */
+  }
+
+  /* ПОЗИЦИЯ 5 (5-я, 10-я, 15-я, 20-я...) — Широкая правая (дополнение к позиции 4) */
+  .articleListWrapper.--magazine-layout .gridItemBg:nth-child(5n + 5) {
+    grid-column: span 4;
   }
 }
 
