@@ -11,7 +11,11 @@ import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 
-// const isProd = process.env.NODE_ENV === 'production'
+const defaultBg = {
+  src: '/static/img/blog/dog.webp',
+  size: { w: 896, h: 1344 },
+  type: 'image/webp',
+}
 
 type TPageProps = {
   _pageService: TPageService;
@@ -22,6 +26,57 @@ type TPageProps = {
     normalized: string;
   },
 }
+
+import path from 'path'
+
+// Функция сканирует папку _articles и ищет совпадения по тексту
+const searchLocalMdx = async (queryText: string): Promise<NCodeSamplesSpace.TNote[]> => {
+  if (typeof window !== 'undefined') return [];
+  
+  try {
+    const fs = require('fs');
+    const matter = require('gray-matter');
+    
+    const articlesDirectory = path.join(process.cwd(), 'public/static/_articles');
+    
+    if (!fs.existsSync(articlesDirectory)) return [];
+    
+    const files: string[] = fs.readdirSync(articlesDirectory);
+    const matchedNotes: NCodeSamplesSpace.TNote[] = [];
+    
+    const normalizedQuery = queryText.toLowerCase().trim();
+
+    files.forEach((fileName) => {
+      // Работаем только с файлами .mdx
+      if (!fileName.endsWith('.mdx')) return;
+      
+      const filePath = path.join(articlesDirectory, fileName);
+      const fileContents = fs.readFileSync(filePath, 'utf8');
+      const { data, content } = matter(fileContents);
+      
+      const title = (data.title || '').toLowerCase();
+      const slug = fileName.replace(/\.mdx$/, '');
+
+      // Если поисковый запрос есть в заголовке статьи — добавляем в результаты
+      if (title.includes(normalizedQuery) || slug.toLowerCase().includes(normalizedQuery)) {
+        matchedNotes.push({
+          _id: slug,
+          title: data.title || slug,
+          description: content,
+          isPrivate: false,
+          createdAt: data.createdAt || new Date().toISOString(),
+          updatedAt: data.updatedAt || new Date().toISOString(),
+          priority: data.priority || 0
+        });
+      }
+    });
+    
+    return matchedNotes;
+  } catch (error) {
+    console.error('[MDX Search] Ошибка локального поиска:', error);
+    return [];
+  }
+};
 
 const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
   if (!_pageService?.isOk) return (
@@ -93,7 +148,22 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
     }
     let list: TArticle[] = []
 
-    const withoutSpaces = typeof search_query_title === 'string' ? search_query_title.replace(/\s/g, '') : ''
+    // const withoutSpaces = typeof search_query_title === 'string' ? search_query_title.replace(/\s/g, '') : ''
+    // const normalized = !!withoutSpaces
+    //   ? search_query_title.replace(/\s/g, '')
+    //     .split(',')
+    //     // .map((tag: any) => !!tag && typeof tag === 'string' ? decodeURIComponent(tag) : '')
+    //     // .filter((normalizedTag: string) => !!normalizedTag)
+    //     .join(', ')
+    //   : ''
+
+    // console.log(`withoutSpaces -> ${withoutSpaces}`)
+    // console.log(`normalized -> ${normalized}`)
+    // console.log(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
+
+    // -- LOCAL EXP
+    // Внутри getInitialProps страницы поиска (BlogQST):
+    const withoutSpaces = typeof search_query_title === 'string' ? search_query_title.replace(/\s/g, '') : '';
     const normalized = !!withoutSpaces
       ? search_query_title.replace(/\s/g, '')
         .split(',')
@@ -102,9 +172,43 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
         .join(', ')
       : ''
 
-    // console.log(`withoutSpaces -> ${withoutSpaces}`)
-    // console.log(`normalized -> ${normalized}`)
-    // console.log(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
+    let remoteData: NCodeSamplesSpace.TNote[] = [];
+    let localData: NCodeSamplesSpace.TNote[] = [];
+
+    // 1. Пробуем искать в сети
+    const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`);
+    if (noteResult.ok && Array.isArray(noteResult.response?.data)) {
+      remoteData = noteResult.response.data;
+      _pageService.isOk = true;
+      _pageService.response = noteResult.response;
+    }
+
+    // 2. Ищем локально на диске сервера
+    if (withoutSpaces) {
+      localData = await searchLocalMdx(withoutSpaces);
+      // Если сеть лежала, но локально что-то нашлось — помечаем страницу как успешную
+      if (localData.length > 0) {
+        _pageService.isOk = true;
+      }
+    }
+
+    // 3. Объединяем результаты без дубликатов (ориентируемся на _id)
+    const combinedData = [...remoteData];
+    localData.forEach(localNote => {
+      const isDuplicate = combinedData.some(remoteNote => remoteNote._id === localNote._id);
+      if (!isDuplicate) {
+        combinedData.push(localNote);
+      }
+    });
+
+    // 4. Маппим объединенный список в TArticle[] для сетки PagesGrid
+    list = combinedData.map((note) => ({
+      original: note,
+      slug: slugMap.get(note._id)?.slug || note._id, // используем _id как фолбек-слаг
+      brief: slugMap.get(note._id)?.brief || 'Локальный материал',
+      bg: slugMap.get(note._id)?.bg || defaultBg,
+    }));
+    // --
 
     switch (true) {
       case !!withoutSpaces: {

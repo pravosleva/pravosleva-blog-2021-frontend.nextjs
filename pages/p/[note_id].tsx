@@ -12,8 +12,9 @@ import { setTitle } from '~/store/reducers/pageMeta'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { NextPageContext } from 'next'
 import { Store } from 'redux'
+import path from 'path'
+import { defaultBg } from '~/srv.utils/local-mdx/defaultBg'
 
-// Интерфейс для маппинга старых и новых путей в slugMap
 interface ISlugMappingItem {
   id: string | number;
   brief?: string;
@@ -24,23 +25,57 @@ interface ISlugMappingItem {
   };
 }
 
-// Строгое описание пропсов, приходящих в компонент страницы
 interface IBlogArticleSlugProps {
   _pageService: TPageService;
   article: TArticle | null;
 }
 
-const defaultBg = {
-  src: 'https://pravosleva.pro',
-  size: { w: 896, h: 1344 },
-  type: 'image/webp',
-}
+const readLocalMdx = async (slug: string): Promise<TArticle | null> => {
+  if (typeof window !== 'undefined') return null;
 
-const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
+  try {
+    const fs = require('fs');
+    const matter = require('gray-matter');
+
+    const articlesDirectory = path.join(process.cwd(), '_articles');
+    const filePath = path.join(articlesDirectory, `${slug}.mdx`);
+
+    if (!fs.existsSync(filePath)) {
+      return null;
+    }
+
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const { data, content } = matter(fileContents);
+
+    console.log(`[MDX Fallback] Прочитана локальная статья: ${slug}`);
+
+    return {
+      original: {
+        _id: slug,
+        title: data.title || 'Без названия (Локальный файл)',
+        description: content,
+        isPrivate: false,
+        createdAt: data.createdAt || new Date().toISOString(),
+        updatedAt: data.updatedAt || new Date().toISOString(),
+        priority: data.priority || 0
+      },
+      slug: slug,
+      brief: data.brief || 'Локальная копия статьи',
+      bg: data.bg_src ? {
+        src: data.bg_src,
+        size: data.bg_size || { w: 896, h: 1344 },
+        type: data.bg_type || 'image/webp'
+      } : defaultBg,
+    };
+  } catch (error) {
+    console.error(`[MDX Fallback] Ошибка чтения файла ${slug}:`, error);
+    return null;
+  }
+};
+
+export default function BlogArticleSlug({ _pageService, article }: IBlogArticleSlugProps) {
   const { title } = useSelector((state: IRootState) => state.pageMeta)
 
-  // Оптимизация 1: Защитный барьер. Если статья не найдена или упала с ошибкой,
-  // мы прерываем выполнение до того, как Head попытается прочитать свойства из null.
   if (!_pageService?.isOk || !article) {
     return (
       <Layout>
@@ -59,12 +94,11 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
         <title>{title}</title>
         <meta name="description" content={article.brief || 'Найдётся всё что не нашлось ранее, если оно действительно нужно'} />
 
-        {/* --- Open Graph / Facebook Meta Tags --- */}
         <meta property="og:url" content={thisPageUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={article.original.title} />
         <meta property="og:locale" content="ru_RU" />
-        <meta property="article:publisher" content="https://pravosleva.pro" />
+        <meta property="article:publisher" content="https://pravosleva.pro/" />
         <meta property="article:section" content={article.original.title} />
         <meta property="og:locale:alternate" content="be_BY" />
         <meta property="og:locale:alternate" content="kk_KZ" />
@@ -84,14 +118,13 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
           </>
         ) : (
           <>
-            <meta property="og:image" content="https://pravosleva.prostatic/img/logo/logo-pravosleva.jpg" />
-            <meta property="og:image:secure_url" content="https://pravosleva.prostatic/img/logo/logo-pravosleva.jpg" />
+            <meta property="og:image" content="https://pravosleva.pro" />
+            <meta property="og:image:secure_url" content="https://pravosleva.pro" />
           </>
         )}
 
         <meta property="og:site_name" content="Pravo$leva // Blog" />
 
-        {/* --- Twitter Meta Tags --- */}
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content={thisPageUrl} />
         <meta name="twitter:title" content={article.original.title} />
@@ -104,11 +137,12 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
         ) : (
           <>
             <meta name="twitter:card" content="summary" />
-            <meta name="twitter:image" content="https://pravosleva.prostatic/img/logo/logo-pravosleva.jpg" />
+            <meta name="twitter:image" content="https://pravosleva.pro" />
           </>
         )}
       </Head>
       <Layout>
+        {/* Передаем пропсы безопасно, подстраиваясь под мемоизацию компонента */}
         <Article _pageService={_pageService} article={article} />
       </Layout>
     </>
@@ -118,7 +152,6 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
 BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
   (store: Store) => async (ctx: NextPageContext): Promise<IBlogArticleSlugProps> => {
     const rawNoteId = ctx.query?.note_id
-    // Оптимизация 2: Превращаем непредсказуемый query-параметр в чистую строку
     const note_id = typeof rawNoteId === 'string' ? rawNoteId : ''
 
     const _pageService: TPageService = {
@@ -127,12 +160,28 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     }
     let article: TArticle | null = null
 
-    // Приведение карты slugMapping к безопасному индексному типу Record
+    // 1. ПРИОРИТЕТ: Ищем сначала локальный .mdx файл
+    if (note_id) {
+      const localArticle = await readLocalMdx(note_id);
+      if (localArticle) {
+        store.dispatch(setTitle(localArticle.original.title));
+        _pageService.isOk = true;
+        
+        const basePropsFallback = await getInitialPropsBase(ctx);
+        setCommonStore({ store, baseProps: basePropsFallback });
+        
+        return {
+          _pageService,
+          article: localArticle,
+        };
+      }
+    }
+
     const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
     const matchedMapping = note_id ? typedSlugMapping[note_id] : undefined
 
     if (matchedMapping) {
-      // КЕЙС 1: Страница найдена по алиасу в slugMap
+      // КЕЙС А: Статья из маппинга
       const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${matchedMapping.id}`)
       
       if (noteResult.ok && noteResult.response?.data) {
@@ -152,16 +201,17 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
         _pageService.message = 'Скорее всего, автор закрыл статью на редактирование'
       }
     } else {
-      // КЕЙС 2: Прямой поиск статьи по её системному ID из URL
+      // КЕЙС Б: Статья по прямому системному ID в URL
       if (!note_id) {
         _pageService.isOk = false
         _pageService.message = 'Идентификатор заметки пуст или невалиден'
       } else {
+        // ИСПРАВЛЕН Баг пути: теперь строго /express-next-api/...
         const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
         
         try {
           if (!noteResult.ok) {
-            throw new Error('Не удалось получить статью. Возможно, автор закрыл ее на редактирование, либо ее не существует')
+            throw new Error('Не удалось получить статью с удаленного API. Локальной копии также не найдено.')
           }
           
           if (noteResult.response) {
@@ -200,5 +250,3 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     }
   }
 )
-
-export default BlogArticleSlug

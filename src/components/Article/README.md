@@ -1,5 +1,6 @@
+```tsx
 import { useMemo, memo, useRef, useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic' // Импортируем утилиту динамических импортов Next.js
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
 import { withTranslator } from '~/hocs/withTranslator'
@@ -14,13 +15,21 @@ import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
+// import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
+// import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
 import { resetGalleryRegistry } from '~/store/reactive-engine/reactiveGalleryEngine';
 import { ArticlesSearchDesktop } from '../ArticlesList/components'
 import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
 import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
-import Image from 'next/image'
+// import { GlobalArticleLightbox } from '~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox'
+import Image from 'next/image' // 1. Импортируем оптимизатор картинок Next.js
 
+/* =========================================================================
+   РАЗГРУЗКА БАНДЛА СТРАНИЦЫ: Переводим тяжелые виджеты на ленивую загрузку (SSR: false).
+   Браузер вообще не будет скачивать и парсить их JS-код при первой загрузке,
+   что освободит Main Thread для мгновенной фиксации LCP и снизит TBT!
+   ========================================================================= */
 const DynamicCollapsibleQuickNav = dynamic(
   () => import('~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav').then(m => m.CollapsibleQuickNav),
   { ssr: false }
@@ -41,9 +50,13 @@ const DynamicGlobalArticleLightbox = dynamic(
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+
+  /* =========================================================================
+     ИСПРАВЛЕНО: Флаг отложенного монтирования для защиты от каскадного SSR-фриза
+     ========================================================================= */
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
-    setIsMounted(true)
+    setIsMounted(true) // Сработает строго на клиенте после полной отрисовки первого экрана
   }, [])
 
   const { slug } = article
@@ -90,6 +103,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       )}
       {!!article ? (
         <>
+          {/* Хлебные крошки */}
           <ResponsiveBlock isPaddedMobile isLimited>
             <BreadCrumbs
               t={t}
@@ -99,6 +113,8 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               ]}
             />
           </ResponsiveBlock>
+
+          {/* Главный широкоформатный баннер статьи */}
           {!!article.bg && (
             <ResponsiveBlock isLimitedForDesktop>
               <div ref={bannerRef} className={styles['external-article-wrapper']}>
@@ -113,6 +129,13 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                     <Image
                       src={(() => {
                         let originalSrc = article.bg?.src || '/static/img/blog/coming-soon-v3.jpg';
+                        
+                        /* =========================================================================
+                          ИСПРАВЛЕНО ДЛЯ LOOPBACK БАГА: Жестко выжигаем собственный домен из пути!
+                          Если в базу записался полный URL нашего домена (.pro или .ru), мы превращаем 
+                          его в чистый абсолютный путь от корня локальной файловой системы сервера.
+                          Это на 100% заблокирует ложные внешние HTTP-запросы Node.js к самому себе.
+                          ========================================================================= */
                         if (originalSrc.includes('pravosleva.pro') || originalSrc.includes('pravosleva.ru')) {
                           originalSrc = originalSrc
                             .replace('https://pravosleva.pro', '')
@@ -120,6 +143,8 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                             .replace('https://pravosleva.ru', '')
                             .replace('http://pravosleva.ru', '');
                         }
+
+                        // Если после очистки или изначально слэша нет — гарантированно добавляем его
                         if (!originalSrc.startsWith('/') && !originalSrc.startsWith('http')) {
                           return `/${originalSrc}`;
                         }
@@ -130,10 +155,12 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                       layout="fill"
                       objectFit="cover"
                       objectPosition="center"
-                      priority
+                      priority // Наш критический preload-приоритет в <head>
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
                     />
                   </div>
+
+                  {/* Контент баннера поверх картинки (Тоже защищаем статичным рендерингом без isMounted) */}
                   <div
                     className={clsx(
                       'tiles-grid-item-in-article',
@@ -218,3 +245,4 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
     </>
   )
 }))
+```

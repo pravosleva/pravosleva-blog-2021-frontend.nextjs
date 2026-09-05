@@ -1,0 +1,37 @@
+---
+# 6a9abed4f7929b414054205c
+title: "Инструкция"
+brief: "План Б"
+bg_src: "https://pravosleva.pro/static/img/blog/dog.webp"
+bg_size: { w: 1200, h: 630 }
+bg_type: "image/webp"
+
+# 1. Даты и сортировка
+createdAt: "2026-09-05T12:51:32.523Z"
+updatedAt: "2026-09-05T00:37:40.082Z"
+priority: 1
+
+# 2. Таксономия и авторы
+author: "Den Pol"
+tags: ["instruction", "thisapp"]
+category: "guides"
+---
+
+# Instruction
+## Q
+Как быть, когда однажды code-samples.space станет недоступен?
+
+## A
+1. Используйте директорию `/public/static/_articles/*` для хранения статей.
+2. Slug статьи - это имя файла (без расширения)
+3. На переходный период можно создавать клоны статей с добавлением в имени `.local` (потом избавиться - ссылки будут актуальны)
+4. Ликвидировать обращение к удаленному ресурсу в файлах:
+   * `srv.express-next-api/router/code-samples-proxy/api/notes/[id].ts`
+   * `srv.express-next-api/router/code-samples-proxy/api/notes/index.ts`
+
+### Алгоритм пока следующий:
+- Поиск локального файла 👉 Поиск в сети 👉 UI Error
+- Путь к целевой странице (когда удаленная база будет недоступна) + переходный период 👉 `/p/[slug]`
+
+### See also
+`srv.utils/local-mdx/readLocalMdx.ts`
