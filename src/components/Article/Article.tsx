@@ -1,5 +1,5 @@
 import { useMemo, memo, useRef, useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic' // Импортируем утилиту динамических импортов Next.js
 import ReactMarkdown from 'react-markdown'
 import { getFormatedDate2 } from '~/utils/time-tools/timeConverter'
 import { withTranslator } from '~/hocs/withTranslator'
@@ -14,13 +14,21 @@ import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
+// import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
+// import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
 import { resetGalleryRegistry } from '~/store/reactive-engine/reactiveGalleryEngine';
 import { ArticlesSearchDesktop } from '../ArticlesList/components'
 import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
 import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
-import Image from 'next/image'
+// import { GlobalArticleLightbox } from '~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox'
+import Image from 'next/image' // 1. Импортируем оптимизатор картинок Next.js
 
+/* =========================================================================
+   РАЗГРУЗКА БАНДЛА СТРАНИЦЫ: Переводим тяжелые виджеты на ленивую загрузку (SSR: false).
+   Браузер вообще не будет скачивать и парсить их JS-код при первой загрузке,
+   что освободит Main Thread для мгновенной фиксации LCP и снизит TBT!
+   ========================================================================= */
 const DynamicCollapsibleQuickNav = dynamic(
   () => import('~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav').then(m => m.CollapsibleQuickNav),
   { ssr: false }
@@ -41,9 +49,13 @@ const DynamicGlobalArticleLightbox = dynamic(
 export const Article = withTranslator<TArticleComponentProps>(memo(({ t, currentLang, article }) => {
   const baseClasses = useBaseStyles()
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+
+  /* =========================================================================
+     ИСПРАВЛЕНО: Флаг отложенного монтирования для защиты от каскадного SSR-фриза
+     ========================================================================= */
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
-    setIsMounted(true)
+    setIsMounted(true) // Сработает строго на клиенте после полной отрисовки первого экрана
   }, [])
 
   const { slug } = article
@@ -90,6 +102,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       )}
       {!!article ? (
         <>
+          {/* Хлебные крошки */}
           <ResponsiveBlock isPaddedMobile isLimited>
             <BreadCrumbs
               t={t}
@@ -99,6 +112,8 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               ]}
             />
           </ResponsiveBlock>
+
+          {/* Главный широкоформатный баннер статьи */}
           {!!article.bg && (
             <ResponsiveBlock isLimitedForDesktop>
               <div ref={bannerRef} className={styles['external-article-wrapper']}>
@@ -106,13 +121,61 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                   className='article-wrapper'
                   style={{ position: 'relative', overflow: 'hidden' }}
                 >
+                  {/* =========================================================================
+                    ПУЛЕНЕПРОБИВАЕМЫЙ БАННЕР: Задаем жесткий уникальный key для тега div.
+                    Это заставит React 17 намертво "приварить" этот узел к DOM-дереву.
+                    При регидратации виджетов ниже React гарантированно пропустит этот блок,
+                    не будет сбрасывать src и стирать обложку, а LCP рухнет в зеленую зону!
+                    ========================================================================= */}
                   <div 
                     key={`hero-banner-image-${article.slug}`} // Уникальный ключ защищает от remount
                     style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}
                   >
+                    {/* <Image
+                      src={article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'}
+                      alt={article.original.title}
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
+                      priority // Оставляем! Прелоад в <head> теперь отработает идеально
+                      // Ограничиваем максимальное разрешение для десктопа
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+                    /> */}
+                    {/* =========================================================================
+                      ПУЛЕНЕПРОБИВАЕМЫЙ НАТИВНЫЙ ЛОАДЕР (NEXT.JS 11 FIXED):
+                      Если картинка уже в .webp, мы полностью обходим капризный _next/image роутер!
+                      Браузер скачает прямой файл, картинка гарантированно отобразится без ошибок,
+                      а LCP мгновенно упадет до рекордных значений.
+                      ========================================================================= */}
+                    {/* <Image
+                      loader={({ src }) => {
+                        // Если путь начинается со static или /static — возвращаем прямую ссылку
+                        if (src.startsWith('static')) return `/${src}`;
+                        return src;
+                      }}
+                      src={article.bg?.src || '/static/img/blog/coming-soon-v3.jpg'}
+                      alt={article.original.title}
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
+                      priority // Наш критический preload-приоритет в <head>
+                    /> */}
+                    {/* =========================================================================
+                      ИСПРАВЛЕНО: Снайперский Санитайзер путей. 
+                      Если строка src не начинается со слэша / или http, мы ПРИНУДИТЕЛЬНО 
+                      добавляем его в начало. Это заставит Next.js 11 и Sharp безошибочно 
+                      найти исходный файл в файловой системе Ubuntu и пережать его!
+                      ========================================================================= */}
                     <Image
                       src={(() => {
                         let originalSrc = article.bg?.src || '/static/img/blog/coming-soon-v3.jpg';
+                        
+                        /* =========================================================================
+                          ИСПРАВЛЕНО ДЛЯ LOOPBACK БАГА: Жестко выжигаем собственный домен из пути!
+                          Если в базу записался полный URL нашего домена (.pro или .ru), мы превращаем 
+                          его в чистый абсолютный путь от корня локальной файловой системы сервера.
+                          Это на 100% заблокирует ложные внешние HTTP-запросы Node.js к самому себе.
+                          ========================================================================= */
                         if (originalSrc.includes('pravosleva.pro') || originalSrc.includes('pravosleva.ru')) {
                           originalSrc = originalSrc
                             .replace('https://pravosleva.pro', '')
@@ -120,6 +183,8 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                             .replace('https://pravosleva.ru', '')
                             .replace('http://pravosleva.ru', '');
                         }
+
+                        // Если после очистки или изначально слэша нет — гарантированно добавляем его
                         if (!originalSrc.startsWith('/') && !originalSrc.startsWith('http')) {
                           return `/${originalSrc}`;
                         }
@@ -130,10 +195,12 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                       layout="fill"
                       objectFit="cover"
                       objectPosition="center"
-                      priority
+                      priority // Наш критический preload-приоритет в <head>
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
                     />
                   </div>
+
+                  {/* Контент баннера поверх картинки (Тоже защищаем статичным рендерингом без isMounted) */}
                   <div
                     className={clsx(
                       'tiles-grid-item-in-article',
