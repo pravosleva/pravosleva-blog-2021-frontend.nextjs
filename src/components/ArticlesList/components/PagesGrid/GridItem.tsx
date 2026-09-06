@@ -6,20 +6,22 @@ import Link from '~/components/Link'
 import { slugMap } from '~/constants/blog/slugMap'
 import { Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import clsx from 'clsx'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
 
 type TProps = {
-  article: TArticle;
+  article: IEnhancedArticle;
 }
 
 const defaultBgUrl = '/static/img/blog/coming-soon-v3.jpg'
 
 export const GridItem = memo(({ article }: TProps) => {
-  const { original, bg, brief } = article
+  const { original, bg, brief, isLocal } = article
   const { _id, createdAt, title } = original
   const url = bg?.src || defaultBgUrl
 
   // 1. Формируем полную абсолютную ссылку для QR-кода
-  const articleSlug = slugMap.get(_id)?.slug || ''
+  const articleSlug = slugMap.get(_id)?.slug || (isLocal ? article.original._id : '') || ''
   
   // Важно: QR-код должен содержать полный URL с доменом, чтобы телефон его распознал
   const host = typeof window !== 'undefined' ? window.location.origin : 'https://pravosleva.pro'
@@ -36,7 +38,7 @@ export const GridItem = memo(({ article }: TProps) => {
       }}
     >
       {/* 2. БЛОК С QR-КОДОМ (Показывается только если у статьи есть слаг) */}
-      {slugMap.has(_id) && (
+      {(slugMap.has(_id) || isLocal) && (
         <div className="gridItemQrContainer" title="Сканируйте QR-код, чтобы читать с телефона">
           <QRCodeSVG 
             value={fullArticleUrl} 
@@ -49,11 +51,11 @@ export const GridItem = memo(({ article }: TProps) => {
       )}
 
       <div className='gridItemBox'>
-        <div className='gridItemTitle'><h3>{title}</h3></div>
+        <div className='gridItemTitle'><h3>{clsx({ ['📂 Local Copy |']: isLocal }, title)}</h3></div>
         <div className='gridItemDescription'>{brief}</div>
         <div className='gridItemAction'>
           {
-            slugMap.has(_id) ? (
+            (slugMap.has(_id) || isLocal) ? (
               <div>
                 <Button
                   color='primary'

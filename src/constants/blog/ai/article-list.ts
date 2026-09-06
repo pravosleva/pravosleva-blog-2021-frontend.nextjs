@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   src: 'https://pravosleva.pro/static/img/blog/cobain.jpg',
@@ -9,7 +9,7 @@ const bg = {
   type: 'image/png',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'ai-cover-toplist-2025-11-alternative': {
     id: '69160612f7929b4140541ff6',
     brief: 'Alternative AI Cover Toplist',

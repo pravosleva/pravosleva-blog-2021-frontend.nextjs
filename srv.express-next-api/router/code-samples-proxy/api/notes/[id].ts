@@ -36,7 +36,7 @@ export const getNote = async (req: IRequest, res: TEnhancedResponse) => {
       // Отдаем фронтенд-клиенту структуру ответа TSingleNoteResponse
       return res.status(200).send({
         success: true,
-        data: localArticle.original // Достаем чистый TNote из утилиты
+        data: localArticle,
       })
     }
   } catch (fsError) {

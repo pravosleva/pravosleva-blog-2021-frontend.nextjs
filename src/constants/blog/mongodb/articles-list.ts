@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 export const bg = {
   // src: 'https://pravosleva.pro/static/img/blog/logo-mongodb-2.png',
@@ -15,7 +15,7 @@ export const bg = {
   type: 'image/jpg',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: {[key: string]: ISlugMappingItem} = {
   'mongodb-search-samples': {
     id: '5fcf89195c65457d85706310',
     brief: 'Чтоб не забыть',

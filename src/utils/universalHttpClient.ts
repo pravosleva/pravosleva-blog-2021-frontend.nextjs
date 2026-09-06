@@ -56,19 +56,19 @@ class httpClientSingletone {
     return httpClientSingletone._instance;
   }
 
-  public async get(url: string): Promise<NResponseLocal.IResult> {
+  public async get<T>(url: string): Promise<NResponseLocal.IResult<T>> {
     // console.log(url)
     return await this.api
       .get(url)
       .then(httpErrorHandler) // res -> res.data
       .then(apiErrorHandler) // data -> data
-      .then((data: any) => ({
+      .then((data: T) => ({
         ok: true,
         response: data,
       }))
       .catch(axiosUniversalCatch)
   }
-  public async post(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult> {
+  public async post<T>(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult<T>> {
     return await this.api
       .post(url, data)
       .then(httpErrorHandler) // res -> res.data
@@ -79,7 +79,7 @@ class httpClientSingletone {
       }))
       .catch(axiosUniversalCatch)
   }
-  public async pravoslevaPost(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult> {
+  public async pravoslevaPost<T>(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult<T>> {
     return await this.eHelperApi
       .post(url, data)
       .then(httpErrorHandler) // res -> res.data

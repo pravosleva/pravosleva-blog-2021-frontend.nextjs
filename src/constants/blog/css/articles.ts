@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   src: 'https://pravosleva.pro/static/img/blog/bg-css-v2.jpg',
@@ -9,7 +9,7 @@ const bg = {
   type: 'image/jpg',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'scroll-snap-type-exp': {
     id: '6878d8d710f7b720079c8bd9',
     brief: 'Карточки с эффектом перелистывания',

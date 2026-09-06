@@ -7,9 +7,10 @@ import { ArticlesSearchDesktop, ArticlesSearchMobile, PagesGrid } from './compon
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
 
 type TArticlesListComponentProps = {
-  list: TArticle[];
+  list: IEnhancedArticle[];
   searchQueryTitle: {
     original: string;
     withoutSpaces: string;

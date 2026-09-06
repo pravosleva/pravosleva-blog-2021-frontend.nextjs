@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   src: 'https://pravosleva.pro/static/img/blog/logo-nginx.jpg',
@@ -9,7 +9,7 @@ const bg = {
   type: 'image/jpg',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: {[key: string]: ISlugMappingItem} = {
   'nginx-get-public-ip': {
     id: '602cfad280b2f31ebde37da0',
     brief: 'Заметки начинающего DevOps инженера',

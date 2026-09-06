@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 export const bg = {
   src: 'static/img/blog/logo-js-2.webp',
@@ -17,7 +17,7 @@ export const bgReactivity = {
   type: 'image/webp',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'js-vanilla-getExtractedValues': {
     id: '694d0e0ef7929b4140541fff',
     brief: 'Simple way to extract target values from string in JS vanilla',

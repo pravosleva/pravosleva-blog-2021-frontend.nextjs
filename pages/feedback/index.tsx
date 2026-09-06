@@ -37,7 +37,7 @@ const Feedback = ({ t }: any) => {
   }
   const send = useCallback(
     async (token: string): Promise<string> => {
-      const verifyResult = await universalHttpClient.post(
+      const verifyResult = await universalHttpClient.post<{ original: { score: number } }>(
         RECAPTCHAV3_VERIFY_URL,
         new URLSearchParams({
           captcha: token,
@@ -46,7 +46,7 @@ const Feedback = ({ t }: any) => {
       
       try {
         if (verifyResult.ok) {
-          if (verifyResult?.response.original?.score >= recaptchaScoreLimit) {
+          if (!!verifyResult?.response?.original && verifyResult?.response?.original.score >= recaptchaScoreLimit) {
             if (typeof window !== 'undefined' && isProd) {
               // @ts-ignore
               // ym(
@@ -74,7 +74,7 @@ const Feedback = ({ t }: any) => {
             else
               throw newEntryResult?.response || newEntryResult?.message || 'No message'
           } else
-            throw new Error(`Bot detected! Your score by Google ${verifyResult?.response.original?.score}. Humans limit was set to ${recaptchaScoreLimit}`)
+            throw new Error(`Bot detected! Your score by Google ${!!verifyResult?.response?.original ? verifyResult?.response.original?.score : '-'}. Humans limit was set to ${recaptchaScoreLimit}`)
         }
       } catch (err: any) {
         return Promise.reject(typeof err === 'string' ? err : (err?.message || 'ERR2: Что-то пошло не так...'))

@@ -5,8 +5,8 @@ import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 import { getNote, rules as singleNoteRules } from './[id]'
 import fs from 'fs'
 import path from 'path'
-import { NCodeSamplesSpace } from '~/types'
-import { readLocalMdx } from '~/srv.utils/local-mdx/readLocalMdx' // Импортируем вашу утилиту
+// import { NCodeSamplesSpace } from '~/types'
+import { IEnhancedArticle, readLocalMdx } from '~/srv.utils/local-mdx/readLocalMdx' // Импортируем вашу утилиту
 
 const codeSamplesProxyApi = express()
 const NOTES_BASE_API_URL = 'http://62.109.21.103'
@@ -28,13 +28,13 @@ export const indexRules = {
 }
 
 // Оптимизированная функция поиска локальных заметок через переиспользование утилиты
-const searchLocalNotes = async (qText: string): Promise<NCodeSamplesSpace.TNote[]> => {
+const searchLocalNotes = async (qText: string): Promise<IEnhancedArticle[]> => {
   try {
-    const articlesDirectory = path.join(process.cwd(), '_articles')
+    const articlesDirectory = path.join(process.cwd(), 'public/static/_articles')
     if (!fs.existsSync(articlesDirectory)) return []
 
     const files = fs.readdirSync(articlesDirectory)
-    const matchedNotes: NCodeSamplesSpace.TNote[] = []
+    const matchedNotes: IEnhancedArticle[] = []
     const normalizedQuery = qText.toLowerCase().trim()
 
     // Проходим по всем файлам параллельно через Promise.all для максимальной скорости (Оптимизация!)
@@ -55,13 +55,13 @@ const searchLocalNotes = async (qText: string): Promise<NCodeSamplesSpace.TNote[
 
         // Проверяем условия поискового фильтра
         if (!normalizedQuery || title.includes(normalizedQuery) || slug.toLowerCase().includes(normalizedQuery) || isTagMatched) {
-          matchedNotes.push(note)
+          matchedNotes.push(localArticle)
         }
       })
     )
 
     // Сортируем: новые заметки всегда вверху списка
-    return matchedNotes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    return matchedNotes.sort((a, b) => new Date(b.original.createdAt).getTime() - new Date(a.original.createdAt).getTime())
   } catch (error) {
     console.error('[API Local Search] Ошибка сканирования через утилиту:', error)
     return []
@@ -71,8 +71,8 @@ const searchLocalNotes = async (qText: string): Promise<NCodeSamplesSpace.TNote[
 const getNotes = async (req: IRequest, res: IResponse) => {
   const { q_title_all_words, limit, page } = req.query 
   
-  let remoteNotes: NCodeSamplesSpace.TNote[] = []
-  let localNotes: NCodeSamplesSpace.TNote[] = []
+  let remoteNotes: IEnhancedArticle[] = []
+  let localNotes: IEnhancedArticle[] = []
   let apiResponseMeta = null
 
   // 1. Сетевой запрос к API
@@ -85,7 +85,7 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   const notesResult = await universalHttpClient.get(url)
   
   if (notesResult.isOk && notesResult.response?.success && Array.isArray(notesResult.response?.data)) {
-    remoteNotes = notesResult.response.data
+    remoteNotes = notesResult.response.data.map((e: any) => ({ original: e }))
     apiResponseMeta = notesResult.response.pagination
   }
 
@@ -104,7 +104,7 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   // 3. Объединение без дубликатов
   const combinedData = [...remoteNotes]
   localNotes.forEach((lNote) => {
-    const isDuplicate = combinedData.some((rNote) => rNote._id === lNote._id)
+    const isDuplicate = combinedData.some((rNote) => rNote.original._id === lNote.original._id)
     if (!isDuplicate) {
       combinedData.push(lNote)
     }
@@ -119,8 +119,8 @@ const getNotes = async (req: IRequest, res: IResponse) => {
     pagination: {
       totalPages: Math.ceil(totalNotesCount / currentLimit) || 1,
       currentPage: Number(page) || 1,
-      totalNotes: totalNotesCount
-    }
+      totalNotes: totalNotesCount,
+    },
   })
 }
 

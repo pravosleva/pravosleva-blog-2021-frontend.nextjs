@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bgSolid = {
   src: 'https://pravosleva.pro/static/img/blog/solid.webp',
@@ -33,7 +33,7 @@ const bgEyes = {
   type: 'image/webp',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'programming-solid': {
     id: '6728d250d9a7126af852ec18',
     brief: 'SOLID нужен для обеспечения качественной модульности, уменьшающей когнитивную сложность кода и способствующей большей переиспользуемости',

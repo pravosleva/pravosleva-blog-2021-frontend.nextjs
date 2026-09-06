@@ -23,7 +23,7 @@ export const axiosUniversalCatch = (err: {
   request: any;
   getErrorMsg: () => any;
   message: any;
-}): NResponseLocal.IResultSuccess | NResponseLocal.IResultError => {
+}): NResponseLocal.IResultSuccess<any> | NResponseLocal.IResultError => {
   let commonMsg = err?.message || 'Unknown ERR'
 
   switch (true) {

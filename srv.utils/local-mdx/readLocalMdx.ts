@@ -24,16 +24,17 @@ interface IEnhancedNote extends NCodeSamplesSpace.TNote {
   tags?: string[];
 }
 
-// Интерфейс для расширения статьи, если фронтенд умеет читать теги на верхнем уровне
-interface IEnhancedArticle extends Omit<TArticle, 'original'> {
+// Интерфейс для расширения статьи со свойством локального индикатора
+export interface IEnhancedArticle extends Omit<TArticle, 'original'> {
   original: IEnhancedNote;
   tags?: string[];
   author?: string;
+  isLocal?: boolean; // Добавляем флаг локального источника
 }
 
 /**
  * Вспомогательная функция для безопасного чтения локального MDX файла на сервере.
- * Вынесена в утилиты для переиспользования в getInitialProps страниц Next.js.
+ * Перенаправлена на работу с директорией public/static/_articles/
  */
 export const readLocalMdx = async (slug: string): Promise<IEnhancedArticle | null> => {
   // Железобетонная защита от случайного вызова на стороне клиента (в браузере)
@@ -43,9 +44,9 @@ export const readLocalMdx = async (slug: string): Promise<IEnhancedArticle | nul
     const fs = require('fs')
     const matter = require('gray-matter')
 
-    // Формируем абсолютный путь к папке _articles в корне проекта
-    const articlesDirectory = path.join(process.cwd(), 'public/static/_articles')
-    const filePath = path.join(articlesDirectory, `${slug}.mdx`)
+    // Оптимизация путей: Теперь смотрим строго в public/static/_articles
+    const staticArticlesDirectory = path.join(process.cwd(), 'public', 'static', '_articles')
+    const filePath = path.join(staticArticlesDirectory, `${slug}.mdx`)
 
     // Если файла физически нет — возвращаем null для переключения на сетевое API
     if (!fs.existsSync(filePath)) return null
@@ -62,7 +63,7 @@ export const readLocalMdx = async (slug: string): Promise<IEnhancedArticle | nul
       return null
     }
 
-    console.log(`[MDX Fallback] Успешно прочитана локальная статья: ${slug}.mdx`)
+    console.log(`[MDX Fallback] Успешно прочитана локальная статья из папки public: ${slug}.mdx`)
 
     return {
       original: {
@@ -73,20 +74,21 @@ export const readLocalMdx = async (slug: string): Promise<IEnhancedArticle | nul
         createdAt: frontMatter.createdAt || new Date().toISOString(),
         updatedAt: frontMatter.updatedAt || new Date().toISOString(),
         priority: frontMatter.priority || 0,
-        tags: frontMatter.tags || [], // Теперь это свойство безопасно благодаря IEnhancedNote
+        tags: frontMatter.tags || [],
       },
       slug: slug,
       brief: frontMatter.brief || 'Локальная копия статьи',
       bg: frontMatter.bg_src ? {
-        src: frontMatter.bg_src,
-        size: frontMatter.bg_size || { w: 896, h: 1344 },
-        type: frontMatter.bg_type || 'image/webp'
+        src: frontMatter.bg_src || defaultBg.src,
+        size: frontMatter.bg_size || defaultBg.size,
+        type: frontMatter.bg_type || defaultBg.type,
       } : defaultBg,
       tags: frontMatter.tags || [],
       author: frontMatter.author || 'system',
+      isLocal: true, // Помечаем статью как локальную для вывода бейджа на фронтенде
     }
   } catch (error) {
-    console.error(`[MDX Fallback] Ошибка чтения файла ${slug}:`, error)
+    console.error(`[MDX Fallback] Ошибка чтения файла ${slug} из папки public:`, error)
     return null
   }
 }

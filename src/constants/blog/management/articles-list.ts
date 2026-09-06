@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 export const bg = {
   src: 'https://pravosleva.pro/static/img/blog/management.jpeg',
@@ -9,7 +9,7 @@ export const bg = {
   type: 'image/jpeg',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   // 'about-management': {
   //   id: '66c702ba08a5177347693291',
   //   brief: 'Interested about project management',

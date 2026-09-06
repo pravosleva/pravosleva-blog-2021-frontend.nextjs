@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 export const reactBg = {
   src: 'https://pravosleva.pro/static/img/blog/react-logo-bg.jpeg',
@@ -17,7 +17,7 @@ const jsBg = {
   type: 'image/webp',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'react-hook-use-outside-click': {
     id: '63e4f9255ce46c7f363d448b',
     brief: 'Хук для отслеживания клика вне элемента',

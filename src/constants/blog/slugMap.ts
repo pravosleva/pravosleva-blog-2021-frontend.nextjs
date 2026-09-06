@@ -1,4 +1,4 @@
-import { TArticleTools } from './types'
+import { ISlugMappingItem } from './types'
 import { list as articlesListAboutBash } from './bash'
 import { list as articlesListAboutCss } from './css'
 import { list as articlesListAboutCv } from './cv'
@@ -20,7 +20,7 @@ import { list as articlesListAboutAI } from './ai'
 import { list as articlesListAboutMath } from './math'
 import { list as articlesListAboutReact } from './react'
 
-export const slugMapping: { [key: string]: TArticleTools } = {
+export const slugMapping: { [key: string]: ISlugMappingItem } = {
   ...articlesListAboutBash,
   ...articlesListAboutCss,
   ...articlesListAboutCv,
@@ -350,7 +350,7 @@ export const slugMapping: { [key: string]: TArticleTools } = {
   },
 }
 
-const _slugMap = new Map<string, TArticleTools & {
+const _slugMap = new Map<string, ISlugMappingItem & {
   slug: string;
 }>()
 

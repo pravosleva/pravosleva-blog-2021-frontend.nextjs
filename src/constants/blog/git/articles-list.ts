@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   // src: 'https://pravosleva.pro/static/img/blog/git-transparent.png',
@@ -14,7 +14,7 @@ const bg = {
   type: 'image/webp',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'git-cherry-pick': {
     id: '60d1b52000cc4a1dc3edbee9',
     brief: 'Заметки про GIT',

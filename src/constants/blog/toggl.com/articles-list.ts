@@ -1,8 +1,8 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 import { bg as mongodbBg } from '../mongodb'
 // import { bg as managementBg } from '../management'
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: {[key: string]: ISlugMappingItem} = {
   'about-mongodb': {
     id: '61b616c7c2f1fd2a1ac7caa4',
     brief: 'Interested by toggle.com',

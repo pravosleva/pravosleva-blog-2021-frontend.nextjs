@@ -12,66 +12,16 @@ import { setTitle } from '~/store/reducers/pageMeta'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { NextPageContext } from 'next'
 import { Store } from 'redux'
-import path from 'path'
+// import path from 'path'
 import { defaultBg } from '~/srv.utils/local-mdx/defaultBg'
-
-interface ISlugMappingItem {
-  id: string | number;
-  brief?: string;
-  bg?: {
-    src: string;
-    size: { w: number; h: number };
-    type: string;
-  };
-}
+import { IEnhancedArticle, readLocalMdx } from '~/srv.utils/local-mdx/readLocalMdx'
+import { NCodeSamplesSpace } from '~/types'
+import { ISlugMappingItem } from '~/constants/blog/types'
 
 interface IBlogArticleSlugProps {
   _pageService: TPageService;
   article: TArticle | null;
 }
-
-const readLocalMdx = async (slug: string): Promise<TArticle | null> => {
-  if (typeof window !== 'undefined') return null;
-
-  try {
-    const fs = require('fs');
-    const matter = require('gray-matter');
-
-    const articlesDirectory = path.join(process.cwd(), '_articles');
-    const filePath = path.join(articlesDirectory, `${slug}.mdx`);
-
-    if (!fs.existsSync(filePath)) {
-      return null;
-    }
-
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const { data, content } = matter(fileContents);
-
-    console.log(`[MDX Fallback] Прочитана локальная статья: ${slug}`);
-
-    return {
-      original: {
-        _id: slug,
-        title: data.title || 'Без названия (Локальный файл)',
-        description: content,
-        isPrivate: false,
-        createdAt: data.createdAt || new Date().toISOString(),
-        updatedAt: data.updatedAt || new Date().toISOString(),
-        priority: data.priority || 0
-      },
-      slug: slug,
-      brief: data.brief || 'Локальная копия статьи',
-      bg: data.bg_src ? {
-        src: data.bg_src,
-        size: data.bg_size || { w: 896, h: 1344 },
-        type: data.bg_type || 'image/webp'
-      } : defaultBg,
-    };
-  } catch (error) {
-    console.error(`[MDX Fallback] Ошибка чтения файла ${slug}:`, error);
-    return null;
-  }
-};
 
 export default function BlogArticleSlug({ _pageService, article }: IBlogArticleSlugProps) {
   const { title } = useSelector((state: IRootState) => state.pageMeta)
@@ -151,6 +101,8 @@ export default function BlogArticleSlug({ _pageService, article }: IBlogArticleS
 
 BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
   (store: Store) => async (ctx: NextPageContext): Promise<IBlogArticleSlugProps> => {
+    console.log('[getInitialProps] Текущий query:', ctx.query)
+    
     const rawNoteId = ctx.query?.note_id
     const note_id = typeof rawNoteId === 'string' ? rawNoteId : ''
 
@@ -158,86 +110,107 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
       isOk: false,
       modifiedArticle: null,
     }
-    let article: TArticle | null = null
+    let article: IEnhancedArticle | null = null
 
-    // 1. ПРИОРИТЕТ: Ищем сначала локальный .mdx файл
-    if (note_id) {
-      const localArticle = await readLocalMdx(note_id);
+    // ИСПРАВЛЕНИЕ ПРИЧИНЫ 2: Защита от двойного триггера при пустом клиентском роуте.
+    // Если Next.js еще не распарсил URL, мы мгновенно возвращаем пустой стейт,
+    // предотвращая отправку холостых запросов к бэкенду.
+    if (!note_id) {
+      _pageService.isOk = false
+      _pageService.message = 'Идентификатор статьи пуст (ожидание инициализации роутера)'
+      return { _pageService, article: null }
+    }
+
+    const isServer = typeof window === 'undefined'
+    const apiUrl = `/express-next-api/code-samples-proxy/api/notes/${note_id}`
+
+    if (isServer) {
+      // --- СЕРВЕРНЫЙ РЕНДЕРИНГ (SSR / F5) ---
+      console.log('[getInitialProps] Выполнение на СЕРВЕРЕ')
+      
+      const localArticle = await readLocalMdx(note_id)
       if (localArticle) {
-        store.dispatch(setTitle(localArticle.original.title));
-        _pageService.isOk = true;
+        store.dispatch(setTitle(localArticle.original.title))
+        _pageService.isOk = true
         
-        const basePropsFallback = await getInitialPropsBase(ctx);
-        setCommonStore({ store, baseProps: basePropsFallback });
+        const basePropsFallback = await getInitialPropsBase(ctx)
+        setCommonStore({ store, baseProps: basePropsFallback })
         
         return {
           _pageService,
           article: localArticle,
-        };
+        }
       }
-    }
 
-    const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
-    const matchedMapping = note_id ? typedSlugMapping[note_id] : undefined
+      // Если локального файла нет — делаем ОДИН запрос к нашему Express-прокси
+      const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TSingleNoteResponse>(apiUrl)
 
-    if (matchedMapping) {
-      // КЕЙС А: Статья из маппинга
-      const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${matchedMapping.id}`)
+      console.log(noteResult)
       
-      if (noteResult.ok && noteResult.response?.data) {
-        store.dispatch(setTitle(noteResult.response.data.title || 'Без названия'))
+      const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
+      const matchedMapping = typedSlugMapping[note_id]
 
+      if (noteResult.ok && noteResult.response?.data) {
+        store.dispatch(setTitle(noteResult.response.data.original.title || 'Без названия'))
         _pageService.isOk = true
         _pageService.response = noteResult.response
-        article = {
-          original: { ...noteResult.response.data },
-          slug: note_id,
-          brief: matchedMapping.brief || '',
-          bg: matchedMapping.bg || defaultBg,
-        }
-      } else {
-        _pageService.isOk = false
-        _pageService.response = noteResult?.response || null
-        _pageService.message = 'Скорее всего, автор закрыл статью на редактирование'
-      }
-    } else {
-      // КЕЙС Б: Статья по прямому системному ID в URL
-      if (!note_id) {
-        _pageService.isOk = false
-        _pageService.message = 'Идентификатор заметки пуст или невалиден'
-      } else {
-        // ИСПРАВЛЕН Баг пути: теперь строго /express-next-api/...
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
         
-        try {
-          if (!noteResult.ok) {
-            throw new Error('Не удалось получить статью с удаленного API. Локальной копии также не найдено.')
-          }
-          
-          if (noteResult.response) {
-            if (!noteResult.response.isPrivate) {
-              store.dispatch(setTitle(noteResult.response.data?.title || 'Без названия'))
+        article = matchedMapping 
+          ? {
+              original: noteResult.response.data.original,
+              slug: note_id,
+              brief: matchedMapping.brief || '',
+              bg: matchedMapping.bg || defaultBg,
+            }
+          : noteResult.response.data
+      } else {
+        _pageService.isOk = false
+        _pageService.response = noteResult?.response?.data ? { data: noteResult.response.data, success: false } : undefined
+        _pageService.message = matchedMapping 
+          ? 'Локальной копии не найдено; Из БД не получено: Возможно, автор закрыл статью на редактирование'
+          : 'Доселе не публикованная статья. Возможно всего, автор закрыл статью на редактирование'
+      }
 
-              _pageService.isOk = true
-              _pageService.response = noteResult.response
-              article = {
-                original: { ...noteResult.response.data },
-                slug: note_id,
-                brief: 'DRAFT',
-                bg: defaultBg,
-              }
-            } else {
-              throw new Error(`Неизвестный кейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.isPrivate)})`)
+    } else {
+      // --- КЛИЕНТСКИЙ ПЕРЕХОД (SPA / Next Link) ---
+      console.log('[getInitialProps] Выполнение на КЛИЕНТЕ')
+      
+      // ИСПРАВЛЕНИЕ ПРИЧИНЫ 1: Делаем ровно один запрос, используя созданную ранее константу apiUrl
+      const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TSingleNoteResponse>(apiUrl)
+      
+      try {
+        if (!noteResult.ok) {
+          throw new Error('Не удалось получить статью с удаленного API.')
+        }
+        
+        if (noteResult.response?.data?.original) {
+          const originalNote = noteResult.response.data.original
+          
+          if (!originalNote.isPrivate) {
+            store.dispatch(setTitle(originalNote.title || 'Без названия'))
+            _pageService.isOk = true
+            _pageService.response = noteResult.response
+
+            const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
+            const matchedMapping = typedSlugMapping[note_id]
+
+            article = {
+              original: originalNote,
+              slug: note_id,
+              brief: matchedMapping?.brief || 'DRAFT',
+              bg: matchedMapping?.bg || defaultBg,
             }
           } else {
-            throw new Error('Неизвестный кейс (ответ получен, но невалидный)')
+            throw new Error(`Неизвестный кейс (статья приватная - isPrivate is ${String(originalNote.isPrivate)})`)
           }
-        } catch (err: unknown) {
-          const error = err as Error
-          _pageService.isOk = false
-          _pageService.response = noteResult?.response || null
-          _pageService.message = error?.message || 'Unknown error occurred'
+        } else {
+          throw new Error('Неизвестный кейс (ответ получен, но структура невалидна)')
         }
+      } catch (err: unknown) {
+        const error = err as Error
+        _pageService.isOk = false
+        _pageService.response = noteResult?.response || undefined
+        _pageService.message = error?.message || 'Unknown error occurred'
       }
     }
 

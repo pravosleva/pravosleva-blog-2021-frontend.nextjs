@@ -1,4 +1,4 @@
-export type TArticleTools = {
+export type ISlugMappingItem = {
   id: string;
   brief: string;
   bg?: {

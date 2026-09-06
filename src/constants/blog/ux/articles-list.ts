@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 // const marketingBg = {
 //   src: 'https://pravosleva.pro/static/img/blog/marketing.webp',
@@ -17,7 +17,7 @@ const deadProductBg = {
   type: 'image/webp',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: {[key: string]: ISlugMappingItem} = {
   // 'broken-ux-exp-2024': {
   //   id: '66b72ed3bde98b4a61a17fc5',
   //   brief: 'Анализ ошибок маркетинга на примере опытного образца',

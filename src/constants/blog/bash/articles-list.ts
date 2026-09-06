@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   src: 'https://pravosleva.pro/static/img/blog/logo-bash.png',
@@ -17,7 +17,7 @@ const bgHard = {
   type: 'image/gif',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'bash-quaint-files-copy': {
     id: '605b35611ead2f48d72e74a3',
     brief: 'Скрипт в функции просматривает директории (и поддиректории) srcDir и копирует...',

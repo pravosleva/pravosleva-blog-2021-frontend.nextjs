@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   src: 'https://pravosleva.pro/static/img/blog/browser.jpeg',
@@ -9,7 +9,7 @@ const bg = {
   type: 'image/jpeg',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'protocols': {
     id: '66e0201dd9a7126af852ebff',
     brief: 'Заметки про сети',

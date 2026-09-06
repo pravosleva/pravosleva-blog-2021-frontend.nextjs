@@ -1,3 +1,5 @@
+import { IEnhancedArticle } from "~/srv.utils/local-mdx/readLocalMdx";
+
 export namespace NCodeSamplesSpace {
   export type TNote = {
     _id: string;
@@ -10,7 +12,7 @@ export namespace NCodeSamplesSpace {
   }
   export type TNotesListResponse = {
     success: boolean;
-    data: TNote[];
+    data: IEnhancedArticle[];
     pagination: {
       totalPages: number;
       currentPage: number;
@@ -19,6 +21,6 @@ export namespace NCodeSamplesSpace {
   }
   export type TSingleNoteResponse = {
     success: boolean;
-    data: TNote;
+    data: IEnhancedArticle;
   }
 }

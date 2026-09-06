@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   src: 'https://pravosleva.pro/static/img/blog/bg-node-js.webp',
@@ -9,7 +9,7 @@ const bg = {
   type: 'image/webp',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: {[key: string]: ISlugMappingItem} = {
   'request-params-validation-in-express-js': {
     id: '65e03441879fb9319a7a38f3',
     brief: 'Реализация в рамках паттерна Middleware',

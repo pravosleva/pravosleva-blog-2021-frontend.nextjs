@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 // const bg = {
 //   src: 'https://pravosleva.pro/static/img/blog/cv-v0.jpg',
@@ -17,7 +17,7 @@ const bg2 = {
   type: 'image/webp',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'cv-ru': {
     id: '68905b0d10f7b720079c8bdd',
     brief: 'Мой опыт в коммерческой разработке',

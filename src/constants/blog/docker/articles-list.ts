@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 const bg = {
   src: 'https://pravosleva.pro/static/img/blog/logo-docker.png',
@@ -9,7 +9,7 @@ const bg = {
   type: 'image/png',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: {[key: string]: ISlugMappingItem} = {
   'docker-exp-2023': {
     id: '67307326d9a7126af852ec1b',
     brief: 'Заметки про Docker',

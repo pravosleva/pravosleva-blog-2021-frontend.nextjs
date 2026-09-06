@@ -1,4 +1,5 @@
 import { withDebounce, AbstractService } from '@pravosleva/reactive-engine'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
 import { NCodeSamplesSpace } from '~/types'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 
@@ -79,7 +80,15 @@ export class SearchArticlesService extends AbstractService {
           .join(',')
 
         const endpoint = `/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(normalizedWords)}&page=${page}&limit=${limit}`
-        const response = await universalHttpClient.get(endpoint)
+        const response = await universalHttpClient.get<{
+          success: boolean;
+          data: IEnhancedArticle[];
+          pagination: {
+            totalPages: number;
+            currentPage: number;
+            totalNotes: number;
+          };
+        }>(endpoint)
 
         if (response.ok && response.response?.success && Array.isArray(response.response.data)) {
           const { data, pagination } = response.response
@@ -88,12 +97,12 @@ export class SearchArticlesService extends AbstractService {
           this.totalPages.value = pagination.totalPages || 1
           this.totalNotes.value = pagination.totalNotes || 0
           
-          return data as NCodeSamplesSpace.TNote[]
+          return data as IEnhancedArticle[]
         }
 
         if (!response.response?.success) throw new Error(response.message || 'API ERR (no mgs)')
         
-        return [] as NCodeSamplesSpace.TNote[]
+        return [] as IEnhancedArticle[]
       },
       { delay: 400 } // Задержка дебаунса 400 мс
     ),

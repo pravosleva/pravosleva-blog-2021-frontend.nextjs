@@ -6,20 +6,17 @@ import { ErrorPage } from '~/components/ErrorPage';
 import { Layout } from '~/components/Layout';
 import { wrapper } from '~/store'
 import { ArticlesList } from '~/components/ArticlesList'
-import { slugMap } from '~/constants/blog/slugMap'
+import { slugMap, slugMapping } from '~/constants/blog/slugMap'
 import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-
-const defaultBg = {
-  src: '/static/img/blog/dog.webp',
-  size: { w: 896, h: 1344 },
-  type: 'image/webp',
-}
+import path from 'path'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx';
+import { ISlugMappingItem } from '~/constants/blog/types';
 
 type TPageProps = {
-  _pageService: TPageService;
-  list: TArticle[];
+  // _pageService: TPageService;
+  list: IEnhancedArticle[];
   searchQueryTitle: {
     original: string;
     withoutSpaces: string;
@@ -27,10 +24,8 @@ type TPageProps = {
   },
 }
 
-import path from 'path'
-
 // Функция сканирует папку _articles и ищет совпадения по тексту
-const searchLocalMdx = async (queryText: string): Promise<NCodeSamplesSpace.TNote[]> => {
+const searchLocalMdx = async (queryText: string): Promise<IEnhancedArticle[]> => {
   if (typeof window !== 'undefined') return [];
   
   try {
@@ -42,7 +37,7 @@ const searchLocalMdx = async (queryText: string): Promise<NCodeSamplesSpace.TNot
     if (!fs.existsSync(articlesDirectory)) return [];
     
     const files: string[] = fs.readdirSync(articlesDirectory);
-    const matchedNotes: NCodeSamplesSpace.TNote[] = [];
+    const matchedNotes: IEnhancedArticle[] = [];
     
     const normalizedQuery = queryText.toLowerCase().trim();
 
@@ -60,13 +55,17 @@ const searchLocalMdx = async (queryText: string): Promise<NCodeSamplesSpace.TNot
       // Если поисковый запрос есть в заголовке статьи — добавляем в результаты
       if (title.includes(normalizedQuery) || slug.toLowerCase().includes(normalizedQuery)) {
         matchedNotes.push({
-          _id: slug,
-          title: data.title || slug,
-          description: content,
-          isPrivate: false,
-          createdAt: data.createdAt || new Date().toISOString(),
-          updatedAt: data.updatedAt || new Date().toISOString(),
-          priority: data.priority || 0
+          slug,
+          brief: 'DRAFT',
+          original: {
+            _id: slug,
+            title: data.title || slug,
+            description: content,
+            isPrivate: false,
+            createdAt: data.createdAt || new Date().toISOString(),
+            updatedAt: data.updatedAt || new Date().toISOString(),
+            priority: data.priority || 0
+          }
         });
       }
     });
@@ -78,16 +77,18 @@ const searchLocalMdx = async (queryText: string): Promise<NCodeSamplesSpace.TNot
   }
 };
 
-const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
-  if (!_pageService?.isOk) return (
-    <Layout>
-      <ErrorPage
-        message={_pageService?.message || 'ERR: No _pageService.message'}
-      >
-        <pre>{JSON.stringify({ _pageService, list }, null, 2)}</pre>
-      </ErrorPage>
-    </Layout>
-  )
+const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
+
+const BlogQST = ({ list, searchQueryTitle }: TPageProps) => {
+  // if (!_pageService?.isOk) return (
+  //   <Layout>
+  //     <ErrorPage
+  //       message={_pageService?.message || 'ERR: No _pageService.message'}
+  //     >
+  //       <pre>{JSON.stringify({ _pageService, list }, null, 2)}</pre>
+  //     </ErrorPage>
+  //   </Layout>
+  // )
 
   const thisPageUrl = `https://pravosleva.pro/blog/q/${searchQueryTitle.withoutSpaces}`
 
@@ -127,11 +128,17 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
         <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" />
       </Head>
       <Layout>
-        <ArticlesList
-          // _pageService={_pageService}
-          list={list}
-          searchQueryTitle={searchQueryTitle}
-        />
+        {
+          list.length > 0 ? (
+            <ArticlesList
+              // _pageService={_pageService}
+              list={list}
+              searchQueryTitle={searchQueryTitle}
+            />
+          ) : (
+            <b>Не найдено</b>
+          )
+        }
       </Layout>
     </>
   )
@@ -139,14 +146,17 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
 
 BlogQST.getInitialProps = wrapper.getInitialPageProps(
   // @ts-ignore
-  (store) => async (ctx: any) => {
+  (store) => async (ctx: NextPageContext) => {
     const { query: { search_query_title } } = ctx
-    // let errorMsg = null
-    const _pageService: TPageService = {
+    const _pageService: { isOk: boolean; message?: string } = {
       isOk: false,
-      modifiedArticle: null,
     }
-    let list: TArticle[] = []
+
+    let list: IEnhancedArticle[] = []
+    const isServer = typeof window === 'undefined'
+
+    // const apiUrl = '/express-next-api/code-samples-proxy/api/notes'
+    
 
     // const withoutSpaces = typeof search_query_title === 'string' ? search_query_title.replace(/\s/g, '') : ''
     // const normalized = !!withoutSpaces
@@ -172,43 +182,47 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
         .join(', ')
       : ''
 
-    let remoteData: NCodeSamplesSpace.TNote[] = [];
-    let localData: NCodeSamplesSpace.TNote[] = [];
+    let remoteData: IEnhancedArticle[] = [];
+    let localData: IEnhancedArticle[] = [];
 
     // 1. Пробуем искать в сети
-    const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`);
-    if (noteResult.ok && Array.isArray(noteResult.response?.data)) {
-      remoteData = noteResult.response.data;
-      _pageService.isOk = true;
-      _pageService.response = noteResult.response;
+    // const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponse>(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`);
+    const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponse>(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
+    if (notesResult.ok && !!notesResult.response?.data && Array.isArray(notesResult.response.data)) {
+      remoteData = notesResult.response.data;
     }
 
-    // 2. Ищем локально на диске сервера
-    if (withoutSpaces) {
-      localData = await searchLocalMdx(withoutSpaces);
-      // Если сеть лежала, но локально что-то нашлось — помечаем страницу как успешную
-      if (localData.length > 0) {
-        _pageService.isOk = true;
+    if (notesResult.ok && notesResult.response?.data) {
+      _pageService.isOk = true
+      list = notesResult.response.data
+    } else {
+      if (isServer) {
+        // 2. Ищем локально на диске сервера
+        if (withoutSpaces) {
+          localData = await searchLocalMdx(withoutSpaces);
+          // Если сеть лежала, но локально что-то нашлось — помечаем страницу как успешную
+          if (localData.length > 0) {
+            _pageService.isOk = true;
+          }
+        }
+
+        // 3. Объединяем результаты без дубликатов (ориентируемся на _id)
+        const combinedData = [...remoteData];
+        localData.forEach(localNote => {
+          const isDuplicate = combinedData.some(remoteNote => remoteNote.original._id === localNote.original._id);
+          if (!isDuplicate) {
+            combinedData.push(localNote);
+          }
+        });
+
+        // 4. Маппим объединенный список в TArticle[] для сетки PagesGrid
+        list = combinedData
+        // --
+      } else {
+        _pageService.isOk = false
+        _pageService.message = 'Not today, bro'
       }
     }
-
-    // 3. Объединяем результаты без дубликатов (ориентируемся на _id)
-    const combinedData = [...remoteData];
-    localData.forEach(localNote => {
-      const isDuplicate = combinedData.some(remoteNote => remoteNote._id === localNote._id);
-      if (!isDuplicate) {
-        combinedData.push(localNote);
-      }
-    });
-
-    // 4. Маппим объединенный список в TArticle[] для сетки PagesGrid
-    list = combinedData.map((note) => ({
-      original: note,
-      slug: slugMap.get(note._id)?.slug || note._id, // используем _id как фолбек-слаг
-      brief: slugMap.get(note._id)?.brief || 'Локальный материал',
-      bg: slugMap.get(note._id)?.bg || defaultBg,
-    }));
-    // --
 
     switch (true) {
       case !!withoutSpaces: {
@@ -217,23 +231,18 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
           withoutSpaces,
           normalized,
         }))
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
-        if (noteResult.ok && !!noteResult?.response?.data && Array.isArray(noteResult.response.data)) {
+        const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponse>(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
+        if (notesResult.ok && !!notesResult?.response?.data && Array.isArray(notesResult.response.data)) {
           _pageService.isOk = true
-          _pageService.response = noteResult.response
-          list = [...noteResult.response.data.map(({ _id, ...rest }: NCodeSamplesSpace.TNote) => ({
-            original: {
-              _id,
-              ...rest,
-            },
-            slug: slugMap.get(_id)?.slug || null,
-            brief: slugMap.get(_id)?.brief || null,
-            bg: slugMap.get(_id)?.bg || null,
-          }))]
+          list = notesResult.response.data.map((n) => ({
+            original: n.original,
+            bg: typedSlugMapping[n.slug]?.bg,
+            brief: typedSlugMapping[n.slug]?.brief as string,
+            slug: n.slug,
+          }))
         } else {
           _pageService.isOk = false
-          _pageService.response = noteResult?.response || null
-          _pageService.message = noteResult?.response?.message || 'No noteResult?.response?.message'
+          _pageService.message = notesResult?.message || 'No notesResult?.response?.message'
         }
       }
         break

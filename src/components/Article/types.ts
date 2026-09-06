@@ -1,3 +1,4 @@
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx';
 import { NCodeSamplesSpace } from '~/types'
 
 export type TArticle = {
@@ -22,7 +23,7 @@ export type TPageService = {
 }
 
 export type TArticleComponentProps = {
-  article: TArticle;
+  article: IEnhancedArticle;
   _pageService: TPageService;
   // t: (translatableString: string) => string;
 }

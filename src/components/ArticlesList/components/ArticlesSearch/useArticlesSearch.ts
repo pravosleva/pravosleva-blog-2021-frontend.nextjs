@@ -3,6 +3,7 @@ import { SearchArticlesService } from '../../../../store/reactive-engine/article
 import { useRef } from 'react'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
 import { searchEngine } from '~/store/reactive-engine/articles-search/searchEngine'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
 
 export const useArticlesSearch = () => {
   const searchArticlesService = searchEngine.inject(SearchArticlesService)
@@ -14,7 +15,7 @@ export const useArticlesSearch = () => {
   const { loading, data, error } = useReactiveValue0(searchArticlesService.searchResource)
 
   // (WTF?) Используем useRef, чтобы сохранять предыдущие результаты во время загрузки следующей страницы
-  const __resultsRef = useRef<NCodeSamplesSpace.TNote[]>([])
+  const __resultsRef = useRef<IEnhancedArticle[]>([])
   
   if (data && data.length > 0) {
     __resultsRef.current = data

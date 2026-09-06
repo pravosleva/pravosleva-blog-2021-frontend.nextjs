@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 export const bg = {
   src: '/static/img/projects/math-preview.gif',
@@ -9,7 +9,7 @@ export const bg = {
   type: 'image/gif',
 }
 
-export const list: { [key: string]: TArticleTools } = {
+export const list: { [key: string]: ISlugMappingItem } = {
   'math-byFifthDegreeLeastSquaresApproximation': {
     id: '6992cfc6f7929b4140542006',
     brief: 'Approximation by Fifth Degree Least Squares in JS vanilla',

@@ -5,6 +5,7 @@ import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';
 import { slugMap } from '~/constants/blog/slugMap';
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx';
 
 
 interface ArticlesSearchMobileProps {
@@ -172,10 +173,10 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
               </div>
             )
             : (!!data && data?.length > 0) ? (
-              data.map((note: any) => (
+              data.map((note: IEnhancedArticle) => (
                 <a
-                  key={note._id}
-                  href={getLink(note._id)}
+                  key={note.original._id}
+                  href={getLink(note.original._id)}
                   target='_blank'
                   style={{
                     display: 'flex',
@@ -198,7 +199,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                       WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
                       overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
                     }}>
-                    {note.title}
+                    {note.original.title}
                   </div>
                   <div
                     style={{
@@ -208,7 +209,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                       WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
                       overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
                     }}>
-                    {note.description || 'Нет описания заметки'}
+                    {note.original.description || 'Нет описания заметки'}
                   </div>
                 </a>
               ))

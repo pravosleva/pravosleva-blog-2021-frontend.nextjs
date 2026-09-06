@@ -1,4 +1,4 @@
-import { TArticleTools } from '../types'
+import { ISlugMappingItem } from '../types'
 
 export const bg = {
   src: 'https://pravosleva.pro/static/img/blog/red-shark.webp',
@@ -18,7 +18,7 @@ const bgKaz = {
   type: 'image/jpg',
 }
 
-export const list: {[key: string]: TArticleTools} = {
+export const list: {[key: string]: ISlugMappingItem} = {
   'red-shark-2022-9-2': {
     id: '65d73e282eff672077764cce',
     brief: 'UI fixes',
