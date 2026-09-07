@@ -17,11 +17,11 @@ const defaultBgUrl = '/static/img/blog/coming-soon-v3.jpg'
 
 export const GridItem = memo(({ article }: TProps) => {
   const { original, bg, brief, isLocal } = article
-  const { _id, createdAt, title } = original
+  // const { _id, createdAt, title } = original
   const url = bg?.src || defaultBgUrl
 
   // 1. Формируем полную абсолютную ссылку для QR-кода
-  const articleSlug = slugMap.get(_id)?.slug || (isLocal ? article.original._id : '') || ''
+  const articleSlug = slugMap.get(original?._id)?.slug || (isLocal ? article?.original?._id : '') || ''
   
   // Важно: QR-код должен содержать полный URL с доменом, чтобы телефон его распознал
   const host = typeof window !== 'undefined' ? window.location.origin : 'https://pravosleva.pro'
@@ -38,7 +38,7 @@ export const GridItem = memo(({ article }: TProps) => {
       }}
     >
       {/* 2. БЛОК С QR-КОДОМ (Показывается только если у статьи есть слаг) */}
-      {(slugMap.has(_id) || isLocal) && (
+      {(slugMap.has(original?._id) || isLocal) && (
         <div className="gridItemQrContainer" title="Сканируйте QR-код, чтобы читать с телефона">
           <QRCodeSVG 
             value={fullArticleUrl} 
@@ -51,11 +51,11 @@ export const GridItem = memo(({ article }: TProps) => {
       )}
 
       <div className='gridItemBox'>
-        <div className='gridItemTitle'><h3>{clsx({ ['📂 Local Copy |']: isLocal }, title)}</h3></div>
+        <div className='gridItemTitle'><h3>{clsx({ ['📂 Local Copy |']: isLocal }, original?.title)}</h3></div>
         <div className='gridItemDescription'>{brief}</div>
         <div className='gridItemAction'>
           {
-            (slugMap.has(_id) || isLocal) ? (
+            (slugMap.has(original?._id) || isLocal) ? (
               <div>
                 <Button
                   color='primary'
@@ -79,7 +79,7 @@ export const GridItem = memo(({ article }: TProps) => {
               </div>
             ) : null
           }
-          <div style={{ fontSize: 'small' }}>{!!createdAt ? getNormalizedDate(createdAt) : 'No date'}</div>
+          <div style={{ fontSize: 'small' }}>{!!original?.createdAt ? getNormalizedDate(original?.createdAt) : 'No date'}</div>
         </div>
       </div>
     </div>

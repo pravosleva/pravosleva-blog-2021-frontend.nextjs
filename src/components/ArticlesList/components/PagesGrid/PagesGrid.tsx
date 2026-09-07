@@ -14,7 +14,7 @@ export const PagesGrid = memo(({ articles, variant = 'default' }: TGridProps) =>
   return (
     <div className={wrapperClassName}>
       {
-        articles.map((article) => <GridItem key={article.original._id} article={article} />)
+        articles.map((article) => <GridItem key={article?.original?._id} article={article} />)
       }
     </div>
   )

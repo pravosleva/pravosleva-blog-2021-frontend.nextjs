@@ -175,8 +175,8 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
             : (!!data && data?.length > 0) ? (
               data.map((note: IEnhancedArticle) => (
                 <a
-                  key={note.original._id}
-                  href={getLink(note.original._id)}
+                  key={note?.original?._id}
+                  href={getLink(note?.original?._id)}
                   target='_blank'
                   style={{
                     display: 'flex',
@@ -199,7 +199,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                       WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
                       overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
                     }}>
-                    {note.original.title}
+                    {note.original?.title}
                   </div>
                   <div
                     style={{
@@ -209,7 +209,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                       WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
                       overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
                     }}>
-                    {note.original.description || 'Нет описания заметки'}
+                    {note.original?.description || 'Нет описания заметки'}
                   </div>
                 </a>
               ))

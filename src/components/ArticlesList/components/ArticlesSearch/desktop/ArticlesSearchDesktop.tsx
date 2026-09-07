@@ -319,8 +319,8 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
               {results.map((note) => (
                 <a
-                  key={note.original._id}
-                  href={getLink(note.original._id)}
+                  key={note.original?._id}
+                  href={getLink(note.original?._id)}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -337,11 +337,11 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
                   onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                 >
                   <div style={{ fontSize: '15px', fontWeight: 'bold', color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : '#FF8E53' }}>
-                    {note.original.title}
+                    {note.original?.title}
                   </div>
                   {/* Обрезка строки до двух линий, как мы настроили ранее */}
                   <div style={{ fontSize: '13px', color: '#888', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {note.original.description || 'Описание отсутствует'}
+                    {note.original?.description || 'Описание отсутствует'}
                   </div>
                 </a>
               ))}

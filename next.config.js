@@ -145,7 +145,7 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96],
   },
-  productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
+  productionBrowserSourceMaps: true, // Оптимизация 1 (см. ниже)
   pwa: {
     dest: 'public', // NOTE: By default to .next
     runtimeCaching: customRuntimeCaching,
