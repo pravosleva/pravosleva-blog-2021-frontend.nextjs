@@ -1,4 +1,4 @@
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx';
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types';
 import { NCodeSamplesSpace } from '~/types'
 
 export type TArticle = {

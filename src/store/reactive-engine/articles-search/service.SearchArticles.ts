@@ -1,6 +1,6 @@
 import { withDebounce, AbstractService } from '@pravosleva/reactive-engine'
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
-import { NCodeSamplesSpace } from '~/types'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types'
+// import { NCodeSamplesSpace } from '~/types'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 
 const STORAGE_KEY_QUERY = 'search:ls:query'

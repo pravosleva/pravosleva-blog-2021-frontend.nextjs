@@ -5,7 +5,7 @@ import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';
 import { slugMap } from '~/constants/blog/slugMap';
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx';
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types';
 
 
 interface ArticlesSearchMobileProps {

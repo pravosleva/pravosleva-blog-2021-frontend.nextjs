@@ -1,9 +1,9 @@
-import { NCodeSamplesSpace } from '~/types'
+// import { NCodeSamplesSpace } from '~/types'
 import { SearchArticlesService } from '../../../../store/reactive-engine/articles-search/service.SearchArticles'
 import { useRef } from 'react'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
 import { searchEngine } from '~/store/reactive-engine/articles-search/searchEngine'
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types'
 
 export const useArticlesSearch = () => {
   const searchArticlesService = searchEngine.inject(SearchArticlesService)

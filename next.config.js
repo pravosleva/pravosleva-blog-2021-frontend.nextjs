@@ -163,6 +163,10 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96],
   },
   productionBrowserSourceMaps: true, // Оптимизация 1 (см. ниже)
+  experimental: {
+    // Отключает генерацию тяжелых source-maps для серверной сборки
+    serverSourceMaps: false, 
+  },
   pwa: {
     dest: 'public', // NOTE: By default to .next
     runtimeCaching: customRuntimeCaching,

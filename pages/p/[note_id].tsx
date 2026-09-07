@@ -14,13 +14,13 @@ import { NextPageContext } from 'next'
 import { Store } from 'redux'
 // import path from 'path'
 import { defaultBg } from '~/srv.utils/local-mdx/defaultBg'
-import { IEnhancedArticle, readLocalMdx } from '~/srv.utils/local-mdx/readLocalMdx'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types'
 import { NCodeSamplesSpace } from '~/types'
 import { ISlugMappingItem } from '~/constants/blog/types'
 
 interface IBlogArticleSlugProps {
   _pageService: TPageService;
-  article: TArticle | null;
+  article: IEnhancedArticle | null;
 }
 
 export default function BlogArticleSlug({ _pageService, article }: IBlogArticleSlugProps) {
@@ -36,7 +36,7 @@ export default function BlogArticleSlug({ _pageService, article }: IBlogArticleS
     )
   }
 
-  const thisPageUrl = `https://pravosleva.pro{article.slug}`
+  const thisPageUrl = `https://pravosleva.pro$/p/${article.slug || article.original._id}`
 
   return (
     <>
@@ -61,8 +61,14 @@ export default function BlogArticleSlug({ _pageService, article }: IBlogArticleS
           <>
             <meta property="og:image" content={article.bg.src} />
             <meta property="og:image:secure_url" content={article.bg.src} />
-            <meta property='og:image:width' content={String(article.bg.size.w)} />
-            <meta property='og:image:height' content={String(article.bg.size.h)} />
+            {
+              !!article.bg.size && (
+                <>
+                  <meta property='og:image:width' content={String(article.bg.size?.w)} />
+                  <meta property='og:image:height' content={String(article.bg.size?.h)} />
+                </>
+              )
+            }
             <meta property='og:image:type' content={article.bg.type} />
             <meta property="og:image:alt" content="img alt sample" />
           </>
@@ -127,6 +133,9 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     if (isServer) {
       // --- СЕРВЕРНЫЙ РЕНДЕРИНГ (SSR / F5) ---
       console.log('[getInitialProps] Выполнение на СЕРВЕРЕ')
+
+      // ИСПРАВЛЕНИЕ: Динамический импорт изолирует серверный код от клиентского бандла
+      const { readLocalMdx } = await import('~/srv.utils/local-mdx/readLocalMdx') 
       
       const localArticle = await readLocalMdx(note_id)
       if (localArticle) {
@@ -158,11 +167,11 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
         article = matchedMapping 
           ? {
               original: noteResult.response.data.original,
-              slug: note_id,
-              brief: matchedMapping.brief || '',
-              bg: matchedMapping.bg || defaultBg,
+              // slug: note_id,
+              // brief: matchedMapping.brief || '',
+              // bg: matchedMapping.bg || defaultBg,
             }
-          : noteResult.response.data
+          : null // noteResult.response.data
       } else {
         _pageService.isOk = false
         _pageService.response = noteResult?.response?.data ? { data: noteResult.response.data, success: false } : undefined

@@ -1,13 +1,13 @@
 import React, { useMemo, memo } from 'react'
 import { GoHomeSection } from '~/components/GoHomeSection'
 import { withTranslator } from '~/hocs/withTranslator'
-import { TArticle } from '~/components/Article/types'
+// import { TArticle } from '~/components/Article/types'
 import { BreadCrumbs, NBreadCrumbs } from '~/components/BreadCrumbs'
 import { ArticlesSearchDesktop, ArticlesSearchMobile, PagesGrid } from './components'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types'
 
 type TArticlesListComponentProps = {
   list: IEnhancedArticle[];
@@ -66,6 +66,12 @@ export const ArticlesList = memo(withTranslator<TArticlesListComponentProps>(({
         <div style={mainContainerStyle}>
           {hasArticles && <PagesGrid articles={list} variant="magazine" />}
         </div>
+      </ResponsiveBlock>
+
+      <ResponsiveBlock isLimited isPaddedMobile>
+        <pre style={{ fontSize: 'x-small', padding: '1.45rem 16px' }}>
+          {JSON.stringify({ list }, null, 2)}
+        </pre>
       </ResponsiveBlock>
 
       <ResponsiveBlock isLimited style={footerSectionStyle} isPaddedMobile>

@@ -11,8 +11,9 @@ import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import path from 'path'
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx';
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types';
 import { ISlugMappingItem } from '~/constants/blog/types';
+// import { searchLocalMdx } from '~/srv.utils/local-mdx/searchLocalMdx';
 
 type TPageProps = {
   // _pageService: TPageService;
@@ -23,59 +24,6 @@ type TPageProps = {
     normalized: string;
   },
 }
-
-// Функция сканирует папку _articles и ищет совпадения по тексту
-const searchLocalMdx = async (queryText: string): Promise<IEnhancedArticle[]> => {
-  if (typeof window !== 'undefined') return [];
-  
-  try {
-    const fs = require('fs');
-    const matter = require('gray-matter');
-    
-    const articlesDirectory = path.join(process.cwd(), 'public/static/_articles');
-    
-    if (!fs.existsSync(articlesDirectory)) return [];
-    
-    const files: string[] = fs.readdirSync(articlesDirectory);
-    const matchedNotes: IEnhancedArticle[] = [];
-    
-    const normalizedQuery = queryText.toLowerCase().trim();
-
-    files.forEach((fileName) => {
-      // Работаем только с файлами .mdx
-      if (!fileName.endsWith('.mdx')) return;
-      
-      const filePath = path.join(articlesDirectory, fileName);
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data, content } = matter(fileContents);
-      
-      const title = (data.title || '').toLowerCase();
-      const slug = fileName.replace(/\.mdx$/, '');
-
-      // Если поисковый запрос есть в заголовке статьи — добавляем в результаты
-      if (title.includes(normalizedQuery) || slug.toLowerCase().includes(normalizedQuery)) {
-        matchedNotes.push({
-          slug,
-          brief: 'DRAFT',
-          original: {
-            _id: slug,
-            title: data.title || slug,
-            description: content,
-            isPrivate: false,
-            createdAt: data.createdAt || new Date().toISOString(),
-            updatedAt: data.updatedAt || new Date().toISOString(),
-            priority: data.priority || 0
-          }
-        });
-      }
-    });
-    
-    return matchedNotes;
-  } catch (error) {
-    console.error('[MDX Search] Ошибка локального поиска:', error);
-    return [];
-  }
-};
 
 const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
 
@@ -189,17 +137,41 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
     // const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponse>(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`);
     const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponse>(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
     if (notesResult.ok && !!notesResult.response?.data && Array.isArray(notesResult.response.data)) {
-      remoteData = notesResult.response.data;
+      remoteData = notesResult.response.data.map((n) => ({
+        original: n,
+        // bg: typedSlugMapping[n.slug]?.bg,
+        // brief: typedSlugMapping[n.slug]?.brief as string,
+        // slug: n.slug,
+      }))
     }
 
     if (notesResult.ok && notesResult.response?.data) {
       _pageService.isOk = true
-      list = notesResult.response.data
+      list = notesResult.response.data.map((n) => ({
+        original: n,
+        // bg: typedSlugMapping[n.slug]?.bg,
+        // brief: typedSlugMapping[n.slug]?.brief as string,
+        // slug: n.slug,
+      }))
     } else {
       if (isServer) {
         // 2. Ищем локально на диске сервера
         if (withoutSpaces) {
-          localData = await searchLocalMdx(withoutSpaces);
+          // localData = await searchLocalMdx(withoutSpaces);
+          let localData: IEnhancedArticle[] = [];
+          const isServer = typeof window === 'undefined';
+          if (isServer && withoutSpaces) {
+            // Вебпак поймет, что этот код выполняется только на сервере, 
+            // но чтобы он гарантированно не тащил функцию в клиентский бандл, см. Шаг 2.
+            // localData = await searchLocalMdx(withoutSpaces);
+
+            // ДИНАМИЧЕСКИЙ ИМПОРТ: Загружается только на стороне Node.js
+            const { searchLocalMdx } = await import('~/srv.utils/local-mdx/searchLocalMdx');
+            localData = await searchLocalMdx(withoutSpaces);
+            if (localData.length > 0) {
+              _pageService.isOk = true;
+            }
+          }
           // Если сеть лежала, но локально что-то нашлось — помечаем страницу как успешную
           if (localData.length > 0) {
             _pageService.isOk = true;
@@ -235,10 +207,10 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
         if (notesResult.ok && !!notesResult?.response?.data && Array.isArray(notesResult.response.data)) {
           _pageService.isOk = true
           list = notesResult.response.data.map((n) => ({
-            original: n.original,
-            bg: typedSlugMapping[n.slug]?.bg,
-            brief: typedSlugMapping[n.slug]?.brief as string,
-            slug: n.slug,
+            original: n,
+            // bg: typedSlugMapping[n.slug]?.bg,
+            // brief: typedSlugMapping[n.slug]?.brief as string,
+            // slug: n.slug,
           }))
         } else {
           _pageService.isOk = false

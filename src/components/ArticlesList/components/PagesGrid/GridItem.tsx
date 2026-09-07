@@ -7,7 +7,7 @@ import { slugMap } from '~/constants/blog/slugMap'
 import { Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import clsx from 'clsx'
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types'
 
 type TProps = {
   article: IEnhancedArticle;
@@ -52,7 +52,11 @@ export const GridItem = memo(({ article }: TProps) => {
 
       <div className='gridItemBox'>
         <div className='gridItemTitle'><h3>{clsx({ ['📂 Local Copy |']: isLocal }, original?.title)}</h3></div>
-        <div className='gridItemDescription'>{brief}</div>
+        <div className='gridItemDescription'>
+          <pre style={{ fontSize: 'x-small', padding: '1.45rem 16px' }}>
+            {JSON.stringify({ article }, null, 2)}
+          </pre>
+        </div>
         <div className='gridItemAction'>
           {
             (slugMap.has(original?._id) || isLocal) ? (

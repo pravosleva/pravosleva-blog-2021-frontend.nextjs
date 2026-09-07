@@ -1,9 +1,10 @@
 import { memo } from 'react'
 import { GridItem } from './GridItem'
-import { TArticle } from '~/components/Article/types'
+// import { TArticle } from '~/components/Article/types'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types';
 
 type TGridProps = {
-  articles: TArticle[];
+  articles: IEnhancedArticle[];
   variant?: 'default' | 'magazine'; // Добавляем проп для вариативности
 }
 

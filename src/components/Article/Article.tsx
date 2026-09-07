@@ -84,8 +84,9 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       {isMounted && (
         <>
           <DynamicCollapsibleQuickNav pageLimit={5} />
-          <DynamicHeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} actualSlug={slug} />
-          <DynamicHeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} actualSlug={slug} />
+          <DynamicHeadingsQuickNav
+            currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} actualSlug={slug || ''} />
+          <DynamicHeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} actualSlug={slug || ''} />
         </>
       )}
       {!!article ? (

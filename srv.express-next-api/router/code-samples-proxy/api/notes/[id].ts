@@ -2,6 +2,7 @@ import { Request as IRequest } from 'express'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 import { TEnhancedResponse } from '~/srv.utils/types'
 import { readLocalMdx } from '~/srv.utils/local-mdx/readLocalMdx' // Импортируем вашу утилиту
+import { slugMap } from '../../../../../src/constants/blog/slugMap'
 
 const NOTES_BASE_API_URL = 'http://62.109.21.103'
 
@@ -44,7 +45,8 @@ export const getNote = async (req: IRequest, res: TEnhancedResponse) => {
   }
 
   // --- СТРАТЕГИЯ 2: Сетевой фолбек ---
-  const url = `${NOTES_BASE_API_URL}/api/notes/${id}`
+  const possibleId = slugMap.has(id) ? slugMap.get(id)?.id : id
+  const url = `${NOTES_BASE_API_URL}/api/notes/${possibleId}`
   const noteResult = await universalHttpClient.get(url)
   res.endTime('css_get_note')
 

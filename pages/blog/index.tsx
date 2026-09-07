@@ -16,7 +16,7 @@ import { Store } from 'redux'
 // import path from 'path'
 // import matter from 'gray-matter'
 // import { defaultBg } from '~/srv.utils/local-mdx/defaultBg'
-import { IEnhancedArticle } from '~/srv.utils/local-mdx/readLocalMdx'
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types'
 import { ISlugMappingItem } from '~/constants/blog/types'
 
 type TPageService = {
@@ -83,6 +83,9 @@ export default function BlogIndex({ _pageService, list }: IBlogIndexProps) {
           }}
           isBlogPage
         />
+        <pre style={{ fontSize: 'x-small', padding: '1.45rem 16px' }}>
+          {JSON.stringify({ _pageService }, null, 2)}
+        </pre>
       </Layout>
     </>
   )
@@ -106,14 +109,18 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
     const apiUrl = '/express-next-api/code-samples-proxy/api/notes'
     const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponse>(apiUrl)
 
+    // console.log(`- gip: /blog | notesResult`)
+    // console.log(notesResult)
+    // console.log('- ')
+
     if (notesResult.ok && notesResult.response?.data) {
       _pageService.isOk = true
       _pageService.response = notesResult.response
       list = notesResult.response.data.map((n) => ({
-        original: n.original,
-        bg: typedSlugMapping[n.slug]?.bg,
-        brief: typedSlugMapping[n.slug]?.brief as string,
-        slug: n.slug,
+        original: n,
+        // bg: typedSlugMapping[n.slug]?.bg,
+        // brief: typedSlugMapping[n.slug]?.brief as string,
+        // slug: n.slug,
       }))
     } else {
       // КЕЙС 2: API (сеть) недоступно или упало с ошибкой

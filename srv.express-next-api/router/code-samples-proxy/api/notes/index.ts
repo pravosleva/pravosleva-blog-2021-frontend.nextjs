@@ -6,7 +6,8 @@ import { getNote, rules as singleNoteRules } from './[id]'
 import fs from 'fs'
 import path from 'path'
 // import { NCodeSamplesSpace } from '~/types'
-import { IEnhancedArticle, readLocalMdx } from '~/srv.utils/local-mdx/readLocalMdx' // Импортируем вашу утилиту
+import { readLocalMdx } from '~/srv.utils/local-mdx/readLocalMdx' // Импортируем вашу утилиту
+import { IEnhancedArticle } from '~/srv.utils/local-mdx/types'
 
 const codeSamplesProxyApi = express()
 const NOTES_BASE_API_URL = 'http://62.109.21.103'
@@ -46,7 +47,13 @@ const searchLocalNotes = async (qText: string): Promise<IEnhancedArticle[]> => {
         
         // Переиспользуем нашу утилиту! Она сама проверит isDraft и распарсит метаданные
         const localArticle = await readLocalMdx(slug)
-        if (!localArticle || !localArticle.original) return
+        // if (!localArticle || !localArticle.original) return
+
+        console.log(`- [srv.express-next-api] ${fileName}`)
+        console.log(!!localArticle ? Object.keys(localArticle) : null)
+        console.log('-')
+
+        if (!localArticle) return
 
         const note = localArticle.original
         const title = note.title.toLowerCase()
