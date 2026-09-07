@@ -9,8 +9,8 @@ const dotenv = require('dotenv')
 // NOTE: v2 Импортируем сам Webpack-плагин напрямую (он гарантированно установлен внутри @next/bundle-analyzer)
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
-const isProduction = process.env.NODE_ENV === 'production'
-const envFileName = isProduction ? '.env.production' : '.env.dev'
+const envFileName = '.env.production'
+console.log(`envFileName -> ${envFileName}`)
 const env = dotenv.parse(fs.readFileSync(envFileName))
 
 const {
@@ -19,9 +19,38 @@ const {
   NEXT_APP_GIT_SHA1,
 } = process.env
 
+// Читаем переменную отключения оптимизации (приводим строку "true" к булеву типу)
+const disableImageOptimization = 
+  env.NEXT_DISABLE_IMAGE_OPTIMIZATION === 'true' || 
+  env.NEXT_DISABLE_IMAGE_OPTIMIZATION === '1'
+console.log(`disableImageOptimization -> ${String(disableImageOptimization)}`)
+if (disableImageOptimization) {
+  console.log('☝️ Отпимизация картинок "на лету" отключена! Не забудьте проверить конфиг NGINX')
+  console.log(`# -- Stage server --
+location = /_next/image {
+  if ($request_uri ~* "url=(?:%2F|/)?static(?:%2F|/)([^&]+)") {
+      set $raw_image_path $1;
+  }
+  set $clean_path $raw_image_path;
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+
+  if ($clean_path = "") {
+      return 404;
+  }
+  root /home/projects/pravosleva-blog/frontend.nextjs/public/static;
+  rewrite ^ /$clean_path break;
+  expires 30d;
+  access_log off;
+  add_header Cache-Control "public, max-age=2592000, must-revalidate";
+}
+# --`)
+}
+
 const isDev = process.env.NODE_ENV === 'development'
 
-// ─── СКРИПТ АВТО-МИНИФИКАЦИИ CSS ──────────────────────────────────────
 function minifyStaticCSS() {
   const srcDir = path.resolve(process.cwd(), 'public/static/css')
   const destDir = path.resolve(srcDir, 'min')
@@ -56,10 +85,8 @@ function minifyStaticCSS() {
 
 // Запускаем минификацию перед инициализацией Next.js
 minifyStaticCSS()
-// ──────────────────────────────────────────────────────────────────────
 
 // Создаем кастомные правила кэширования, расширяя стандартные от next-pwa
-// Создаем кастомные правила кэширования
 const customRuntimeCaching = [
   // 0. ЖЕСТКОЕ ИСКЛЮЧЕНИЕ ДЛЯ ENTERPRISE ВИДЖЕТОВ
   {
@@ -118,30 +145,20 @@ const customRuntimeCaching = [
   ...runtimeCaching,
 ]
 
-// -- NOTE: v1
-// const bundleAnalyzer = withBundleAnalyzer({
-//   enabled: ['both', 'server', 'browser'].includes(process.env.BUNDLE_ANALYZE),
-//   openAnalyzer: false, // Автоматически НЕ откроет отчеты в браузере после билда
-//   analyzerMode: 'static',
-// })
-// --
-
 const nextConfig = {
   images: {
-    /* =========================================================================
-       ИСПРАВЛЕНО: Ставим WebP на первое место. 
-       Это уберет перегрузку процессора сервера при обработке больших галерей,
-       мгновенно снизит TTFB (время ответа) и вернет отображение всех "пропавших" картинок.
-       ========================================================================= */
+    // Полное отключение оптимизации на лету, если флаг равен true
+    unoptimized: disableImageOptimization,
+    // Ставим WebP на первое место. 
+    // Это уберет перегрузку процессора сервера при обработке больших галерей,
+    // мгновенно снизит TTFB (время ответа) и вернет отображение всех "пропавших" картинок.
     formats: ['image/webp', 'image/avif'],
     // formats: ['image/avif', 'image/webp'], // Сначала сервер попробует отдать AVIF, если браузер старый — отдаст WebP
     domains: ['pravosleva.ru', 'pravosleva.pro'], // Зарегистрируйте ваши медиа-домены, если обложки летят из CDN
-    /* =========================================================================
-       КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Ограничиваем сетку разрешений (deviceSizes).
-       Мы полностью ИСКЛЮЧАЕМ тяжелые разрешения 2048, 3840 (4K) из сборщика.
-       Теперь максимальная ширина обложки на десктопе будет строго ограничена 1920px!
-       Это снизит нагрузку на ОЗУ сервера в 4 раза, уберет краши Sharp и вернет картинки.
-       ========================================================================= */
+    // Ограничиваем сетку разрешений (deviceSizes).
+    // Мы полностью ИСКЛЮЧАЕМ тяжелые разрешения 2048, 3840 (4K) из сборщика.
+    // Теперь максимальная ширина обложки на десктопе будет строго ограничена 1920px!
+    // Это снизит нагрузку на ОЗУ сервера в 4 раза, уберет краши Sharp и вернет картинки.
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96],
   },
@@ -161,22 +178,12 @@ const nextConfig = {
       '/': { page: '/' },
     }
   },
-  /* =========================================================================
-     ПРАВИЛЬНАЯ НАСТРОЙКА SASS В NEXT.JS 11:
-     Никаких push() в Webpack rules! Фреймворк сам подхватит эти опции 
-     и применит к встроенным лоадерам стилей, не ломая CSS-модули плеера.
-     ========================================================================= */
   sassOptions: {
     includePaths: [path.join(__dirname, 'node_modules'), path.join(__dirname, 'src')],
     outputStyle: 'compressed',
   },
 
   webpack(config, { isServer, dev: isDev }) {
-    /* =========================================================================
-       ИСПРАВЛЕНО ДЛЯ WEBPACK 5:
-       Вместо config.node используем config.resolve.fallback. Это единственный 
-       валидный способ заглушить серверные полифилы в Webpack 5!
-       ========================================================================= */
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -187,13 +194,6 @@ const nextConfig = {
         tls: false,
         crypto: false,
       };
-
-      /* =========================================================================
-         ИСПРАВЛЕНО ДЛЯ REACT ERROR #130:
-         Вместо грубого config.externals используем IgnorePlugin. 
-         Он мягко велит сборщику пропустить sharp на клиенте, не подставляя 
-         undefined в рантайм React-компонентов, убирая краш гидратации!
-         ========================================================================= */
       config.plugins.push(
         new webpack.IgnorePlugin({
           resourceRegExp: /^sharp$/,
@@ -234,6 +234,4 @@ const nextConfig = {
   },
 }
 
-// -- NOTE: v2 
 module.exports = withPWA(nextConfig)
-// --
