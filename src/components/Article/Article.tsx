@@ -14,15 +14,12 @@ import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
-// import { CollapsibleQuickNav } from '~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav'
-// import { HeadingsQuickNav, HeadingsQuickNavMobile } from '~/react-markdown-renderers/HeadingsQuickNav'
 import { resetGalleryRegistry } from '~/store/reactive-engine/reactiveGalleryEngine';
 import { ArticlesSearchDesktop } from '../ArticlesList/components'
 import { useArticlesSearch } from '../ArticlesList/components/ArticlesSearch/useArticlesSearch'
 import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
-// import { GlobalArticleLightbox } from '~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/GlobalArticleLightbox'
-import Image from 'next/image' // 1. Импортируем оптимизатор картинок Next.js
+import Image from 'next/image' // Оптимизатор картинок Next.js
 
 /* =========================================================================
    РАЗГРУЗКА БАНДЛА СТРАНИЦЫ: Переводим тяжелые виджеты на ленивую загрузку (SSR: false).
@@ -50,9 +47,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
   const baseClasses = useBaseStyles()
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 
-  /* =========================================================================
-     ИСПРАВЛЕНО: Флаг отложенного монтирования для защиты от каскадного SSR-фриза
-     ========================================================================= */
+  // Флаг отложенного монтирования для защиты от каскадного SSR-фриза
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
     setIsMounted(true) // Сработает строго на клиенте после полной отрисовки первого экрана
@@ -122,7 +117,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                   style={{ position: 'relative', overflow: 'hidden' }}
                 >
                   {/* =========================================================================
-                    ПУЛЕНЕПРОБИВАЕМЫЙ БАННЕР: Задаем жесткий уникальный key для тега div.
+                    БАННЕР: Задаем жесткий уникальный key для тега div.
                     Это заставит React 17 намертво "приварить" этот узел к DOM-дереву.
                     При регидратации виджетов ниже React гарантированно пропустит этот блок,
                     не будет сбрасывать src и стирать обложку, а LCP рухнет в зеленую зону!
@@ -142,7 +137,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
                     /> */}
                     {/* =========================================================================
-                      ПУЛЕНЕПРОБИВАЕМЫЙ НАТИВНЫЙ ЛОАДЕР (NEXT.JS 11 FIXED):
+                      НАТИВНЫЙ ЛОАДЕР (NEXT.JS 11 FIXED):
                       Если картинка уже в .webp, мы полностью обходим капризный _next/image роутер!
                       Браузер скачает прямой файл, картинка гарантированно отобразится без ошибок,
                       а LCP мгновенно упадет до рекордных значений.
@@ -267,7 +262,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                   style={{ boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 7px -1px', padding: '8px', borderRadius: '24px', width: 'fit-content' }}
                   className={clsx({ 'backdrop-blur--lite': true })}
                 >
-                  <WebShareBtn url={`https://pravosleva.pro/p/${article.slug}`} title={article.original.title} text={clsx('Pravo$leva', '|', article.brief)} />
+                  <WebShareBtn url={`https://pravosleva.pro/p/${article.slug}`} title={article.original.title} text={clsx('PravoSleva', '|', article.brief)} />
                 </div>
               </MobileOnly>
             </>

@@ -25,7 +25,7 @@ import { universalHttpClient } from '~/utils/universalHttpClient'
 import { NCodeSamplesSpace } from '~/types'
 import { ArticlesList } from '~/components/ArticlesList'
 import { ErrorPage } from '~/components/ErrorPage'
-import { slugMap } from '~/constants/blog/slugMap'
+// import { slugMap } from '~/constants/blog/slugMap'
 import { TArticle } from '~/components/Article'
 import Head from 'next/head'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
@@ -55,8 +55,15 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         <title>Pravosleva | Blog</title>
         <meta name="description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
 
-        {/* <!-- Facebook Meta Tags --> */}
-        <meta property="og:url" content="https://pravosleva.pro/blog" />
+        {/* Каноническая ссылка по умолчанию (страницы смогут перебивать её своим уникальным URL) */}
+        <link
+          rel="canonical"
+          // href='https://pravosleva.pro/'
+          href={process.env.NEXT_SEO}
+        />
+
+        {/* Facebook Meta Tags */}
+        <meta property="og:url" content={process.env.NEXT_SEO} />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="ru_RU" />
         <meta property="og:locale:alternate" content="be_BY" />
@@ -68,7 +75,7 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         <meta property="og:title" content="Blog" />
         <meta property="og:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
         <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="og:site_name" content="Pravo$leva" />
+        <meta property="og:site_name" content="PravoSleva" />
 
         {/* <!-- Twitter Meta Tags --> */}
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />

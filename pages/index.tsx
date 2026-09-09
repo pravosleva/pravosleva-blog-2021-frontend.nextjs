@@ -57,16 +57,6 @@ import { wrapper } from '~/store'
 // ]
 
 const Index = () => {
-  // const goToPage = (url: string) => (e: any) => {
-  //   e.preventDefault()
-  //   try {
-  //     window.location.href = url
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // }
-
-  // NOTE: Только пепел знает, что значит сгореть дотла.
   return (
     <>
       <Head>
@@ -96,7 +86,7 @@ const Index = () => {
         <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         <meta property="twitter:domain" content="pravosleva.pro" />
         <meta property="twitter:url" content="https://pravosleva.pro/blog/article/bash-quaint-files-copy" />
-        <meta name="twitter:title" content="Pravo$leva" />
+        <meta name="twitter:title" content="PravoSleva" />
         <meta name="twitter:description" content='Заметки начинающего разраба' />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
         {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}

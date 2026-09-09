@@ -143,6 +143,15 @@ const customRuntimeCaching = [
 ]
 
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/reactive-engine/',
+        permanent: false, // <-- Важно! Это отдаст статус 302
+      },
+    ]
+  },
   images: {
     // Полное отключение оптимизации на лету, если флаг равен true
     unoptimized: disableImageOptimization,

@@ -38,14 +38,17 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
     </Layout>
   )
 
-  const thisPageUrl = `https://pravosleva.pro/blog/q/${searchQueryTitle.withoutSpaces}`
+  const thisPageUrl = `${process.env.NEXT_SEO}/blog/q/${encodeURIComponent(searchQueryTitle.withoutSpaces)}`
 
   return (
     <>
       <Head>
         {/* -- NOTE: Meta */}
         {/* <!-- HTML Meta Tags --> */}
-        <title>Search 🔎 | {searchQueryTitle.normalized}</title>
+        <title>Поиск: {searchQueryTitle.normalized} | Pravosleva</title>
+        {/* Склеиваем параметры поиска на домен .pro */}
+        <link rel="canonical" href={thisPageUrl} />
+
         <meta name="description" content={`What about ${searchQueryTitle.normalized}`} />
 
         {/* <!-- Facebook Meta Tags --> */}
@@ -59,14 +62,16 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:title" content='🔎 Check it out' />
-        <meta property="og:description" content={`What about ${searchQueryTitle.normalized}`} />
-        <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="og:site_name" content="Pravo$leva // Search" />
+        <meta property="og:description" content={`About ${searchQueryTitle.normalized}`} />
+        <meta property="og:image" content={`${process.env.NEXT_SEO}/static/img/logo/logo-pravosleva.jpg`} />
+        <meta property="og:site_name" content="PravoSleva // Search" />
 
         {/* <!-- Twitter Meta Tags --> */}
         <meta name="twitter:card" content="summary" />
-        {/* <meta property="twitter:domain" content="pravosleva.pro" /> */}
-        <link rel="canonical" href={thisPageUrl}></link>
+        <link
+          rel="canonical"
+          href={process.env.NEXT_SEO}
+        ></link>
         <meta name="twitter:title" content='🔎 Check it out' />
         <meta name="twitter:description" content={`What about ${searchQueryTitle.normalized}`} />
         <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />

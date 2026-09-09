@@ -31,7 +31,7 @@ import { pageview } from '~/utils/googleAnalitycs'
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-const isProd = process.env.NODE_ENV === 'production'
+// const isProd = process.env.NODE_ENV === 'production'
 // const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
 // const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 const GA_API_SECRET = process.env.GA_API_SECRET || 'changeit'
@@ -194,8 +194,11 @@ function AppWithRedux(props: MyAppProps) {
         {/* Базовый цвет темы (оставляем тут, так как завязано на рантайм) */}
         <meta name="theme-color" content="#0162c8" />
         
-        {/* Каноническая ссылка по умолчанию (страницы смогут перебивать её своим уникальным URL) */}
-        <link rel="canonical" href='https://pravosleva.pro/' />
+        {/* Каноническая ссылка по умолчанию (страницы смогут перебивать её своим уникальным URL) EXAMPLE: href='https://pravosleva.pro/' */}
+        <link rel="canonical" href={process.env.NEXT_SEO} />
+
+        {/* Facebook Meta Tags */}
+        <meta property="og:url" content={process.env.NEXT_SEO} />
 
         {/* Мета-тег viewport (Next.js требует держать его строго в _app) */}
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />

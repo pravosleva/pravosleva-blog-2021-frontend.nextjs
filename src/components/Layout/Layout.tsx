@@ -86,6 +86,15 @@ export const Layout = ({ children, noFooter }: TProps) => {
                   GIT SHA1 <code>{NEXT_APP_GIT_SHA1}</code>
                 </div>
                 <div>
+                  Local search 👉 <code>{process.env.NOTES_IS_LOCAL_SEARCH_ENABLED}</code>
+                </div>
+                <div>
+                  Remote search 👉 <code>{process.env.NOTES_IS_REMOTE_SEARCH_ENABLED}</code>
+                </div>
+                <div>
+                  Images optimization disabled 👉 <code>{process.env.NEXT_IS_IMAGE_OPTIMIZATION_DISABLED}</code>
+                </div>
+                <div>
                   Bundle analyzer 👉{' '}
                   <a
                     style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}

@@ -52,7 +52,8 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
     )
   }
 
-  const thisPageUrl = `https://pravosleva.pro{article.slug}`
+  const canonicalUrl = `${process.env.NEXT_SEO}/p/${article.slug}`
+  const thisPageUrl = `${process.env.NEXT_SEO}/p/${article.slug}`
 
   return (
     <>
@@ -61,11 +62,13 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
         <meta name="description" content={article.brief || 'Найдётся всё что не нашлось ранее, если оно действительно нужно'} />
 
         {/* --- Open Graph / Facebook Meta Tags --- */}
+        {/* ЖЕЛЕЗОБЕТОННОЕ SEO-ПРАВИЛО: Роботы будут индексировать эту страницу ТОЛЬКО под доменом .pro */}
+        <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={thisPageUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={article.original.title} />
         <meta property="og:locale" content="ru_RU" />
-        <meta property="article:publisher" content="https://pravosleva.pro" />
+        <meta property="article:publisher" content={process.env.NEXT_SEO} />
         <meta property="article:section" content={article.original.title} />
         <meta property="og:locale:alternate" content="be_BY" />
         <meta property="og:locale:alternate" content="kk_KZ" />
@@ -90,7 +93,7 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
           </>
         )}
 
-        <meta property="og:site_name" content="Pravo$leva // Blog" />
+        <meta property="og:site_name" content="PravoSleva // Blog" />
 
         {/* --- Twitter Meta Tags --- */}
         <meta property="twitter:domain" content="pravosleva.pro" />
