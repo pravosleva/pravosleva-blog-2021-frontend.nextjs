@@ -57,13 +57,14 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
     const tags: string[] = Array.isArray(tools.tags) ? tools.tags : []
     const isTagMatched = tags.some(tag => tag.toLowerCase().includes(normalizedQuery))
 
-    const isMatched = 
+    const isMatched = !tools.isPrivate && (
       !normalizedQuery || 
       slugKey.toLowerCase().includes(normalizedQuery) || 
       humanReadableTitle.toLowerCase().includes(normalizedQuery) || 
       titleText.includes(normalizedQuery) ||
       briefText.includes(normalizedQuery) ||
       isTagMatched
+    )
 
     if (isMatched) {
         matchedNotes.push({
