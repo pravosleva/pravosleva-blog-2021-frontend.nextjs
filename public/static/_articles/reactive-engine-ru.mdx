@@ -1,0 +1,688 @@
+---
+title: "Реактивные мутации в JS: Создаем предсказуемый реактивный граф вычислений на сигналах"
+brief: 'JS в действии'
+bg_src: '/static/img/blog/reactive-5.webp'
+bg_size: { w: 1344, h: 768 }
+bg_type: 'image/webp'
+
+createdAt: "2026-07-10T13:08:07.182Z"
+updatedAt: "2026-08-31T12:27:33.630Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["react", "reactivity"]
+#category: "guides"
+isPrivate: false
+---
+[Podcast 01](https://pravosleva.ru/docs/_exp/podcast/01.6.mp3 "Podcast #1")
+
+Эта статья - логическое продолжение моих экспериментов с реактивностью в JavaScript. На работе я решаю стандартные продуктовые задачи бизнеса. Но чтобы по-настоящему понять, как оптимизировать производительность под капотом, я написал свой реактивный движок достаточно простой для понимания, дебага и тестирования.
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="Навигация по статье"
+actionsJson='[
+  {
+    "label": "LOCAL_LINK",
+    "_label": "Идея",
+    "link": "#2-osnovnaya-ideya-instrumenta"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "JS",
+    "link": "#2-primer-ispolzovaniya-na-chistom-js"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "React (CSR)",
+    "link": "#2-primer-ispolzovaniya-v-react-(csr)"
+  },
+  {
+    "label": "NEW_TAB_LINK",
+    "_label": "React (SSR) ↗️",
+    "link": "/p/6a803917f7929b414054203a"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "Асинхронные ресурсы",
+    "link": "#3-eshe-primer-iz-doki:-asinhronnye-resursy-s-zavisimostyami-ot-neskolkih-signalov"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "API caching",
+    "link": "#3-dekoratory:-keshirovanie-zaprosov-s-podderzhkoj-vremeni-zhizni-(ttl)"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "Big forms perf",
+    "link": "#4-optimizaciya-proizvoditelnosti-bolshih-form-cherez-tochechnye-podpiski-(property-level-subscriptions)"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "Логирование ядра",
+    "link": "#2-logirovanie-yadra"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "Vue 3 (CSR)",
+    "link": "#2-ispolzovanie-core-servisov-vo-vue-3-composition-api"
+  },
+  {
+    "label": "NEW_TAB_LINK",
+    "_label": "Vue 3 (SSR) ↗️",
+    "link": "/p/reactive-engine-ssr-vue3-nuxt4"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "Angular 16+",
+    "link": "#2-angular-16+"
+  },
+  {
+    "label": "LOCAL_LINK",
+    "_label": "Резюме",
+    "link": "#2-rezyume"
+  }
+]'
+/>
+
+В современной фронтенд-разработке реактивность очень важна. Но в React она может быть достигнута посредством библиотек (MobX, RxJS и прочее).
+
+**Вот что я хочу вам показать 👉 [npmjs.com/package/@pravosleva/reactive-engine](https://www.npmjs.com/package/@pravosleva/reactive-engine)**
+
+NPM-пакет `@pravosleva/reactive-engine` решает именно эту задачу, предоставляя разработчикам специализированный движок (синглтон-экземпляр `ReactiveEngine`) для управления реактивными состояниями и автоматического вычисления зависимостей на чистом JavaScript.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "START_NEW_TAB",
+      "label": "Сравнительный анализ размеров бандла v1.5.5 и возможностей движка с другими стейт/кэш-менеджерами",
+      "type": "link",
+      "link": "/p/reactive-engine-news-1.5.5"
+    }
+  ]'
+/>
+
+## Основная идея инструмента
+
+Архитектура `@pravosleva/reactive-engine` базируется на концепции направленного графа вычислений. Вместо того чтобы вручную вызывать функции обновления при каждом изменении переменной, вы описываете связи между данными один раз. **Движок сам берет на себя задачу по цепочке обновить все зависимые узлы**.
+
+### Ключевые преимущества такого подхода:
+- **Разделение ответственности (Decoupling).** Бизнес-логика полностью отделена от слоя представления (UI-рендеринга).
+- **Минимизация лишних вычислений.** Движок кэширует промежуточные результаты и пересчитывает только то, что действительно изменилось.
+- **Предсказуемый Data Flow.** Потоки данных движутся строго в одном направлении, исключая бесконечные циклы обновлений.
+
+### Как это устроено под капотом?
+
+Подобные реактивные движки обычно реализуют три фундаментальных типа сущностей:
+- **Атомы / Сигналы (Atoms / Signals / Observables)** - базовые ячейки хранения данных. Они хранят примитивы или объекты и генерируют событие всякий раз, когда их значение перезаписывается.
+- **Вычисляемые свойства (Computed / Computed Nodes)** - узлы графа, которые зависят от других ячеек. Они лениво (lazy) вычисляют свое значение и автоматически подписываются на те атомы, которые были прочитаны в процессе выполнения их функции.
+- **Эффекты / Реакции (Effects / Reactions)** - конечные точки графа, которые не возвращают новых данных, но выполняют побочные эффекты (Side Effects): сохраняют данные в LocalStorage, отправляют API-запросы или дергают методы обновления интерфейса.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "START_NEW_TAB",
+      "label": "Пробуем на React + SSR (Next App Router)",
+      "type": "link",
+      "link": "/p/reactive-engine-ssr-react-next"
+    },
+    {
+      "title": "END_NEW_TAB",
+      "label": "Пробуем на Vue 3 + SSR (Nuxt 4)",
+      "type": "link",
+      "link": "/p/reactive-engine-ssr-vue3-nuxt4"
+    }
+  ]'
+/>
+
+## Пример использования на чистом JS
+**На чистом JS** вместо того чтобы вручную вызывать функции обновления при каждом изменении переменной, вы описываете связи между данными один раз через свойство `.value`. Движок сам берет на себя задачу по цепочке обновить все зависимые узлы.
+
+Давайте представим стандартную задачу: расчет стоимости корзины товаров с учетом динамической скидки и отправкой аналитики. С использованием реактивного движка на чистом JS код принимает декларативный вид:
+```tsx
+import { ReactiveEngine } from '@pravosleva/reactive-engine'
+
+// Инициализируем движок (Синглтон)
+const engine = new ReactiveEngine()
+
+// Инициализируем базовые состояния (Сигналы)
+const price = engine.signal(1000)
+const quantity = engine.signal(2)
+const discountPercent = engine.signal(10) // 10%
+
+// Описываем вычисляемые узлы графа (Computed)
+// Движок автоматически отслеживает, к каким .value было обращение внутри функций
+const baseTotalPrice = engine.computed(() => price.value * quantity.value)
+const finalPrice = engine.computed(() => {
+  const total = baseTotalPrice.value
+  const discount = (total * discountPercent.value) / 100
+  return total - discount
+})
+
+// Создаем побочный эффект (Effect)
+engine.effect(() => {
+  console.log(`[UI Update] Итоговая сумма к оплате: ${finalPrice.value} руб.`)
+})
+
+// Работа с реактивным графом
+// В консоли сразу сработает эффект при инициализации: 
+// "[UI Update] Итоговая сумма к оплате: 1800 руб."
+
+// Меняем количество товара (Операция ++ вызывает сеттер свойства .value)
+quantity.value++
+// Движок автоматически пересчитает baseTotalPrice -> finalPrice -> вызовет эффект:
+// В консоли: "[UI Update] Итоговая сумма к оплате: 2700 руб."
+```
+
+### Для новичков: Интерактивный пример для быстрого старта (Pure JS + CDN)
+
+Для использования реактивного ядра не обязательно разворачивать тяжелую инфраструктуру Node.js, Vite или Webpack. Новички могут подключить монолитную UMD-сборку библиотеки напрямую через обычный тег `<script>` и сразу использовать весь потенциал декларативного потока данных:
+
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reactive Engine Express Start</title>
+  
+  <!-- NOTE: Подключаем монолитную UMD-сборку ядра с продакшена -->
+  <script src="https://pravosleva.pro/reactive-engine/reactive-engine.umd.js"></script>
+</head>
+<body style="background: #0e0e13; color: #fff; font-family: monospace; padding: 40px;">
+
+  <div style="max-width: 500px; margin: 0 auto; background: #14141b; padding: 24px; border-radius: 8px; border: 1px solid #222;">
+    <h2 style="color: #00b4d8; margin-top: 0;">⚡ Тест-драйв реактивного графа</h2>
+    
+    <!-- Экранные маркеры вывода пикселей -->
+    <div style="font-size: 16px; margin-bottom: 20px; line-height: 1.6;">
+      <div>Базовое значение: <span id="raw-view" style="color: #e6c229; font-weight: bold;">0</span></div>
+      <div>Удвоенное (Computed): <span id="doubled-view" style="color: #42b883; font-weight: bold;">0</span></div>
+    </div>
+
+    <!-- Кнопки управления экшенами -->
+    <div style="display: flex; gap: 10px;">
+      <button id="inc-btn" style="background: #7952b3; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: inherit;">
+        ➕ Увеличить (+1)
+      </button>
+      <button id="reset-btn" style="background: #2b2b36; color: #aaa; border: 1px solid #333; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: inherit;">
+        🔄 Сбросить
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 1. Извлекаем глобальный класс ReactiveEngine из пространства имен window.ReactiveEngineLib
+    const { ReactiveEngine } = window.ReactiveEngineLib;
+
+    // 2. Инициализируем инстанс движка с включенным дев-логгером транзакций
+    const engine = new ReactiveEngine({
+      logger: {
+        isEnabled: true,
+        instanceName: 'html-pure-js',
+      }
+    });
+
+    // 3. Создаем атомарный сырой источник данных (Signal)
+    const counter = engine.signal(0, 'pure-js:signal:counter');
+
+    // 4. Создаем зависимое ленивое вычисляемое свойство (Computed)
+    // Оно автоматически пересчитается ТОЛЬКО при реальной мутации counter.value!
+    const doubled = engine.computed(() => {
+      return counter.value * 2;
+    }, 'pure-js:computed:doubled');
+
+    // Находим DOM-элементы интерфейса
+    const rawView = document.getElementById('raw-view');
+    const doubledView = document.getElementById('doubled-view');
+    const incBtn = document.getElementById('inc-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    // 5. Заводим реактивную реакцию (Effect) для синхронизации состояния с DOM
+    // Холодный старт соберет зависимости, а при боевых кликах эффект обновит строго нужные текстовые ноды
+    engine.effect(() => {
+      rawView.innerText = counter.value;
+      doubledView.innerText = doubled.value;
+    }, 'pure-js:effect:dom-sync');
+
+    // 6. Навешиваем стандартные браузерные слушатели событий и мутируем стейт
+    incBtn.addEventListener('click', () => {
+      counter.value += 1; // Запустит батчинг MICROTASK TRANSACTION в консоли DevTools!
+    });
+
+    resetBtn.addEventListener('click', () => {
+      counter.value = 0;
+    });
+  </script>
+
+</body>
+</html>
+```
+
+## Пример использования в React (CSR)
+
+Начиная с версии `v1.x`, архитектура `@pravosleva/reactive-engine` перешла на мультифреймворковую модульную модель, предоставляя изолированные легковесные адаптеры под каждую UI-платформу (React, Vue 3, Angular). В экосистеме React интеграция бизнес-логики и компонентов строится на базе паттерна **Dependency Injection (Внедрение зависимостей)** и канонических хуков подписки, полностью исключающих ручное управление жизненным циклом эффектов. 
+
+```tsx
+import { AbstractService } from '@pravosleva/reactive-engine'
+import { ReactiveEngine } from '@pravosleva/reactive-engine/react'
+// ☝️ ВАЖНО! Будьте внимательны!
+// В версиях v1.x (и выше) классы движка имеют разделенный экспорт для работы в разных окружениях: React (CSR), Vue 3.2+, Angular 16+
+
+class Logic extends AbstractService {
+  public counter = this.engine.signal<number>(0, 'example-100:signal:counter')
+  public doubledCounter = this.engine.computed<number>(() => this.counter.value * 2, 'example-100:computed:counter')
+
+  public inc = () => {
+    this.counter.value += 1
+  }
+}
+
+const engine = new ReactiveEngine()
+
+export const Example100 = () => {
+  const logic = engine.inject(Logic)
+  const counter = engine.use(logic.counter)
+  const doubledCounter = engine.use(logic.doubledCounter)
+
+  return (
+    <div>
+      <h1>Computed</h1>
+      <code>{counter} | x2 = {doubledCounter}</code>
+      <div>
+        <button onClick={logic.inc}>+ INC</button>
+      </div>
+    </div>
+  )
+}
+```
+
+### Анатомия адаптера и реактивного графа
+В приведенном примере класс `Logic` наследуется от базового `AbstractService`, инкапсулируя в себе атомарный Push-источник данных (`this.engine.signal`) и производное ленивое вычисление (`this.engine.computed`). На стороне UI-компонента метод `engine.inject(Logic)` извлекает (или лениво конструирует) синглтон-экземпляр данного сервиса из глобального реестра ядра. Финальное связывание графа зависимостей с деревом рендеринга React осуществляется через специализированный хук `engine.use()`. Этот хук работает на базе нативного механизма `useSyncExternalStore`, автоматически регистрируя точечную подписку компонента на конкретный реактивный примитив. При срабатывании экшена `logic.inc()`, ядро производит атомарную мутацию сигнала, запускает батчинг микрозадач и синхронно уведомляет исключительно те хуки `engine.use`, которые прямо зависят от изменившихся данных, **гарантируя нулевой оверхед и теоретический минимум перерисовок интерфейса**.
+
+### Сайд-эффекты в React через императивные подписки
+В сценариях, когда изменение реактивного стейта не должно приводить к каскадному перерендеру всего DOM-дерева компонента, а требует выполнения точечного сайд-эффекта (Side Effects) — фреймворк предоставляет хук `useReactiveSubscription`. Он **позволяет организовать прямое, высокопроизводительное прослушивание тиков ядра, минуя тяжелые механизмы диффинга Virtual DOM**.
+
+Чуть более подробно описано **[в документации](https://pravosleva.pro/reactive-engine/react/hooks/useReactiveSubscription.html)**.
+
+### Хук для подписки на реактивные синалы
+Хук `useReactiveValue` для извлечения значения из Signal/Computed/Resource и авто-ререндера компонента. Поддерживает React 18+ и ленивые фабрики без утечек памяти. Предположим, что `counterSignal` и `doubleComputed` созданы где-то в вашем приложении. Хук **сам подпишется, вытащит значение наружу и будет триггерить ререндер компонента**.
+
+Чуть более подробно описано **[в документации](https://pravosleva.pro/reactive-engine/react/hooks/useReactiveValue.html)**.
+
+### Еще примеры с React
+- [Пример 002: Аудиоплеер](https://github.com/garage-13/reactive-engine/tree/main/examples/002-signal-audioplayer)
+- [Пример 109: Демонстрация батчинга](https://github.com/garage-13/reactive-engine/tree/main/examples/109-computed-batching)
+- [Пример 112: Работа с `<canvas>` для отображения потребляемых ресурсов](https://github.com/garage-13/reactive-engine/tree/main/examples/112-reactive-canvas)
+- [Пример 113: Реактивная форма с самописной Стейт-машиной](https://github.com/garage-13/reactive-engine/tree/main/examples%2F113-reactive-form-2)
+- [Пример 201: Сигналы и цепочка зависимых запросов](https://github.com/garage-13/reactive-engine/tree/main/examples/201-multi-resource)
+- [Пример 207: ГдеБенз сервис + **LeafLet**](https://github.com/garage-13/reactive-engine/tree/main/examples/207-resource-gdebenz-leaflet-clusters)
+- [Пример 209: ГдеБенз сервис + **GoogleMaps**](https://github.com/garage-13/reactive-engine/tree/main/examples/209-resource-gdebenz-googlemaps)
+- [Пример 210: ГдеБенз сервис + **MapBox**](https://github.com/garage-13/reactive-engine/tree/main/examples/210-resource-gdebenz-mapbox)
+
+<Alert type="success" text="Таким образом, библиотека предоставляет полный цикл управления потоком данных в React 18+
+&nbsp;
+**State (Signal) 👉 Derivatives (Computed) 👉 UI (useReactiveValue) 👉 Reactions (useReactiveSubscription)**
+&nbsp;
+С появлением React 18 встроенный метод `useSyncExternalStore` стал официальным стандартом для подписки на внешние реактивные источники данных. Именно благодаря ему хук `useReactiveValue` синхронизируется с циклом рендеринга React без разрывов (тиринга) и хаотичных перерисовок.
+&nbsp;
+Для Vue 3.2+ и Angular 16+ концепция сохраняется на 100%, но там используются другие нативные термины слоев отображения, так как эти фреймворки из коробки имеют собственные встроенные Push/Pull-механизмы." />
+
+### Умная автоочистка вычислений (Zero-Config Garbage Collection)
+
+Движок под капотом использует современное JavaScript API — **[FinalizationRegistry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry)**. Как только React удаляет компонент или меняет зависимости в `useMemo`, старая ссылка на вычисление уничтожается, а ядро автоматически удаляет брошенные реактивные эффекты и очищает внутренний кэш.
+
+#### Демонстрация безопасного инлайн-вычисления без утечек памяти
+```tsx
+import React, { useMemo } from 'react'
+import { useReactiveValue } from '@pravosleva/reactive-engine/react'
+import { engine, globalProductsSignal } from '~/store'
+
+export const FilteredCatalog = ({ category }: { category: string }) => {
+  // Вы можете безбоязненно использовать стандартный useMemo.
+  // При смене категории старая ссылка сотрется, а движок сам зачистит allEffects ядра!
+  const dynamicComputed = useMemo(() => {
+    return engine.computed(() =>
+      globalProductsSignal.value.filter(p => p.category === category)
+    );
+  }, [category]);
+
+  const filteredList = useReactiveValue(dynamicComputed);
+
+  return (
+    <ul>
+      {filteredList.map(p => <li key={p.id}>{p.name}</li>)}
+    </ul>
+  )
+}
+```
+
+### Еще пример из доки: Асинхронные ресурсы с зависимостями от нескольких сигналов
+
+Если ваш сетевой запрос зависит от фильтров, пагинации или ID пользователя, объедините их в computed, чтобы resource автоматически перезапускал fetch-логику и отменял потерявшие актуальность запросы:
+```tsx
+// apiStore.ts
+
+import { engine } from '~/store'
+
+export const userIdSignal = engine.signal(1, 'userId')
+export const tabSignal = engine.signal<'posts' | 'todos'>('posts', 'tab')
+
+// Объединяем сигналы в единый вычисляемый массив зависимостей
+const requestDeps = engine.computed(() => {
+  return [userIdSignal.value, tabSignal.value] as const
+});
+
+// Создаем реактивный асинхронный ресурс
+export const userDataResource = engine.resource(
+  async ([userId, tab], abortSignal) => {
+    const res = await fetch(`https://typicode.com{userId}/${tab}`, {
+      signal: abortSignal, // Передаем нативный токен отмены
+    });
+    if (!res.ok) throw new Error('Ошибка при загрузке данных')
+    return res.json()
+  },
+  requestDeps, // Передаем зависимости
+  'userData'
+)
+```
+
+В компоненте это выглядит максимально декларативно:
+```tsx
+// UserProfile.tsx
+
+import React from 'react'
+import { useReactiveValue } from '@pravosleva/reactive-engine/react'
+import { userIdSignal, tabSignal, userDataResource } from './apiStore'
+
+export const UserProfile = () => {
+  // Читаем объект состояния ресурса: { data, loading, error }
+  const { data, loading, error } = useReactiveValue(userDataResource);
+  const tab = useReactiveValue(tabSignal);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+
+      <button onClick={() => { tabSignal.value = 'posts'; }}>Вкладка Посты</button>
+      <button onClick={() => { tabSignal.value = 'todos'; }}>Вкладка Задачи</button>
+      <button onClick={() => { userIdSignal.value += 1; }}>Следующий пользователь</button>
+
+      <h4>Текущая вкладка: {tab}</h4>
+
+      {loading && <p>Загрузка данных по сети...</p>}
+      {error && <p style={{ color: 'red' }}>Произошла ошибка: {error.message}</p>}
+      {data && <pre>{JSON.stringify(data.slice(0, 3), null, 2)}</pre>}
+    </div>
+  )
+}
+```
+
+### Декораторы: Кэширование запросов с поддержкой времени жизни (TTL)
+
+Вы можете использовать утилиты-декораторы для кэширования ответов сервера, чтобы при частом переключении вкладок не спамить сеть повторными запросами.
+
+```ts
+import { engine } from '~/store'
+import { withCache } from '@pravosleva/reactive-engine' // Либо какая-то другая кастомная утилита для кеширования
+
+const searchSignal = engine.signal('', 'search')
+
+export const cachedSearchResource = engine.resource(
+  withCache(
+    async (query, abortSignal) => {
+      const res = await fetch(`https://example.com{query}`, { signal: abortSignal })
+      return res.json()
+    },
+    { ttl: 30 * 1000 } // Кэш будет валиден 30 секунд для каждого уникального query
+  ),
+  searchSignal
+);
+```
+
+Подробнее про декораторы можно почитать в [документации](https://pravosleva.pro/reactive-engine/decorators/).
+
+### Метод `reactive` (спойлер: не для Vue!)
+Главное архитектурное преимущество метода `reactive` (Proxy) на уровне больших форм заключается в гранулярности (точечности) обновлений 👉 **обратите внимание на [Пример 111](https://github.com/garage-13/reactive-engine/tree/main/examples/111-reactive-form) (реактивная форма без `react-hook-form`)**.
+
+В классическом React изменение одного поля в большом объекте состояния обычно приводит к пересозданию всего объекта (`setForm(prev => ({ ...prev, field: value }))`), что неизбежно вызывает каскадный перерендер всей формы и всех её полей. В случае с Proxy-объектом ядра, подписка оформляется не на объект целиком, а строго на конкретные пропсы (ключи), к которым произошло обращение. Если пользователь вводит текст в поле name, то эффекты и компоненты, слушающие `age` или `role`, останутся абсолютно неподвижными, не потратив ни одного такта процессора на повторные проверки.
+
+#### Оптимизация производительности больших форм через точечные подписки (Property-level Subscriptions)
+
+При работе с большими и глубоко вложенными структурами данных (сложные многошаговые формы, таблицы, анкеты из сотен полей) метод `reactive` предоставляет колоссальный **буст производительности за счет гранулярного отслеживания зависимостей (Fine-grained Reactivity)**. В отличие от стандартного подхода React, где изменение одного символа в инпуте требует иммутабельного пересоздания всей формы (`...spread`) и запускает тотальный перерендер всего UI-дерева, **Proxy-архитектура ядра регистрирует подписки строго на уровне отдельных свойств объекта**.
+
+Каждое поле формы, вычисляемое свойство (`computed`) или фоновый эффект подписываются исключительно на те ключи (`prop`), которые они физически прочитали в процессе работы. Это изолирует потоки данных и гарантирует, что при вводе текста в одно конкретное поле будут выполняться и перерисовываться **только те эффекты и компоненты, которые прямо от него зависят**, в то время как сотни соседних полей формы останутся в состоянии абсолютного покоя. Такой подход сводит рантайм-накладные расходы к теоретическому минимуму и исключает появление лагов ввода (input lag) без необходимости вручную делить форму на десятки изолированных контекстов или мемоизировать компоненты через `React.memo`.
+
+#### Почему во Vue 3 от этого нет выигрыша?
+В версии Vue 3.2 появился глобальный метод `customRef`, а также был сильно оптимизирован встроенный пакет `@vue/reactivity`. Vue 3 устроен так, что его система реактивности полностью отделена от уровня рендеринга (Virtual DOM) и поставляется как самостоятельная библиотека.
+
+То есть, **Vue 3 под капотом уже построен на точно такой же Proxy-реактивности**.
+Когда вы вызываете встроенные методы Vue `reactive()` или `shallowRef()`, Vue создаёт точно такие же ловушки `get` и `set`, реализуя точечные подписки на уровне отдельных свойств (`prop`).
+
+Если вы пропускаете объект через `engine.reactive` ядра, а затем во Vue-компоненте передаёте его в адаптер:
+```ts
+const user = engine.use(logic.userReactiveObject);
+```
+
+Происходит **эффект "двойного проксирования" (Proxy Over Proxy)**. Рантайм JavaScript начинает выполнять двойную работу:
+1. Вы меняете свойство `user.name`.
+2. Срабатывает триггер `set` ядра `ReactiveEngine`, запускает микрозадачу батчинга и логирования.
+3. Затем ядро уведомляет подписку адаптера, которая дёргает `triggerRef(state)` во Vue.
+4. В этот момент просыпается собственная Proxy-система Vue 3 и запускает свой цикл обновления виртуального DOM (Virtual DOM).
+
+Поскольку Vue из коробки обладает абсолютно той же гранулярностью (Fine-grained Reactivity), Proxy-обертывание на уровне ядра никак не ускорит рендеринг Vue — он и так работает на пределе физических возможностей Proxy.
+
+## Логирование ядра
+Начиная с версии библиотеки `1.5.1-beta`, в ядро был добавлен встроенный механизм логирования. Он позволяет в реальном времени отслеживать жизненный цикл графа вычислений: подписки, операции чтения/записи (ловушки `get` и `set`), триггеры эффектов и батчинг микрозадач (Reactive Transactions).
+```ts
+// Включим логи для Примера 100:
+const engine = new ReactiveEngine({
+  logger: {
+    // Включаем логгер:
+    isEnabled: true,
+    // Добавляем вывод таймингов по желанию:
+    traceTime: true,
+    // Можно фильтровать только нужные логи:
+    filter: /^example-.*:signal:.*/,
+    // -- NOTE: И еще пару бонусов! При желании можно:
+    // Дать название движку - это основная метка для маркировки транзакций (инстансов ядра в приложении может быть больше одного):
+    instanceName: undefined,
+    //  Посмотреть внутренние сигналы ядра (для особо интересующихся):
+    isCoreOptimizationDebugEnabled: false,
+    // -- 
+  }
+})
+```
+
+### Практический разбор телеметрии: Анализ транзакций батчинга в микрозадачах
+
+В [Примере 100](https://github.com/garage-13/reactive-engine/tree/main/examples/100-computed) создан счетчик и подписанный на него удвоенный Computed, далее происходит следующее (две транзакции из скринов ниже):
+1. Монтирование компонента
+2. Клик для увеличения счетчика `logic.inc()`
+
+*Логи ядра:*
+
+![React](https://pravosleva.pro/express-helper/chat/storage/uploads/mg.pravosleva/1786611247214.png "Логи ядра")
+
+Предоставленный лог консоли наглядно демонстрирует работу ленивой Pull/Push-модели ядра в связке с UI-слоем React на примере компонента `Example100`. Телеметрию можно разделить на два фундаментальных этапа жизненного цикла:
+
+1. **Этап инициализации (`First Мicrotask Tick | Size: 1`)**: На тайминге `7634.50 ms` происходит маунт компонента. Хук `engine.use(logic.doubledCounter)` запрашивает значение `computed`. Ядро фиксирует первый холодный расчет вычисляемого свойства `example-100:computed:counter`. Затратив всего `0.010ms`, компут вычисляет базовый ноль (`value: 0`), кэширует его и синхронно отдает в React. На этом этапе ядро регистрирует граф зависимостей.
+
+2. **Этап атомарной мутации и батчинга (`Microtask Tick | Size: 2`)**: На тайминге `111873.70 ms` пользователь кликает по кнопке, вызывая экшен `logic.inc()`, который инкрементирует `signal`. Сеттер сигнала перехватывает мутацию (`from: 0, to: 1`) и немедленно выставляет микрозадачу батчинга через `queueMicrotask`. Обратите внимание на список активных подписчиков сигнала (`subscribersCount: 2`): **ядро четко знает, что от этого сигнала зависят ровно две сущности — вычисляемое свойство `example-100:computed:counter` и сам React-компонент через хук подписки `react:use:example-100:signal:counter`**. На границе микрозадачи логгер закрывает батч, и ядро выполняет каскад: вычисляемое свойство мгновенно инвалидируется, делает перерасчет (`🟢 Стабильно`), умножая новое значение на два (`value: 2`), и пушит обновленный плоский пакет данных в React.
+
+ <CollapsibleBox
+isEnabledForNavigation='1'
+header="Что значит «пушить в React»"
+text="Давайте разберем эту фразу простыми словами, без сложной терминологии.
+&nbsp;
+Когда в приложении меняется какое-то значение (например, счетчик стал `1`), в классическом React запускается тяжелый процесс: фреймворк начинает перепроверять весь компонент сверху вниз, сравнивая виртуальные деревья (Virtual DOM), чтобы понять, какие пиксели на экране нужно перерисовать
+&nbsp;
+В нашем же случае, благодаря ядру библиотеки, этот процесс происходит совершенно иначе и намного эффективнее:
+&nbsp;
+**1. «Обновленный плоский пакет данных»** — это просто готовый, чистый результат всех вычислений на стороне JS-логики. В нашем примере ядро само посчитало, что раз счетчик равен `1`, то удвоенное значение — это `2`. Оно не заставляет React заниматься этой математикой.
+**2. «Пушит в React»** — означает, что библиотека сама точечно «стучится» в конкретное место компонента (в те самые хуки `engine.use`) и говорит: *«Привет! У меня тут готовая цифра 2 для экрана. Просто возьми её и покажи пользователю»*.
+&nbsp;
+**В чём главная фишка этого момента?**
+&nbsp;
+Библиотека работает как **курьерская доставка**. Вместо того чтобы заставлять React «идти на склад, искать ингредиенты и готовить блюдо заново» (полный ререндер), ядро само собирает коробку с готовым результатом (плоский пакет данных) и приносит её прямо к нужной «двери» на экране (пушит в React).
+&nbsp;
+React остается только мгновенно отобразить эту готовую цифру `2` в теге `<code>`, не тратя ресурсы процессора на лишнюю работу.
+" />
+
+#### К чему я это все?
+Этот лог является главным доказательством эффективности фреймворка: вместо хаотичных перерисовок Virtual DOM, ядро упаковало мутацию сигнала и пересчет компута в **один-единственный синхронный батч (`Size: 2`)**, вызвав ровно одно изолированное обновление интерфейса без коллизий и холостого дребезга кадров.
+
+Таким образом, у каждого сигнала есть подписчики, которых можно увидеть в логе и при желании быстро найти в коде.
+
+*Аналогичная стуация для Vue в [Примере 108](https://github.com/garage-13/reactive-engine/tree/main/examples/108-computed-vue) (если включить логи при создании `ReactiveEngine`):*
+
+![Vue](https://pravosleva.pro/express-helper/chat/storage/uploads/mg.pravosleva/1786611253650.png "Логи ядра")
+
+## Использование Core-сервисов во Vue 3 Composition API
+
+Версия движка, импортируемая из `@pravosleva/reactive-engine/vue` предоставляет бесшовную интеграцию полиморфных Core-сервисов вашего приложения с **Vue 3 Composition API**.
+
+Класс `ReactiveEngine` из подпакета `/vue` расширяет базовое ядро и преобразует сигналы движка в стандартные Vue `ShallowRef` объекты с автоматическим управлением жизненным циклом подписок, полностью защищая приложение от утечек памяти как в UI-компонентах, так и в независимых областях видимости эффектов (`EffectScope`).
+
+<Alert type="success" text="Библиотека предоставляет полный цикл управления потоком данных для Vue 3.2+
+&nbsp;
+**State (Signal) 👉 Derivatives (Computed) 👉 UI (vueEngine.use / shallowRef) 👉 Reactions (watch / watchEffect)**" />
+
+### Особенности рантайма и автоматическая очистка
+
+Адаптер спроектирован как универсальное (isomorphic) решение и автоматически определяет контекст, в котором он был вызван:
+
+1. **Внутри компонентов (`setup`)**: Если метод `.use()` вызван во время инициализации компонента, адаптер автоматически регистрирует хук `onUnmounted` и отписывается от сигналов ядра при размонтировании DOM-узла.
+2. **Внутри EffectScope (Pinia / Кастомные Composables)**: Если метод вызван вне UI, но внутри активной области видимости эффектов (например, в Pinia-сторе), адаптер регистрирует хук `onScopeDispose`. Подписка будет уничтожена вместе со сбросом этого скоупа.
+3. **Глобальный контекст**: Если метод вызван в глобальной области видимости, подписка останется активной на всё время жизни приложения.
+
+Для людей, изучающих Vue, ниже представлен каноничный пример интеграции чистой бизнес-логики счетчика в компонент с использованием синтаксиса `<script setup>`:
+
+```vue
+<script setup lang="ts">
+import { AbstractService } from '@pravosleva/reactive-engine';
+import { ReactiveEngine as ReactiveEngine4Vue } from '@pravosleva/reactive-engine/vue';
+import clsx from 'clsx';
+import baseClasses from '~/ui.common.module.scss';
+import btnClasses from '~/ui.button.module.scss';
+
+// 1. Описываем изолированную бизнес-логику (Ядро/Сервис) — код 1-в-1 как в React/Angular
+class CounterLogic extends AbstractService {
+  public counter = this.engine.signal<number>(0, 'example:vue:counter');
+  public doubledCounter = this.engine.computed<number>(() => this.counter.value * 2, 'example:vue:computed');
+
+  public inc = () => {
+    this.counter.value += 1;
+  };
+}
+
+// 2. Инициализируем Vue-версию движка
+const engine = new ReactiveEngine4Vue();
+
+// 3. Внедряем сервис из DI-контейнера движка
+const logic = engine.inject(CounterLogic);
+
+// 4. Локальные Vue-реактивные обертки со стартовыми значениями сигналов.
+// Метод .use() возвращает стандартный ShallowRef<T> объект.
+const counter = engine.use(logic.counter);
+const doubledCounter = engine.use(logic.doubledCounter);
+</script>
+
+<template>
+  <!-- Использование классов и clsx идентично React-окружению -->
+  <div :class="clsx(baseClasses.unit, baseClasses.stack2)">
+    <div :class="baseClasses.absoluteUnitLabel">Vue 3 Signal Example</div>
+
+    <!-- 
+      ⚠️ Обратите внимание! 
+      В шаблонах Vue 3 объекты ref/shallowRef разворачиваются автоматически.
+      Писать `counter.value` внутри тегов {{ }} НЕ нужно — это вызовет ошибку.
+    -->
+    <code>{{ counter }} | x2 = {{ doubledCounter }}</code>
+
+    <div :class="baseClasses.catSection">
+      <!-- Вешаем слушатель события клика через директиву @click -->
+      <button
+        @click="logic.inc"
+        :class="clsx(btnClasses.neonBtn, btnClasses['neonBtn--primary'], btnClasses['neonBtn--outlined'])"
+      >
+        INC (Vue)
+      </button>
+    </div>
+  </div>
+</template>
+```
+
+### Архитектурные преимущества интеграции:
+* **Zero-overhead реактивность:** Благодаря использованию `shallowRef` вместо глубокого `ref`, Vue не тратит ресурсы процессора на рекурсивный прокси-обход тяжелых структур данных, приходящих из ядра.
+* **Принудительные триггеры (`triggerRef`):** Внутри подписки адаптера зашит вызов `triggerRef`. Это гарантирует, что если сигнал вашего ядра обновит внутреннее свойство сложного объекта или массива без мутации самой ссылки, Vue гарантированно и мгновенно перерисует интерфейс.
+* **Полная совместимость с экосистемой:** Полученные через `.use()` переменные являются нативными реактивными примитивами Vue. Вы можете передавать их в watch-трекеры, вычисляемые свойства `computed(() => ...)` самого фреймворка или выводить в секции `<style>` через `v-bind`.
+
+## Angular 16+
+Начиная с версии 16, в Angular появилась собственная революционная подсистема Signals, которая полностью меняет механику обновления DOM-дерева без участия тяжелого `Zone.js`.
+- **UI (`ngEngine.use`):** Адаптер ядра синхронизирует сигналы движка с нативными реактивными примитивами Angular Signal, обеспечивая точечное обновление шаблонов (`[value]="counter()"`)
+- **Reactions (`effect`):** Вместо сторонних хуков используется встроенная нативная функция Angular `effect(() => { ... }`), которая императивно перехватывает изменения на уровне зоны видимости компонента.
+
+<CollapsibleBox
+header="Zone.js — это..."
+text="Библиотека от Google, которая создаёт невидимый контекст (асинхронную «зону») вокруг всего кода приложения.
+&nbsp;
+**Зачем она нужна в Angular?**
+&nbsp;
+Она выполняет одну главную задачу: автоматически отслеживает абсолютно любые асинхронные события в браузере. Как только в приложении срабатывает клик, завершается fetch-запрос, срабатывает **setTimeout** или **setInterval**, **Zone.js** перехватывает это событие (патчит нативные методы браузера) и даёт Angular команду: «Внимание, что-то произошло! Запусти проверку изменений (Change Detection) и обнови UI».
+&nbsp;
+**Зачем от неё отказываются в Angular 16+?**
+&nbsp;
+**1. Накладные расходы.** Библиотека заставляет Angular перепроверять всё дерево компонентов сверху вниз при малейшем чихе (даже если сдвинулся один пиксель на Canvas), что создаёт лишнюю нагрузку на процессор.
+**2. Сложный дебаг.** Ошибки в консоли превращаются в гигантские «километровые» треки.
+&nbsp;
+Переход на нативные Сигналы (Signals) в Angular 16+ позволяет фреймворку точечно обновлять конкретный инпут в обход **Zone.js**, выводя производительность на один уровень с реактивным движком **ReactiveEngine**!"
+/>
+
+<Alert type="success" text="Библиотека предоставляет полный цикл управления потоком данных для Angular 16+
+&nbsp;
+**State (Signal) 👉 Derivatives (Computed) 👉 UI (ngEngine.use / Signal) 👉 Reactions (effect)**" />
+
+## Резюме
+
+### Кроссплатформенная матрица потока данных (Data Flow Matrix)
+
+Архитектурное преимущество ядра заключается в том, что слои бизнес-логики (**State** и **Derivatives**) остаются абсолютно неизменными, изолированными и переносимыми между фреймворками. Меняются только пассивные адаптеры на UI-слое отображения и слое реакций:
+
+| Фреймворк | 1. State Layer (Источники) | 2. Derivatives (Вычисления) | 3. UI Layer Bridge (Отображение) | 4. Reactions Layer (Эффекты) |
+| :--- | :--- | :--- | :--- | :--- |
+| **React 18+** | `signal` / `reactive` | `computed` | `useReactiveValue` | `useReactiveSubscription` |
+| **Vue 3.2+** | `signal` | `computed` | `vueEngine.use` (`shallowRef`) | `watch` / `watchEffect` |
+| **Angular 16+** | `signal` | `computed` | `ngEngine.use` (`Signal`) | `effect` |
+
+Этот сквозной анализ наглядно подчеркивает мощь кроссплатформенной архитектуры движка `ReactiveEngine` 👉 **бизнес-логика остается абсолютно неизменной и переносимой, меняются только пассивные адаптеры для UI-слоя.**
+
+### Ключевые выводы для разработчиков:
+* **React 18+**: Поток данных замыкается через нативный `useSyncExternalStore` (внутри `useReactiveValue`), гарантируя отсутствие разрывов (тиринга) экрана. Побочные эффекты UI изолируются через `useReactiveSubscription` без лишних рендеров компонента.
+* **Vue 3.2+**: Сигналы ядра бесшовно конвертируются в нативные `shallowRef`. Слой реакций полностью отдается нативному реактивному рантайму Vue (`watch`), исключая оверхед на кастомные хуки.
+* **Angular 16+**: Адаптер осуществляет прямую мостовую синхронизацию с нативными `Signals` Angular, позволяя точечно обновлять шаблоны (`{{ counter() }}`) в обход *Zone.js*.
+
+Пакет `@pravosleva/reactive-engine` - это отличный выбор для разработчиков, которым нужен полный контроль над реактивностью без необходимости тащить за собой тяжеловесные экосистемы вроде MobX или RxJS. Он **позволяет структурировать хаотичные потоки данных в понятный, легко тестируемый и высокопроизводительный вычислительный граф**.
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="Документация Reactive Engine"
+text="🇷🇺 **[На русском](https://pravosleva.pro/reactive-engine/)** - активно дополняется
+&nbsp;
+🇬🇧 **[На английском](https://pravosleva.pro/reactive-engine/en)** - дополняется менее активно, поэтому русскоязычный вариант пока остаётся более полным"
+/>
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "START_NEW_TAB",
+      "label": "📦 NPM пакет",
+      "type": "link",
+      "link": "https://www.npmjs.com/package/@pravosleva/reactive-engine"
+    },
+    {
+      "title": "END_NEW_TAB",
+      "label": "🇷🇺 Документация на русском",
+      "type": "link",
+      "link": "https://pravosleva.pro/reactive-engine/"
+    }
+  ]'
+/>

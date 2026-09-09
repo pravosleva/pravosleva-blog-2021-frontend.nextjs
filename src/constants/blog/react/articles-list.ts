@@ -8,14 +8,14 @@ export const reactBg = {
   },
   type: 'image/jpeg',
 }
-const jsBg = {
-  src: 'static/img/blog/logo-js-2.webp',
-  size: {
-    w: 640,
-    h: 360,
-  },
-  type: 'image/webp',
-}
+// const jsBg = {
+//   src: 'static/img/blog/logo-js-2.webp',
+//   size: {
+//     w: 640,
+//     h: 360,
+//   },
+//   type: 'image/webp',
+// }
 
 export const list: { [key: string]: TArticleTools } = {
   'react-hook-use-outside-click': {
@@ -23,9 +23,9 @@ export const list: { [key: string]: TArticleTools } = {
     brief: 'Хук для отслеживания клика вне элемента',
     bg: reactBg,
   },
-  'react-vs-vue3': {
-    id: '6a9abed4f7929b414054205c',
-    brief: 'Прямое сравнение',
-    bg: jsBg,
-  },
+  // 'react-vs-vue3': {
+  //   id: '6a9abed4f7929b414054205c',
+  //   brief: 'Прямое сравнение',
+  //   bg: jsBg,
+  // },
 }

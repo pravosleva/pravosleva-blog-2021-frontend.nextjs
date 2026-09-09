@@ -1,4 +1,4 @@
-import { TArticle, TPageService } from '~/components/Article'
+import { TArticle } from '~/components/Article'
 import { universalHttpClient } from '~/utils/universalHttpClient';
 import Head from 'next/head'
 // import { convertToPlainText } from '~/utils/markdown/convertToPlainText';
@@ -14,7 +14,11 @@ import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 // const isProd = process.env.NODE_ENV === 'production'
 
 type TPageProps = {
-  _pageService: TPageService;
+  _pageService: {
+    isOk: boolean;
+    message?: string;
+    response?: NCodeSamplesSpace.TNotesListResponseModified;
+  };
   list: TArticle[];
   searchQueryTitle: {
     original: string;
@@ -87,9 +91,12 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
   (store) => async (ctx: any) => {
     const { query: { search_query_title } } = ctx
     // let errorMsg = null
-    const _pageService: TPageService = {
-      isOk: false,
-      modifiedArticle: null,
+    const _pageService: {
+      isOk: boolean;
+      message?: string;
+      response?: NCodeSamplesSpace.TNotesListResponseModified;
+    } = {
+      isOk: false
     }
     let list: TArticle[] = []
 
@@ -113,23 +120,26 @@ BlogQST.getInitialProps = wrapper.getInitialPageProps(
           withoutSpaces,
           normalized,
         }))
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
-        if (noteResult.ok && !!noteResult?.response?.data && Array.isArray(noteResult.response.data)) {
+        const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponseModified>(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
+        if (notesResult.ok && !!notesResult?.response?.data && Array.isArray(notesResult.response.data)) {
           _pageService.isOk = true
-          _pageService.response = noteResult.response
-          list = [...noteResult.response.data.map(({ _id, ...rest }: NCodeSamplesSpace.TNote) => ({
-            original: {
-              _id,
-              ...rest,
-            },
-            slug: slugMap.get(_id)?.slug || null,
-            brief: slugMap.get(_id)?.brief || null,
-            bg: slugMap.get(_id)?.bg || null,
-          }))]
+          _pageService.response = notesResult.response
+          // list = [...notesResult.response.data.map(({ _id, ...rest }: NCodeSamplesSpace.TNote) => ({
+          //   original: {
+          //     _id,
+          //     ...rest,
+          //   },
+          //   slug: slugMap.get(_id)?.slug || null,
+          //   brief: slugMap.get(_id)?.brief || null,
+          //   bg: slugMap.get(_id)?.bg || null,
+          // }))]
+          list = !!notesResult.response?.data
+          ? notesResult.response?.data
+          : []
         } else {
           _pageService.isOk = false
-          _pageService.response = noteResult?.response || null
-          _pageService.message = noteResult?.response?.message || 'No noteResult?.response?.message'
+          _pageService.response = notesResult?.response
+          _pageService.message = notesResult?.message || 'No notesResult?.message'
         }
       }
         break

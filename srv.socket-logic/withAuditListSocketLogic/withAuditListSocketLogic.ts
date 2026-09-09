@@ -1,6 +1,6 @@
 import { Socket, Server } from 'socket.io'
 // import { getTstValue } from '~/srv.utils'
-import { NEvent, NEventData, NTodo } from './types'
+import { NEvent, NEventData, NTodo, TAudit } from './types'
 // NOTE: Fake DB as cache
 import {
   stateInstance,
@@ -58,21 +58,21 @@ export const withAuditListSocketLogic = (io: Server) => {
       // }>()
 
       // const t0 = performance.now()
-      universalHttpClient.post(`${baseEHelperUrl}/subprojects/aux-state/${room}/get-item`, {
+      universalHttpClient.post<{ audits: TAudit[] }>(`${baseEHelperUrl}/subprojects/aux-state/${room}/get-item`, {
         namespace: 'audit-list',
         tg_chat_id: room,
       })
         .then((res) => {
           console.log(res)
           if (res.isOk && Array.isArray(res.response?.audits)) {
-            stateInstance.initRoomAudits({ room, audits: res.response?.audits })
+            stateInstance.initRoomAudits({ room, audits: res.response?.audits || [] })
             io.to(socket.id).emit(NEvent.EServerOutgoing.AUDITLIST_REPLACE, {
               room,
               audits: stateInstance.get(room) || [],
               // _specialReport: { eHelperAudits: res },
             })
           } else io.to(socket.id).emit(NEvent.EServerOutgoing.ERR_MESSAGE, {
-            message: `BACK Socket report <- ${res.message || res.response?.message || 'Не удалось получить список audits (текст ошибки не получен)'}`,
+            message: `BACK Socket report <- ${res.message || res?.message || 'Не удалось получить список audits (текст ошибки не получен)'}`,
           })
         })
         .catch((err) => {

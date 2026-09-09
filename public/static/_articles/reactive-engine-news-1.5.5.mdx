@@ -1,0 +1,66 @@
+---
+title: "Reactive Engine: Обзор версии 1.5.5"
+brief: 'JS в действии'
+bg_src: '/static/img/blog/coca-cola.webp'
+bg_size: { w: 1080,h: 1080 }
+bg_type: 'image/webp'
+
+createdAt: "2026-08-14T13:21:59.816Z"
+updatedAt: "2026-08-27T13:45:38.820Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["react", "reactivity", "reactive_engine"]
+#category: "news"
+isPrivate: false
+---
+_Добавлю музычки чтоб нескучно было:_
+
+<Podcast 
+  url="https://radiorecord.hostingradio.ru/phonk96.aacp" 
+  title="Internet Radio Streaming | Phonk" 
+  description="Кстати, этот аудиоплеер написан на сигналах движка @pravosleva/reactive-engine" 
+  durationStr="--:--"
+  bg="/static/img/blog/phonk-music.jpeg" 
+/>
+
+## Обзор релиза `v1.5.5-beta`
+
+### Вес [Reactive Engine](https://www.npmjs.com/package/@pravosleva/reactive-engine) и эффективность упаковки
+* **Монолитное ядро (ES-модуль):** `dist/core.mjs` — всего **17.40 kB** (сжатие **5.69 kB Gzip**).
+* **Монолитный браузерный бандл:** `dist/reactive-engine.umd.js` — **14.60 kB** (всего **5.43 kB Gzip**).
+* **Ультра-легкие UI-адаптеры:** Слой интеграции с React (`dist/react/index.mjs`) занимает **1.27 kB**, а точечные хуки подписок (`useReactiveValue`) — по **0.09–0.11 kB**.
+* **Zero-Overhead Архитектура:** Полная изоляция от тяжелых внешних зависимостей. Движок поставляется по цене стандартной утилиты-хелпера, гарантируя мгновенный старт UI даже на слабых мобильных устройствах.
+
+### Сводная матрица сравнения характеристик с другими СТМ
+В разрезе ***реактивности***:
+
+| Фреймворк / Критерий | Вес (Gzip) | Скачиваний в неделю (npm) | Архитектурная модель | Микрозадачный батчинг | Рантайм-линтер | Изоляция инстансов | Порог входа | Зависимость от UI |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **[Reactive Engine](https://github.com/garage-13/reactive-engine)** | **~5.4 kB** | **<100 (Internal Beta)** | **Атомарная Push/Pull (Signals + Proxy)** | **Да (Монолитные транзакции)** | **Да (`__performance_advice__`)** | **Да (`instanceName`)** | **Низкий (UMD-скрипт)** | **Абсолютно независим** |
+| **[RxJS v7](https://github.com/reactivex/rxjs)** | ~18.0 kB | ~46 000 000+ | Стримы (Observable Push) | Нет | Нет | Да | Очень высокий | Абсолютно независим |
+| **[Redux Toolkit](https://github.com/reduxjs/redux-toolkit)** | ~11.5 kB | ~10 500 000+ | Монолитно-иммутабельная (Flux) | Нет | Нет | Нет (строго один Store) | Высокий | Независим |
+| **[Zustand](https://github.com/pmndrs/zustand)** | ~1.2 kB | ~5 500 000+ | Плоский синглтон-стейт (Flux-like) | Нет (React-батчинг) | Нет | Ограничено | Средний | Практически независим |
+| **[MobX v6](https://github.com/mobxjs/mobx)** | ~16.5 kB | ~1 200 000+ | Мутируемая Proxy (Observables) | Да (встроенный батчинг) | Нет | Да | Средний | Независим |
+| **[XState v5](https://www.npmjs.com/package/xstate)** | ~23.0 kB | ~1 100 000+ | Акторы / Конечные автоматы (FSM) | Нет (атомарность за счет единого перехода автомата) | Нет | Да | Очень высокий | Независим |
+| **[Effector](https://github.com/effector/effector/blob/master/CHANGELOG.md)** | ~11.0 kB | ~150 000+ | Декларативный граф (Stores/Events) | Да (автоматический синхронный батчинг на уровне графа) | Нет | Да (Fork-инфраструктура) | Высокий | Независим |
+| **[Valtio](https://github.com/pmndrs/valtio)** | ~3.1 kB | ~140 000+ | Мутируемый Proxy-стейт | Нет | Нет | Ограничено | Низкий | Сфокусирован на React |
+| **[Solid.js (Core)](https://github.com/solidjs/solid)** | ~8.0 kB | ~120 000+ | Точечная Push/Pull (Signals) | Частично (через `batch`) | Нет | Да | Средний | Жестко вшит в рантайм |
+| **Reatom v3** | ~4.5 kB | ~10 000+ | Атомарный граф (иммутабельный) | Частично (батчинг в экшенах) | Нет | Да (через контекст) | Высокий | Независим |
+| **Vue 3 (Reactivity)** | ~12.0 kB | *В составе Vue (4.5M+/нед)* | Proxy-ориентированная автоматическая | Да (асинхронный батчинг обновлений UI и эффектов на микрозадачах) | Нет | Да | Средний | Вшит в ядро Vue |
+| **React Context API** | 0 kB | *В составе React (22M+/нед)* | Проброс зависимостей (DI-паттерн) | Нет | Нет | Да | Низкий | Жестко завязан на React |
+
+> Внутри Vue 3 на самом деле есть глубоко встроенный асинхронный батчинг на микрозадачах (микробатчинг), но он работает строго на слое обновления UI и реакций (`watch` / `nextTick`), а не на слое самих данных.
+
+Колонка скачиваний наглядно демонстрирует рыночную зрелость технологий. Гиганты вроде **RxJS** и **Redux Toolkit** удерживают лидерство за счет огромной легаси-базы. Библиотека **@pravosleva/reactive-engine** при околонулевом весе предоставляет функционал батчинга на уровне **MobX**, атомарность на уровне **Reatom** и встроенный инструмент аудита кода.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "Реактивные мутации в JS (часть 1)",
+      "type": "link",
+      "link": "/p/reactive-engine-ru"
+    }
+  ]'
+/>

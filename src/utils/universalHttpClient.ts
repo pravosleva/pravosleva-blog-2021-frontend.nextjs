@@ -15,7 +15,7 @@ const isDev = process.env.NODE_ENV === 'development'
 // : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
 
 const baseConfig: IAxiosRequestConfig = {
-  baseURL: isDev ? 'http://localhost:3000' : 'https://pravosleva.pro', // 'http://pravosleva.ru/',
+  baseURL: isDev ? 'http://localhost:3000' : 'https://pravosleva.ru', // 'http://pravosleva.ru/',
   // headers: {
   //   'Origin': 'http://localhost:1337',
   //   'Access-Control-Allow-Origin': '*',
@@ -56,7 +56,7 @@ class httpClientSingletone {
     return httpClientSingletone._instance;
   }
 
-  public async get(url: string): Promise<NResponseLocal.IResult> {
+  public async get<T>(url: string): Promise<NResponseLocal.IResult<T>> {
     // console.log(url)
     return await this.api
       .get(url)
@@ -68,7 +68,7 @@ class httpClientSingletone {
       }))
       .catch(axiosUniversalCatch)
   }
-  public async post(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult> {
+  public async post<T>(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult<T>> {
     return await this.api
       .post(url, data)
       .then(httpErrorHandler) // res -> res.data
@@ -79,7 +79,7 @@ class httpClientSingletone {
       }))
       .catch(axiosUniversalCatch)
   }
-  public async pravoslevaPost(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult> {
+  public async pravoslevaPost<T>(url: string, data?: URLSearchParams): Promise<NResponseLocal.IResult<T>> {
     return await this.eHelperApi
       .post(url, data)
       .then(httpErrorHandler) // res -> res.data

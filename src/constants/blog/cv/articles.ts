@@ -8,19 +8,16 @@ import { TArticleTools } from '../types'
 //   },
 //   type: 'image/jpg',
 // }
-const bg2 = {
-  src: 'https://pravosleva.pro/static/img/blog/logo-js-850x478.webp',
-  size: {
-    w: 850,
-    h: 478,
-  },
-  type: 'image/webp',
-}
+// const bg2 = {
+//   src: 'https://pravosleva.pro/static/img/blog/logo-js-850x478.webp',
+//   size: { w: 850, h: 478 },
+//   type: 'image/webp',
+// }
 
 export const list: { [key: string]: TArticleTools } = {
-  'cv-ru': {
-    id: '68905b0d10f7b720079c8bdd',
-    brief: 'Мой опыт в коммерческой разработке',
-    bg: bg2,
-  },
+  // 'cv-ru': {
+  //   id: '68905b0d10f7b720079c8bdd',
+  //   brief: 'Мой опыт в коммерческой разработке',
+  //   bg: bg2,
+  // },
 }

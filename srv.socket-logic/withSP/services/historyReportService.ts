@@ -53,7 +53,7 @@ export const historyReportService = ({
           else throw new Error(addToReestrResult.message || 'No message')
 
           if (validated.ok) {
-            const result = await universalHttpClient.post(
+            const result = await universalHttpClient.post<{ id: number }>(
               '/express-helper/sp/report/v2/offline-tradein/mtsmain2024/send',
               {
                 eventCode: 'report-by-user:history',
@@ -85,7 +85,7 @@ export const historyReportService = ({
             if (!result?.isOk) {
               logger.add({ message: '[Result] Cant save data to Google Sheets (server cache only)' })
               const ts = new Date().getTime()
-              const tgNotifResult = await universalHttpClient.post(
+              const tgNotifResult = await universalHttpClient.post<{ id: string }>(
                 'http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send',
                 {
                   resultId: ts,

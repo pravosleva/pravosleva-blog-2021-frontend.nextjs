@@ -13,6 +13,7 @@ import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import clsx from 'clsx'
 import { useStyles } from '~/components/Layout/useStyles'
 import classes from '~/components/Layout/Layout.module.scss'
+import { NCodeSamplesSpace } from '~/types'
 
 // const defaultBg = {
 //   src: 'https://pravosleva.pro/static/img/blog/dog.webp',
@@ -138,15 +139,12 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
   (store) => async (ctx: any) => {
     const { query: { note_id } } = ctx
     // let errorMsg = null
-    const _pageService: TPageService = {
-      isOk: false,
-      modifiedArticle: null,
-    }
+    const _pageService: TPageService = { isOk: false }
     let article = null
 
     switch (true) {
       case !!slugMapping[note_id]: {
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${slugMapping[note_id].id}`)
+        const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TSingleNoteResponse>(`/express-next-api/code-samples-proxy/api/notes/${slugMapping[note_id].id}`)
         // console.log(`-- ${slug}`)
         // console.log(noteResult)
         // console.log('--')
@@ -164,7 +162,7 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
           }
         } else {
           _pageService.isOk = false
-          _pageService.response = noteResult?.response || null
+          _pageService.response = noteResult?.response
           _pageService.message = [
             'Скорее всего, автор закрыл статью на редактирование',
             // noteResult?.response?.message || 'No noteResult?.response?.message',
@@ -173,7 +171,7 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
         break
       }
       default: {
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
+        const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TLocalNoteResponse>(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
         // console.log(`-- ${slug}`)
         // console.log(noteResult)
         // console.log('--')
@@ -186,20 +184,20 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
               ].join(' // '))
             case noteResult.ok && !!noteResult.response:
               switch (true) {
-                case !noteResult.response.isPrivate:
-                  store.dispatch(setTitle(noteResult.response.data.title))
+                case !noteResult.response?.data.isPrivate:
+                  if (!!noteResult.response?.data.title) store.dispatch(setTitle(noteResult.response?.data.title))
 
                   _pageService.isOk = true
                   _pageService.response = noteResult.response
                   article = {
-                    original: { ...noteResult.response.data },
+                    original: { ...(noteResult.response?.data || {}) },
                     slug: note_id,
                     brief: '[DRAFT]',
                     bg: defaultBg,
                   }
                   break
                 default:
-                  throw new Error(`Неизвестный нейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.isPrivate)})`)
+                  throw new Error(`Неизвестный нейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response?.data.isPrivate)})`)
               }
               break
             default:
@@ -207,7 +205,7 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
           }
         } catch (err: any) {
           _pageService.isOk = false
-          _pageService.response = noteResult?.response || null
+          _pageService.response = noteResult?.response
           _pageService.message = [
             err?.message || 'No err?.message',
             // noteResult?.response?.message || 'No noteResult?.response?.message',

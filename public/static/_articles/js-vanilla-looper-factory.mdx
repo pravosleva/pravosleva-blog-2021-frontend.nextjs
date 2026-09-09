@@ -1,0 +1,112 @@
+---
+title: "looperFactory #jsVanilla #reactHook"
+brief: "Прямое сравнение (local mdx)"
+bg_src: "/static/img/blog/logo-js-2.webp"
+bg_size: { w: 640, h: 360 }
+bg_type: "image/webp"
+
+createdAt: "2026-02-16T09:56:57.486Z"
+updatedAt: "2026-08-21T07:58:39.585Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["js", "react"]
+category: "guides"
+isPrivate: false
+---
+Продолжаем марафон универсальных утилит на JavaScript, которые я использую от проекта к проекту независимо от стека.
+
+## Базовая утилита (JS)
+`~/utils/looperFactory.ts`
+```ts
+type TLooperInstance = {
+  start: (cb: () => void) => void;
+  stop: () => void;
+  restart: (cb: () => void) => void;
+}
+
+export const looperFactory = ({
+  delay = 10 * 1000, // 10 seconds by default
+  isFirstStartRequired = false,
+}: {
+  delay?: number;
+  isFirstStartRequired?: boolean;
+}): () => TLooperInstance => {
+  let timer: NodeJS.Timeout;
+  let wasStopped = false;
+  let __counter = 0;
+
+  return () => {
+    const start = (cb: () => void) => {
+      // console.log('Run');
+      if (!wasStopped) {
+        if (__counter === 0 && isFirstStartRequired) {
+          cb();
+        }
+        timer = setTimeout(() => {
+          // console.log('Looper done and will be restarted.');
+          if (cb) { cb(); }
+          start(cb);
+        }, delay);
+        __counter += 1;
+      } // else console.log('Not started');
+    };
+    const stop = () => {
+      // console.log('Looper stopped');
+      wasStopped = true;
+      clearTimeout(timer);
+    };
+    const restart = (cb: () => void) => {
+      stop();
+      wasStopped = false;
+      __counter = 0;
+      start(cb);
+    };
+    return {
+      start, stop, restart
+    };
+  };
+};
+```
+
+## Пример использования (React)
+К примеру, есть требование отображать индикатор непрочитанных сообщений, но на проекте нет сокетов, зато есть возможность циклически делать запрос в соответствующее API.
+```ts
+import { useRef, useEffect } from 'react';
+import { looperFactory } from '~/utils/looperFactory';
+
+type TProps = {
+  activePersonID: string | undefined;
+  isAllowed: boolean;
+}
+
+export const useFreshNotificationsCount = ({
+  activePersonID, isAllowed
+}: TProps) => {
+  const { fetchDmsNotificationsCount } = useApiService();
+  const looperRef = useRef(looperFactory({
+    delay: 20 * 1000,
+    isFirstStartRequired: true,
+  })());
+
+  useEffect(() => {
+    if (!isAllowed) {
+      looperRef.current.stop();
+      return;
+    }
+    looperRef.current.restart(() => {
+      fetchDmsNotificationsCount({
+        query: {
+          activePersonID, // For example
+        },
+      })
+        .then((_fetcherResponse) => {
+          // NOTE: Use data for success case
+        })
+        .catch((_fetcherErr) => {
+          // NOTE: Use erorr case
+        });
+    });
+  }, [activePersonID, isAllowed]);
+};
+```

@@ -53,37 +53,37 @@ export const slugMapping: { [key: string]: TArticleTools } = {
       type: 'image/png',
     },
   },
-  'team-scoring': {
-    // id: '653053616917cd0d733cddb9',
-    id: '6a994d39f7929b4140542059',
-    brief: 'По мотивам статьи Joel Spolsky',
-    bg: {
-      // size: {
-      //   w: 1200,
-      //   h: 630,
-      // },
-      // src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
-      // type: 'image/jpg',
-      size: {
-        w: 309,
-        h: 270,
-      },
-      src: '/static/img/projects/math-preview.gif',
-      type: 'image/gif',
-    },
-  },
-  'estimate-corrector-2024': {
-    id: '67723f368c79264aa7fd53b1',
-    brief: 'Based on the methodology by Joel Spolsky',
-    bg: {
-      size: {
-        w: 1200,
-        h: 630,
-      },
-      src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
-      type: 'image/jpg',
-    },
-  },
+  // 'team-scoring': {
+  //   // id: '653053616917cd0d733cddb9',
+  //   id: '6a994d39f7929b4140542059',
+  //   brief: 'По мотивам статьи Joel Spolsky',
+  //   bg: {
+  //     // size: {
+  //     //   w: 1200,
+  //     //   h: 630,
+  //     // },
+  //     // src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
+  //     // type: 'image/jpg',
+  //     size: {
+  //       w: 309,
+  //       h: 270,
+  //     },
+  //     src: '/static/img/projects/math-preview.gif',
+  //     type: 'image/gif',
+  //   },
+  // },
+  // 'estimate-corrector-2024': {
+  //   id: '67723f368c79264aa7fd53b1',
+  //   brief: 'Based on the methodology by Joel Spolsky',
+  //   bg: {
+  //     size: {
+  //       w: 1200,
+  //       h: 630,
+  //     },
+  //     src: 'https://pravosleva.pro/static/img/projects/scoring.jpg',
+  //     type: 'image/jpg',
+  //   },
+  // },
   'google-sheets-api-quota': {
     id: '64c8d7dbdb108f2f99272e0c',
     brief: 'Чтоб не забыть',
@@ -226,54 +226,54 @@ export const slugMapping: { [key: string]: TArticleTools } = {
       type: 'image/webp',
     },
   },
-  'what-where-when': {
-    id: '678bcbf18c79264aa7fd53b6',
-    brief: 'Музыка из шоу',
-    bg: {
-      src: 'https://pravosleva.pro/static/img/blog/what-where-when.jpg',
-      size: {
-        w: 860,
-        h: 576,
-      },
-      type: 'image/jpg',
-    },
-  },
-  'reactive-engine-news-1.5.5': {
-    id: '6a7f1677f7929b4140542039',
-    brief: 'News',
-    bg: {
-      src: '/static/img/blog/coca-cola.webp',
-      size: {
-        w: 1080,
-        h: 1080,
-      },
-      type: 'image/webp',
-    },
-  },
-  'reactive-engine-ssr-vue3-nuxt4': {
-    id: '6a8d539ef7929b4140542047',
-    brief: 'Tutorial',
-    bg: {
-      src: '/static/img/blog/nuxt4-logo-black.webp',
-      size: {
-        w: 1600,
-        h: 1600,
-      },
-      type: 'image/webp',
-    },
-  },
-  'reactive-engine-ssr-react-next': {
-    id: '6a803917f7929b414054203a',
-    brief: 'Tutorial',
-    bg: {
-      src: '/static/img/blog/nextjs-logo.webp',
-      size: {
-        w: 563,
-        h: 563,
-      },
-      type: 'image/webp',
-    },
-  },
+  // 'what-where-when': {
+  //   id: '678bcbf18c79264aa7fd53b6',
+  //   brief: 'Музыка из шоу',
+  //   bg: {
+  //     src: 'https://pravosleva.pro/static/img/blog/what-where-when.jpg',
+  //     size: {
+  //       w: 860,
+  //       h: 576,
+  //     },
+  //     type: 'image/jpg',
+  //   },
+  // },
+  // 'reactive-engine-news-1.5.5': {
+  //   id: '6a7f1677f7929b4140542039',
+  //   brief: 'News',
+  //   bg: {
+  //     src: '/static/img/blog/coca-cola.webp',
+  //     size: {
+  //       w: 1080,
+  //       h: 1080,
+  //     },
+  //     type: 'image/webp',
+  //   },
+  // },
+  // 'reactive-engine-ssr-vue3-nuxt4': {
+  //   id: '6a8d539ef7929b4140542047',
+  //   brief: 'Tutorial',
+  //   bg: {
+  //     src: '/static/img/blog/nuxt4-logo-black.webp',
+  //     size: {
+  //       w: 1600,
+  //       h: 1600,
+  //     },
+  //     type: 'image/webp',
+  //   },
+  // },
+  // 'reactive-engine-ssr-react-next': {
+  //   id: '6a803917f7929b414054203a',
+  //   brief: 'Tutorial',
+  //   bg: {
+  //     src: '/static/img/blog/nextjs-logo.webp',
+  //     size: {
+  //       w: 563,
+  //       h: 563,
+  //     },
+  //     type: 'image/webp',
+  //   },
+  // },
   // {
   //   id: 1,
   //   title: 'AuditList 2023',
@@ -300,54 +300,45 @@ export const slugMapping: { [key: string]: TArticleTools } = {
   //   brief: 'PROJECT_BRIEF@AUDITOR_HELPER',
   //   tags: [],
   // },
-  'audit-list-2023': {
-    id: '6a85e2a2f7929b4140542042',
-    brief: 'Audit helper',
-    bg: {
-      src: '/static/img/projects/audit-v2.webp',
-      size: {
-        w: 700,
-        h: 466,
-      },
-      type: 'image/webp',
-    },
-  },
-  'edna-trash-2026': {
-    id: '6a8c0c6bf7929b4140542046',
-    brief: 'Фронтенд треш-кейс с разбором',
-    bg: {
-      src: '/static/img/blog/FB_IMG_1787205276491.webp',
-      size: {
-        w: 2048,
-        h: 2048,
-      },
-      type: 'image/webp',
-    },
-  },
-  'internet-radio-streaming': {
-    id: '6a90263cf7929b4140542048',
-    brief: 'Список радиостанций',
-    bg: {
-      src: '/static/img/blog/radio.webp',
-      size: {
-        w: 740,
-        h: 415,
-      },
-      type: 'image/webp',
-    },
-  },
-  'next-seo': {
-    id: '6a907696f7929b414054204a',
-    brief: 'Успешная реанимация трупа в 2026. Реальный опыт штурма производительности в Next.js 11 (Webpack 5): как мы опустили TBT в 3.5 раза до рекордных 150 мс, ускорили LCP на 15 секунд и победили дедлоки гидратации, петли loopback и оверхед dev-инструментов',
-    bg: {
-      src: '/static/img/blog/FB_IMG_1786890976656.jpg',
-      size: {
-        w: 1856,
-        h: 1856,
-      },
-      type: 'image/jpg',
-    },
-  },
+
+  // 'audit-list-2023': {
+  //   id: '6a85e2a2f7929b4140542042',
+  //   brief: 'Audit helper',
+  //   bg: {
+  //     src: '/static/img/projects/audit-v2.webp',
+  //     size: { w: 700, h: 466 },
+  //     type: 'image/webp',
+  //   },
+  // },
+  // 'edna-trash-2026': {
+  //   id: '6a8c0c6bf7929b4140542046',
+  //   brief: 'Фронтенд треш-кейс с разбором',
+  //   bg: {
+  //     src: '/static/img/blog/FB_IMG_1787205276491.webp',
+  //     size: { w: 2048, h: 2048 },
+  //     type: 'image/webp',
+  //   },
+  // },
+  // 'internet-radio-streaming': {
+  //   id: '6a90263cf7929b4140542048',
+  //   brief: 'Список радиостанций',
+  //   bg: {
+  //     src: '/static/img/blog/radio.webp',
+  //     size: { w: 740, h: 415 },
+  //     type: 'image/webp',
+  //   },
+  // },
+  // 'next-seo-2021': {
+  //   title: 'Разгон Next.js в Lighthouse: Практический кейс оптимизации медиа-ядра и инфраструктуры и пара слов про Partytown',
+  //   id: '6a907696f7929b414054204a',
+  //   brief: 'Успешная реанимация трупа в 2026. Реальный опыт штурма производительности в Next.js 11 (Webpack 5): как мы опустили TBT в 3.5 раза до рекордных 150 мс, ускорили LCP на 15 секунд и победили дедлоки гидратации, петли loopback и оверхед dev-инструментов',
+  //   bg: {
+  //     src: '/static/img/blog/FB_IMG_1786890976656.jpg',
+  //     size: { w: 1856, h: 1856 },
+  //     type: 'image/jpg',
+  //   },
+  //   priority: 5,
+  // },
 }
 
 const _slugMap = new Map<string, TArticleTools & {

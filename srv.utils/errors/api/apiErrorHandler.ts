@@ -8,7 +8,7 @@ export const apiErrorHandler = (res: any): any | ApiError => {
       return res
     default: {
       // console.log(res)
-      throw new ApiError(res?.message || 'No API res.message')
+      throw new ApiError(res?.message || 'apiErrorHandler: No API res.message (контракт API не выполнен)')
     }
   }
 }

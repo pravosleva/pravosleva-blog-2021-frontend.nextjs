@@ -37,7 +37,7 @@ const getCardBgColor = (themeName: TThemeName) => {
   return themeName === 'dark' || themeName === 'hard-gray' || themeName === 'gray' ? 'rgba(255,255,255,0.03)' : '#fff'
 }
 
-/* ================= СТИЛИ КНОПКИ СНИЗУ (НАД SCROLL TOP) ================= */
+// СТИЛИ КНОПКИ СНИЗУ (НАД SCROLL TOP)
 type TTriggerProps = {
   themeName: TThemeName
   isShowed: boolean
@@ -88,7 +88,7 @@ const StyledSearchTriggerBtn = styled('div')<TTriggerProps>`
   }
 `
 
-/* ================= СТИЛИ ВЫЕЗЖАЮЩЕЙ ПАНЕЛИ ПОИСКА ================= */
+// СТИЛИ ВЫЕЗЖАЮЩЕЙ ПАНЕЛИ ПОИСКА
 type TPanelProps = {
   themeName: TThemeName
   isOpen: boolean
@@ -125,7 +125,7 @@ const SlidingSearchPanel = styled('div')<TPanelProps>`
     `}
 `
 
-/* ================= СТИЛИ БЭЙДЖА СЧЕТЧИКА НАХОДОК ================= */
+// СТИЛИ БЭЙДЖА СЧЕТЧИКА НАХОДОК
 type TBadgeProps = {
   themeName: TThemeName
 }
@@ -167,7 +167,7 @@ const SearchCountBadge = styled('span')<TBadgeProps>`
   }
 `
 
-/* ================= ОСНОВНОЙ КОМПОНЕНТ ================= */
+// ОСНОВНОЙ КОМПОНЕНТ
 interface ArticlesSearchDesktopProps {
   currentTheme: TThemeName
 }
@@ -184,6 +184,7 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
     setCurrentPage,
     setLimit,
     reset,
+    close,
     isSearchPanelOpen,
     setIsSearchPanelOpen,
   } = useArticlesSearch()
@@ -261,7 +262,7 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
             )}
           </div>
           <button
-            onClick={() => setIsSearchPanelOpen(false)}
+            onClick={close}
             style={{ border: 'none', background: 'transparent', color: '#888', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
           >
             <CloseIcon />
@@ -319,8 +320,8 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
               {results.map((note) => (
                 <a
-                  key={note._id}
-                  href={getLink(note._id)}
+                  key={note.original._id}
+                  href={getLink(note.original._id)}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -337,11 +338,11 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
                   onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                 >
                   <div style={{ fontSize: '15px', fontWeight: 'bold', color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : '#FF8E53' }}>
-                    {note.title}
+                    {note.original.title}
                   </div>
                   {/* Обрезка строки до двух линий, как мы настроили ранее */}
                   <div style={{ fontSize: '13px', color: '#888', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {note.description || 'Описание отсутствует'}
+                    {note.original.description || 'Описание отсутствует'}
                   </div>
                 </a>
               ))}

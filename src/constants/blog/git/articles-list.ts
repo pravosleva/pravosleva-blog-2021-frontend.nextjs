@@ -50,9 +50,9 @@ export const list: { [key: string]: TArticleTools } = {
     brief: 'Заметки про GIT',
     bg,
   },
-  'git-flow-2026-p2': {
-    id: '6a0deb35f7929b4140542020',
-    brief: 'Заметки про GIT',
-    bg,
-  },
+  // 'git-flow-2026-p2': {
+  //   id: '6a0deb35f7929b4140542020',
+  //   brief: 'Заметки про GIT',
+  //   bg,
+  // },
 }

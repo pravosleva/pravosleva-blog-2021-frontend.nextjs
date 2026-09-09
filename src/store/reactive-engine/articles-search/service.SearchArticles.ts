@@ -79,7 +79,7 @@ export class SearchArticlesService extends AbstractService {
           .join(',')
 
         const endpoint = `/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(normalizedWords)}&page=${page}&limit=${limit}`
-        const response = await universalHttpClient.get(endpoint)
+        const response = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponseModified>(endpoint)
 
         if (response.ok && response.response?.success && Array.isArray(response.response.data)) {
           const { data, pagination } = response.response
@@ -88,12 +88,12 @@ export class SearchArticlesService extends AbstractService {
           this.totalPages.value = pagination.totalPages || 1
           this.totalNotes.value = pagination.totalNotes || 0
           
-          return data as NCodeSamplesSpace.TNote[]
+          return data
         }
 
         if (!response.response?.success) throw new Error(response.message || 'API ERR (no mgs)')
         
-        return [] as NCodeSamplesSpace.TNote[]
+        return []
       },
       { delay: 400 } // Задержка дебаунса 400 мс
     ),
@@ -145,6 +145,10 @@ export class SearchArticlesService extends AbstractService {
     this.totalNotes.value = 0
   }
 
+  public close(): void {
+    this.isSearchPanelOpen.value = false
+  }
+
   // Метод полной очистки стейта
   public reset(): void {
     this.searchQuery.value = ''
@@ -156,6 +160,6 @@ export class SearchArticlesService extends AbstractService {
     }
 
     // #SEARCH_PANEL_EXP 2/3
-    this.isSearchPanelOpen.value = false
+    // this.isSearchPanelOpen.value = false
   }
 }

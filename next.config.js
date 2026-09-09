@@ -10,7 +10,6 @@ const dotenv = require('dotenv')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 const envFileName = '.env.production'
-console.log(`envFileName -> ${envFileName}`)
 const env = dotenv.parse(fs.readFileSync(envFileName))
 
 const {
@@ -20,9 +19,7 @@ const {
 } = process.env
 
 // Читаем переменную отключения оптимизации (приводим строку "true" к булеву типу)
-const disableImageOptimization = 
-  env.NEXT_DISABLE_IMAGE_OPTIMIZATION === 'true' || 
-  env.NEXT_DISABLE_IMAGE_OPTIMIZATION === '1'
+const disableImageOptimization = env.NEXT_IS_IMAGE_OPTIMIZATION_DISABLED === '1'
 console.log(`disableImageOptimization -> ${String(disableImageOptimization)}`)
 if (disableImageOptimization) {
   console.log('☝️ Отпимизация картинок "на лету" отключена! Не забудьте проверить конфиг NGINX')

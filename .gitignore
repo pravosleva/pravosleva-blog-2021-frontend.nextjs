@@ -33,5 +33,10 @@ deploy-app-config.json
 /public/workbox-*
 /public/static/analyze/*
 
+# SEO
+/public/robots.txt
+/public/sitemap.xml
+/public/static/local.slug-map.json
+
 # tmp
 **/*/__vx.tsx

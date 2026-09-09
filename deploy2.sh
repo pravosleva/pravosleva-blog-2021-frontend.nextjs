@@ -1,5 +1,33 @@
 source ./read-env.sh
 
+./refresh-slug-mapping.sh
+
+# 2. Читаем переменную домена карты сайта из файла конфигурации стенда (например, .env.stage или .env.production)
+SITEMAP_HOST=$(read_env BASH_SITEMAP .env."$1")
+
+if [ -z "$SITEMAP_HOST" ]; then
+  echo "⚠️  WARNING: BASH_SITEMAP is not defined for environment '$1'. Fallback to default check..."
+  # Если переменной нет, можно подставить фолбек или остановить билд
+fi
+
+# 3. Запускаем генерацию sitemap.xml, принудительно передавая SITEMAP_HOST в Node.js через переменные окружения командной строки
+if [ ! -z "$SITEMAP_HOST" ]; then
+  NEXT_APP_SITEMAP_BASE_URL="$SITEMAP_HOST" node ./scripts/generate-sitemap.js
+fi
+
+# -- 3.5. АВТОГЕНЕРАЦИЯ ROBOTS.TXT ПОД КОНКРЕТНЫЙ СТЕНД
+ROBOTS_PATH="./public/robots.txt"
+
+if [ "$1" == "stage" ] || [ "$1" == "ru" ]; then
+  # Если деплоим на стейдж (.ru) — полностью закрываем сайт от роботов, оставляя только sitemap
+  echo -e "User-agent: *\nDisallow: /express-next-api/\n\nSitemap: ${SITEMAP_HOST}/sitemap.xml" > $ROBOTS_PATH
+  echo "[Robots] Сгенерирован защищенный robots.txt для STAGE стенда"
+else
+  # Если деплоим на прод (.pro) — разрешаем полную индексацию, скрывая только API
+  echo -e "User-agent: *\nAllow: /\nDisallow: /express-next-api/\n\nSitemap: ${SITEMAP_HOST}/sitemap.xml" > $ROBOTS_PATH
+  echo "[Robots] Сгенерирован открытый robots.txt для PRODUCTION стенда"
+fi
+
 DEPLOY_HOST=$(read_env BASH_DEPLOY_HOST .env."$1")
 
 # -- Проверяем, удалось ли прочитать переменную, чтобы не деплоить в "никуда"
@@ -29,7 +57,7 @@ rsync -av --delete server.dist/ $deploy_path_server_dist_dir &&
 
 # -- Явное копирвание конфигов и прочего вспомогательного
 #rsync -av .env."$1" "${DEPLOY_HOST}:${REMOTE_ROOT}/.env.$1" &&
-rsync -av .env."$1" "${DEPLOY_HOST}:${REMOTE_ROOT}/.env.production" &&
+rsync -av .env.production "${DEPLOY_HOST}:${REMOTE_ROOT}/.env.production" &&
 #rsync -av next.config.js $deploy_path_config_file &&
 #rsync -av package.json $deploy_path_package_json_file &&
 

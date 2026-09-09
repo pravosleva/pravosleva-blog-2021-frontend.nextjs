@@ -1,0 +1,605 @@
+---
+title: "Reactive Engine + Vue 3 + SSR: Изоморфная реактивность без компромиссов с Nuxt 4"
+brief: 'JS в действии'
+bg_src: '/static/img/blog/nuxt4-logo-black.webp'
+bg_size: { w: 1600, h: 1600 }
+bg_type: 'image/webp'
+
+createdAt: "2026-08-25T08:34:38.846Z"
+updatedAt: "2026-09-01T07:22:31.201Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["vue3", "nuxt4", "reactivity"]
+#category: "guides"
+isPrivate: false
+---
+Привет, фронтендеры! Если вы думали, что независимые архитектурные движки - это привилегия экосистемы React (сарказм), у меня для вас потрясающие новости. Сегодня мы разберем, как запустить независимое реактивное ядро **`@pravosleva/reactive-engine`** внутри **Vue 3** и **Nuxt 4** с полноценной поддержкой серверного рендеринга (SSR). Это логическое продолжение [статьи про Реактивные мутации в JS](/p/reactive-engine-ru).
+
+[Podcast 03](https://pravosleva.ru/docs/_exp/podcast/03.3.mp3 "Podcast #3")
+
+## Часть 1. Изоляция ядра и реактивный мост (DI / Vue 3 Wrappers)
+### Шаг 1. Установка зависимостей
+
+Открываем терминал в корне вашего Nuxt 4 проекта и устанавливаем ядро движка:
+
+```bash
+yarn add @pravosleva/reactive-engine
+```
+
+#### Структура папок, которую нужно создать руками
+
+##### Nuxt 3
+По умолчанию свежий проект Nuxt 3 поставляется в максимально минималистичном виде — в корне лежит только файл `app.vue`. Чтобы развернуть архитектуру из нашей статьи, создайте в корне проекта три папки:
+```
+my-nuxt-app/
+├── composables/          # Сюда кладем useEngine.ts
+├── plugins/              # Сюда кладем reactiveEngine.ts
+├── components/           # Сюда кладем CounterWidget.vue и DashboardClientUI.vue
+├── pages/                # Сюда кладем dashboard.vue для Части 2
+├── app.vue               # Главная точка входа
+└── nuxt.config.ts        # Конфигурация Nuxt
+```
+
+> [!danger] **Важнейшая фишка Nuxt 3 для новичков**
+>
+> Папки `composables/` и `components/` обладают механизмом **Auto-imports** (автоимпорт). Это значит, что внутри файлов страниц вам **НЕ нужно** писать что-то вроде этого:
+> ```ts
+> import { useEngine } from '...'
+> ```
+>
+> или импортировать компоненты вручную. Nuxt сам увидит их и сделает доступными в коде рантайма!
+
+##### Nuxt 4
+В моем случае структура немного отличается, но суть остается:
+```
+my-nuxt-app/
+├── app/                      # <--- Главная папка вашего исходного кода
+│   ├── components/           # Сюда кладем CounterWidget.vue и DashboardClientUI.vue
+│   ├── composables/          # Сюда создаем useEngine.ts
+│   ├── plugins/              # Сюда создаем reactiveEngine.ts
+│   ├── pages/                # Сюда создаем dashboard.vue
+│   ├── app.config.ts         # Конфигурация приложения Nuxt 4
+│   └── app.vue               # Главная точка входа
+├── package.json
+└── nuxt.config.ts            # Глобальный конфиг (лежит в самом корне проекта)
+```
+> **🛠️ Микро-справка для импортов (Новичку на заметку)**
+>
+> Поскольку в Nuxt 4 папка `/app` является корневым пространством имен, алиас `~` или `#` автоматически перенаправляется сборщиком внутрь этой папки.
+> Когда вы будете писать код из нашей статьи, пути импорта останутся красивыми и короткими. Вместо длинных относительных путей внутри `CounterWidget.vue` вы сможете писать:
+> ```ts
+> // NOTE: For example
+> import { useEngine } from '~/composables/useEngine'
+> // > Webpack/Vite сам найдет файл в app/composables/
+> ```
+
+На текущий момент файл `app/app.vue` выглядит так:
+```vue
+<template>
+  <div style="background-color: #121214; min-height: 100vh; padding: 40px; display: flex; justify-content: center; align-items: center;">
+    <!-- Nuxt автоматически найдет и отрендерит компонент из папки app/components/ -->
+    <CounterWidget />
+  </div>
+</template>
+```
+
+### Шаг 2. Изоляция ядра на сервере (Nuxt Plugin)
+
+Поскольку в среде SSR Node.js-процесс обслуживает тысячи пользователей одновременно, создавать движок как глобальный синглтон нельзя — данные одного пользователя неизбежно утекут к другому. 
+
+Мы напишем Nuxt-плагин, который будет создавать **изолированный инстанс движка под каждый конкретный HTTP-запрос** (паттерн Request-Scoped State), используя нативный механизм внедрения зависимостей `provide/inject`.
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="Плагин в контексте Nuxt 4 — это..."
+text="**Изолированный TypeScript/JavaScript модуль, который автоматически запускается на самом раннем этапе старта приложения до того, как начнется рендеринг Vue-компонентов**
+&nbsp;
+Если говорить простыми словами, плагин — это **«входной шлюз» и конфигуратор вашего приложения**. Он нужен для того, чтобы инициализировать глобальные библиотеки, настроить сквозные сервисы и прокинуть их в контекст, сделав доступными в любой точке проекта
+&nbsp;
+В архитектуре Nuxt 4 плагины играют критически важную роль благодаря трем ключевым концепциям:
+&nbsp;
+**1. Изоморфность и разделение сред (SSR-безопасность)**
+&nbsp;
+**По умолчанию код плагина в Nuxt 4 является изоморфным** — он выполняется дважды: сначала на сервере Node.js (при генерации HTML), а затем в браузере (при оживлении интерфейса). Но Nuxt 4 позволяет жестко разграничить рантайм с помощью расширений файлов, что критично для SSR:
+&nbsp;
+`myPlugin.server.ts` — запустится **строго на сервере.** Идеально для работы с сессиями, серверными базами данных или шифрованными ключами API.
+&nbsp;
+`myPlugin.client.ts` — запустится **строго в браузере.** Используется для подключения библиотек, требующих объект `window`, `document`, работу с буфером обмена или LocalStorage.
+&nbsp;
+**2. Паттерн Request-Scoped State (Изоляция запросов)**
+&nbsp;
+В обычном Vue-приложении (SPA) вы можете создать плагин как глобальный синглтон (через `export const engine = new Engine()`).
+&nbsp;
+Но на сервере Node.js один процесс обслуживает тысячи пользователей одновременно. Если сделать синглтон, данные одного юзера улетят в сессию другого. **Плагин в Nuxt 4 решает эту проблему архитектурно:** функция внутри `defineNuxtPlugin` вызывается заново **на каждый входящий HTTP-запрос**. Экземпляры библиотек (как наш `ReactiveEngine`) рождаются изолированными, живут в рамках одной сессии и безопасно уничтожаются сборщиком мусора.
+&nbsp;
+**3. Механизм внедрения зависимостей (`provide`)**
+&nbsp;
+Главная задача плагина — зарегистрировать зависимость и отдать её приложению. В Nuxt 4 это делается через возвращаемый объект `return { provide: { ... } }`.
+&nbsp;
+Nuxt под капотом делает две вещи:
+_**1. Во Vue-шаблонах:** Движок автоматически прокидывается через глобальный `provide`, и любой компонент может достать его через `inject('RE_ENGINE')`._
+_**2. В Nuxt-контексте:** Сервис становится доступен через системный хук `useNuxtApp().$reEngine`._
+&nbsp;
+**📂 Где они лежат и как работают в Nuxt 4?**
+&nbsp;
+В Nuxt 4 все плагины располагаются в папке **`app/plugins/`**. Фреймворк использует механизм **Directory-based Auto-scanning:** вам не нужно нигде прописывать и регистрировать файлы в конфигах. Nuxt 4 сам сканирует папку `app/plugins/`, на лету генерирует для них TypeScript-типы и автоматически подключает к ядру приложения в правильном порядке."
+/>
+
+Создаем файл `app/plugins/reactiveEngine.ts`:
+
+```typescript
+// app/plugins/reactiveEngine.ts
+
+import { ReactiveEngine as ReactiveEngine4Vue } from '@pravosleva/reactive-engine/vue'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  // Инициализируем Vue-версию движка под текущую сессию/запрос
+  const engine = new ReactiveEngine4Vue({
+    logger: {
+      isEnabled: import.meta.dev,
+      instanceName: import.meta.server ? 'nuxt-server-engine' : 'nuxt-client-engine'
+    }
+  })
+
+  // Прокидываем инстанс во Vue-контекст приложения (для inject)
+  nuxtApp.vueApp.provide('RE_ENGINE', engine)
+
+  // Делаем движок доступным через useNuxtApp().$reEngine
+  return {
+    provide: {
+      reEngine: engine
+    }
+  }
+})
+```
+
+Для удобного и строго типизированного доступа к движку внутри компонентов создадим простой composable в файле `app/composables/useEngine.ts`:
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="Composable в контексте Nuxt 4 — это..."
+text="**Функция, которая инкапсулирует в себя логику состояния и переиспользуемые функции, созданная с помощью встроенного во Vue 3 Composition API**
+&nbsp;
+Если говорить простыми словами, это «строительный блок» бизнес-логики, который можно легко импортировать в любые компоненты, чтобы не дублировать один и тот же код. По своей сути композаблы во Vue 3 **являются прямым архитектурным аналогом кастомных хуков в React** (таких как `useEdna` или `useArticlesSearch` из предыдущих статей)
+&nbsp;
+В Nuxt 4 композаблы выходят на новый уровень благодаря встроенной магии автоматизации и SSR-оптимизации. Вот главные особенности, которые нужно знать разработчику:
+&nbsp;
+**1. Тотальный автоимпорт (Auto-imports)**
+&nbsp;
+В Nuxt 4 все файлы, расположенные в директории `app/composables/`, сканируются фреймворком автоматически:
+👉 **Как было раньше:** Чтобы использовать функцию в компоненте, нужно было писать `import { useMyHook } from '~/composables/useMyHook'`.
+👉 **Как это работает в Nuxt 4:** Вы просто создаете файл (например, `app/composables/useEngine.ts`) и экспортируете оттуда функцию. Всё! В любом компоненте или на любой странице вы можете сразу писать `const engine = useEngine()`. Nuxt сам сгенерирует TypeScript-типы и лениво подключит этот код в рантайме только там, где он реально вызывается.
+&nbsp;
+**2. Управление состоянием в SSR-среде (useState)**
+&nbsp;
+Обычный реактивный `ref()` или `reactive()`, объявленный на верхнем уровне композабла, превращается в глобальный синглтон. В обычном браузере это нормально, но при серверном рендеринге (SSR) это вызовет **утечку данных между пользователями**.
+&nbsp;
+Для решения этой проблемы Nuxt 4 предоставляет специальный встроенный композабл `useState()`. Он гарантирует:
+👉 Изоляцию данных между HTTP-запросами на сервере
+👉 Бесшовную передачу (сериализацию) этого состояния с сервера Node.js в браузер в виде JSON-снимка (то, что мы использовали во второй части нашей статьи для гидратации графа)
+&nbsp;
+**📂 Правила организации композаблов в Nuxt 4**
+&nbsp;
+Чтобы автоимпорт работал без сбоев, в папке `app/composables/` принято соблюдать два простых правила:
+&nbsp;
+**Именование по конвенции `use*`**: Функции всегда называют с префикса use (например, `useEngine`, `useAuth`, `useLocalStorage`), что сразу дает понять разработчику и линтеру, что внутри используется реактивное состояние
+&nbsp;
+**Два типа экспорта:** Nuxt 4 умеет читать как именованные экспорты (`export const useEngine = ...`), так и дефолтные (`export default function () ...`). Рекомендуется использовать именованные экспорты, если в одном файле группируется несколько связанных микро-хуков."
+/>
+
+#### 🎓 Сравнение ментальных моделей: React Custom Hooks vs Vue Composables
+
+| Критерий | Custom Hook (React / Next.js) | Composable (Vue 3 / Nuxt 4) |
+| :--- | :--- | :--- |
+| **Импорт** | Требуется явный `import` вверху файла. | **Автоимпорт** из папки `app/composables/`. |
+| **Физика вызова** | Вызывается **на каждый ререндер** компонента. Код внутри функции крутится циклически. | Вызывается **строго один раз** при инициализации компонента (`setup`). Дальше рантайм следит за точечными прокси-мутациями. |
+| **Оптимизация** | Требует ручной обертки в `useCallback` и `useMemo` для защиты от лишних перерисовок. | Не требует оптимизаций зависимостей. Код изначально мелкозернистый и работает максимально быстро. |
+
+
+```typescript
+// app/composables/useEngine.ts
+
+import { inject } from 'vue'
+
+// Явное указание импорта типа для удовлетворения правил TS/ESLint
+import type { ReactiveEngine as ReactiveEngine4Vue } from '@pravosleva/reactive-engine/vue'
+
+export const useEngine = () => {
+  const engine = inject<ReactiveEngine4Vue>('RE_ENGINE')
+  if (!engine) {
+    throw new Error('useEngine должен использоваться строго внутри плагина, где активирован provide')
+  }
+  return engine
+}
+```
+
+### Шаг 3. Создаем реактивный Vue-компонент
+
+Теперь самое интересное — магия моста между независимым грахом бизнес-логики и рантаймом Vue 3. Метод **`engine.use(signal)`** автоматически оборачивает сигнал ядра в стандартный объект **`ShallowRef<T>`**, обеспечивая реактивную синхронизацию изменений.
+
+Создаем компонент счетчика `components/CounterWidget.vue`:
+
+```vue
+<script setup lang="ts">
+import { AbstractService } from '@pravosleva/reactive-engine'
+import { useEngine } from '~/composables/useEngine'
+
+// 1. Описываем изолированную бизнес-логику (Сервис) 
+// Этот код на 100% идентичен тому, что мы пишем в React!
+class CounterLogic extends AbstractService {
+  public counter = this.engine.signal<number>(0, 'example:vue:counter')
+  public doubledCounter = this.engine.computed<number>(() => this.counter.value * 2, 'example:vue:computed')
+
+  public inc = () => {
+    this.counter.value += 1
+  }
+}
+
+// 2. Достаем изолированный инстанс движка из контекста Nuxt 3
+const engine = useEngine()
+
+// 3. Внедряем наш сервис из встроенного DI-контейнера ядра
+const logic = engine.inject(CounterLogic)
+
+// 4. Оборачиваем сигналы во Vue-реактивные примитивы.
+// Метод .use() возвращает стандартный ShallowRef<T> объект.
+const counter = engine.use(logic.counter)
+const doubledCounter = engine.use(logic.doubledCounter)
+</script>
+
+<template>
+  <div>
+    <div>Vue 3 Signal Example</div>
+
+    <!-- 
+      ⚠️ Внимание новичкам! 
+      В шаблонах Vue 3 объекты ref/shallowRef разворачиваются автоматически.
+      Обращаться к .value внутри тегов {{ }} НЕ нужно — пишем просто имя переменной.
+    -->
+    <code>{{ counter }} | x2 = {{ doubledCounter }}</code>
+
+    <div>
+      <!-- Вешаем слушатель события клика через директиву @click -->
+      <button @click="logic.inc">
+        INC (Vue)
+      </button>
+    </div>
+  </div>
+</template>
+```
+
+## 🌊 Часть 2. Гидратация состояния (Dehydration / Hydration)
+
+Чтобы полностью ликвидировать микро-мерцание контента при гидратации и убрать любые ложные сообщения об ошибках, мы применили изоморфный паттерн гарантированного фоллбэка: если внутреннее состояние `resourceState.value.data` движка находится в фазе секундного сброса (`null`), наше вычисляемое свойство `metricsData` на стороне Vue мгновенно и бесшовно подставляет данные напрямую из `props.snapshot`. Верстка застывает намертво, обеспечивая идеальный UX без Layout Shift.
+
+### Шаг 1. Универсальный асинхронный сервис
+
+Сервис сам управляет своими зависимостями (`computed`) и асинхронным ресурсом (`resource`), принимая нативный токен отмены `abortSignal`.
+
+Создаем файл **`app/services/DashboardMetricsService.ts`**:
+
+```ts
+// app/services/DashboardMetricsService.ts
+
+import { AbstractService } from '@pravosleva/reactive-engine'
+
+// Интерфейс сырых данных бэкенда
+export interface IDashboardData {
+  rawUsersCount: number
+  rawServerLoad: number
+}
+
+// Контракт плоского слепка состояния (Snapshot) для передачи по сети
+export interface IDashboardSnapshot {
+  'ssr:metrics:users': number
+  'ssr:metrics:load': number
+}
+
+export class DashboardMetricsService extends AbstractService {
+  // 1. Сигналы-зависимости. snapshotSignal — изоморфный мост гидратации
+  public endpoint = this.engine.signal<string>('dashboard-metrics', 'ssr:signal:endpoint')
+  private snapshotSignal = this.engine.signal<IDashboardSnapshot | null>(null, 'ssr:signal:snapshot')
+
+  // Объединяем сигналы в единый вычисляемый кортеж зависимостей для ресурса
+  private requestDeps = this.engine.computed(() => {
+    return [this.endpoint.value, this.snapshotSignal.value] as const
+  }, 'ssr:computed:request-deps')
+
+  // 2. Декларативный асинхронный ресурс (Сетевой слой)
+  public metricsResource = this.engine.resource<IDashboardData, readonly [string, IDashboardSnapshot | null]>(
+    async ([_endpoint, clientSnapshot]) => {
+      // ГИДРАТАЦИЯ: Если на клиент прилетел готовый снапшот — мгновенно отдаем его без fetch
+      if (clientSnapshot) {
+        return {
+          rawUsersCount: clientSnapshot['ssr:metrics:users'],
+          rawServerLoad: clientSnapshot['ssr:metrics:load']
+        }
+      }
+
+      // Вызывается на сервере Node.js при SSR ИЛИ при ручном refresh на клиенте
+      if (import.meta.server) {
+        return { rawUsersCount: 1420, rawServerLoad: 42 }
+      }
+
+      // Эмуляция сети для последующих ручных обновлений на клиенте
+      await new Promise(resolve => setTimeout(resolve, 100))
+      return {
+        rawUsersCount: Math.floor(Math.random() * 200) + 1300,
+        rawServerLoad: Math.floor(Math.random() * 30) + 20
+      }
+    },
+    this.requestDeps,
+    'ssr:resource:metrics'
+  )
+
+  // 3. Вычисляемое свойство статуса (Считываем поля .data строго по типам вашего ядра)
+  public status = this.engine.computed<string>(() => {
+    const data = this.metricsResource.data
+    if (!data) return 'STABLE ✅' // Дефолтный статус для серверного кадра при гидратации
+    return data.rawServerLoad > 80 ? 'CRITICAL 🔥' : 'STABLE ✅'
+  }, 'ssr:computed:status')
+
+  /**
+   * Метод гидратации: Переводим сигналы на рельсы прилетевших данных
+   */
+  public initFromSnapshot(snapshot?: IDashboardSnapshot | null): void {
+    if (!snapshot) return
+    this.snapshotSignal.value = snapshot
+  }
+
+  /**
+   * Метод генерации снимка для передачи по сети на сервере
+   */
+  public getSnapshot(): IDashboardSnapshot {
+    const data = this.metricsResource.data
+    return {
+      'ssr:metrics:users': data?.rawUsersCount ?? 1420,
+      'ssr:metrics:load': data?.rawServerLoad ?? 42
+    }
+  }
+
+  /**
+   * Бизнес-метод мутации (Инвалидация через изменение зависимостей ресурса)
+   */
+  public simulateUserInflow = (): void => {
+    this.snapshotSignal.value = null // Снимаем заглушку, открывая шлюз для живой сети
+    this.endpoint.value = `dashboard-metrics?refresh=${Date.now()}`
+  }
+}
+```
+
+### Шаг 2. Серверная подготовка данных
+
+На сервере Node.js мы запрашиваем сырые метрики из базы данных, внедряем наш новый сервис из DI-контейнера текущей сессии, наполняем его данными и генерируем плоский JSON-слепок через `getSnapshot()`.
+
+#### План А: ⚠️ Экспериментальный
+
+Обновляем файл **`app/pages/dashboard.vue`**:
+
+```vue
+<!-- app/pages/dashboard.vue -->
+<script setup lang="ts">
+import { useEngine } from '~/composables/useEngine'
+import { DashboardMetricsService, type IDashboardSnapshot } from '~/services/DashboardMetricsService'
+
+const engine = useEngine()
+const metricsService = engine.inject(DashboardMetricsService)
+
+// На этапе SSR блокируем поток сервера Node.js до полного выполнения асинхронного ресурса движка
+if (import.meta.server) {
+  // Если у вашего ресурса есть promise-геттер загрузки, дожидаемся его выполнения
+  // Либо Nuxt автоматически дождется топ-левел await тасок перед генерацией HTML-кадра
+}
+
+// Формируем плоский снимок состояния
+const sharedSnapshot = useState<IDashboardSnapshot>(
+  'engine-state-snapshot',
+  () => metricsService.getSnapshot()
+)
+</script>
+
+<template>
+  <main style="max-width: 600px; margin: 0 auto; padding: 40px;">
+    <h1 style="color: #ff8a53; font-size: 1.8rem; margin-bottom: 24px;">
+      🌊 Мониторинг: Nuxt 4 + ReactiveEngine (Resource SSR)
+    </h1>
+
+    <DashboardClientUI :snapshot="sharedSnapshot" />
+  </main>
+</template>
+```
+
+#### План Б:  Родной подход Nuxt через `useAsyncData` (рекомендуемый и самый стабильный)
+Чтобы не пытаться вытащить скрытые промисы из вашего Webpack-эффекта внутри движка, мы можем поручить управление сетевым запросом встроенному в Nuxt инструменту `useAsyncData`.
+Мы выполним fetcher-функцию один раз средствами Nuxt, а затем передадим готовый результат в метод `setup()` сервиса прямо на сервере. Это гарантирует **0 секунд ожидания** и идеальную SSR-генерацию.
+Полностью обновите файл `app/pages/dashboard.vue`:
+```vue
+<!-- app/pages/dashboard.vue -->
+<script setup lang="ts">
+import { useEngine } from '~/composables/useEngine'
+import { DashboardMetricsService, type IDashboardSnapshot } from '~/services/DashboardMetricsService'
+
+// 1. На сервере Nuxt сам выполняет асинхронный запрос и блокирует поток до его резолва
+const { data: serverMetrics } = await useAsyncData('dashboard-ssr-fetch', async () => {
+  // В реальном проекте здесь будет обращение к вашему бэкенду/базе
+  return {
+    rawUsersCount: 1420,
+    rawServerLoad: 42
+  }
+})
+
+const engine = useEngine()
+const metricsService = engine.inject(DashboardMetricsService)
+
+// 2. Превращаем результат запроса Nuxt в плоский слепок (Snapshot)
+const initialSnapshot: IDashboardSnapshot = {
+  'ssr:metrics:users': serverMetrics.value?.rawUsersCount ?? 1420,
+  'ssr:metrics:load': serverMetrics.value?.rawServerLoad ?? 42
+}
+
+// 3. Записываем snapshot в кэш сервиса прямо на сервере, чтобы getSnapshot() отработал корректно
+metricsService.initFromSnapshot(initialSnapshot)
+
+// 4. Упаковываем в изоморфный буфер для передачи в браузер
+const sharedSnapshot = useState<IDashboardSnapshot>('engine-state-snapshot', () => initialSnapshot)
+</script>
+
+<template>
+  <main style="max-width: 600px; margin: 0 auto; padding: 40px;">
+    <h1 style="color: #ff8a53; font-size: 1.8rem; margin-bottom: 24px;">
+      🌊 Мониторинг: Nuxt 4 + ReactiveEngine (Resource SSR)
+    </h1>
+    
+    <DashboardClientUI :snapshot="sharedSnapshot" />
+  </main>
+</template>
+```
+
+### Шаг 3. Клиентская гидратация и интерактивный UI
+
+Клиентский компонент принимает пропсы, внедряет этот же самый класс сервиса в рантайме браузера и гидрирует его метод `initFromSnapshot()`. Код становится кристально чистым, а логика — централизованной.
+
+Обновляем файл **`app/components/DashboardClientUI.vue`**:
+
+```vue
+<!-- app/components/DashboardClientUI.vue -->
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useEngine } from '~/composables/useEngine'
+import { DashboardMetricsService, type IDashboardSnapshot, type IDashboardData } from '~/services/DashboardMetricsService'
+
+interface IDashboardProps {
+  snapshot: IDashboardSnapshot | null
+}
+
+const props = defineProps<IDashboardProps>()
+
+const engine = useEngine()
+const logic = engine.inject(DashboardMetricsService)
+
+// Инициализируем мост гидратации до запуска эффектов
+logic.initFromSnapshot(props.snapshot)
+
+// Строим реактивный мост во Vue со строгими типами вашего ядра (без any)
+const resourceState = engine.use(logic.metricsResource)
+const status = engine.use(logic.status)
+
+// Бесшовный прокси-фоллбэк (Ликвидация микро-мерцания верстки).
+// Если ресурс сбросился в null в момент гидратации эффектов, мы подставляем данные из props.snapshot напрямую. Экран застывает намертво без морганий.
+const metricsData = computed<IDashboardData | null>(() => {
+  const currentResourceData = resourceState.value?.data
+
+  if (currentResourceData) {
+    return currentResourceData
+  }
+
+  if (props.snapshot) {
+    return {
+      rawUsersCount: props.snapshot['ssr:metrics:users'],
+      rawServerLoad: props.snapshot['ssr:metrics:load']
+    }
+  }
+
+  return null
+})
+</script>
+
+<template>
+  <div style="background: rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 16px;">
+    <h3 style="margin: 0; color: #00b7ff;">
+      Ресурс гидрирован на базе нативного fetcher-транзита:
+    </h3>
+
+    <!-- TypeScript строго проверяет наличие полей внутри объекта metricsData -->
+    <div
+      v-if="metricsData"
+      style="font-size: 1.1rem; font-family: monospace;"
+    >
+      <div>Активных сессий: <code style="color: #00ffcc; font-weight: bold;">{{ metricsData.rawUsersCount }}</code></div>
+      <div style="margin-top: 8px;">
+        Нагрузка на CPU: <code style="color: #00ffcc; font-weight: bold;">{{ metricsData.rawServerLoad }}%</code>
+      </div>
+      <div style="margin-top: 8px;">
+        Статус системы: <code style="color: #ffcb6b; font-weight: bold;">{{ status }}</code>
+      </div>
+
+      <!-- Аккуратный индикатор фонового рефреша сети -->
+      <div
+        v-if="resourceState && resourceState.loading"
+        style="color: #ff8a53; font-size: 0.85rem; margin-top: 12px; font-style: italic;"
+      >
+        🔄 Обновление данных из сети...
+      </div>
+    </div>
+
+    <div
+      v-else
+      style="color: #ff5370;"
+    >
+      Критическая ошибка: данные сервера потеряны
+    </div>
+
+    <div>
+      <button
+        style="padding: 10px 16px; border: none; background: #ff8a53; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer;"
+        @click="logic.simulateUserInflow"
+      >
+        Обновить ресурс (Мутировать зависимость)
+      </button>
+    </div>
+  </div>
+</template>
+```
+
+### Проверка работы изоморфного приложения в браузере
+Перейдите в браузере на роут нашего дашборда:👉 http://localhost:3000/dashboard
+
+> [!info] **На что обратить внимание (Суть SSR)**
+> 
+> 1.  **Отсутствие мерцания:** Страница мгновенно отображает цифры 1420 и 42%. Никаких пустых лоадеров или нулей — данные прилетели готовыми прямо в HTML-коде с сервера Node.js.
+> 2.  **Живой граф:** Кликните по кнопке. Метрики в интерфейсе начнут синхронно увеличиваться. Это доказывает, что клиентский движок успешно подхватил слепок сервера и развернул на его основе полноценный реактивный граф в рантайме браузера.
+
+### 🚨 Золотые правила безопасности (SSR Rules of Thumb)
+
+1. **Request-Scoped инстансы:** Категорически избегайте глобальных синглтонов классов логики в SSR-среде. Инстанс должен создаваться через Nuxt Plugin и жить только в рамках текущего HTTP-запроса, изолируя сессии пользователей.
+2. **`engine.use(signal)` в рантайме:** Метод выступает умным контекстным адаптером. На сервере Node.js он пассивно считывает текущее значение для генерации HTML-строки, а на клиенте в браузере — автоматически разворачивает полноценную реактивную подписку.
+3.  **Сериализация примитивов:** В `useState` передавайте только плоские объекты (snapshots), а не сигналы целиком.
+
+## 📊 Сводная матрица и глубокий анализ: React vs Vue 3 в SSR-окружении
+
+Чтобы окончательно разложить по полочкам механику работы независимого реактивного ядра в изоморфных фреймворках, давайте взглянем на сводную матрицу состояний и жизненного цикла данных. 
+
+Несмотря на фундаментальные различия под капотом (React полагается на неизменяемость данных, виртуальное дерево и ручные ререндеры, в то время как Vue 3 использует нативную прокси-реактивность и мелкозернистое обновление DOM), движок `@pravosleva/reactive-engine` выступает для них универсальным общим знаменателем. Он полностью инкапсулирует бизнес-логику, предоставляя каждому фреймворку специализированные легковесные адаптеры-коннекторы (`use` для React и `engine.use()` для Vue 3), которые переводят сигналы ядра на нативный язык реактивности конкретного UI-движка.
+
+| Фаза / Контекст | React + Next.js (Pages/App Router) | Vue 3 + Nuxt 3/4 (Nitro Engine) | Физика процесса под капотом движка |
+| :--- | :--- | :--- | :--- |
+| **Изоляция на сервере (Node.js)** | Создание через DI-контейнер или Request-Scoped контекст внутри SSR-контроллера страницы. | Регистрация Request-Scoped инстанса через Nuxt Plugin с помощью встроенного механизма `provide/inject`. | **Защита от утечки данных:** Каждый HTTP-запрос порождает изолированный экземпляр графа вычислений. Память утилизируется сборщиком мусора (GC) сразу после отправки HTML. |
+| **Рендеринг кадра на сервере** | Адаптер считывает сырое `.value` сигнала, преобразуя его в статическую HTML-строку. Подписки (эффекты) блокируются. | Метод `engine.use()` считывает текущее значение кадра на сервере, не запуская клиентские вотчеры. | **Нулевой оверхед на сервере:** На этапе SSR Node.js не тратит ресурсы на подписки и отслеживание мутаций — граф работает как быстрый синхронный конвейер. |
+| **Изоморфный транспорт (Транзит)** | Сериализация через `pageProps` (в Pages Router) или пропсы серверных компонентов (в App Router). | Сериализация плоского слепка (Snapshot) в JSON-строку и передача через встроенный изоморфный буфер `useState()`. | **Dehydration (Дегидратация):** Сигналы нельзя передавать целиком (они содержат функции и подписки). Передается только плоский стейт «ключ-значение». |
+| **Оживление в браузере (Hydration)** | Клиентский адаптер подхватывает пропсы и создает локальные подписки, связывая граф со стейтом React. | Клиентский инстанс движка инициализирует сигналы данными из `useState()`, а `engine.use()` возвращает живой `ShallowRef<T>`. | **Синхронизация без мерцания:** Интерфейс оживает в браузере на базе *тех же самых данных*, что были на сервере, полностью исключая ошибки *Hydration Mismatch*. |
+| **Мутации и апдейты в DOM** | Изменение сигнала триггерит внутренний хук, вызывая ререндер компонента React и его дочерних нод. | Изменение значения сигнала мутирует связанный `ShallowRef`. Vue точечно обновляет строго текстовую ноду в DOM. | **Мелкозернистая реактивность:** Граф вычислений движка идеально мэтчится со стратегией обновлений Vue 3, обеспечивая максимальную производительность (60 FPS). |
+
+## Физика изоморфного моста: Разбор ментальной модели
+
+Главное, что должен усвоить разработчик при работе с `@pravosleva/reactive-engine` в SSR — это дуализм поведения метода `engine.use()`. 
+
+В момент, когда страница компилируется на сервере Node.js, этот метод работает в «пассивном» режиме: он просто заглядывает в ячейку памяти текущего кадра ресурса `metricsResource.data`, забирает вычисленные сервером данные из базы или внешнего API и мгновенно отдает их во Vue-шаблон для генерации статического HTML. Никаких слушателей, фоновых таймеров и подписок на сервере не создается, что гарантирует защиту от утечек оперативной памяти в Node.js.
+
+Но как только этот же код загружается в браузер пользователя, метод `engine.use()` переключается в «активный» режим. Он берет нативный асинхронный ресурс ядра, создает функцию-слушатель (`subscribe`), оборачивает ее во Vue-примитив `ShallowRef<T>` и подмешивает в жизненный цикл компонента. Благодаря разработанному нами прокси-фоллбэку в вычисляемом свойстве `metricsData`, Vue бесшовно удерживает серверную картинку контента в момент секундного перезапуска эффектов Webpack. 
+
+В результате мы получили уникальный архитектурный гибрид: бизнес-логика пишется как кристально чистый, независимый от фреймворков декларативный код (сервисы, ресурсы и computed-цепочки), а UI-слой получает ультрабыструю, нативную и строго типизированную реактивность.
+
+## Заключение
+Использование `@pravosleva/reactive-engine` в Nuxt 3-4 доказывает, что бизнес-логика (граф) полностью отделена от UI. Это позволяет писать код, тестировать его в изоляции и использовать как в React, так и в Vue.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "Реактивные мутации в JS (часть 1)",
+      "type": "link",
+      "link": "/p/reactive-engine-ru"
+    }
+  ]'
+/>

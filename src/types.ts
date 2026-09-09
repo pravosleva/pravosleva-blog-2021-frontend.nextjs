@@ -17,8 +17,37 @@ export namespace NCodeSamplesSpace {
       totalNotes: number;
     };
   }
+  export type TNotesListResponseModified = {
+    success: boolean;
+    data: { original: TNote; slug: string }[];
+    pagination: {
+      totalPages: number;
+      currentPage: number;
+      totalNotes: number;
+    };
+  }
   export type TSingleNoteResponse = {
     success: boolean;
     data: TNote;
+  }
+  export type TLocalNoteResponse = {
+    success: boolean;
+    data: TNote & {
+      title: string
+      brief: string
+      bg?: {
+        src: string
+        size: { w: number; h: number }
+        type: string
+      }
+      createdAt?: string
+      updatedAt?: string
+      priority?: number
+      tags?: string[]
+      category?: string
+      isPrivate?: boolean
+      author?: string
+      id?: string | number // на случай, если id прокинут из базы
+    };
   }
 }

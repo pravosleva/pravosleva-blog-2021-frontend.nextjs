@@ -3,7 +3,7 @@ import { NCodeSamplesSpace } from '~/types'
 export type TArticle = {
   slug: string;
   original: NCodeSamplesSpace.TNote;
-  brief: string;
+  brief?: string;
   bg?: {
     src: string;
     size: {
@@ -17,8 +17,7 @@ export type TArticle = {
 export type TPageService = {
   isOk: boolean;
   message?: string;
-  response?: NCodeSamplesSpace.TSingleNoteResponse;
-  modifiedArticle: TArticle | null;
+  response?: NCodeSamplesSpace.TSingleNoteResponse | NCodeSamplesSpace.TLocalNoteResponse;
 }
 
 export type TArticleComponentProps = {

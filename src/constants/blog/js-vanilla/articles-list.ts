@@ -8,14 +8,14 @@ export const bg = {
   },
   type: 'image/webp',
 }
-export const bgReactivity = {
-  src: '/static/img/blog/reactive-5.webp',
-  size: {
-    w: 1344,
-    h: 768,
-  },
-  type: 'image/webp',
-}
+// export const bgReactivity = {
+//   src: '/static/img/blog/reactive-5.webp',
+//   size: {
+//     w: 1344,
+//     h: 768,
+//   },
+//   type: 'image/webp',
+// }
 
 export const list: { [key: string]: TArticleTools } = {
   'js-vanilla-getExtractedValues': {
@@ -58,11 +58,11 @@ export const list: { [key: string]: TArticleTools } = {
     brief: 'JS Generators experience',
     bg,
   },
-  'reactive-engine-ru': {
-    id: '6a50eeb7f7929b414054202b',
-    brief: 'JS в действии',
-    bg: bgReactivity,
-  },
+  // 'reactive-engine-ru': {
+  //   id: '6a50eeb7f7929b414054202b',
+  //   brief: 'JS в действии',
+  //   bg: bgReactivity,
+  // },
   'js-interview-2026': {
     id: '6a3e79f8f7929b4140542026',
     brief: 'Заметки про JS',

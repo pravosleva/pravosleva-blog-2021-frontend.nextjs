@@ -79,7 +79,14 @@ const Sidebar = styled.div`
   z-index: 3;
 `
 
-const STATIC_TAGS = [...['сетевые_протоколы', 'краснаяАкула', 'bash', 'git', 'nginx', 'рабочие_моменты']].sort(abSort)
+const STATIC_TAGS = [
+  // 'сетевые_протоколы',
+  // 'краснаяАкула',
+  'bash',
+  // 'git',
+  // 'nginx',
+  'рабочие_моменты',
+].sort(abSort)
 
 export const withMobileMenu = (ComposedComponent) => {
   // 1. Создаем внутренний чистый компонент со всей логикой
@@ -147,13 +154,13 @@ export const withMobileMenu = (ComposedComponent) => {
                 </a>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/p/protocols">
                 <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/protocols') ? 'active' : ''}>
                   {props.t('NETWORK_PROTOCOLS')}
                 </a>
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link href="/blog/q/MartVirkus">
                 <a onClick={handleCloseSidebar} className={checkActive('/blog/q/MartVirkus')}>Comic by Mart Virkus</a>

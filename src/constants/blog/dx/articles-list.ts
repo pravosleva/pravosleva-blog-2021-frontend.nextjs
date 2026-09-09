@@ -8,14 +8,14 @@ const madDeveloperBg = {
   },
   type: 'image/webp',
 }
-const dxBg = {
-  src: 'https://pravosleva.pro/static/img/blog/joker.webp',
-  size: {
-    w: 990,
-    h: 1220,
-  },
-  type: 'image/webp',
-}
+// const dxBg = {
+//   src: 'https://pravosleva.pro/static/img/blog/joker.webp',
+//   size: {
+//     w: 990,
+//     h: 1220,
+//   },
+//   type: 'image/webp',
+// }
 
 export const list: {[key: string]: TArticleTools} = {
   'good-dx-exp-2024': {
@@ -23,9 +23,9 @@ export const list: {[key: string]: TArticleTools} = {
     brief: 'Философ был свободен от следующих 4-х предметов: предвзятого взгляда, уверенности, упрямства и эгоизма (Конфуций)',
     bg: madDeveloperBg,
   },
-  'good-dx-exp-2024-p3': {
-    id: '66d83030d9a7126af852ebfd',
-    brief: 'DX news',
-    bg: dxBg,
-  },
+  // 'good-dx-exp-2024-p3': {
+  //   id: '66d83030d9a7126af852ebfd',
+  //   brief: 'DX news',
+  //   bg: dxBg,
+  // },
 }

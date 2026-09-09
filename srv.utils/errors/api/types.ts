@@ -1,7 +1,7 @@
 export namespace NResponseLocal {
-  export interface IResult {
+  export interface IResult<T> {
     isOk: boolean
-    response?: any
+    response?: T
     message?: string
   }
 

@@ -14,7 +14,7 @@ export const useArticlesSearch = () => {
   const { loading, data, error } = useReactiveValue0(searchArticlesService.searchResource)
 
   // (WTF?) Используем useRef, чтобы сохранять предыдущие результаты во время загрузки следующей страницы
-  const __resultsRef = useRef<NCodeSamplesSpace.TNote[]>([])
+  const __resultsRef = useRef<{ original: NCodeSamplesSpace.TNote; slug: string }[]>([])
   
   if (data && data.length > 0) {
     __resultsRef.current = data
@@ -42,6 +42,7 @@ export const useArticlesSearch = () => {
 
     // #SEARCH_PANEL_EXP 3/3
     isSearchPanelOpen,
-    setIsSearchPanelOpen: (val: boolean) => { searchArticlesService.isSearchPanelOpen.value = val }
+    setIsSearchPanelOpen: (val: boolean) => { searchArticlesService.isSearchPanelOpen.value = val },
+    close: () => searchArticlesService.close(),
   }
 }

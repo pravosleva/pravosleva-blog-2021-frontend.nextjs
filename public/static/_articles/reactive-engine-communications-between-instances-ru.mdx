@@ -1,0 +1,251 @@
+---
+title: "Reactive Engine: Инстансы движка или Общение между государствами"
+brief: 'JS в действии'
+bg_src: '/static/img/blog/reactive-5.webp'
+bg_size: { w: 1344, h: 768 }
+bg_type: 'image/webp'
+
+createdAt: "2026-08-12T14:25:58.642Z"
+updatedAt: "2026-08-15T16:56:34.881Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["react", "reactivity", "reactive_engine"]
+category: "news"
+isPrivate: false
+---
+## Топ-3 тезиса
+### Экономия на операциях с памятью (Garbage Collection)
+В React при каждом изменении стейта компонент вызывается как функция заново. Это значит, что **в памяти заново создаются тысячи временных JS-объектов, описывающих Virtual DOM**. Затем **React тратит ресурсы CPU на их сравнение (reconciliation)**, а после — **нагружает Garbage Collector (сборщик мусора)**, чтобы эти объекты удалить. Мой движок создает прокси-обертку один раз при инициализации. При изменении данных память не забивается временным мусором, так как обновление идет напрямую в целевой узел DOM.
+
+### Проблема ререндеров решена на уровне архитектуры
+В React, если стейт изменился на самом верху приложения, по умолчанию начнет перерисовываться всё дерево вниз. Разработчикам приходится вручную расставлять `useMemo`, useCallback и `React.memo`, чтобы спасти перформанс. В моем движке такой проблемы нет физически: благодаря Proxy и Dependency Tracking, изменение переменной count дернет исключительно функцию обновления строки `<span>{count}</span>`, даже если этот спан зарыт на 20 уровней вглубь дерева. Родительские компоненты вообще не знают об этом обновлении.
+
+### Нулевой оверхед на загрузку (Bundle Size & TTI)
+Для долгосрочных и нагруженных инхаус-продуктов критически важна метрика TTI (Time to Interactive). Доставка 45 килобайт рантайма React на мобильные устройства со слабым 3G-интернетом замедляет парсинг скриптов. Мой движок весит в 15–20 раза меньше, не требует тяжелых полифилов и начинает работать мгновенно, что дает колоссальный буст для Core Web Vitals на клиенте.
+
+## Инстансы движка
+Каждый вызов `new ReactiveEngine()` создает изолированное государство со своей собственной инфраструктурой под капотом. У них нет общего глобального стейта, они никак не пересекаются в памяти и ничего не знают друг о друге.
+
+### Что у каждого инстанса движка свое (изолированное)?
+- **Собственный DI-контейнер**: Сервисы, зарегистрированные через `engine1.inject(Logic)`, будут жить только внутри первого движка. Если вы вызовете `engine2.inject(Logic)`, создастся совершенно другой, второй экземпляр класса `Logic`.
+- **Изолированный граф реактивности**: Сигналы и компутеды, созданные внутри `engine1`, не могут триггерить вычисления или эффекты, созданные внутри `engine2`. Сборщик зависимостей (`engine.activeEffect`) у каждого свой.
+- **Раздельные шедулеры батчинга**: Очередь микрозадач `queueMicrotask` на выполнение эффектов и логов формируется у каждого движка отдельно. Они не склеиваются между собой.
+- **Собственные настройки логгера**: Вы можете включить логгер на полную мощность для `engine1`, а для `engine2` полностью его отключить — их консоли не будут забивать друг друга.
+
+### Зачем это нужно на практике?
+- Паттерн нескольких инстансов движка идеален для микрофронтендов (**Microfrontends**) или изолированных виджетов.
+- Если на одной большой странице вашего портала рендерится сразу три независимых сложных виджета (например: «Чат», «Форма загрузки документов» и «Дашборд аналитики»), каждый из них может инициализировать свой собственный `new ReactiveEngine()`.
+- Это гарантирует, что **тяжелые каскады перерасчетов или очистка памяти (`destroy()`) внутри Чата физически не смогут затормозить или сломать работу Формы документов**, так как их реактивные графы изолированы на уровне инстансов классов.
+
+#### Отличный юзкейс для двух независимых инстансов — это архитектура «Ядро Системы + Изолированный Плагин» (или микрофронтенды).
+
+*Представьте дашборд оператора:*
+- **Главный инстанс (`hostEngine`)** управляет глобальным состоянием (например, текущим выбранным пользователем/аккаунтом).
+- **Второй инстанс (`widgetEngine`)** — это изолированный сторонний виджет (например, Чат или Калькулятор тарифа), который живет своей жизнью, имеет свои тяжелые внутренние сигналы, но должен реагировать на то, какой пользователь сейчас выбран в Главном ядре.
+
+Мы изолируем виджет на уровне своего `new ReactiveEngine()`, чтобы его внутренний спам вычислений не трогал Глобальное ядро. При этом мы «подружим» их через мост синхронизации на уровне эффекта.
+
+##### Шаг 1. Изолированная бизнес-логика двух систем
+```ts
+// services.ts
+
+import { AbstractService } from '@pravosleva/reactive-engine'
+
+// Глобальный сервис хост-приложения (Инстанс 1)
+export class HostGlobalService extends AbstractService {
+  public activeUserId = this.engine.signal<string>('user-1', 'host:active-user-id');
+  
+  public switchUser(id: string) {
+    this.activeUserId.value = id;
+  }
+}
+
+// Внутренний сервис изолированного виджета (Инстанс 2)
+export class WidgetInternalService extends AbstractService {
+  // Виджет хранит локальную копию ID, чтобы крутить вокруг неё свои вычисления
+  public currentTargetUser = this.engine.signal<string>('', 'widget:target-user');
+  public widgetLocalCounter = this.engine.signal<number>(0, 'widget:local-counter');
+
+  // Тяжелый локальный компутед виджета
+  public widgetStatus = this.engine.computed(() => {
+    return `[Виджет работает для ${this.currentTargetUser.value}]. Локальных кликов: ${this.widgetLocalCounter.value}`;
+  }, 'widget:computed:status [IS_OPTIMIZED=1]');
+
+  public incLocal() {
+    this.widgetLocalCounter.value += 1;
+  }
+}
+```
+
+##### Шаг 2. React-компонент с мостом синхронизации
+Здесь мы создаем два независимых движка. Секрет их «дружбы» заключается в том, что мы подписываемся на Глобальный сигнал Хоста и при его изменении синхронно пинаем сигнал Виджета.
+```tsx
+// Example115.tsx
+
+import { useEffect } from 'react'
+import baseClasses from '~/ui.common.module.scss'
+import btnClasses from '~/ui.button.module.scss'
+import { ReactiveEngine } from '@pravosleva/reactive-engine/react'
+import { HostGlobalService, WidgetInternalService } from './services'
+import clsx from 'clsx'
+
+// 🌟 Создаем два АБСОЛЮТНО независимых государства в памяти
+const hostEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^host:.*/ } });
+const widgetEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^widget:.*/ } });
+
+export const Example115 = () => {
+  // Инжектируем синглтоны в их родные инстансы движков
+  const hostLogic = hostEngine.inject(HostGlobalService);
+  const widgetLogic = widgetEngine.inject(WidgetInternalService);
+
+  // Оформляем стандартные подписки для вывода на экран
+  const activeUserId = hostEngine.use(hostLogic.activeUserId);
+  const widgetStatus = widgetEngine.use(widgetLogic.widgetStatus);
+
+  // 🌟 МОСТ ДРУЖБЫ И СИНХРОНИЗАЦИИ (Cross-Engine Bridge):
+  useEffect(() => {
+    // Подписываемся на изменения в Первом движке (Host)
+    const unsubscribeHost = hostEngine.effect(() => {
+      const freshHostUserId = hostLogic.activeUserId.value;
+
+      // Передаем значение во Второй движок (Widget) напрямую в его сигнал!
+      // Это абсолютно безопасно, так как вызов происходит на границе систем
+      widgetLogic.currentTargetUser.value = freshHostUserId;
+    }, 'bridge:host-to-widget-sync');
+
+    // При размонтировании (unmount) уничтожаем мост
+    return () => unsubscribeHost();
+  }, [hostLogic, widgetLogic]);
+
+  return (
+    <div className={clsx(baseClasses.unit, baseClasses.stack2)} style={{ width: '600px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      
+      {/* СЛОЙ 1: ХОСТ ПРИЛОЖЕНИЕ (ДВИЖЕК 1) */}
+      <div style={{ padding: '12px', background: '#1a1a24', borderRadius: '8px', border: '1px solid #00b4d8' }}>
+        <h4 style={{ margin: '0 0 8px 0', color: '#00b4d8' }}>🌐 Хост-приложение (Engine #1)</h4>
+        <div style={{ fontSize: '13px', marginBottom: '10px' }}>Текущий пользователь в Системе: <b>{activeUserId}</b></div>
+        
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            onClick={() => hostLogic.switchUser('user-1')}
+            className={clsx(btnClasses.btn, btnClasses.neonBtn, btnClasses['neonBtn--primary'], { [btnClasses['neonBtn--contained']]: activeUserId === 'user-1' })}
+          >
+            User 1
+          </button>
+          <button 
+            onClick={() => hostLogic.switchUser('user-2')}
+            className={clsx(btnClasses.btn, btnClasses.neonBtn, btnClasses['neonBtn--primary'], { [btnClasses['neonBtn--contained']]: activeUserId === 'user-2' })}
+          >
+            User 2
+          </button>
+        </div>
+      </div>
+
+      {/* СЛОЙ 2: ИЗОЛИРОВАННЫЙ ВИДЖЕТ (ДВИЖЕК 2) */}
+      <div style={{ padding: '12px', background: '#111116', borderRadius: '8px', border: '1px solid #42b883' }}>
+        <h4 style={{ margin: '0 0 8px 0', color: '#42b883' }}>🧩 Изолированный Плагин-Виджет (Engine #2)</h4>
+        <div style={{ fontSize: '13px', fontFamily: 'monospace', background: '#000', padding: '8px', borderRadius: '4px', marginBottom: '10px', color: '#ccc' }}>
+          {widgetStatus}
+        </div>
+        
+        <button 
+          onClick={() => widgetLogic.incLocal()}
+          className={clsx(btnClasses.btn, btnClasses.neonBtn, btnClasses['neonBtn--secondary'], btnClasses['neonBtn--contained'])}
+        >
+          💥 Локальный клик виджета (+1)
+        </button>
+      </div>
+
+    </div>
+  )
+}
+```
+
+##### 🔬 Что мы видим в консоли и почему это шедевр изоляции?
+Когда вы нажимаете кнопку «💥 Локальный клик виджета»:
+1. Мутирует сигнал `widgetLocalCounter`.
+2. Пересчитывается компут `widget:computed:status`.
+3. В логгере стреляет обособленный батч `REACTIVE TRANSACTION (Filter: widget)`.
+4. **Главное ядро (`hostEngine`) об этом клике вообще ничего не знает!** Его логгер полностью молчит, его компуты не перепроверяются, а граф зависимостей Хоста остается в идеальном покое. Мы защитили Хост от спама тяжелого плагина.
+
+Когда вы переключаете пользователя на Хосте («User 2»):
+1. Сигнал `host:active-user-id` меняется.
+2. Просыпается наш useEffect-мост `bridge:host-to-widget-sync`.
+3. Он забирает свежий ID и пушит его во второй движок: `widgetLogic.currentTargetUser.value = 'user-2'`.
+4. Виджет подхватывает это значение, пересчитывает свой статус и плавно обновляет зеленую плашку на экране.
+
+Паттерн организации кросс-движковых мостов через `useEffect` или через прямые методы `.subscribe()` — это стандарт для построения надежных корпоративных плагинных систем.
+
+### Выбор способа связи создаваемых движков
+Он зависит от того, где рождается это событие и каков жизненный цикл ваших модулей. `useEffect` — отличный и безопасный вариант для React-компонентов, но **он жестко привязывает логику к UI-слою**. Если компонент размонтируется, связь порвется.
+Если вам нужна постоянная архитектурная связь на уровне фоновых сервисов (Data Layer), которая работает вообще в обход фреймворка (например, до маунта компонентов или в чистом NodeJS/Vitest), механизмы React использовать нельзя.
+
+Давайте разберем 3 основных способа, как подружить два независимых инстанса движка.
+
+#### Способ 1. Чистый JavaScript-мост через `.subscribe()` (Вне фреймворка)
+Самый надежный способ связать движки на уровне бизнес-логики. Мы нативно подписываемся на сигнал первого движка через метод `.subscribe()` и в коллбэке синхронно пинаем сигнал второго движка.Этот код пишется прямо в файле инициализации сервисов `services.ts` и работает автономно:
+```ts
+// src/examples/example-115/services.ts
+
+import { AbstractService, ReactiveEngine } from '@pravosleva/reactive-engine'
+
+// 1. Создаем движки на уровне слоя данных
+export const hostEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^host:.*/ } });
+export const widgetEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^widget:.*/ } });
+
+export class HostGlobalService extends AbstractService {
+  public activeUserId = this.engine.signal<string>('user-1', 'host:active-user-id');
+  public switchUser(id: string) { this.activeUserId.value = id; }
+}
+
+export class WidgetInternalService extends AbstractService {
+  public currentTargetUser = this.engine.signal<string>('', 'widget:target-user');
+  public widgetLocalCounter = this.engine.signal<number>(0, 'widget:local-counter');
+  
+  public widgetStatus = this.engine.computed(() => {
+    return `[Виджет для ${this.currentTargetUser.value}]. Кликов: ${this.widgetLocalCounter.value}`;
+  }, 'widget:computed:status [IS_OPTIMIZED=1]');
+
+  public incLocal() { this.widgetLocalCounter.value += 1; }
+}
+
+// 2. Инициализируем синглтоны в их родных контейнерах
+const hostLogic = hostEngine.inject(HostGlobalService);
+const widgetLogic = widgetEngine.inject(WidgetInternalService);
+
+// 🌟 ЧИСТЫЙ JS-МОСТ СИНХРOНИЗАЦИИ (Канонический подход):
+// Мы используем встроенный метод .subscribe() сигнала ядра. 
+// Связь будет жить вечно в оперативной памяти приложения, независимо от роутинга React!
+hostLogic.activeUserId.subscribe((event) => {
+  // Напрямую пушим новое значение во второй изолированный движок
+  widgetLogic.currentTargetUser.value = event.to; 
+});
+```
+
+#### Способ 2. Декларативный мост через эффекты ядра (`engine.effect`)
+Если вы хотите использовать продвинутый батчинг микрозадач (`REACTIVE TRANSACTION`), вы можете завести мост через `engine.effect` первого движка прямо в корневом файле конфигурации приложения:
+```ts
+// Сработает синхронно в конце микрозадачи, упаковав лог смены пользователя в транзакции Хоста
+hostEngine.effect(() => {
+  const freshId = hostLogic.activeUserId.value; // Намертво подписываем эффект к Engine 1
+  
+  widgetLogic.currentTargetUser.value = freshId; // Синхронно пушим в Engine 2
+}, 'core-bridge:global-sync [IS_OPTIMIZED=1]');
+```
+
+#### Способ 3. Мост через механизмы фреймворка (`useEffect` / `watch` / `effect`)
+Это тот вариант, который мы написали в самом начале.
+**Когда он идеален:** Когда второй движок (`widgetEngine`) — это **динамический плагин**, который загружается на экран только в определенные моменты (например, вкладка «Расширенная аналитика»). Нам не нужно держать подписку в памяти вечно. Пока вкладка открыта — `useEffect` держит мост. Вкладку закрыли — `useEffect` вернул `unsubscribeHost()`, и память полностью очистилась.
+
+#### ⚖️ Сводная таблица: Выбор стратегии синхронизации инстансов
+
+| Критерий сравнения | Способ 1 и 2 (`.subscribe` / `engine.effect`) | Способ 3 (`useEffect` в React) |
+| :--- | :--- | :--- |
+| **Где располагается код?** | На уровне слоя данных (`services.ts` или `main.ts`) | На уровне UI-представления (`Component.tsx`) |
+| **Жизненный цикл связи** | Вечный (пока открыта вкладка приложения в браузере) | Динамический (активен, пока компонент смонтирован) |
+| **Управление памятью** | Не требуется (синглтон-сервисы не уничтожаются) | Автоматическое (через функцию очистки в `return`) |
+| **Тестирование (Vitest / Jest)**| **Идеально** — тестируется как чистый JS без рендера UI | Требует рендера компонента (`@testing-library`) |
+| **Связность (Coupling)** | Слабая (Low Coupling) — архитектурный плюс | Высокая (High Coupling) — привязано к React |
+
+**Резюме:** Для примера `Example115` использование `useEffect` является абсолютно легитимным и наглядным DX-паттерном, так как мы демонстрируем поведение именно внутри React-песочницы. Но если вы проектируете архитектуру большого приложения — лучше выносить мосты синхронизации на уровень файлов конфигурации слоев данных (`services.ts`), оставляя компоненты React кристально чистыми.

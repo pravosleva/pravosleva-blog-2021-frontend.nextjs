@@ -1,4 +1,68 @@
-# Next.js with TypeScript
+# Pravosleva Blog
+Next.js / React / TypeScript
+
+## News 2026.09 Оптимизация расходов на VPS
+Чтоб не потерять важную информацию и оптимизировать расходы, мы предусмотрели локальный поиск по файлам и генерацию объекта для отображения списка статей.
+
+### Deploy
+**Stage**
+```bash
+yarn build && bash deploy2.sh stage
+```
+**Prod**
+```bash
+yarn build && bash deploy2.sh production
+```
+
+Что произойдет:
+- Билд
+- Индексация локальных статей 👉 Создастся `public/static/local.slug-map.json`
+- Создастся `public/robots.txt` & Sitemap
+- Деплой продуктов сборки, исходя из настроек целевых ардресов в файлах `.env.[stage|production]`
+
+### 0. Добавить статью
+Создать файл `public/static/_articles/[readable-slug-in-kebab-case].mdx`
+
+### 1. Генерация локальной карты сайта в `public/static/local.slug-map.json`
+```bash
+chmod +x refresh-slug-mapping.sh
+bash refresh-slug-mapping.sh
+```
+
+Объект должен быть доступен на сервере по `/static/local.slug-map.json`
+
+_Или:_
+```json
+"scripts": {
+  "transpile-server": "...",
+  "build": "node scripts/generate-slug-map.js && next build"
+}
+```
+
+### 2. Отключение поиска по удаленному ресурсу, включение локального поиска
+`.env.production`
+```sh
+NOTES_IS_LOCAL_SEARCH_ENABLED=1
+NOTES_IS_REMOTE_SEARCH_ENABLED=0
+```
+
+### 3. Переход на бюджетный сервер (минимум расхода RAM)
+```sh
+NEXT_IS_IMAGE_OPTIMIZATION_DISABLED=1
+```
+
+### 4. Настройки деплоя на разные стенды (только для bash)
+`.env.production`
+```sh
+BASH_DEPLOY_HOST=
+BASH_REMOTE_ROOT=/root/projects/pravosleva-blog/frontend.nextjs
+```
+
+`.env.stage`
+```sh
+BASH_DEPLOY_HOST=
+BASH_REMOTE_ROOT=/home/projects/pravosleva-blog/frontend.nextjs
+```
 
 ## News 2026.08
 

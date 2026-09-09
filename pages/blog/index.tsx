@@ -36,7 +36,7 @@ import { setCommonStore } from '~/utils/next'
 type TPageService = {
   isOk: boolean;
   message?: string;
-  response?: NCodeSamplesSpace.TNotesListResponse;
+  response?: NCodeSamplesSpace.TNotesListResponseModified;
 }
 
 const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: TArticle[]; }) => {
@@ -117,22 +117,16 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
     // if (result?.ok === true) store.dispatch(setIsOneTimePasswordCorrect(true))
     // if (typeof result === 'string') errorMsg = result
 
-    const notesResult = await universalHttpClient.get('/express-next-api/code-samples-proxy/api/notes')
+    const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponseModified>('/express-next-api/code-samples-proxy/api/notes')
     let list: TArticle[] = []
 
     switch (true) {
       case notesResult.ok && !!notesResult.response:
         _pageService.isOk = true
         _pageService.response = notesResult.response
-        list = [...notesResult.response.data.map(({ _id, ...rest }: NCodeSamplesSpace.TNote) => ({
-          original: {
-            _id,
-            ...rest,
-          },
-          slug: slugMap.get(_id)?.slug || null,
-          brief: slugMap.get(_id)?.brief || null,
-          bg: slugMap.get(_id)?.bg || null,
-        }))]
+        list = !!notesResult.response?.data
+          ? notesResult.response?.data
+          : []
         break
       default:
         _pageService.isOk = false

@@ -1,0 +1,262 @@
+---
+title: "Синхронизация веток 🎓 Ключевое решение в одно действие"
+brief: 'Заметки про GIT'
+bg_src: '/static/img/blog/git-transparent-2.webp'
+bg_size: { w: 512, h: 512 }
+bg_type: 'image/webp'
+
+createdAt: "2026-05-20T17:11:17.863Z"
+updatedAt: "2026-06-04T08:41:12.535Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["git", "рабочие_моменты", "bash"]
+category: "guides"
+isPrivate: false
+---
+Продолжаем марафон утилит, которые я беру с собой от проекта к проекту практически без изменений.
+
+## Проблема и решение
+Знакомая ситуация: на проекте запущено 5 разных тестовых стендов для заказчиков, аналитиков и QA. Фронтендеру нужно постоянно следить, чтобы на конкретном инстансе крутилась именно та ветка, которую сейчас должны тестировать на данном "стенде". Если тратить время на то чтоб заливать нужную ветку репозитория вручную - однозначно будет просаживаться производительность разработчика, т.к. это предусматривает следующий порядок действий в терминале: Нужно переключиться на ветку, сделать pull, сбросить локальные изменения, зафорсить в нужный стенд (и это не самый плохой сценарий) - ошибся одной буквой в консоли либо перепутал ветки - и обновил не тот (либо сломал чужой) стенд.
+
+Читателю предлагаю бросить взгляд на скрипт, который создан как раз для экономии времени на синхронизацию веток. Он автоматизирует рутину, когда нужно быстро и безопасно раскатить конкретную версию проекта на тестовый инстанс и делать это без лишних опасений и головной боли.
+
+Работу скрипта опишем на примере синхронизации веток:
+- `test` - ветка на которую "смотрит" тестовый инстанс *(куда копировать)*
+- `stable` - стабильный релиз *(откуда копировать)*
+
+> [!info] **Ключевое решение в одно действие 💊**
+>
+> Перед тем как отдать на растерзание тетировщикам новую фичу (накатить ее на тестовый инстанс), нужно синхронизировать удаленную ветку `test` с удаленной веткой `stable`, вам нужно вызвать этот скрипт без передачи аргументов.
+> Поскольку в коде уже зашиты нужные вам значения по умолчанию (`DEFAULT_DEST="test"` и `DEFAULT_SOURCE="stable"`), скрипт сам подставит их.
+
+## Способы вызова скрипта
+Перед запуском убедитесь, что ваш терминал открыт в корне Git-репозитория.
+
+### Вариант 1: Безопасный просмотр (Рекомендуется)
+Флаг `--dry-run` покажет, какие коммиты будут удалены или добавлены, но не внесет никаких изменений в Git:
+```bash
+bash _aux.sync-branches.sh --dry-run
+```
+
+### Вариант 2: Прямая синхронизация
+Запуск в обычном режиме. Скрипт автоматически запросит подтверждение (y/n) перед сбросом веток:
+```bash
+bash _aux.sync-branches.sh
+```
+
+### Вариант 3: Явное указание веток
+Вы можете вручную переопределить ветки. Аргументы передаются в порядке 👉 **[КУДА] [ОТКУДА]**:
+
+```bash
+bash _aux.sync-branches.sh test stable
+```
+
+## Как это работает под капотом
+- Обновление данных: Скрипт выполняет `git fetch origin`, запрашивая свежую историю из удаленного репозитория;
+- Локальный сброс: Операция сброса веток (`git reset --hard`) происходит локально на вашем компьютере;
+- Пуш в сеть: Результат отправляется в удаленный репозиторий через `git push --force`;
+
+> [!danger] **Важное замечание по работе скрипта!**
+>
+> Скрипт выполняет команду
+> ```sh
+> git fetch origin
+> ```
+> Это значит, что для анализа изменений он использует самые свежие данные из удаленного репозитория
+> Однако, саму операцию сброса
+> ```sh
+> git reset --hard
+> ```
+> он делает локально на вашем компьютере, после чего отправляет результат в сеть через:
+> ```sh
+> git push --force
+> ```
+> ⚠️ Поэтому соблюдайте два правила 👇
+> 1. **У вас не должно быть незакоммиченных изменений в локальном репозитории;**
+> 2. **Не работайте с локальной веткой `test` - она будет перезаписана каждый раз при использовании этого механизма синхронизации, делегируйте эту работу скрипту**
+
+## Код скрипта
+`_aux.sync-branches.sh`
+```bash
+#!/usr/bin/env bash
+
+# NOTE: 1. ПЕРЕМЕННЫЕ ПО УМОЛЧАНИЮ
+DEFAULT_DEST="test"
+DEFAULT_SOURCE="stable"
+
+DRY_RUN=false
+# NOTE: Проверяем наличие флага --dry-run
+for arg in "$@"; do
+    if [ "$arg" == "--dry-run" ]; then DRY_RUN=true; fi
+done
+
+# UPD: Безопасная очистка аргументов от флага без использования внешних утилит (sed)
+ARGS=()
+for arg in "$@"; do
+    [[ "$arg" != "--dry-run" ]] && ARGS+=("$arg")
+done
+
+# UPD: Извлекаем элементы из правильно сформированного массива
+DEST_BRANCH=${ARGS[0]:-$DEFAULT_DEST}
+SOURCE_BRANCH=${ARGS[1]:-$DEFAULT_SOURCE}
+
+# Логика определения целевой точки (если передан только 1 аргумент - это коммит для test)
+if [ ${#ARGS[@]} -eq 1 ] && [ "${ARGS[0]}" != "prod" ] && [ "${ARGS[0]}" != "dev" ]; then
+    TARGET_POINT=${ARGS[0]}
+    DEST_BRANCH=$DEFAULT_DEST
+else
+    TARGET_POINT=$SOURCE_BRANCH
+fi
+
+START_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# -- NOTE: Возврат при ошибках
+# Функция вернет вас на исходную ветку, даже если скрипт упадет или вы нажмете Ctrl+C
+cleanup() {
+    local exit_code=$?
+    trap - EXIT INT TERM # Предотвращаем бесконечный рекурсивный цикл trap
+    echo "🔄 Возврат на исходную ветку: $START_BRANCH"
+    git checkout "$START_BRANCH" >/dev/null 2>&1
+    exit $exit_code
+}
+trap cleanup EXIT INT TERM
+# --
+
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+BACKUP_PREFIX="backup/${DEST_BRANCH}"
+BACKUP_BRANCH="${BACKUP_PREFIX}_${TIMESTAMP}"
+
+echo "📡 Обновление данных из origin..."
+git fetch origin --prune
+
+# --- NOTE: 2. Проверка существования целевой точки
+if ! git rev-parse --verify "$TARGET_POINT" >/dev/null 2>&1; then
+    echo "❌ Ошибка: Точка '$TARGET_POINT' не найдена."
+    exit 1
+fi
+TARGET_SHA=$(git rev-parse "$TARGET_POINT")
+# ---
+
+# --- NOTE: 3. Анализ расхождений
+REMOTE_DIFF=$(git rev-list --count "$TARGET_SHA..origin/$DEST_BRANCH" 2>/dev/null || echo 0)
+LOCAL_DIFF=$(git rev-list --count "$TARGET_SHA..$DEST_BRANCH" 2>/dev/null || echo 0)
+
+# UPD: Проверка на "обратное отставание"
+BEHIND_COUNT=$(git rev-list --count "$DEST_BRANCH..$TARGET_SHA" 2>/dev/null || echo 0)
+
+if [ "$BEHIND_COUNT" -eq 0 ] && [ "$REMOTE_DIFF" -eq 0 ] && [ "$LOCAL_DIFF" -eq 0 ]; then
+    echo "✅ Ветки идентичны. Синхронизация не требуется."
+    exit 0
+fi
+
+# Если источник (TARGET_SHA) сам отстает от цели (DEST_BRANCH)
+if [ "$BEHIND_COUNT" -eq 0 ] && ([ "$REMOTE_DIFF" -gt 0 ] || [ "$LOCAL_DIFF" -gt 0 ]); then
+    echo "⚠️  ВНИМАНИЕ: Кажется, ветки перепутаны местами!"
+    echo "В целевой ветке [$DEST_BRANCH] ЕСТЬ новые коммиты, а в источнике [$TARGET_POINT] их НЕТ."
+    echo "Сброс приведет к откату кода назад."
+    read -p "Вы уверены, что хотите ОТКАТИТЬ $DEST_BRANCH к состоянию $TARGET_POINT? (y/n): " reverse_confirm
+    [[ $reverse_confirm != "y" ]] && { echo "❌ Отмена."; exit 1; }
+fi
+# ---
+
+# --- ПРОВЕРКА РАЗНИЦЫ (основная логика) ---
+print_boxed_log() {
+    local title="$1"
+    local log_content="$2"
+
+    # Если лог пустой, ничего не выводим
+    [[ -z "$log_content" ]] && return
+
+    # Определяем ширину рамки (минимум 60 символов, либо по ширине терминала - 4 символа для отступов)
+    local term_width=$(tput cols 2>/dev/null || echo 80)
+    local width=$(( term_width > 80 ? 80 : term_width - 4 ))
+    [[ $width -lt 60 ]] && width=60
+
+    # Линии рамки
+    local horizontal_line=$(printf '─%.0s' $(seq 1 $width))
+
+    # Верхняя граница
+    echo -e "\e[33m┌${horizontal_line}┐\e[0m"
+
+    # Заголовок блока
+    printf "\e[33m│\e[0m %-${width}s \e[33m│\e[0m\n" "$title"
+    echo -e "\e[33m├${horizontal_line}┤\e[0m"
+
+    # Вывод строк лога с обрезкой по ширине, если они слишком длинные
+    echo "$log_content" | while read -r line; do
+        # Очищаем строку от спецсимволов, если нужно, и форматируем под рамку
+        # Если строка длиннее рамки, она аккуратно обрезается, чтобы не ломать край
+        if [ ${#line} -gt $((width - 2)) ]; then
+            line="${line:0:$((width - 5))}..."
+        fi
+        printf "\e[33m│\e[0m %-$((width - 1))s \e[33m│\e[0m\n" "$line"
+    done
+
+    # Нижная граница
+    echo -e "\e[33m└${horizontal_line}┘\e[0m"
+}
+if [ "$REMOTE_DIFF" -gt 0 ] || [ "$LOCAL_DIFF" -gt 0 ]; then
+    echo "ℹ️  Цель [$DEST_BRANCH] получит $BEHIND_COUNT новых коммитов из [$TARGET_POINT]."
+    echo -e "\e[31m⚠️  Будут УДАЛЕНЫ уникальные изменения из целевой ветки!\e[0m"
+    echo ""
+
+    # Собираем логи в переменные, используя origin/, чтобы избежать ошибки "unknown revision"
+    # Также убираем дубликаты коммитов через sort -u
+    LOCAL_LOG=$(git log --oneline "$TARGET_SHA..$DEST_BRANCH" 2>/dev/null || true)
+    REMOTE_LOG=$(git log --oneline "$TARGET_SHA..origin/$DEST_BRANCH" 2>/dev/null || true)
+    COMBINED_LOG=$(echo -e "${LOCAL_LOG}\n${REMOTE_LOG}" | grep -v '^$' | sort -u)
+
+    # Выводим красивый блок
+    print_boxed_log "Изменения на УДАЛЕНИЕ из [$DEST_BRANCH]:" "$COMBINED_LOG"
+    echo ""
+
+    if [ "$DRY_RUN" = true ]; then
+        echo "🔍 [DRY-RUN]: Режим просмотра. Выход."
+        exit 0
+    fi
+
+    read -p "Создать бэкап и перезаписать $DEST_BRANCH? (y/n): " confirm
+    [[ $confirm != "y" ]] && { echo "❌ Отмена."; exit 1; }
+fi
+# ---
+
+# --- NOTE: ВЫПОЛНЕНИЕ ---
+# Проверяем чистоту рабочего каталога перед переключением
+if ! git diff-index --quiet HEAD --; then
+    echo "❌ Ошибка: У вас есть незакоммиченные изменения. Сделайте stash или commit."
+    exit 1
+fi
+
+git checkout "$DEST_BRANCH"
+echo "📦 Бэкап: $BACKUP_BRANCH"
+git checkout -b "$BACKUP_BRANCH" && git push origin "$BACKUP_BRANCH"
+git checkout "$DEST_BRANCH"
+
+echo "🧹 Сброс $DEST_BRANCH до $TARGET_SHA..."
+git reset --hard "$TARGET_SHA" && git push origin "$DEST_BRANCH" --force
+
+# NOTE: Чистка бэкапов (удаленных и локальных)
+THRESHOLD_DATE=$(date -d "7 days ago" +%Y%m%d 2>/dev/null || date -v-7d +%Y%m%d)
+
+# Получаем уникальный список старых бэкапов (и локальных, и удаленных)
+DELETED_BRANCHES=()
+while read -r branch; do
+    CLEAN_NAME=$(echo "$branch" | sed -E 's|[* ]+||g; s|remotes/origin/||; s|origin/||')
+
+    # Проверяем, не обрабатывали ли мы эту ветку уже
+    if [[ ! " ${DELETED_BRANCHES[@]} " =~ " ${CLEAN_NAME} " ]]; then
+        BRANCH_DATE=$(echo "$CLEAN_NAME" | grep -oE '[0-9]{8}')
+
+        if [ ! -z "$BRANCH_DATE" ] && [ "$BRANCH_DATE" -lt "$THRESHOLD_DATE" ]; then
+            echo "🗑️ Удаляю старый бэкап: $CLEAN_NAME"
+            git push origin --delete "$CLEAN_NAME" >/dev/null 2>&1
+            git branch -D "$CLEAN_NAME" >/dev/null 2>&1
+            DELETED_BRANCHES+=("$CLEAN_NAME")
+        fi
+    fi
+done < <(git branch -a | grep "${BACKUP_PREFIX}_")
+# ---
+
+echo "✅ ГОТОВО! Ветка $DEST_BRANCH синхронизирована с $TARGET_POINT"
+```

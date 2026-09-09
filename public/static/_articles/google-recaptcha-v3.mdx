@@ -1,0 +1,255 @@
+---
+title: "Google reCAPTCHA v3"
+brief: 'Tutorial'
+bg_src: "/static/img/blog/google-recaptcha-v3.jpg"
+bg_size: { w: 1200, h: 630 }
+bg_type: 'image/jpg'
+
+createdAt: "2019-08-01T23:02:43.540Z"
+updatedAt: "2023-09-30T09:21:21.816Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["рабочие_моменты", "google"]
+category: "guides"
+isPrivate: false
+---
+# First steps
+Firstly you should go to **[Register reCAPTCHA v3 keys](https://www.google.com/recaptcha/admin/create)**. Also you can read **[Original docs for v3](https://developers.google.com/recaptcha/docs/v3)**. This page explains how to enable and customize reCAPTCHA v3 on your webpage...
+
+*Дальше на русском, т.к. на инглише хорошо гуглится оффициальная документация.*
+
+# Коротко про механизм
+Помимо двух ключей `RECAPTCHAV3_SERVER_KEY` и `RECAPTCHAV3_CLIENT_KEY`, полученных в личном кабинете, Google регистрирует действия пользователя на веб-странице и создает временный ключ, который вы получаете на клиенте. Например, с помощью компонента из пакета npm `react-recaptcha-v3`:
+```tsx
+// @/components/RecaptchaV3
+import React from 'react'
+import { ReCaptcha } from 'react-recaptcha-v3'
+
+const RECAPTCHAV3_CLIENT_KEY = process.env.RECAPTCHAV3_CLIENT_KEY
+
+export interface IRecaptchaProps {
+  action?: string
+  sitekey?: string
+  onToken: (token: string) => void
+}
+
+export const Recaptcha: React.FC<IRecaptchaProps> = (props) => {
+  return (
+    <ReCaptcha
+      sitekey={RECAPTCHAV3_CLIENT_KEY}
+      action={props.action}
+      verifyCallback={props.onToken}
+    />
+  )
+}
+```
+
+Компонент `ReCaptcha` сделает запрос в Гугл для создания временного токена и вызовет переданный обработчик `onToken`, который получил в агрументе этот токен - используя его Вы сможете спросить у Гугла **_\"Что c пользователем, проверка которого привязана к токену `x0123`, на сколько ему можно доверять?\"_**
+
+## Backend: Express сервер (прослойка)
+Относительно фронта: Эта прослойка получит запрос, вызванный в теле обработчика `onToken` 🍸...
+
+На бэке: Итак, вы имеете аккаунт, пару ключей от Гугла и простой сервер на Express. И файл `.env` с переменными окружения для бэка:
+```bash
+RECAPTCHAV3_VERIFY_URL=https://www.google.com/recaptcha/api/siteverify
+RECAPTCHAV3_SERVER_KEY=<RECAPTCHAV3_SERVER_KEY>
+```
+
+Пример middleware для Express:
+```js
+const axios = require("axios");
+const { httpErrorHandler } = require("utils/errors/http/axios/httpErrorHandler");
+const { apiErrorHandler } = require("utils/errors/api/recaptcha-v3/apiErrorHandler");
+const { universalAxiosCatch } = require("utils/errors/universalCatch")
+
+const RECAPTCHAV3_SERVER_KEY = process.env.RECAPTCHAV3_SERVER_KEY;
+const RECAPTCHAV3_VERIFY_URL = process.env.RECAPTCHAV3_VERIFY_URL;
+
+module.exports = async (req, res) => {
+  if (!req.body.captcha) {
+    res.status(400).send({
+      success: 0,
+      captcha: req.body.captcha,
+      errors: {
+        requestError: ["Captcha token is undefined"],
+      },
+    });
+  }
+
+  const byGoogle = await axios
+    .post(
+      `${RECAPTCHAV3_VERIFY_URL}?secret=${RECAPTCHAV3_SERVER_KEY}&response=${req.body.captcha}`
+    )
+    .then(httpErrorHandler)
+    .then(apiErrorHandler)
+    .then((data) => ({
+      isOk: true,
+      response: data,
+    }))
+    .catch(universalAxiosCatch);
+
+  if (byGoogle.isOk) {
+    if (byGoogle.response.success) {
+      res.status(200).send({
+        success: 1,
+        original: byGoogle.response,
+      });
+    } else {
+      res.status(400).send({
+        success: 0,
+        captcha: req.body.captcha,
+        original: byGoogle.response,
+        errors: {
+          "!byGoogle.response.success": ["Неожиданная ошибка на стороне Гугла"],
+        },
+      });
+    }
+  } else {
+    res.status(400).send({
+      success: 0,
+      captcha: req.body.captcha,
+      errors: {
+        "!byGoogle.isOk": [byGoogle.msg],
+      },
+    });
+  }
+};
+```
+
+## Frontend: React
+
+`.env.prod` с переменными окружения для фронта:
+```bash
+RECAPTCHAV3_CLIENT_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxx
+RECAPTCHAV3_VERIFY_URL=<YOUR_HOST>/express-helper/recaptcha-v3/verify
+```
+
+🍸 Так вот, насчет `onToken`. Нужно сделать еще один (последний) запрос `verifyResult` в Гугл, чтоб узнать, насколько можно доверять пользователю, по результатам чего мы можем принять решение, стоит ли отправлять целевой запрос - в моем случае, на создание нового отзыва: в теле функции `toBeOrNotToBe` есть логика, определяющая, буду ли я доверять этому пользователю.
+```tsx
+// ...
+import { loadReCaptcha } from 'react-recaptcha-v3'
+import { post } from '@/helpers/services/restService'
+import { Recaptcha } from '@/components/RecaptchaV3-2'
+
+const RECAPTCHAV3_CLIENT_KEY = process.env.RECAPTCHAV3_CLIENT_KEY
+const RECAPTCHAV3_VERIFY_URL = process.env.RECAPTCHAV3_VERIFY_URL
+// Требуемая вероятность (с таким строгим критерием, целевой запрос, скорее всего, никогда не выполнится)
+const recaptchaScoreLimit = 0.95
+
+const Feedback = () => {
+  const router = useRouter()
+  const [wasSent, setWasSent] = useState(false)
+  const [isRecaptchaShowed, setIsRecaptchaShowed] = useState(false)
+  const { value: companyName, bind: bindCompanyName } = useInput('')
+  const { value: contactName, bind: bindContactName, reset: resetContactName } = useInput('')
+  const { value: comment, bind: bindComment, reset: resetComment } = useInput('')
+  const showRecaptcha = (e: any) => {
+    e.preventDefault()
+    setIsRecaptchaShowed(true)
+  }
+  const toBeOrNotToBe = useCallback(async (token: string): Promise<string> => {
+    const verifyResult = await post(
+      RECAPTCHAV3_VERIFY_URL,
+      new URLSearchParams({
+        captcha: token,
+      })
+    )
+
+    if (verifyResult.isOk) {
+      if (verifyResult?.response.original?.score > recaptchaScoreLimit) {
+        const createNewEntryResult = await post(
+          '/entries',
+          new URLSearchParams({
+            companyName,
+            contactName,
+            comment,
+          })
+        )
+
+        if (createNewEntryResult.isOk) {
+          return Promise.resolve('New Entry created')
+        }
+      } else {
+        return Promise.reject(
+          `Bot detected! Your score by Google ${
+            verifyResult?.response.original?.score
+          }. Humans limit was set to ${recaptchaScoreLimit}`
+        )
+      }
+    }
+
+    return Promise.reject(verifyResult?.msg)
+  }, [companyName, contactName, comment])
+  const dispatch = useDispatch()
+  const onToken = useCallback(
+    (token) => {
+      toBeOrNotToBe(token)
+        .then((text) => {
+          dispatch(showAsyncToast({
+            text, delay: 7000, type: 'success'
+          }))
+          // resetCompanyName()
+          resetContactName()
+          resetComment()
+
+          setIsRecaptchaShowed(false)
+          setWasSent(true)
+
+          router.push('/feedback/thanks')
+        })
+        .catch((text) => {
+          dispatch(showAsyncToast({ text, delay: 10000, type: 'error' }))
+          router.push(`/feedback/sorry?msg=${encodeURIComponent(text)}`)
+        })
+    },
+    [toBeOrNotToBe]
+  )
+  useEffect(() => {
+    if (process.browser) {
+      loadReCaptcha(RECAPTCHAV3_CLIENT_KEY)
+    }
+    return () => {
+      if (process.browser) {
+        // Derty hack =)
+        document.querySelector('.grecaptcha-badge').parentElement.remove()
+      }
+    }
+  }, [])
+
+  return (
+    <Layout>
+      <Container className="box">
+        {!wasSent && (
+          <form onSubmit={showRecaptcha}>
+            <h2 className="gradient-animate-effect">Feedback</h2>
+            <div className="inputBox">
+              <input name="companyName" placeholder="invisible" {...bindCompanyName} required />
+              <label>Company name</label>
+            </div>
+            <div className="inputBox">
+              <input name="contactName" placeholder="invisible" {...bindContactName} required />
+              <label>Your name</label>
+            </div>
+            <div className="inputBox">
+              <textarea name="comment" placeholder=\"invisible\" {...bindComment} required />
+              <label>Comment</label>
+            </div>
+            <div className="special-link-wrapper fade-in-effect unselectable">
+              <button className="rippled-btn" type="submit">
+                Submit
+              </button>
+              {isRecaptchaShowed && <Recaptcha onToken={onToken} action="feedback" />}
+            </div>
+          </form>
+        )}
+      </Container>
+    </Layout>
+  )
+}
+```
+
+# Samples
+
+- **Back**: [Source code](https://github.com/pravosleva/express-helper/blob/master/src/server/routers/recaptcha-v3/mws/verify/index.js) | [Swagger](http://pravosleva.ru/express-helper/swagger/#/default/post_recaptcha_v3_verify)
+- **Front**: Source code | Demo (in progress...)

@@ -1,0 +1,432 @@
+---
+title: "Reactive Engine + React + SSR: работа с Next.js (App Router)"
+brief: 'JS в действии'
+bg_src: '/static/img/blog/nextjs-logo.webp'
+bg_size: { w: 563, h: 563 }
+bg_type: 'image/webp'
+
+createdAt: "2026-08-15T10:01:59.259Z"
+updatedAt: "2026-08-26T08:15:45.204Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["vue3", "nuxt4", "reactivity"]
+#category: "guides"
+isPrivate: false
+---
+При переносе реактивного движка [Reactive Engine](https://www.npmjs.com/package/@pravosleva/reactive-engine) на сервер (Server-Side Rendering) перед архитектором встает фундаментальная задача: **изоляция состояния между пользователями**. 
+
+В браузере ваше приложение инициализируется один раз для одной вкладки. На сервере же Node.js-процесс обслуживает **тысячи пользователей одновременно**. Если создать инстанс движка как глобальный синглтон, данные одного пользователя неизбежно утекут к другому.
+
+В экосистеме Next.js (App Router) существует два основных паттерна интеграции реактивного ядра. Рассмотрим их подробно с примерами кода.
+
+### Вариант 1. Изолированный клиентский контекст (рекомендуемый)
+
+**Концепция:** Движок инициализируется строго на стороне клиента (в браузере) внутри конкретного пользователя. Компоненты Next.js Server Components при этом отдают статическую HTML-разметку, а реактивный граф просыпается в момент гидратации (Hydration).
+
+Для этого мы используем React Context API, чтобы гарантировать создание ровно одного экземпляра движка на сессию.
+
+#### Шаг 1. Создаем провайдер инстанса ядра
+
+Создаем файл `src/providers/EngineProvider.tsx`. Обратите внимание на директиву `"use client"` — она сообщает Next.js, что этот подграф дерева рендерится на клиенте.
+
+```tsx
+"use client"
+
+import React, { createContext, useContext, useRef, ReactNode } from "react"
+import { ReactiveEngine } from "@pravosleva/reactive-engine"
+
+// 1. Создаем интерфейс для хранения нашего инстанса
+interface EngineContextType {
+  engine: ReactiveEngine
+}
+
+const EngineContext = createContext<EngineContextType | null>(null)
+
+export function EngineProvider({ children }: { children: ReactNode }) {
+  // 2. Инициализируем движок строго ОДИН раз через useRef.
+  // Это гарантирует, что при ре-рендерах компонента инстанс не пересоздастся.
+  const engineRef = useRef<ReactiveEngine | null>(null)
+  
+  if (!engineRef.current) {
+    engineRef.current = new ReactiveEngine({
+      logger: {
+        isEnabled: process.env.NODE_ENV === "development",
+        instanceName: "nextjs-client-engine"
+      }
+    })
+  }
+
+  return (
+    <EngineContext.Provider value={{ engine: engineRef.current }}>
+      {children}
+    </EngineContext.Provider>
+  )
+}
+
+// 3. Кастомный хук для удобного доступа к движку в UI-компонентах
+export function useEngine() {
+  const context = useContext(EngineContext)
+  if (!context) {
+    throw new Error("useEngine должен использоваться строго внутри EngineProvider")
+  }
+  return context.engine
+}
+```
+
+#### Шаг 2. Оборачиваем корневой Layout
+
+Добавляем провайдер в главный файл разметки `app/layout.tsx`. Помните, что `layout.tsx` остается серверным компонентом, а `EngineProvider` безопасно внедряет клиентский контекст ниже по дереву.
+
+```tsx
+import { EngineProvider } from "~/providers/EngineProvider"
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ru">
+      <body>
+        {/* Оборачиваем всё приложение или отдельную бизнес-зону */}
+        <EngineProvider>
+          {children}
+        </EngineProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+#### Шаг 3. Используем реактивные примитивы в Client Components
+
+Теперь в любом клиентском компоненте (например, `app/page.tsx` или вложенных виджетах) мы можем динамически создавать сигналы или использовать готовые сервисы, не боясь серверных утечек.
+
+```tsx
+"use client"
+
+import { useEngine } from "~/providers/EngineProvider"
+import { useReactiveValue } from "@pravosleva/reactive-engine/react"
+import { useEffect, useRef } from "react"
+
+export default function CounterWidget() {
+  const engine = useEngine()
+
+  // Инициализируем локальный сигнал один раз при маунте
+  const counterRef = useRef<any>(null)
+  if (!counterRef.current) {
+    counterRef.current = engine.signal(0, "widget:counter")
+  }
+  const counter = counterRef.current
+
+  // Подписываем React на изменения реактивного сигнала
+  const countValue = useReactiveValue(counter)
+
+  return (
+    <div style={{ padding: "20px", border: "1px solid #333" }}>
+      <h3>Клиентский реактивный счетчик</h3>
+      <p>Значение сигнала: <strong>{countValue}</strong></p>
+      <button onClick={() => counter.value += 1}>
+        Инкремент (+1)
+      </button>
+    </div>
+  )
+}
+```
+
+### Вариант 2. Гидратация начального состояния с сервера (Dehydration / Hydration)
+
+**Концепция:** Сервер выполняет тяжелую работу (например, делает fetch-запрос к API базы данных), создает **временный** инстанс ядра, наполняет сигналы данными, сериализует (дегидрирует) этот стейт в плоский JSON и пробрасывает его на клиент. Клиентское ядро подхватывает этот JSON и мгновенно «оживляет» стейт (гидратация) без повторных сетевых запросов.
+
+#### Шаг 1. Серверный компонент собирает данные
+
+В Next.js App Router страницы по умолчанию являются Server Components. Сделаем асинхронный запрос данных в `app/dashboard/page.tsx`:
+
+```tsx
+// app/dashboard/page.tsx (Server Component по умолчанию)
+import { ReactiveEngine } from "@pravosleva/reactive-engine"
+import DashboardClientUI from "~/components/DashboardClientUI"
+
+async function fetchServerMetrics() {
+  // Имитируем запрос к базе данных или внешнему микросервису
+  return {
+    activeUsersCount: 1420,
+    serverLoadPercent: 42
+  }
+}
+
+export default async function DashboardPage() {
+  const serverData = await fetchServerMetrics()
+
+  // 1. Создаем ВРЕМЕННЫЙ инстанс ядра на сервере для текущего запроса
+  const serverEngine = new ReactiveEngine({ logger: { isEnabled: false } })
+  
+  // 2. Наполняем сигналы
+  const usersSignal = serverEngine.signal(serverData.activeUsersCount, "ssr:users")
+  const loadSignal = serverEngine.signal(serverData.serverLoadPercent, "ssr:load")
+
+  // 3. Дегидрируем состояние (сериализуем стейт текущего кадра в плоский объект)
+  const initialSnapshot = {
+    [usersSignal.name]: usersSignal.value,
+    [loadSignal.name]: loadSignal.value
+  }
+
+  // 4. Передаем снимок состояния в клиентский интерактивный компонент
+  return (
+    <main style={{ padding: "40px" }}>
+      <h1>Панель управления системой</h1>
+      <DashboardClientUI snapshot={initialSnapshot} />
+    </main>
+  )
+}
+```
+
+В **Варианте 2** временный инстанс ядра на сервере создается исключительно как **транзитный вычислительный конвейер**. Его единственная задача — собрать данные, прогнать их через внутренний граф вычислений (`computed`), выдать финальный плоский снимок (`snapshot`) для пропсов и сгенерировать готовый HTML-код.
+
+#### Когда временный инстанс уничтожается из памяти?
+В среде Node.js на сервере этот инстанс уничтожается автоматически **сборщиком мусора (Garbage Collector)** сразу после того, как Next.js завершает рендеринг данного серверного компонента и отправляет поток данных (HTML/Stream) в сторону браузера.
+Поскольку `serverEngine` объявлен как локальная переменная внутри функции `async function DashboardPage()`, как только функция завершает выполнение, ссылка на этот объект теряется. На сервере не остается никаких долгоживущих эффектов или глобальных ссылок, поэтому вся память, выделенная под это временное ядро, полностью освобождается при следующем цикле очистки памяти (GC).
+
+#### Шаг 2. Клиентский компонент восстанавливает (гидрирует) граф
+
+Принимаем снимок состояния на клиенте и скармливаем его локальному экземпляру движка. `components/DashboardClientUI.tsx`:
+
+```tsx
+"use client"
+
+import { useEngine } from "~/providers/EngineProvider"
+import { useReactiveValue } from "@pravosleva/reactive-engine/react"
+import { useRef } from "react"
+
+interface DashboardProps {
+  snapshot: Record<string, any>
+}
+
+export default function DashboardClientUI({ snapshot }: DashboardProps) {
+  const engine = useEngine()
+  
+  const usersSignalRef = useRef<any>(null)
+  const loadSignalRef = useRef<any>(null)
+
+  if (!usersSignalRef.current) {
+    // ГИДРАТАЦИЯ: Инициализируем клиентские сигналы значениями, прилетевшими с сервера!
+    usersSignalRef.current = engine.signal(snapshot["ssr:users"] ?? 0, "ssr:users")
+    loadSignalRef.current = engine.signal(snapshot["ssr:load"] ?? 0, "ssr:load")
+  }
+
+  const usersCount = useReactiveValue(usersSignalRef.current)
+  const serverLoad = useReactiveValue(loadSignalRef.current)
+
+  return (
+    <div style={{ background: "#111", padding: "20px", borderRadius: "6px" }}>
+      <h2>Живые метрики (Гидpировано с сервера)</h2>
+      <p>Активных сессий: <span style={{ color: "#00b4d8" }}>{usersCount}</span></p>
+      <p>Текущая нагрузка: <span style={{ color: "#42b883" }}>{serverLoad}%</span></p>
+      
+      {/* Теперь клиент может нативно продолжать мутировать сигналы в браузере */}
+      <button onClick={() => usersSignalRef.current.value += 10}>
+        Имитировать приток пользователей (+10)
+      </button>
+    </div>
+  )
+}
+```
+
+### 🚨 Сводка правил безопасности для разработчика (SSR Rules of Thumb)
+
+1. **Никаких глобальных синглтонов на сервере:** Никогда не экспортируйте `export const globalEngine = new ReactiveEngine()` в файлах, которые могут исполниться на сервере. Инстанс на сервере должен создаваться строго внутри жизненного цикла текущего запроса (Request-Scoped) и уничтожаться после отдачи HTML.
+2. **Маркируйте хуки подписок:** Все компоненты, использующие `useReactiveValue`, `useReactiveSubscription` или методы `engine.use()`, обязаны содержать директиву `"use client"` в самом верху файла.
+3. **Изолируйте создание сигналов в React:** На клиенте всегда оборачивайте первичное создание сигналов и компутов в `useRef` или выносите их декларацию в тело кастомных провайдеров, чтобы избежать неконтролируемого дублирования реактивных нод при ре-рендерах UI-компонентов.
+
+### Сценарий 2: 🌊 Каскад асинхронных запросов и вычислений на сервере (SSR Cascade)
+Часто перед тем, как отдать HTML, серверу нужно сделать целую цепочку последовательных действий:
+- узнать ID пользователя
+- ➔ по ID запросить его профиль
+- ➔ на основе профиля вытянуть финансовые метрики
+- ➔ провести через computed тяжелые расчеты (например, налоги или конвертацию валют).
+
+Вот как элегантно реализуется такой каскадный SSR-сценарий на сервере в файле `app/dashboard/page.tsx`:
+```tsx
+// app/dashboard/page.tsx (Server Component)
+import { ReactiveEngine } from "@pravosleva/reactive-engine"
+import DashboardClientUI from "~/components/DashboardClientUI"
+
+// Имитация каскадных микросервисных запросов
+async function fetchUserSession() {
+  return { userId: "user-99" }
+}
+
+async function fetchUserProfile(userId: string) {
+  // Запрос зависит от результата первого шага
+  return { userId, baseCurrency: "EUR", tariff: "Premium" }
+}
+
+async function fetchRawFinancials(userId: string) {
+  // Запрос зависит от результата первого шага
+  return { rawBalance: 5000, rawTaxRate: 0.20 }
+}
+
+export default async function DashboardPage() {
+  // 1. ЗАПУСКАЕМ КАСКАД ЗАПРОСОВ К БАЗЕ/API
+  const session = await fetchUserSession()
+  
+  // Запросы второго уровня выполняются параллельно для оптимизации времени ответа сервера
+  const [profile, financials] = await Promise.all([
+    fetchUserProfile(session.userId),
+    fetchRawFinancials(session.userId)
+  ])
+
+  // 2. ИНИЦИАЛИЗИРУЕМ ВРЕМЕННЫЙ ДВИЖОК НА ВРЕМЯ ТЕКУЩЕГО HTTP-ЗАПРОСА
+  const serverEngine = new ReactiveEngine({ 
+    logger: { isEnabled: false } // Логгер на сервере выключаем, чтобы не спамить в терминал
+  })
+
+  // 3. СТРОИМ РЕАКТИВНЫЙ ГРАФ ИЗ ПОЛУЧЕННЫХ ДАННЫХ
+  const balanceSignal = serverEngine.signal(financials.rawBalance, "ssr:balance")
+  const taxRateSignal = serverEngine.signal(financials.rawTaxRate, "ssr:tax")
+  const currencySignal = serverEngine.signal(profile.baseCurrency, "ssr:currency")
+
+  // Тяжелая вычисляемая бизнес-логика (Computed). 
+  // Next.js выполнит её прямо на сервере, сформировав финальные цифры для HTML
+  const netProfitComputed = serverEngine.computed(() => {
+    const taxDeduction = balanceSignal.value * taxRateSignal.value
+    return balanceSignal.value - taxDeduction
+  }, "ssr:computed:net-profit")
+
+  const formattedDisplayComputed = serverEngine.computed(() => {
+    return `${netProfitComputed.value.toLocaleString()} ${currencySignal.value}`
+  }, "ssr:computed:display")
+
+  // 4. ДЕГИДРИРУЕМ (СНИМАЕМ СЛИПКИ)
+  // Мы забираем значения сигналов И результат вычислений computed!
+  const initialSnapshot = {
+    "ssr:balance": balanceSignal.value,
+    "ssr:tax": taxRateSignal.value,
+    "ssr:currency": currencySignal.value,
+    "ssr:display-value": formattedDisplayComputed.value // Забираем уже готовый посчитанный сервером текст!
+  }
+
+  // 5. ОТДАЕМ КОМПОНЕНТ
+  // Next.js отрендерит HTML, внутри которого сразу будет строка вроде "4,000 EUR".
+  // Браузер отобразит этот HTML мгновенно без морганий (no layout shifts).
+  return (
+    <main style={{ padding: "40px", fontFamily: "sans-serif" }}>
+      <h1>Финансовая панель {profile.tariff}</h1>
+      
+      {/* Передаем дегидрированный снимок в клиентскую интерактивную часть */}
+      <DashboardClientUI snapshot={initialSnapshot} />
+    </main>
+  )
+}
+```
+
+<CollapsibleBox
+header="Как работает метод Promise.all()"
+text="`Promise.all()` — это встроенный метод JavaScript, который принимает массив (или любой итерируемый объект) промисов и **возвращает один единый промис**.
+&nbsp;
+Он используется для параллельного выполнения нескольких асинхронных операций, когда вам нужно дождаться завершения их всех перед тем, как продолжить работу.
+&nbsp;
+**🧩 Главные правила работы (Как он устроен под капотом)**
+&nbsp;
+**1. «Все или ничего» (All-or-Settled-with-Fail):**
+**Успех:** Метод вернет успешный результат только тогда, когда абсолютно все переданные промисы завершатся успешно. Результатом будет массив ответов в том же порядке, в котором передавались промисы.
+**Отказ:** Если хотя бы один промис завершится ошибкой (`reject`), то `Promise.all()` мгновенно падает с этой ошибкой, игнорируя результаты всех остальных промисов (даже если они выполнились успешно).
+**2. Параллельный запуск:** Все промисы начинают выполняться одновременно, не дожидаясь друг друга. Общее время ожидания будет равно времени выполнения самого долгого промиса в массиве.
+**3. Непромисы в массиве:** Если вы передадите в массив обычное значение (например, число или строку), `Promise.all()` автоматически обернет его в уже успешно выполненный промис (`Promise.resolve()`)."
+/>
+
+#### Что происходит на стороне браузера (Клиентская часть)?
+Когда HTML прилетает в браузер, пользователь сразу видит готовые отрендеренные данные (например, `4,000 EUR`). Затем просыпается клиентский компонент `DashboardClientUI.tsx`, забирает пропсы и моментально гидрирует граф:
+```tsx
+"use client"
+
+// components/DashboardClientUI.tsx
+import { useEngine } from "~/providers/EngineProvider"
+import { useReactiveValue } from "@pravosleva/reactive-engine/react"
+import { useRef } from "react"
+
+export default function DashboardClientUI({ snapshot }: { snapshot: Record<string, any> }) {
+  const engine = useEngine()
+
+  // Восстанавливаем сигналы на клиенте из серверного снимка
+  const balanceSignalRef = useRef<any>(null)
+  if (!balanceSignalRef.current) {
+    balanceSignalRef.current = engine.signal(snapshot["ssr:balance"], "client:balance")
+  }
+
+  // Для вывода используем значение, которое сервер уже посчитал,
+  // обеспечивая 100% совпадение разметки при гидратации (No Hydration Mismatch)
+  return (
+    <div style={{ background: "#222", padding: "20px", borderRadius: "8px", color: "#fff" }}>
+      <h3>Итоговый баланс (Чистая прибыль):</h3>
+      <p style={{ fontSize: "24px", color: "#42b883" }}>
+        {snapshot["ssr:display-value"]}
+      </p>
+      
+      <button onClick={() => balanceSignalRef.current.value += 1000}>
+        📈 Добавить транзакцию на клиенте
+      </button>
+    </div>
+  )
+}
+```
+#### Преимущества такой схемы:
+- **Идеальный SEO и Time-to-First-Byte:** Поисковые роботы видят полноценный текстовый контент, рассчитанный реактивным графом, а не пустые лоадеры.
+- **Безопасность Node.js:** Локальный `serverEngine` полностью изолирован внутри выполнения запроса. Как только HTML сгенерирован — инстанс умирает, гарантируя нулевой риск перекрестных утечек данных между пользователями.
+
+#### ❌ Почему `engine.use` можно использовать только в чистом CSR?
+Хук `engine.use(signal)` спроектирован как клиентский self-contained метод. Под капотом он обращается к глобальным браузерным механизмам синхронизации (например, `useSyncExternalStore` или встроенным подпискам) конкретного экземпляра движка.
+Если вы попробуете вызвать `engine.use(signal)` внутри **Server Component (на сервере в Next.js)**:
+- **Ошибка сборщика:** Сборщик Next.js сразу выбросит ошибку, так как внутри серверных компонентов запрещено использовать любые реактивные хуки, завязанные на жизненный цикл UI (маунт, подписка). На сервере нет понятия «подписка во времени» — сервер выполняет код функции ровно один раз сверху вниз.
+- **Утечка стейта:** Если бы `engine.use` сработал на сервере, он попытался бы зарегистрировать подписку в рантайме. Но так как этот рантайм выполнился на сервере, ссылка на этот компонент осталась бы висеть в Node.js, вызывая утечку памяти.
+
+#### Почему для SSR/Hydration подходит только `useReactiveValue`?
+Хук `useReactiveValue(signal)` импортируется из суб-пути `@pravosleva/reactive-engine/react`, который предназначен строго для **Client Components (с директивой "use client")**.
+В архитектуре Next.js App Router компоненты с пометкой `"use client"` всё равно сначала один раз рендерятся на сервере, чтобы сгенерировать стартовый HTML для браузера. Хук `useReactiveValue` спроектирован с учетом этого факта:
+- **На этапе SSR (Сервер):** Когда Next.js на сервере доходит до `useReactiveValue(signal)`, хук понимает, что находится в среде Node.js. Он не создает никаких подписок, а просто синхронно считывает текущее значение `.value` из сигнала, чтобы подставить его в HTML.
+- **На этапе Hydration (Клиент):** Когда этот же компонент просыпается в браузере (гидратация), хук `useReactiveValue` видит, что среда изменилась на `window`. Он подхватывает тот самый локальный инстанс из `EngineProvider`, безопасно оформляет подписку и заставляет компонент перерисовываться при будущих мутациях на клиенте.
+
+### 🚨 Золотые правила импортов в среде SSR (Next.js)
+
+1. **Создание инстансов, сигналов и компутов (И на сервере, и на клиенте):**
+   Всегда используем чистый корневой импорт.
+   ```typescript
+   import { ReactiveEngine } from "@pravosleva/reactive-engine"
+   ```
+
+2. **Связывание данных с UI (Строго в `"use client"` компонентах):**
+   Для подписки компонентов React в среде SSR используйте исключительно специализированные хуки из суб-пути пакета. Они обучены безопасному серверному рендерингу без генерации утечек памяти и Hydration Mismatch ошибок.
+   ```typescript
+   import { useReactiveValue } from "@pravosleva/reactive-engine/react"
+   ```
+
+3. **Использование `engine.use(signal)`:**
+   Этот метод является синтаксическим сахаром для **чистого Client-Side Rendering (CSR)**. Его использование допускается только в классических Single Page Applications (Vite + React) или внутри функций, гарантированно изолированных от серверного выполнения. В Server Components вызов этого метода приведет к фатальной ошибке сборки.
+
+### Сводная матрица импортов и примитивов: CSR vs SSR
+
+| Примитив / Путь импорта | Режим CSR (Single Page App / Браузер) | Режим SSR: На сервере (Node.js / Next.js Server Components) | Режим SSR: На клиенте (Next.js Hydration / Client Components) |
+| :--- | :--- | :--- | :--- |
+| **`import { ReactiveEngine }`**<br>`from '@pravosleva/reactive-engine'` | **Разрешено.** Основной способ создания долгоживущего инстанса ядра в браузере. | **Разрешено.** Используется для создания *короткоживущих, транзитных* инстансов под текущий HTTP-запрос. | **Разрешено.** Используется исключительно внутри провайдеров (`EngineProvider`) для инициализации клиентского ядра. |
+| **`import { useReactiveValue }`**<br>`from '@pravosleva/reactive-engine/react'` | **Разрешено.** Используется для точечной подписки UI-компонентов на сигналы и компуты. | **Запрещено во встроенных Server Components.** Вызовет ошибку компиляции. | **Разрешено (Строго `"use client"`).** На сервере безопасно считывает плоское значение, в браузере — включает подписку. |
+| **`engine.use(signal)`**<br>*(Синтаксический сахар из ядра)* | **Разрешено.** Идеальный инструмент быстрого старта для SPA приложений (Vite + React). | **Категорически запрещено.** Вызовет мгновенный крах рантайма Node.js или ошибку сборщика Next.js. | **Не рекомендуется.** В гибридных средах (Next.js) этот метод может приводить к ошибкам Hydration Mismatch. |
+| **Жизненный цикл инстанса** | **Глобальный синглтон.** Инстанс ядра живет в памяти вкладки браузера всё время, пока открыта страница. | **Транзитный (Request-Scoped).** Инстанс уничтожается сборщиком мусора (GC) сразу после отправки HTML. | **Сессионный синглтон.** Инстанс изолирован внутри конкретного пользователя через React Context (`useRef`). |
+| **Управление подписками графа** | **Активное.** Граф постоянно пересчитывает зависимости и эффекты при кликах и мутациях. | **Пассивное (Однопроходное).** Граф собирает данные один раз для снимка (snapshot) и не создает живых подписок. | **Активное (После гидратации).** Граф просыпается и начинает реагировать на действия пользователя в браузере. |
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="3 главных вывода для технического резюме"
+text="**1. Ядро (`@pravosleva/reactive-engine`)** универсально, но его жизненный цикл меняется: в CSR это перманентный синглтон, а на SSR-сервере — одноразовая вспышка для расчета математики.
+&nbsp;
+**2. Суб-путь (`@pravosleva/reactive-engine/react`) — это мост гидратации**. Хук `useReactiveValue` специально обучен «двойному поведению»: он пассивен на сервере, но становится активным в браузере.
+&nbsp;
+**3. `engine.use` — это манифест чистой клиентской разработки**. Его использование — маркер того, что приложение работает без участия SSR-архитектуры."
+/>
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "Реактивные мутации в JS (часть 1)",
+      "type": "link",
+      "link": "/p/reactive-engine-ru"
+    }
+  ]'
+/>

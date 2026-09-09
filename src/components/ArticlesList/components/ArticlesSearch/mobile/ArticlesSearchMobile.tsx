@@ -5,6 +5,7 @@ import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';
 import { slugMap } from '~/constants/blog/slugMap';
+import { NCodeSamplesSpace } from '~/types';
 
 
 interface ArticlesSearchMobileProps {
@@ -23,6 +24,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
     setCurrentPage,
     setLimit,
     reset,
+    close,
   } = useArticlesSearch()
 
   const [isMobile, setIsMobile] = useState(false)
@@ -172,10 +174,10 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
               </div>
             )
             : (!!data && data?.length > 0) ? (
-              data.map((note: any) => (
+              data.map((note: { original: NCodeSamplesSpace.TNote; slug: string; }) => (
                 <a
-                  key={note._id}
-                  href={getLink(note._id)}
+                  key={note.original._id}
+                  href={getLink(note.slug || note.original._id)}
                   target='_blank'
                   style={{
                     display: 'flex',
@@ -198,7 +200,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                       WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
                       overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
                     }}>
-                    {note.title}
+                    {note.original.title}
                   </div>
                   <div
                     style={{
@@ -208,7 +210,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                       WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
                       overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
                     }}>
-                    {note.description || 'Нет описания заметки'}
+                    {note.original.description || 'Нет описания заметки'}
                   </div>
                 </a>
               ))
@@ -291,7 +293,11 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
             />
             {localInput && (
               <button 
-                onClick={() => { setLocalInput(''); reset(); }}
+                onClick={() => {
+                  setLocalInput('');
+                  reset();
+                  close();
+                }}
                 style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(calc(-50% + 6px))', border: 'none', background: 'transparent', color: '#888', fontSize: '16px', cursor: 'pointer' }}
               >
                 ✕

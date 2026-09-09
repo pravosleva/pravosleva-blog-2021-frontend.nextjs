@@ -1,5 +1,6 @@
 export type TArticleTools = {
   id: string;
+  title?: string;
   brief: string;
   bg?: {
     src: string;
@@ -9,4 +10,5 @@ export type TArticleTools = {
     };
     type: string;
   };
+  priority?: number;
 }

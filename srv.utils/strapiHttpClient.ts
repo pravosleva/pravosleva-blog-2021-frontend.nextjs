@@ -89,7 +89,7 @@ class httpClientSingletone {
     return msgs.join(' <- ')
   }
 
-  public async get(url: string): Promise<NResponseLocal.IResult> {
+  public async get<T>(url: string): Promise<NResponseLocal.IResult<T>> {
     return await this.api
       .get(url)
       .then(httpErrorHandler) // res -> res.data
@@ -114,7 +114,7 @@ class httpClientSingletone {
       }))
       .catch(axiosUniversalCatch)
   }
-  public async post(url: string, data?: any): Promise<NResponseLocal.IResult> {
+  public async post<T>(url: string, data?: any): Promise<NResponseLocal.IResult<T>> {
     return await this.api
       .post(url, data)
       .then(httpErrorHandler) // res -> res.data
@@ -139,7 +139,7 @@ class httpClientSingletone {
       }))
       .catch(axiosUniversalCatch)
   }
-  public async put(url: string, data?: any): Promise<NResponseLocal.IResult> {
+  public async put<T>(url: string, data?: any): Promise<NResponseLocal.IResult<T>> {
     return await this.api
       .put(url, data)
       .then(httpErrorHandler) // res -> res.data
@@ -162,7 +162,7 @@ class httpClientSingletone {
       }))
       .catch(axiosUniversalCatch)
   }
-  public async delete(url: string, data?: any): Promise<NResponseLocal.IResult> {
+  public async delete<T>(url: string, data?: any): Promise<NResponseLocal.IResult<T>> {
     return await this.api
       .delete(url, data)
       .then(httpErrorHandler) // res -> res.data
@@ -190,7 +190,7 @@ class httpClientSingletone {
     todoItem: NTodo.TItem;
     namespace: string;
   }): Promise<{ ok: boolean; res?: T; message?: string; }> {
-    const result = await this.post('/todos', {
+    const result = await this.post<any>('/todos', {
       data: {
         label: todoItem.label,
         namespace,
@@ -219,7 +219,7 @@ class httpClientSingletone {
     namespace: string;
     room: number;
   }): Promise<{ ok: boolean; res?: T; message?: string; }> {
-    const result = await this.put(`/todos/${todoId}`, {
+    const result = await this.put<any>(`/todos/${todoId}`, {
       data: {
         label: todoItem.label,
         namespace,
@@ -249,7 +249,7 @@ class httpClientSingletone {
   public async deleteTodo<T>({ todoId }: {
     todoId: number;
   }): Promise<{ ok: boolean; res?: T; message?: string; }> {
-    const result = await this.delete(`/todos/${todoId}`)
+    const result = await this.delete<any>(`/todos/${todoId}`)
 
     if (result.isOk && typeof result.response?.data?.id === 'number') return Promise.resolve({
       ok: true,
@@ -268,7 +268,7 @@ class httpClientSingletone {
     res?: T;
     message?: string;
   }> {
-    const result = await this.get('/todos')
+    const result = await this.get<any>('/todos')
 
     if (result.isOk && Array.isArray(result.response?.data)) return Promise.resolve({
       ok: true,

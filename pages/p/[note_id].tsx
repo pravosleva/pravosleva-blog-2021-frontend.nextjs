@@ -12,6 +12,7 @@ import { setTitle } from '~/store/reducers/pageMeta'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { NextPageContext } from 'next'
 import { Store } from 'redux'
+import { NCodeSamplesSpace } from '~/types'
 
 // Интерфейс для маппинга старых и новых путей в slugMap
 interface ISlugMappingItem {
@@ -31,9 +32,9 @@ interface IBlogArticleSlugProps {
 }
 
 const defaultBg = {
-  src: 'https://pravosleva.pro',
+  src: '/static/img/blog/dog.webp',
   size: { w: 896, h: 1344 },
-  type: 'image/webp',
+  type: 'image/webp'
 }
 
 const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
@@ -121,73 +122,49 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     // Оптимизация 2: Превращаем непредсказуемый query-параметр в чистую строку
     const note_id = typeof rawNoteId === 'string' ? rawNoteId : ''
 
-    const _pageService: TPageService = {
-      isOk: false,
-      modifiedArticle: null,
-    }
+    const _pageService: TPageService = { isOk: false }
     let article: TArticle | null = null
 
     // Приведение карты slugMapping к безопасному индексному типу Record
     const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
     const matchedMapping = note_id ? typedSlugMapping[note_id] : undefined
-
-    if (matchedMapping) {
-      // КЕЙС 1: Страница найдена по алиасу в slugMap
-      const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${matchedMapping.id}`)
-      
-      if (noteResult.ok && noteResult.response?.data) {
-        store.dispatch(setTitle(noteResult.response.data.title || 'Без названия'))
-
-        _pageService.isOk = true
-        _pageService.response = noteResult.response
-        article = {
-          original: { ...noteResult.response.data },
-          slug: note_id,
-          brief: matchedMapping.brief || '',
-          bg: matchedMapping.bg || defaultBg,
-        }
-      } else {
-        _pageService.isOk = false
-        _pageService.response = noteResult?.response || null
-        _pageService.message = 'Скорее всего, автор закрыл статью на редактирование'
-      }
+    
+    // NOTE: Прямой поиск статьи по её системному ID из URL
+    // See also: GET https://pravosleva.ru/express-next-api/code-samples-proxy/api/notes/instructions.local
+    if (!note_id) {
+      _pageService.isOk = false
+      _pageService.message = 'Идентификатор заметки пуст или невалиден'
     } else {
-      // КЕЙС 2: Прямой поиск статьи по её системному ID из URL
-      if (!note_id) {
-        _pageService.isOk = false
-        _pageService.message = 'Идентификатор заметки пуст или невалиден'
-      } else {
-        const noteResult = await universalHttpClient.get(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
-        
-        try {
-          if (!noteResult.ok) {
-            throw new Error('Не удалось получить статью. Возможно, автор закрыл ее на редактирование, либо ее не существует')
-          }
-          
-          if (noteResult.response) {
-            if (!noteResult.response.isPrivate) {
-              store.dispatch(setTitle(noteResult.response.data?.title || 'Без названия'))
+      const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TLocalNoteResponse>(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
+      try {
+        if (!noteResult?.ok) {
+          throw new Error([
+            'getInitialProps: Не удалось получить статью. Возможно, автор закрыл ее на редактирование, либо ее не существует'
+          ].join('; '))
+        }
+        if (noteResult?.response) {
+          if (!noteResult.response.data.isPrivate) {
+            store.dispatch(setTitle(noteResult.response.data.title || 'Без названия'))
 
-              _pageService.isOk = true
-              _pageService.response = noteResult.response
-              article = {
-                original: { ...noteResult.response.data },
-                slug: note_id,
-                brief: 'DRAFT',
-                bg: defaultBg,
-              }
-            } else {
-              throw new Error(`Неизвестный кейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.isPrivate)})`)
+            _pageService.isOk = true
+            _pageService.response = noteResult.response
+            article = {
+              original: { ...noteResult.response.data },
+              slug: note_id,
+              brief: noteResult.response.data.brief || matchedMapping?.brief || 'DRAFT',
+              bg: noteResult.response.data.bg || matchedMapping?.bg || defaultBg,
             }
           } else {
-            throw new Error('Неизвестный кейс (ответ получен, но невалидный)')
+            throw new Error(`Неизвестный кейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.data.isPrivate)})`)
           }
-        } catch (err: unknown) {
-          const error = err as Error
-          _pageService.isOk = false
-          _pageService.response = noteResult?.response || null
-          _pageService.message = error?.message || 'Unknown error occurred'
+        } else {
+          throw new Error('Неизвестный кейс (ответ получен, но невалидный)')
         }
+      } catch (err: unknown) {
+        const error = err as Error
+        _pageService.isOk = false
+        _pageService.response = noteResult?.response
+        _pageService.message = error?.message || 'Unknown error occurred'
       }
     }
 
