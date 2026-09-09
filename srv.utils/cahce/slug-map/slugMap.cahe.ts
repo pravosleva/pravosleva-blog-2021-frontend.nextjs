@@ -73,7 +73,7 @@ class SlugMapCacheService {
     // Запускаем регулярный Heartbeat для пинания реактивного сигнала раз в 30 секунд
     global.__slugMapCacheInterval = setInterval(() => {
       cacheTriggerSignal.value += 1
-    }, 30 * 1000)
+    }, 2 * 60 * 60 * 1000) // NOTE: Every 2h
   }
 
   public static getInstance(): SlugMapCacheService {
