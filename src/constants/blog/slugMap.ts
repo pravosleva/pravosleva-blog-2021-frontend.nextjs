@@ -20,7 +20,7 @@ import { list as articlesListAboutAI } from './ai'
 import { list as articlesListAboutMath } from './math'
 import { list as articlesListAboutReact } from './react'
 
-export const slugMapping: { [key: string]: TArticleTools } = {
+const _slugMapping: { [key: string]: TArticleTools } = {
   ...articlesListAboutBash,
   ...articlesListAboutCss,
   ...articlesListAboutCv,
@@ -345,9 +345,9 @@ const _slugMap = new Map<string, TArticleTools & {
   slug: string;
 }>()
 
-for (const slug in slugMapping) _slugMap.set(slugMapping[slug].id, {
+for (const slug in _slugMapping) _slugMap.set(_slugMapping[slug].id, {
   slug,
-  ...slugMapping[slug],
+  ..._slugMapping[slug],
 })
 
-export const slugMap = _slugMap
+// const slugMap = _slugMap

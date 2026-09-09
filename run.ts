@@ -67,9 +67,11 @@ const state = {
 nextApp
   .prepare()
   .then(() => {
-    expressApp.use('/express-next-api', (req: IRequest, _res: IResponse, next: INextFunction) => {
+    expressApp.use('/express-next-api', (req: IRequest, res: IResponse, next: INextFunction) => {
+      res.startTime('add_slug_chache_instance', 'Inject to req obj')
       req.slugMapCacheInstance = slugMapCacheInstance
       req.slugMap = slugMapCacheInstance.slugMapResource.data || undefined
+      res.endTime('add_slug_chache_instance')
       next()
     })
     expressApp.use('/express-next-api', api)

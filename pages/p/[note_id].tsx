@@ -5,7 +5,7 @@ import Head from 'next/head'
 import { ErrorPage } from '~/components/ErrorPage'
 import { Layout } from '~/components/Layout'
 import { wrapper } from '~/store'
-import { slugMapping } from '~/constants/blog/slugMap'
+// import { slugMapping } from '~/constants/blog/slugMap'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { setTitle } from '~/store/reducers/pageMeta'
@@ -129,8 +129,8 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     let article: TArticle | null = null
 
     // Приведение карты slugMapping к безопасному индексному типу Record
-    const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
-    const matchedMapping = note_id ? typedSlugMapping[note_id] : undefined
+    // const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
+    // const matchedMapping = note_id ? typedSlugMapping[note_id] : undefined
     
     // NOTE: Прямой поиск статьи по её системному ID из URL
     // See also: GET https://pravosleva.ru/express-next-api/code-samples-proxy/api/notes/instructions.local
@@ -154,8 +154,8 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
             article = {
               original: { ...noteResult.response.data },
               slug: note_id,
-              brief: noteResult.response.data.brief || matchedMapping?.brief || 'DRAFT',
-              bg: noteResult.response.data.bg || matchedMapping?.bg || defaultBg,
+              brief: noteResult.response.data.brief || 'DRAFT',
+              bg: noteResult.response.data.bg || defaultBg,
             }
           } else {
             throw new Error(`Неизвестный кейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.data.isPrivate)})`)

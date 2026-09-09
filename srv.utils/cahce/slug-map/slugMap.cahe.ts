@@ -35,22 +35,20 @@ class SlugMapCacheService {
       logger: { isEnabled: false, instanceName: 'ServerSlugsSingletonClass' }
     })
 
-    const cacheTriggerSignal = this.engine.signal(0, 'cacheTrigger')
-    const cacheDeps = this.engine.computed(() => [cacheTriggerSignal.value] as const)
+    const cacheTriggerSignal = this.engine.signal<number>(0, 'cacheTrigger')
+    const cacheDeps = this.engine.computed<[number]>(() => [cacheTriggerSignal.value])
 
     this.slugMapResource = this.engine.resource(
       withCache(
-        async (_, _abortSignal) => {
-          console.log('📡 [SlugMapCacheService] Движок пошел по сети к local.slug-map.json...')
+        async ([triggerValue], _abortSignal) => {
+          console.log(`📡 [SlugMapCacheService:${triggerValue}] Движок пошел по сети к local.slug-map.json...`)
           const mapResult = await universalHttpClient.getNoApiErr<TLocalSlugMap>('/static/local.slug-map.json')
-          
           if (!mapResult.isOk || !mapResult.response) {
             throw new Error(mapResult.message || 'Не удалось загрузить local.slug-map.json')
           }
-
           return mapResult.response
         },
-        { ttl: 60 * 1000 } // TTL 60 секунд
+        { ttl: 1 * 60 * 60 * 1000 } // TTL 1h
       ),
       cacheDeps,
       'resource:/static/local.slug-map.json'
@@ -73,7 +71,7 @@ class SlugMapCacheService {
     // Запускаем регулярный Heartbeat для пинания реактивного сигнала раз в 30 секунд
     global.__slugMapCacheInterval = setInterval(() => {
       cacheTriggerSignal.value += 1
-    }, 2 * 60 * 60 * 1000) // NOTE: Every 2h
+    }, 30 * 60 * 1000) // NOTE: Every 30min
   }
 
   public static getInstance(): SlugMapCacheService {

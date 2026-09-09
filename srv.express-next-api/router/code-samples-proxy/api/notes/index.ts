@@ -7,6 +7,7 @@ import { NCodeSamplesSpace } from '~/types'
 import { NResponseLocal } from '~/srv.utils/errors/api'
 import { TLocalSlugMap } from '~/srv.utils/cahce/slug-map/slugMap.cahe'
 import { defaultBg } from '~/srv.utils/local-mdx/readLocalMdxFallback'
+import { testTextByAllWords } from '~/srv.utils/tools-string/testTextByAllWords'
 
 const codeSamplesProxyApi = express()
 const NOTES_BASE_API_URL = 'http://62.109.21.103' // http://code-samples.space
@@ -46,7 +47,7 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
   bg?: { src: string; size: { w: number; h: number }; type: string }
   brief?: string;
 }[] => {
-  const matchedNotes: { original: NCodeSamplesSpace.TNote; slug: string; bg?: { src: string; size: { w: number; h: number }; type: string }; brief?: string }[] = []
+  const matchedNotes: { original: NCodeSamplesSpace.TNote; slug: string; bg?: { src: string; size: { w: number; h: number }; type: string }; brief?: string; }[] = []
   const normalizedQuery = qText.toLowerCase().trim().replace(/\s/g, '')
 
   Object.entries(slugMapping).forEach(([slugKey, tools]) => {
@@ -56,8 +57,10 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
     
     const tags: string[] = Array.isArray(tools.tags) ? tools.tags : []
     const isTagMatched = tags.some(tag => tag.toLowerCase().includes(normalizedQuery))
+    const isPrivate = typeof tools.isPrivate === 'boolean' ? tools.isPrivate : false
 
-    const isMatched = !tools.isPrivate && (
+    const isMatched = !isPrivate && (
+      testTextByAllWords({ words: normalizedQuery.split(','), text: tools.title }) ||
       !normalizedQuery || 
       slugKey.toLowerCase().includes(normalizedQuery) || 
       humanReadableTitle.toLowerCase().includes(normalizedQuery) || 
@@ -67,25 +70,31 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
     )
 
     if (isMatched) {
-        matchedNotes.push({
-          original: {
-            // Берем id из JSON, если его нет — подставляем сам slugKey в качестве уникального ID
-            _id: String(tools._id || slugKey), 
-            // Если в файле был красивый title, выводим его с иконкой папки, иначе — slugKey
-            title: tools.title ? `📁 ${tools.title}` : slugKey,
-            description: tools.brief || 'Локальное описание отсутствует',
-            isPrivate: typeof tools.isPrivate === 'boolean' ? tools.isPrivate : false,
-            // Берем оригинальные даты создания и обновления из JSON-файла!
-            createdAt: tools.createdAt || new Date().toISOString(), 
-            updatedAt: tools.updatedAt || new Date().toISOString(),
-            // Подставляем приоритет из файла, либо 0 по умолчанию
-            priority: typeof tools.priority === 'number' ? tools.priority : 0,
-          },
-          bg: tools.bg || defaultBg,
-          slug: String(slugKey || tools._id),
-          brief: tools.brief,
-        })
-      }
+      console.log(`-- MATCHED: ${tools.title}`)
+      console.log(tools)
+      console.log('--')
+    }
+
+    if (isMatched) {
+      matchedNotes.push({
+        original: {
+          // Берем id из JSON, если его нет — подставляем сам slugKey в качестве уникального ID
+          _id: String(tools._id || slugKey), 
+          // Если в файле был красивый title, выводим его с иконкой папки, иначе — slugKey
+          title: tools.title ? `📁 ${tools.title}` : slugKey,
+          description: tools.brief || 'Локальное описание отсутствует',
+          isPrivate,
+          // Берем оригинальные даты создания и обновления из JSON-файла!
+          createdAt: tools.createdAt || new Date().toISOString(), 
+          updatedAt: tools.updatedAt || new Date().toISOString(),
+          // Подставляем приоритет из файла, либо 0 по умолчанию
+          priority: typeof tools.priority === 'number' ? tools.priority : 0,
+        },
+        bg: tools.bg || defaultBg,
+        slug: String(slugKey || tools._id),
+        brief: tools.brief,
+      })
+    }
   })
 
   return matchedNotes
@@ -102,8 +111,6 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   let remoteNotes: { original: NCodeSamplesSpace.TNote; slug: string }[] = []
   let localNotes: { original: NCodeSamplesSpace.TNote; slug: string }[] = []
   let notesResult: NResponseLocal.IResult<NCodeSamplesSpace.TNotesListResponse> | undefined = undefined
-
-  const cacheService = req.slugMapCacheInstance
 
   // === МЕТКА 1: Замеряем общее время выполнения всего гибридного поиска ===
   res.startTime('hybrid_search_total', 'Total Hybrid Search Execution Time')
@@ -131,34 +138,39 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   }
 
   // 2. СТРАТЕГИЯ: Поиск в локальном объекте (из синглтона в памяти)
-  if (isLocalSearchEnabled && cacheService) {
-    // МЕТКА 3: Замеряем время работы с синглтон-кэшем и фильтрацию в оперативной памяти
-    const currentCacheAge = cacheService.getHumanReadableAge()
-    res.startTime('reactive_cache_local_search', `Memory cache-hit search; Last update: ${currentCacheAge}`)
-
-    let slugMapping = cacheService.getMapping()
-
-    if (!slugMapping) {
-      // МЕТКА 4: Жесткий фолбек (сработает только при холодном старте, если в памяти пусто)
-      res.startTime('db_proxy_get_slug_map_direct', 'Fallback call directly to local network json file')
+  const cacheService = req.slugMapCacheInstance
+  const currentCacheAge = cacheService?.getHumanReadableAge() || 'No cacheService in req ctx'
+  if (isLocalSearchEnabled) {
+    let slugMapping
+    const activeData = req.slugMap
+    console.log(`-- typeof activeData (from req.slugMap) is ${typeof activeData}`)
+    if (activeData) {
+      res.startTime('slug_map', 'activeData taken from req.slugMap')
+      slugMapping = activeData
+      res.endTime('slug_map')
+    } else {
+      // МЕТКА 3: Замеряем время работы с синглтон-кэшем и фильтрацию в оперативной памяти
+      res.startTime('reactive_cache_local_search', `Memory cache-hit search; Last update: ${currentCacheAge}`)
       try {
-        const mapResult = await universalHttpClient.get<TLocalSlugMap>('/static/local.slug-map.json')
+        const mapResult = await universalHttpClient.getNoApiErr<TLocalSlugMap>('/static/local.slug-map.json')
         if (mapResult.isOk && mapResult.response) {
           slugMapping = mapResult.response
-          cacheService.updateTimestampDirectly()
+          cacheService?.updateTimestampDirectly()
         }
       } catch (directMapError) {
         console.error('[API Search List] Direct SlugMap fallback fetch failed:', directMapError)
       }
-      res.endTime('db_proxy_get_slug_map_direct')
+      res.endTime('reactive_cache_local_search')
     }
 
+    // ОПТИМИЗАЦИЯ: Выносим вызов фильтрации наружу! 
+    // Теперь поиск и отсечение приватных заметок сработают в любом случае.
     if (slugMapping) {
       const searchQuery = typeof q_title_all_words === 'string' ? q_title_all_words : ''
+      res.startTime('search_in_slug_mapping', 'Local fn called')
       localNotes = searchInSlugMapping(slugMapping, searchQuery)
+      res.endTime('search_in_slug_mapping')
     }
-
-    res.endTime('reactive_cache_local_search')
   }
 
   // Защита: если ничего не найдено
@@ -176,12 +188,29 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   // МЕТКА 5: Время, затраченное процессором на объединение и многоуровневую сортировку массивов
   res.startTime('data_merge_and_sort', 'Data Merge and Multi-level Sorting')
 
-  // 3. ОБЪЕДИНЕНИЕ
+  // 3. ОБЪЕДИНЕНИЕ С ИЗМЕНЕННЫМ ПРИОРИТЕТОМ И ЖЕСТКИМ СКРЫТИЕМ ПРИВАТНЫХ СТАТЕЙ
+  // Инициализируем массив отфильтрованными локальными заметками (в них приватных уже гарантированно нет)
   const allCombinedNotes = [...localNotes]
+
   remoteNotes.forEach((rNote) => {
+    // Безопасно проверяем флаг приватности у статьи, пришедшей из удаленной БД API
+    const isRemoteNotePrivate = typeof rNote.original?.isPrivate === 'boolean' 
+      ? rNote.original.isPrivate 
+      : false
+
+    // ОПТИМИЗАЦИЯ: Если статья из базы помечена как приватная, мы ЕЁ ИГНОРИРУЕМ СРАЗУ
+    if (isRemoteNotePrivate) {
+      console.log(`[API Search Sync] Удаленная приватная заметка ${rNote.original._id} отсечена на этапе слияния.`)
+      return // Переходим к следующему элементу цикла, не добавляя в общий список
+    }
+
+    // Проверяем на дубликаты с локальным кэшем
     const isDuplicate = allCombinedNotes.some((lNote) => String(lNote.original._id) === String(rNote.original._id))
+    
     if (!isDuplicate) {
       allCombinedNotes.push(rNote)
+    } else {
+      console.log(`[API Search Sync] Сетевая копия заметки ${rNote.original._id} пропущена. Заменена локальной версией.`)
     }
   })
 

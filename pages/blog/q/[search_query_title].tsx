@@ -6,7 +6,7 @@ import { ErrorPage } from '~/components/ErrorPage';
 import { Layout } from '~/components/Layout';
 import { wrapper } from '~/store'
 import { ArticlesList } from '~/components/ArticlesList'
-import { slugMap } from '~/constants/blog/slugMap'
+// import { slugMap } from '~/constants/blog/slugMap'
 import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'

@@ -11,7 +11,6 @@ import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByT
 import { pluralize } from '~/utils/string-tools/pluralize' // Наша функция склонений
 import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { getCounterBadgeBgColor, getCounterBadgeTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
-import { slugMap } from '~/constants/blog/slugMap'
 
 const getTextColorByThemeName = (themeName: TThemeName) => {
   switch (themeName) {
@@ -217,7 +216,7 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
 
   const getLink = (id: string) => {
     // 1. Формируем полную абсолютную ссылку для QR-кода
-    const articleSlug = slugMap.get(id)?.slug || id
+    const articleSlug = id
     
     // Важно: QR-код должен содержать полный URL с доменом, чтобы телефон его распознал
     // const host = typeof window !== 'undefined' ? window.location.origin : 'https://pravosleva.pro'
@@ -321,7 +320,7 @@ export const ArticlesSearchDesktop: React.FC<ArticlesSearchDesktopProps> = ({ cu
               {results.map((note) => (
                 <a
                   key={note.original._id}
-                  href={getLink(note.original._id)}
+                  href={getLink(note.slug || note.original._id)}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
