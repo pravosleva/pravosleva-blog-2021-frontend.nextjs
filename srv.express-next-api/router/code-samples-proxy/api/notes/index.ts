@@ -107,10 +107,10 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   // === МЕТКА 1: Замеряем общее время выполнения всего гибридного поиска ===
   res.startTime('hybrid_search_total', 'Total Hybrid Search Execution Time')
 
-  // 1. СТРАТЕГИЯ: Поиск на удаленном ресурсе СУБД
+  // 1. СТРАТЕГИЯ: Поиск на удаленном ресурсе DB
   if (iRemoteSearchEnabled) {
     // МЕТКА 2: Время, затраченное на поход в сеть к удаленной базе данных
-    res.startTime('db_remote_fetch', `Fetch 9999 notes from remote СУБД: ${NOTES_BASE_API_URL}`)
+    res.startTime('db_remote_fetch', `Fetch 9999 notes from remote DB: ${NOTES_BASE_API_URL}`)
     
     const remoteFetchLimit = 9999
     let url = `${NOTES_BASE_API_URL}/api/notes?limit=${remoteFetchLimit}&sort_by_create_date=1&page=1`
