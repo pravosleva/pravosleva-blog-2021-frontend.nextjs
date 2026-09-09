@@ -212,6 +212,12 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                     }}>
                     {note.original.description || 'Нет описания заметки'}
                   </div>
+                  {/* <pre
+                    style={{ fontSize: 'x-small',
+                      whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
+                      wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
+                    }}
+                  >{JSON.stringify(note, null, 2)}</pre> */}
                 </a>
               ))
             ) : query ? (

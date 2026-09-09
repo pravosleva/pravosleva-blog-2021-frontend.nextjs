@@ -6,6 +6,7 @@ import { getNote, rules as singleNoteRules } from './[id]'
 import { NCodeSamplesSpace } from '~/types'
 import { NResponseLocal } from '~/srv.utils/errors/api/types'
 import { defaultBg } from '~/srv.utils/local-mdx/readLocalMdxFallback'
+import { testTextByAllWords } from '~/srv.utils/tools-string/testTextByAllWords'
 // import { slugMapping } from '../../../../../src/constants/blog/slugMap'
 
 const codeSamplesProxyApi = express()
@@ -92,7 +93,7 @@ interface ILocalSlugItem {
   category?: string
   isPrivate?: boolean
   author?: string
-  id?: string | number // на случай, если id прокинут из базы
+  _id?: string | number // на случай, если id прокинут из базы
 }
 
 // Типизация всего JSON-словаря, где ключом выступает строка (слаг статьи)
@@ -111,7 +112,27 @@ const searchInSlugMapping = async (qText: string): Promise<({
     // 1. Делаем сетевой GET-запрос строго с указанием нашего типа TLocalSlugMap
     const responseResult = await universalHttpClient.getNoApiErr<TLocalSlugMap>(`${process.env.SRV_CODE_SAMPLES_PROXY_API_BASE_URL}/static/local.slug-map.json`)
 
-    console.log(responseResult)
+    // console.log(responseResult)
+    /* NOTEL Example
+    {
+      isOk: true,
+      response: {
+        'what-where-when': {
+          title: 'Что? Где? Когда?',
+          brief: 'Музыка из шоу',
+          bg: [Object],
+          createdAt: '2025-01-18T15:42:41.219Z',
+          updatedAt: '2026-09-02T11:47:07.178Z',
+          priority: 5,
+          tags: [Array],
+          isPrivate: false,
+          _id: '678bcbf18c79264aa7fd53b6',
+          author: 'Den Pol',
+          category: 'resume'
+        }
+      }
+    }
+    */
 
     // Проверяем, что запрос прошел успешно и данные вернулись в нужном формате
     if (!responseResult.isOk || !responseResult.response) {
@@ -128,15 +149,16 @@ const searchInSlugMapping = async (qText: string): Promise<({
       const briefText = tools.brief ? tools.brief.toLowerCase() : ''
       const titleText = tools.title ? tools.title.toLowerCase() : ''
       const isPrivate = tools.isPrivate || false
-      
       // Расширяем поиск: ищем совпадение также по массиву тегов, если они прописаны
       const tags: string[] = Array.isArray(tools.tags) ? tools.tags : []
       const isTagMatched = tags.some(tag => tag.toLowerCase().includes(normalizedQuery))
+      const isTitleMatched = testTextByAllWords({ text: tools.title, words: normalizedQuery.split(',') })
 
       const isMatched = !isPrivate && (
         !normalizedQuery || 
         slugKey.toLowerCase().includes(normalizedQuery) || 
         humanReadableTitle.toLowerCase().includes(normalizedQuery) ||
+        isTitleMatched ||
         titleText.includes(normalizedQuery) ||
         briefText.includes(normalizedQuery) ||
         isTagMatched
@@ -146,7 +168,7 @@ const searchInSlugMapping = async (qText: string): Promise<({
         matchedNotes.push({
           original: {
             // Берем id из JSON, если его нет — подставляем сам slugKey в качестве уникального ID
-            _id: String(tools.id || slugKey), 
+            _id: String(tools._id || slugKey), 
             // Если в файле был красивый title, выводим его с иконкой папки, иначе — slugKey
             title: tools.title ? `📁 ${tools.title}` : slugKey,
             description: tools.brief || 'Локальное описание отсутствует',
@@ -158,7 +180,7 @@ const searchInSlugMapping = async (qText: string): Promise<({
             priority: typeof tools.priority === 'number' ? tools.priority : 0,
           },
           bg: tools.bg || defaultBg,
-          slug: String(tools.id || slugKey),
+          slug: String(slugKey || tools._id),
           brief: tools.brief,
         })
       }
@@ -184,13 +206,15 @@ const getNotes = async (req: IRequest, res: IResponse) => {
 
   // 1. СТРАТЕГИЯ: Поиск на удаленном ресурсе СУБД
   if (iRemoteSearchEnabled) {
-    const remoteFetchLimit = isLocalSearchEnabled ? 9999 : currentLimit
+    // Возвращаем надежный лимит 9999 и жестко запрашиваем 1-ю страницу у API.
+    // Это нужно, чтобы выкачать всю базу для сквозной гибридной пагинации.
+    const remoteFetchLimit = 9999
 
-    let url = `${NOTES_BASE_API_URL}/api/notes?limit=${remoteFetchLimit}&sort_by_create_date=1&page=${isLocalSearchEnabled ? 1 : currentPage}`
+    let url = `${NOTES_BASE_API_URL}/api/notes?limit=${remoteFetchLimit}&sort_by_create_date=1&page=1`
     
     if (!!q_title_all_words && typeof q_title_all_words === 'string') { 
       const modifiedQueryTitleAllWords = q_title_all_words.replace(/\s/g, '')
-      url = `${NOTES_BASE_API_URL}/api/notes?limit=${remoteFetchLimit}&q_title_all_words=${encodeURIComponent(modifiedQueryTitleAllWords)}&sort_by_create_date=1&page=${isLocalSearchEnabled ? 1 : currentPage}`
+      url = `${NOTES_BASE_API_URL}/api/notes?limit=${remoteFetchLimit}&q_title_all_words=${encodeURIComponent(modifiedQueryTitleAllWords)}&sort_by_create_date=1&page=1`
     }
     
     notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponse>(url)
@@ -202,54 +226,58 @@ const getNotes = async (req: IRequest, res: IResponse) => {
 
   // 2. СТРАТЕГИЯ: Поиск в локальном объекте slugMapping
   if (isLocalSearchEnabled) {
-    // const searchQuery = typeof q_title_all_words === 'string' ? q_title_all_words : ''
-    // localNotes = searchInSlugMapping(searchQuery)
-
     const searchQuery = typeof q_title_all_words === 'string' ? q_title_all_words : ''
-    // Ждем выполнения асинхронного поиска по сети
     localNotes = await searchInSlugMapping(searchQuery)
   }
 
-  // Защита: если ничего не найдено
+  // Защита: если вообще ничего не найдено ни в сети, ни в памяти
   if (remoteNotes.length === 0 && localNotes.length === 0) {
     return res.status(200).send({
       success: true,
       data: [],
-      message: notesResult?.message || 'Поиск не дал результатов или удаленный сервер недоступен',
+      pagination: { totalPages: 1, currentPage: currentPage, totalNotes: 0 },
+      message: notesResult?.message || 'Поиск не дал результатов или удаленный server недоступен',
       _original: notesResult?.response || null,
     })
   }
 
-  // 3. ОБЪЕДИНЕНИЕ: Собираем полный пул данных без дубликатов по _id
-  const allCombinedNotes = [...remoteNotes]
-  localNotes.forEach((lNote) => {
-    const isDuplicate = allCombinedNotes.some((rNote) => String(rNote.original._id) === String(lNote.original._id))
-    if (!isDuplicate) allCombinedNotes.push(lNote)
+  // 3. ОБЪЕДИНЕНИЕ С ИЗМЕНЕННЫМ ПРИОРИТЕТОМ:
+  // Локальные заметки закладываются первыми. Они главные!
+  const allCombinedNotes = [...localNotes]
+
+  // Добавляем сетевые статьи только если их _id еще нет в локальном пуле
+  remoteNotes.forEach((rNote) => {
+    const isDuplicate = allCombinedNotes.some((lNote) => String(lNote.original._id) === String(rNote.original._id))
+    
+    if (!isDuplicate) {
+      allCombinedNotes.push(rNote)
+    } else {
+      console.log(`[API Search Sync] Удаленная заметка с ID ${rNote.original._id} заменена локальной версией из JSON.`)
+    }
   })
 
-  // 4. МНОГОУРОВНЕВАЯ СТОРТИРОВКА: Приоритет 1 (priority) -> Приоритет 2 (date)
+  // 4. МНОГОУРОВНЕВАЯ СОРТИРОВКА: Приоритет 1 (priority) -> Приоритет 2 (date)
   allCombinedNotes.sort((a, b) => {
-    // Подставляем 0, если у статьи из API нет поля priority, чтобы избежать NaN при вычитании
     const priorityA = typeof a.original.priority === 'number' ? a.original.priority : 0
     const priorityB = typeof b.original.priority === 'number' ? b.original.priority : 0
 
-    // Критерий 1: Сортировка по приоритету (высший приоритет — вверху списка)
     if (priorityB !== priorityA) {
       return priorityB - priorityA
     }
 
-    // Критерий 2: Если приоритеты равны, сортируем по дате создания (свежие — вверху)
     const timeA = new Date(a.original.createdAt || 0).getTime()
     const timeB = new Date(b.original.createdAt || 0).getTime()
     
     return timeB - timeA
   })
 
-  // 5. НАРЕЗКА (Сквозной Limit и Page)
+  // 5. ЧЕСТНАЯ НАРЕЗКА (Сквозной Limit и Page):
+  // Вычисляем индексы среза для текущей страницы от полного объединенного массива
   const totalNotesCount = allCombinedNotes.length
   const startIndex = (currentPage - 1) * currentLimit
   const endIndex = startIndex + currentLimit
   
+  // Нарезаем данные. Теперь локальные файлы займут свои строгие места на конкретных страницах!
   const pagedNotes = allCombinedNotes.slice(startIndex, endIndex)
   const totalPagesCount = Math.ceil(totalNotesCount / currentLimit) || 1
 

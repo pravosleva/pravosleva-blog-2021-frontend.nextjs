@@ -53,7 +53,9 @@ export const GridItem = memo(({ article }: TProps) => {
       <div className='gridItemBox'>
         <div className='gridItemTitle'><h3>{title}</h3></div>
         {
-          !!brief && <div className='gridItemDescription'>{brief}</div>
+          !!brief
+            ? <div className='gridItemDescription'>{brief}</div>
+            : <div className='gridItemDescription'>...</div>
         }
         <div className='gridItemAction'>
           <div>
