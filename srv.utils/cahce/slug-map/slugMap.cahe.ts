@@ -13,6 +13,8 @@ export interface ILocalSlugItem {
   tags?: string[]
   category?: string
   author?: string
+  _id?: string | number
+  bg?: { src: string; size: { w: number; h: number }; type: string }
 }
 
 export type TLocalSlugMap = Record<string, ILocalSlugItem>

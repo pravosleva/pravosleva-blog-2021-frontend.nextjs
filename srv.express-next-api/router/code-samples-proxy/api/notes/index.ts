@@ -4,10 +4,9 @@ import { Request as IRequest, Response as IResponse } from 'express'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 import { getNote, rules as singleNoteRules } from './[id]'
 import { NCodeSamplesSpace } from '~/types'
-import { NResponseLocal } from '~/srv.utils/errors/api/types'
+import { NResponseLocal } from '~/srv.utils/errors/api'
+import { TLocalSlugMap } from '~/srv.utils/cahce/slug-map/slugMap.cahe'
 import { defaultBg } from '~/srv.utils/local-mdx/readLocalMdxFallback'
-import { testTextByAllWords } from '~/srv.utils/tools-string/testTextByAllWords'
-// import { slugMapping } from '../../../../../src/constants/blog/slugMap'
 
 const codeSamplesProxyApi = express()
 const NOTES_BASE_API_URL = 'http://62.109.21.103' // http://code-samples.space
@@ -16,27 +15,21 @@ export const indexRules = {
   params: {
     query: {
       limit: {
-        type: 'number',
-        descr: 'Limit',
-        required: false,
+        type: 'number', descr: 'Limit', required: false,
         validate: (val: any) => ({
           ok: !val || (typeof val === 'string' && !isNaN(Number(val))),
           reason: 'Should be number (optional)'
         }),
       },
       page: {
-        type: 'number',
-        descr: 'Current page',
-        required: false,
+        type: 'number', descr: 'Current page', required: false,
         validate: (val: any) => ({
           ok: !val || (typeof val === 'string' && !isNaN(Number(val))),
           reason: 'Should be number (optional)'
         }),
       },
       q_title_all_words: {
-        type: 'string',
-        descr: 'Words',
-        required: false,
+        type: 'string', descr: 'Words', required: false,
         validate: (val: any) => ({
           ok: !val || typeof val === 'string',
           reason: 'Should be string (optional)'
@@ -46,125 +39,33 @@ export const indexRules = {
   }
 }
 
-// Вспомогательная функция для быстрого поиска по объекту памяти slugMapping без обращения к диску
-// const searchInSlugMapping = (qText: string): NCodeSamplesSpace.TNote[] => {
-//   const matchedNotes: NCodeSamplesSpace.TNote[] = []
-//   const normalizedQuery = qText.toLowerCase().trim().replace(/\s/g, '')
-
-//   // Обходим объект в памяти O(N)
-//   Object.entries(slugMapping).forEach(([slugKey, tools]) => {
-//     // Формируем текстовое поле для поиска на основе слага (заменяем дефисы для гибкости поиска)
-//     const humanReadableTitle = slugKey.replace(/-/g, ' ')
-//     const briefText = tools.brief ? tools.brief.toLowerCase() : ''
-    
-//     // Проверяем вхождение: по слагу, по «очеловеченному» названию или по brief описанию
-//     const isMatched = 
-//       !normalizedQuery || 
-//       slugKey.toLowerCase().includes(normalizedQuery) || 
-//       humanReadableTitle.toLowerCase().includes(normalizedQuery) ||
-//       briefText.includes(normalizedQuery)
-
-//     if (isMatched) {
-//       matchedNotes.push({
-//         // Так как это поиск без чтения файлов, мапим id и метаданные в формат TNote
-//         _id: String(tools.id || slugKey), 
-//         title: !!tools.title ? `📁 ${tools.title}` : slugKey,
-//         description: tools.brief || 'Локальное описание отсутствует',
-//         isPrivate: false,
-//         createdAt: new Date().toISOString(), // Фолбек даты, так как в карте её нет
-//         updatedAt: new Date().toISOString(),
-//         priority: tools.priority || 0,
-//       })
-//     }
-//   })
-
-//   return matchedNotes
-// }
-
-// Структура одной статьи внутри нашего нового JSON-файла
-interface ILocalSlugItem {
-  title: string
-  brief: string
-  bg?: { src: string; size: { w: number; h: number }; type: string }
-  createdAt?: string
-  updatedAt?: string
-  priority?: number
-  tags?: string[]
-  category?: string
-  isPrivate?: boolean
-  author?: string
-  _id?: string | number // на случай, если id прокинут из базы
-}
-
-// Типизация всего JSON-словаря, где ключом выступает строка (слаг статьи)
-type TLocalSlugMap = Record<string, ILocalSlugItem>
-
-const searchInSlugMapping = async (qText: string): Promise<({
-  original : NCodeSamplesSpace.TNote;
+// Обновленная функция быстрого поиска: теперь принимает готовую карту из кэша синглтона
+const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
+  original: NCodeSamplesSpace.TNote;
   slug: string;
   bg?: { src: string; size: { w: number; h: number }; type: string }
   brief?: string;
-})[]> => {
-  const matchedNotes: { original : NCodeSamplesSpace.TNote; slug: string; bg?: { src: string; size: { w: number; h: number }; type: string }; brief?: string }[] = []
+}[] => {
+  const matchedNotes: { original: NCodeSamplesSpace.TNote; slug: string; bg?: { src: string; size: { w: number; h: number }; type: string }; brief?: string }[] = []
   const normalizedQuery = qText.toLowerCase().trim().replace(/\s/g, '')
 
-  try {
-    // 1. Делаем сетевой GET-запрос строго с указанием нашего типа TLocalSlugMap
-    const responseResult = await universalHttpClient.getNoApiErr<TLocalSlugMap>(`${process.env.SRV_CODE_SAMPLES_PROXY_API_BASE_URL}/static/local.slug-map.json`)
+  Object.entries(slugMapping).forEach(([slugKey, tools]) => {
+    const humanReadableTitle = slugKey.replace(/-/g, ' ')
+    const briefText = tools.brief ? tools.brief.toLowerCase() : ''
+    const titleText = tools.title ? tools.title.toLowerCase() : ''
+    
+    const tags: string[] = Array.isArray(tools.tags) ? tools.tags : []
+    const isTagMatched = tags.some(tag => tag.toLowerCase().includes(normalizedQuery))
 
-    // console.log(responseResult)
-    /* NOTEL Example
-    {
-      isOk: true,
-      response: {
-        'what-where-when': {
-          title: 'Что? Где? Когда?',
-          brief: 'Музыка из шоу',
-          bg: [Object],
-          createdAt: '2025-01-18T15:42:41.219Z',
-          updatedAt: '2026-09-02T11:47:07.178Z',
-          priority: 5,
-          tags: [Array],
-          isPrivate: false,
-          _id: '678bcbf18c79264aa7fd53b6',
-          author: 'Den Pol',
-          category: 'resume'
-        }
-      }
-    }
-    */
+    const isMatched = 
+      !normalizedQuery || 
+      slugKey.toLowerCase().includes(normalizedQuery) || 
+      humanReadableTitle.toLowerCase().includes(normalizedQuery) || 
+      titleText.includes(normalizedQuery) ||
+      briefText.includes(normalizedQuery) ||
+      isTagMatched
 
-    // Проверяем, что запрос прошел успешно и данные вернулись в нужном формате
-    if (!responseResult.isOk || !responseResult.response) {
-      console.warn(`Не удалось загрузить local.slug-map.json по сети; ${responseResult.message || 'No message'}`)
-      return Promise.resolve([])
-    }
-
-    // Вытаскиваем чистый типизированный объект словаря
-    const slugMapping: TLocalSlugMap = responseResult.response
-
-    // 2. Обходим объект в памяти
-    Object.entries(slugMapping).forEach(([slugKey, tools]) => {
-      const humanReadableTitle = slugKey.replace(/-/g, ' ')
-      const briefText = tools.brief ? tools.brief.toLowerCase() : ''
-      const titleText = tools.title ? tools.title.toLowerCase() : ''
-      const isPrivate = tools.isPrivate || false
-      // Расширяем поиск: ищем совпадение также по массиву тегов, если они прописаны
-      const tags: string[] = Array.isArray(tools.tags) ? tools.tags : []
-      const isTagMatched = tags.some(tag => tag.toLowerCase().includes(normalizedQuery))
-      const isTitleMatched = testTextByAllWords({ text: tools.title, words: normalizedQuery.split(',') })
-
-      const isMatched = !isPrivate && (
-        !normalizedQuery || 
-        slugKey.toLowerCase().includes(normalizedQuery) || 
-        humanReadableTitle.toLowerCase().includes(normalizedQuery) ||
-        isTitleMatched ||
-        titleText.includes(normalizedQuery) ||
-        briefText.includes(normalizedQuery) ||
-        isTagMatched
-      )
-
-      if (isMatched) {
+    if (isMatched) {
         matchedNotes.push({
           original: {
             // Берем id из JSON, если его нет — подставляем сам slugKey в качестве уникального ID
@@ -184,12 +85,9 @@ const searchInSlugMapping = async (qText: string): Promise<({
           brief: tools.brief,
         })
       }
-    })
-  } catch (error) {
-    console.error('[SlugMap Search] Критическая ошибка при обработке поиска:', error)
-  }
+  })
 
-  return Promise.resolve(matchedNotes)
+  return matchedNotes
 }
 
 const getNotes = async (req: IRequest, res: IResponse) => {
@@ -201,15 +99,20 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   const currentPage = Number(page) || 1
 
   let remoteNotes: { original: NCodeSamplesSpace.TNote; slug: string }[] = []
-  let localNotes: { original: NCodeSamplesSpace.TNote; slug: string; brief?: string; }[] = []
+  let localNotes: { original: NCodeSamplesSpace.TNote; slug: string }[] = []
   let notesResult: NResponseLocal.IResult<NCodeSamplesSpace.TNotesListResponse> | undefined = undefined
+
+  const cacheService = req.slugMapCacheInstance
+
+  // === МЕТКА 1: Замеряем общее время выполнения всего гибридного поиска ===
+  res.startTime('hybrid_search_total', 'Total Hybrid Search Execution Time')
 
   // 1. СТРАТЕГИЯ: Поиск на удаленном ресурсе СУБД
   if (iRemoteSearchEnabled) {
-    // Возвращаем надежный лимит 9999 и жестко запрашиваем 1-ю страницу у API.
-    // Это нужно, чтобы выкачать всю базу для сквозной гибридной пагинации.
+    // МЕТКА 2: Время, затраченное на поход в сеть к удаленной базе данных
+    res.startTime('db_remote_fetch', `Fetch 9999 notes from remote СУБД: ${NOTES_BASE_API_URL}`)
+    
     const remoteFetchLimit = 9999
-
     let url = `${NOTES_BASE_API_URL}/api/notes?limit=${remoteFetchLimit}&sort_by_create_date=1&page=1`
     
     if (!!q_title_all_words && typeof q_title_all_words === 'string') { 
@@ -222,60 +125,84 @@ const getNotes = async (req: IRequest, res: IResponse) => {
     if (notesResult.isOk && notesResult.response?.success && Array.isArray(notesResult.response?.data)) {
       remoteNotes = notesResult.response.data.map((n) => ({ original: n, slug: n._id }))
     }
+
+    res.endTime('db_remote_fetch')
   }
 
-  // 2. СТРАТЕГИЯ: Поиск в локальном объекте slugMapping
-  if (isLocalSearchEnabled) {
-    const searchQuery = typeof q_title_all_words === 'string' ? q_title_all_words : ''
-    localNotes = await searchInSlugMapping(searchQuery)
+  // 2. СТРАТЕГИЯ: Поиск в локальном объекте (из синглтона в памяти)
+  if (isLocalSearchEnabled && cacheService) {
+    // МЕТКА 3: Замеряем время работы с синглтон-кэшем и фильтрацию в оперативной памяти
+    const currentCacheAge = cacheService.getHumanReadableAge()
+    res.startTime('reactive_cache_local_search', `Memory cache-hit search; Last update: ${currentCacheAge}`)
+
+    let slugMapping = cacheService.getMapping()
+
+    if (!slugMapping) {
+      // МЕТКА 4: Жесткий фолбек (сработает только при холодном старте, если в памяти пусто)
+      res.startTime('db_proxy_get_slug_map_direct', 'Fallback call directly to local network json file')
+      try {
+        const mapResult = await universalHttpClient.get<TLocalSlugMap>('/static/local.slug-map.json')
+        if (mapResult.isOk && mapResult.response) {
+          slugMapping = mapResult.response
+          cacheService.updateTimestampDirectly()
+        }
+      } catch (directMapError) {
+        console.error('[API Search List] Direct SlugMap fallback fetch failed:', directMapError)
+      }
+      res.endTime('db_proxy_get_slug_map_direct')
+    }
+
+    if (slugMapping) {
+      const searchQuery = typeof q_title_all_words === 'string' ? q_title_all_words : ''
+      localNotes = searchInSlugMapping(slugMapping, searchQuery)
+    }
+
+    res.endTime('reactive_cache_local_search')
   }
 
-  // Защита: если вообще ничего не найдено ни в сети, ни в памяти
+  // Защита: если ничего не найдено
   if (remoteNotes.length === 0 && localNotes.length === 0) {
+    res.endTime('hybrid_search_total') // Не забываем закрыть общую метку перед выходом
     return res.status(200).send({
       success: true,
       data: [],
       pagination: { totalPages: 1, currentPage: currentPage, totalNotes: 0 },
-      message: notesResult?.message || 'Поиск не дал результатов или удаленный server недоступен',
+      message: notesResult?.message || 'Поиск не дал результатов или удаленный сервер недоступен',
       _original: notesResult?.response || null,
     })
   }
 
-  // 3. ОБЪЕДИНЕНИЕ С ИЗМЕНЕННЫМ ПРИОРИТЕТОМ:
-  // Локальные заметки закладываются первыми. Они главные!
-  const allCombinedNotes = [...localNotes]
+  // МЕТКА 5: Время, затраченное процессором на объединение и многоуровневую сортировку массивов
+  res.startTime('data_merge_and_sort', 'Data Merge and Multi-level Sorting')
 
-  // Добавляем сетевые статьи только если их _id еще нет в локальном пуле
+  // 3. ОБЪЕДИНЕНИЕ
+  const allCombinedNotes = [...localNotes]
   remoteNotes.forEach((rNote) => {
     const isDuplicate = allCombinedNotes.some((lNote) => String(lNote.original._id) === String(rNote.original._id))
-    
     if (!isDuplicate) {
       allCombinedNotes.push(rNote)
-    } // else console.log(`[API Search Sync] Удаленная заметка с ID ${rNote.original._id} заменена локальной версией из JSON.`)
+    }
   })
 
-  // 4. МНОГОУРОВНЕВАЯ СОРТИРОВКА: Приоритет 1 (priority) -> Приоритет 2 (date)
+  // 4. СОРТИРОВКА
   allCombinedNotes.sort((a, b) => {
     const priorityA = typeof a.original.priority === 'number' ? a.original.priority : 0
     const priorityB = typeof b.original.priority === 'number' ? b.original.priority : 0
 
-    if (priorityB !== priorityA) {
-      return priorityB - priorityA
-    }
+    if (priorityB !== priorityA) return priorityB - priorityA
 
     const timeA = new Date(a.original.createdAt || 0).getTime()
     const timeB = new Date(b.original.createdAt || 0).getTime()
-    
     return timeB - timeA
   })
 
-  // 5. ЧЕСТНАЯ НАРЕЗКА (Сквозной Limit и Page):
-  // Вычисляем индексы среза для текущей страницы от полного объединенного массива
+  res.endTime('data_merge_and_sort')
+
+  // 5. ПАГИНАЦИЯ БЕЗ НАРЕЗКИ
   const totalNotesCount = allCombinedNotes.length
   const startIndex = (currentPage - 1) * currentLimit
   const endIndex = startIndex + currentLimit
   
-  // Нарезаем данные. Теперь локальные файлы займут свои строгие места на конкретных страницах!
   const pagedNotes = allCombinedNotes.slice(startIndex, endIndex)
   const totalPagesCount = Math.ceil(totalNotesCount / currentLimit) || 1
 
@@ -288,6 +215,9 @@ const getNotes = async (req: IRequest, res: IResponse) => {
       totalNotes: totalNotesCount
     }
   }
+
+  // Закрываем глобальную метку перед отправкой ответа
+  res.endTime('hybrid_search_total')
 
   return res.status(200).send(responseData)
 }
