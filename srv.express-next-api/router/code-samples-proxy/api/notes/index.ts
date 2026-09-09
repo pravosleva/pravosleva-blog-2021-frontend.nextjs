@@ -70,12 +70,6 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
     )
 
     if (isMatched) {
-      console.log(`-- MATCHED: ${tools.title}`)
-      console.log(tools)
-      console.log('--')
-    }
-
-    if (isMatched) {
       matchedNotes.push({
         original: {
           // Берем id из JSON, если его нет — подставляем сам slugKey в качестве уникального ID
