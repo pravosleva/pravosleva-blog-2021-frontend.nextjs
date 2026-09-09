@@ -251,9 +251,7 @@ const getNotes = async (req: IRequest, res: IResponse) => {
     
     if (!isDuplicate) {
       allCombinedNotes.push(rNote)
-    } else {
-      console.log(`[API Search Sync] Удаленная заметка с ID ${rNote.original._id} заменена локальной версией из JSON.`)
-    }
+    } // else console.log(`[API Search Sync] Удаленная заметка с ID ${rNote.original._id} заменена локальной версией из JSON.`)
   })
 
   // 4. МНОГОУРОВНЕВАЯ СОРТИРОВКА: Приоритет 1 (priority) -> Приоритет 2 (date)

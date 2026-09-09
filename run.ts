@@ -1,5 +1,5 @@
 import serverTiming from 'server-timing'
-import { TEnhancedRequest, TEnhancedResponse } from '~/srv.utils/types'
+import { Request as IRequest, Response as IResponse, NextFunction as INextFunction } from 'express'
 import axios from 'axios'
 import betterModuleAlias from 'better-module-alias'
 import packageJson from './package.json'
@@ -9,6 +9,7 @@ const { join } = require('path')
 const isProd = process.env.NODE_ENV === 'production'
 require('dotenv').config({ path: join(__dirname, isProd? './.env.production' : './.env.dev') })
 import { rootSocketLogic } from '~/srv.socket-logic'
+import {  slugMapCacheInstance } from '~/srv.utils/cahce/slug-map/slugMap.cahe'
 
 const next = require('next')
 const { api } = require('~/srv.express-next-api')
@@ -66,10 +67,15 @@ const state = {
 nextApp
   .prepare()
   .then(() => {
+    expressApp.use('/express-next-api', (req: IRequest, _res: IResponse, next: INextFunction) => {
+      req.slugMapCacheInstance = slugMapCacheInstance
+      req.slugMap = slugMapCacheInstance.slugMapResource.data || undefined
+      next()
+    })
     expressApp.use('/express-next-api', api)
     expressApp.use('/e-api', api)
 
-    expressApp.all('*', (req: TEnhancedRequest, res: TEnhancedResponse) => {
+    expressApp.all('*', (req: IRequest, res: IResponse) => {
       res.startTime('express-side-info', 'INFO: Was intercepted by express')
       req.io = enhancedIO
       // req.crossDeviceState = crossDeviceState
