@@ -41,7 +41,7 @@ export const indexRules = {
 }
 
 // Обновленная функция быстрого поиска: теперь принимает готовую карту из кэша синглтона
-const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
+const searchInSlugMapping = ({ slugMapping, qText, isPrivatePagesIncluded }: { slugMapping: TLocalSlugMap, qText: string, isPrivatePagesIncluded: boolean }): {
   original: NCodeSamplesSpace.TNote;
   slug: string;
   bg?: { src: string; size: { w: number; h: number }; type: string }
@@ -59,7 +59,7 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
     const isTagMatched = tags.some(tag => tag.toLowerCase().includes(normalizedQuery))
     const isPrivate = typeof tools.isPrivate === 'boolean' ? tools.isPrivate : false
 
-    const isMatched = !isPrivate && (
+    const isMatched = !(isPrivate && !isPrivatePagesIncluded) && (
       testTextByAllWords({ words: normalizedQuery.split(','), text: tools.title }) ||
       !normalizedQuery || 
       slugKey.toLowerCase().includes(normalizedQuery) || 
@@ -95,9 +95,6 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
 }
 
 const getNotes = async (req: IRequest, res: IResponse) => {
-  const isLocalSearchEnabled = process.env.NOTES_IS_LOCAL_SEARCH_ENABLED === '1'
-  const iRemoteSearchEnabled = process.env.NOTES_IS_REMOTE_SEARCH_ENABLED === '1'
-  
   const { q_title_all_words, limit, page } = req.query
   const currentLimit = Number(limit) || 60
   const currentPage = Number(page) || 1
@@ -110,7 +107,7 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   res.startTime('hybrid_search_total', 'Total Hybrid Search Execution Time')
 
   // 1. СТРАТЕГИЯ: Поиск на удаленном ресурсе DB
-  if (iRemoteSearchEnabled) {
+  if (req.isRemoteSearchEnabled) {
     // МЕТКА 2: Время, затраченное на поход в сеть к удаленной базе данных
     res.startTime('db_remote_fetch', `Fetch 9999 notes from remote DB: ${NOTES_BASE_API_URL}`)
     
@@ -134,7 +131,8 @@ const getNotes = async (req: IRequest, res: IResponse) => {
   // 2. СТРАТЕГИЯ: Поиск в локальном объекте (из синглтона в памяти)
   const cacheService = req.slugMapCacheInstance
   const currentCacheAge = cacheService?.getHumanReadableAge() || 'No cacheService in req ctx'
-  if (isLocalSearchEnabled) {
+  console.log(`-- req.isLocalSearchEnabled is ${typeof req.isLocalSearchEnabled}`)
+  if (req.isLocalSearchEnabled) {
     let slugMapping
     const activeData = req.slugMap
     console.log(`-- typeof activeData (from req.slugMap) is ${typeof activeData}`)
@@ -162,7 +160,7 @@ const getNotes = async (req: IRequest, res: IResponse) => {
     if (slugMapping) {
       const searchQuery = typeof q_title_all_words === 'string' ? q_title_all_words : ''
       res.startTime('search_in_slug_mapping', 'Local fn called')
-      localNotes = searchInSlugMapping(slugMapping, searchQuery)
+      localNotes = searchInSlugMapping({ slugMapping, qText: searchQuery, isPrivatePagesIncluded: req.isPrivatePagesIncluded || false })
       res.endTime('search_in_slug_mapping')
     }
   }

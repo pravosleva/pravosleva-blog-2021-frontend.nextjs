@@ -1,0 +1,249 @@
+---
+_id: ""
+title: "Doc: NGINX (part 1.2) // pravosleva.pro deployer | Создание пользователя Ubuntu"
+brief: 'DX'
+bg_src: "/static/img/blog/FB_IMG_1788818095960.jpg"
+bg_size: { w: 1904, h: 2538 }
+bg_type: "image/webp"
+
+createdAt: "2026-08-03T20:29:20.384Z"
+updatedAt: "2026-08-03T21:02:12.606Z"
+priority: 0
+
+author: "Den Pol"
+tags: ["this_project", "doc", "ubuntu", "pravosleva.pro"]
+#category: "guides"
+isPrivate: true
+---
+# Создание пользователя на сервере
+Создание отдельного пользователя для деплоя (например, `deployer`) — это лучший стандарт безопасности (Best Practice). Это решает проблему блокировок root и защитит вашу систему, если ключи или скрипты случайно утекут.
+Зайдите на сервер последний раз под root и выполните эти простые шаги.
+### Шаг 1. Создаем пользователя и даем ему права
+1. Выполните команды на сервере:
+Создаем пользователя `deployer`:
+```bash
+sudo adduser deployer --disabled-password --gecos ""
+```
+
+(Флаг `--disabled-password` отключает вход по обычному паролю, оставляя доступ только по ключам).
+
+2. Разрешаем ему управлять папкой проекта `/var/www/my-project` (замените на ваш реальный путь из переменной `PROD_TARGET_PATH_BUILD_DIR`):
+```bash
+# sudo mkdir -p /var/www/my-project
+sudo chown -R deployer:deployer /root/projects/d/reactive-engine
+```
+
+### Шаг 2. Добавляем ваш SSH-ключ новому пользователю
+Прямо на сервере (оставаясь под **root**) переключитесь на создание файлов для нового юзера:
+1. Создаем папку ключей для **deployer**:
+```bash
+sudo mkdir -p /home/deployer/.ssh
+```
+2. Открываем файл:
+```bash
+sudo nano /home/deployer/.ssh/authorized_keys
+```
+3. Вставьте ваш публичный ключ (тот самый, который вы брали из `cat ~/.ssh/id_ed25519.pub` на локальном компьютере). Убедитесь, что это одна сплошная строка. Сохраните (`Ctrl+O`, `Enter`) и выйдете (`Ctrl+X`).
+4. Выставляем правильного владельца и права:
+```bash
+sudo chown -R deployer:deployer /home/deployer/.ssh
+sudo chmod 700 /home/deployer/.ssh
+sudo chmod 600 /home/deployer/.ssh/authorized_keys
+```
+
+### Шаг 3. Финальный тест и обновление конфигов
+1. Проверяем вход с локального компьютера:
+Откройте терминал на своем компьютере и выполните:
+```bash
+ssh deployer@83.220.170.212
+```
+*Вы должны мгновенно и без всяких паролей зайти на сервер!*
+
+2. Обновляем путь в вашем файле `.env.production.local`:
+Замените `/root/projects` на `/home/deployer/projects` в строке пути:
+```bash
+PROD_TARGET_PATH_BUILD_DIR=deployer@83.220.170.212:/home/deployer/projects/d/reactive-engine
+```
+
+# Инструкция по настройке автоматического деплоя документации (VitePress)
+Данная конфигурация решает проблему ручного ввода паролей при деплое, изолирует доступ к серверу через выделенного пользователя deployer вместо root и защищает сервер от падения сборки.
+
+## Чек-лист файлов на локальной машине
+### 1. Файл конфигурации среды `.env.production.local`
+В корне проекта должен содержать только целевой путь (пароли здесь больше хранить нельзя):
+
+```
+PROD_TARGET_PATH_BUILD_DIR=deployer@83.220.170.212:/home/deployer/projects/d/reactive-engine
+```
+
+### 2. Скрипт деплоя `deploy.doc.sh`
+Умный скрипт с автоматическим переключением версии Node.js через **fnm/nvm** на основе `.nvmrc` и поддержкой режима тестирования `--dry-run`.
+
+```bash
+#!/bin/bash
+
+# Останавливать выполнение скрипта при любой ошибке
+set -e
+
+# Инициализация флага dry-run
+DRY_RUN=false
+
+# Обработка аргументов командной строки
+for arg in "$@"; do
+    if [ "$arg" == "--dry-run" ]; then
+        DRY_RUN=true
+        echo "=== DRY RUN MODE ENABLED ==="
+    fi
+done
+
+# --- БЛОК АВТОПЕРЕКЛЮЧЕНИЯ ВЕРСИИ NODE.JS ---
+NODE_REQ_VERSION="22" # Значение по умолчанию
+
+# Автодетекция версии из .nvmrc
+if [ -f ".nvmrc" ]; then
+    NODE_REQ_VERSION=$(cat .nvmrc | tr -d '[:space:]')
+    echo "--> Detected Node.js version from .nvmrc: $NODE_REQ_VERSION"
+else
+    echo "--> .nvmrc not found, using default fallback version: $NODE_REQ_VERSION"
+fi
+
+echo "--> Setting up Node.js environment..."
+
+# 1. Проверяем fnm
+if [ -d "$HOME/.local/share/fnm" ] || command -v fnm &> /dev/null; then
+    echo "Using fnm to set Node.js version..."
+    eval "$(fnm env --use-on-cd)"
+    fnm use "$NODE_REQ_VERSION" || fnm install "$NODE_REQ_VERSION" && fnm use "$NODE_REQ_VERSION"
+
+# 2. Проверяем nvm
+elif [ -s "$HOME/.nvm/nvm.sh" ]; then
+    echo "Using nvm to set Node.js version..."
+    export NVM_DIR="$HOME/.nvm"
+    source "$NVM_DIR/nvm.sh"
+    nvm use "$NODE_REQ_VERSION" || nvm install "$NODE_REQ_VERSION" && nvm use "$NODE_REQ_VERSION"
+
+else
+    echo "WARNING: Neither fnm nor nvm found. Using system Node.js."
+fi
+
+echo "Current Node.js version: $(node -v)"
+# --------------------------------------------
+
+# Загрузка переменных окружения
+source ./_aux.read-env.sh
+PROD_TARGET_PATH_BUILD_DIR=$(read_env PROD_TARGET_PATH_BUILD_DIR .env.production.local)
+
+# Сборка документации
+echo '--> Building documentation... 🛠️'
+yarn docs:build
+
+# Валидация сборки
+if [ ! -d "docs/.vitepress/dist" ] || [ -z "$(ls -A docs/.vitepress/dist)" ]; then
+    echo "ERROR: Build folder 'docs/.vitepress/dist' is missing or empty! Deploy aborted." >&2
+    exit 1
+fi
+
+# Деплой
+if [ "$DRY_RUN" = true ]; then
+    echo '-- [DRY-RUN] DOC DEPLOY STARTED 🛫 (Simulation)'
+    
+    # Показывает только список реально изменившихся файлов, не отправляя их
+    rsync -a --dry-run --delete --itemize-changes docs/.vitepress/dist/ "$PROD_TARGET_PATH_BUILD_DIR" | grep -v '^\.' || true
+    
+    echo '-- [DRY-RUN] DOC DEPLOY COMPLETED 🛬 (Simulation)'
+else
+    echo '-- DOC DEPLOY STARTED 🛫'
+    
+    # Живой деплой
+    rsync -av --delete docs/.vitepress/dist/ "$PROD_TARGET_PATH_BUILD_DIR"
+    
+    echo '-- DOC DEPLOY COMPLETED 🛬'
+fi
+```
+
+## Настройки на удаленном сервере (Linux)
+
+### 1. Права доступа для пользователя `deployer`
+Пользователь `deployer` должен владеть своей папкой со сборкой, а веб-сервер Nginx (пользователь www-data) должен иметь право «проходить» сквозь родительские папки хоум-директории:
+
+```bash
+# Даем права Nginx читать структуру папок
+chmod o+x /home/deployer
+chmod o+x /home/deployer/projects
+chmod o+x /home/deployer/projects/d
+
+# Назначаем владельцем папки проекта пользователя deployer
+chown -R deployer:deployer /home/deployer/projects/d/reactive-engine
+```
+
+### 2. Конфигурация Nginx (`/etc/nginx/sites-available/...`)
+Обновленный блок `location` для корректной раздачи статики VitePress из папки пользователя deployer:
+
+```nginx
+location /reactive-engine {
+    index index.html;
+    root /home/deployer/projects/d; # Указывает на родительскую папку локации
+    autoindex on;
+    
+    # Поддержка клиентского роутинга VitePress (SPA-совместимость)
+    try_files $uri $uri/ /reactive-engine/index.html;
+}
+```
+
+*Команды для применения настроек:*
+```bash
+sudo nginx -t && sudo systemctl restart nginx
+```
+
+## Как пользоваться командами деплоя
+Запуск живого деплоя (происходит автосборка и синхронизация по SSH-ключу без ввода пароля):
+
+```bash
+bash deploy.doc.sh
+```
+
+Запуск режима симуляции (проект собирается локально, но `rsync` только выводит список измененных/удаленных файлов в консоль, физически не трогая файлы на сервере):
+```bash
+bash deploy.doc.sh --dry-run
+```
+
+# FAQ
+> Как подготовить существующую папку со статикой для нового пользователя `deployer`
+
+## Вариант А: Перенести папку в каталог deployer (Рекомендуемый)
+Это самый чистый способ. Папка с документацией будет лежать там, где у `deployer` есть полные права «из коробки».
+
+1. Зайдите на сервер под root и перенесите папку проекта:
+```bash
+# Создаем структуру папок внутри домашней директории deployer
+mkdir -p /home/deployer/projects/d/
+
+# Переносим туда проект из папки root
+mv /root/projects/d/reactive-engine /home/deployer/projects/d/
+
+# Передаем полные права на эти файлы пользователю deployer
+chown -R deployer:deployer /home/deployer/projects/d/reactive-engine
+```
+2. В локальном файле `.env.production.local` укажите новый путь:
+```bash
+PROD_TARGET_PATH_BUILD_DIR=deployer@83.220.170.212:/home/deployer/projects/d/reactive-engine
+```
+
+<Alert text="Теперь вы можете запустить `bash deploy.doc.sh`, и ваш деплой документации VitePress отработает автоматически, безопасно и без единого запроса пароля" type="success" />
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "Syntax",
+      "type": "link",
+      "link": "/p/this-project-doc-0-syntax"
+    },
+    {
+      "title": "NEXT",
+      "label": "NGINX + SSL by Letsencrypt (guide 2025)",
+      "type": "link",
+      "link": "/p/this-project-doc-1-3-nginx"
+    }
+  ]'
+/>

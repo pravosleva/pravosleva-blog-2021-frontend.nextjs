@@ -16,6 +16,7 @@ const DynamicEdnaExp = dynamic(
   { ssr: false } // Отключение SSR полностью разгрузит серверный бандл и гидратацию
 )
 import dynamic from 'next/dynamic'
+import { CodeComparison } from './CodeComparison'
 
 const DynamicAlert = dynamic(
   () => import('~/react-markdown-renderers/Alert/Alert.v4').then(mod => mod.Alert),
@@ -61,6 +62,8 @@ const componentTransforms = {
     </div>),
   ImageInNewTab: (props: any) => <ImageInNewTab {...props} />,
   JSONComparison: (props: any) => <JSONComparison {...props} />,
+  // РЕГИСТРАЦИЯ: Теперь MDX-парсер знает про кастомный тег CodeComparison
+  CodeComparison: (props: any) => <CodeComparison {...props} />,
   ImagesGalleryBox: (props: TImagesGalleryBoxProps) => (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}

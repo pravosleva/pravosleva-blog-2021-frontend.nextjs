@@ -24,19 +24,23 @@ export const rules = {
 }
 
 export const getNote = async (req: IRequest, res: IResponse) => {
-  const isLocalSearchEnabled = process.env.NOTES_IS_LOCAL_SEARCH_ENABLED === '1'
-  const iRemoteSearchEnabled = process.env.NOTES_IS_REMOTE_SEARCH_ENABLED === '1'
+  // const isLocalSearchEnabled = process.env.NODE_ENV === 'development'
+  //   ? true
+  //   : process.env.NOTES_IS_LOCAL_SEARCH_ENABLED === '1'
+  // const iRemoteSearchEnabled = process.env.NOTES_IS_REMOTE_SEARCH_ENABLED === '1'
   const { id: slugOrId } = req.params
   const logs: string[] = []
 
   let possibleId = slugOrId
   let isTargetArticlePrivate = false
 
+  logs.push(`req.isPrivatePagesIncluded -> ${String(req.isPrivatePagesIncluded)}`)
+
   // Вытаскиваем инстанс кэша, переданный через глобальный проброс в run.ts
   const cacheService = req.slugMapCacheInstance
 
   // --- ШАГ 0: ПОЛУЧЕНИЕ АКТУАЛЬНОЙ КАРТЫ ИЗ СИНГЛТОН-КЛАССА КЭША ---
-  if (isLocalSearchEnabled) {
+  if (req.isLocalSearchEnabled) {
     let slugMapping: TLocalSlugMap | {} | null = null
     
     // Вызываем умный метод класса. Замыкание побеждено!
@@ -69,6 +73,8 @@ export const getNote = async (req: IRequest, res: IResponse) => {
 
     logs.push(`[Cache Info] Время с момента последнего обновления: ${currentCacheAge}`)
 
+    
+
     // 3. БЕЗОПАСНАЯ ОБРАБОТКА ОБЪЕКТА СЛАГОВ
     if (slugMapping && Object.keys(slugMapping).length > 0) {
       const activeMapping = slugMapping as TLocalSlugMap
@@ -76,24 +82,24 @@ export const getNote = async (req: IRequest, res: IResponse) => {
       if (activeMapping[slugOrId]) {
         const matchedMeta = activeMapping[slugOrId]
         if (matchedMeta.id) possibleId = String(matchedMeta.id)
-        if (matchedMeta.isPrivate) isTargetArticlePrivate = true
+        if (matchedMeta.isPrivate && !req.isPrivatePagesIncluded) isTargetArticlePrivate = true
       } else {
         const foundSlugEntry = Object.entries(activeMapping).find(
           ([_, meta]) => String(meta.id) === String(slugOrId)
         )
         if (foundSlugEntry) {
           const metaData = foundSlugEntry[1]
-          if (metaData.isPrivate) isTargetArticlePrivate = true
+          if (metaData.isPrivate && !req.isPrivatePagesIncluded) isTargetArticlePrivate = true
         }
       }
     }
   }
 
   logs.push(`id -> ${slugOrId} -> ${possibleId}`)
-  logs.push(`isLocalSearchEnabled -> ${String(isLocalSearchEnabled)}; process.env.NOTES_IS_LOCAL_SEARCH_ENABLED=${String(process.env.NOTES_IS_LOCAL_SEARCH_ENABLED)}`)
+  logs.push(`req.isLocalSearchEnabled -> ${String(req.isLocalSearchEnabled)}`)
 
   // --- ШАГ 1: ФОЛБЕК КЕЙС (Чтение локального файла .mdx) ---
-  if (isLocalSearchEnabled && !isTargetArticlePrivate) {
+  if (req.isLocalSearchEnabled && !isTargetArticlePrivate) {
     const articlesDirectory = path.join(process.cwd(), 'public', 'static', '_articles')
     let localArticleJson: any = null
     
@@ -108,7 +114,7 @@ export const getNote = async (req: IRequest, res: IResponse) => {
     }
     res.endTime('db_proxy_local_fallback')
 
-    if (localArticleJson && !localArticleJson?.isPrivate) {
+    if (localArticleJson && !(localArticleJson?.isPrivate && !req.isPrivatePagesIncluded)) {
       logs.push(`✅ localArticleJson is OK`)
       return res.status(200).send({
         logs,
@@ -120,10 +126,10 @@ export const getNote = async (req: IRequest, res: IResponse) => {
     }
   }
 
-  logs.push(`iRemoteSearchEnabled -> ${String(iRemoteSearchEnabled)}; process.env.NOTES_IS_REMOTE_SEARCH_ENABLED=${String(process.env.NOTES_IS_REMOTE_SEARCH_ENABLED)}`)
+  logs.push(`req.isRemoteSearchEnabled -> ${String(req.isRemoteSearchEnabled)}`)
 
   // --- ШАГ 2: СЕТЕВОЙ ЗАПРОС К УДАЛЕННОМУ API ---
-  if (iRemoteSearchEnabled) {
+  if (req.isRemoteSearchEnabled) {
     res.startTime('db_proxy_get_note', `${NOTES_BASE_API_URL}/api/notes/${possibleId}`)
     const url = `${NOTES_BASE_API_URL}/api/notes/${possibleId}`
     

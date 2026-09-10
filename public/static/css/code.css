@@ -29,3 +29,13 @@
     font-size: small;
   }
 }
+
+.code-comparison .code-block-wrapper {
+  margin: 0;
+}
+.code-comparison .code-block-wrapper button {
+  display: none;
+}
+.code-comparison .code-block-wrapper pre {
+  word-break: break-all !important;
+}

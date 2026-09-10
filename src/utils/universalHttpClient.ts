@@ -23,6 +23,7 @@ const baseConfig: IAxiosRequestConfig = {
   validateStatus: (_s: number) => true,
 }
 
+console.log(`baseConfig.baseURL -> ${baseConfig.baseURL}`)
 
 // const universalErrCatch = (err: any): TLocalResult => {
 //   // @ts-ignore

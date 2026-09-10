@@ -27,9 +27,24 @@ yarn build && bash deploy2.sh production
 ```bash
 chmod +x refresh-slug-mapping.sh
 bash refresh-slug-mapping.sh
+
+# NOTE: ⭐ Если вызывать этот скрипт отдельно, можно включить все заметки с флагом isPrivate: true
+BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED=1 bash refresh-slug-mapping.sh
 ```
 
-Объект должен быть доступен на сервере по `/static/local.slug-map.json`
+> **Dev режим где "все включено":**
+> - `BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED=1`
+> - `NOTES_IS_REMOTE_SEARCH_ENABLED=0` (legacy)
+> - `NOTES_IS_LOCAL_SEARCH_ENABLED=1`
+> ```json
+> {
+>   "scripts": {
+>     "dev": "yarn build && BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED=1 NOTES_IS_REMOTE_SEARCH_ENABLED=0 NOTES_IS_LOCAL_SEARCH_ENABLED=1 NEXT_APP_BUILD_DATE=$(date +\"%Y-%m-%d %T\") NEXT_APP_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g') NEXT_APP_GIT_SHA1=$(git show --format=\"%h\" --no-patch) NODE_ENV=development node server.dist/run.js"
+>   }
+> }
+> ```
+
+Файл должен быть доступен на сервере по `/static/local.slug-map.json`
 
 _Или:_
 ```json

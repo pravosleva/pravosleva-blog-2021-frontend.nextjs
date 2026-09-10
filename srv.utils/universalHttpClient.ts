@@ -1,41 +1,15 @@
 import axios, {
-  // AxiosResponse as IAxiosResponse,
   AxiosRequestConfig as IAxiosRequestConfig,
   AxiosInstance as IAxiosInstance,
 } from 'axios';
 import axiosRetry from 'axios-retry'
-
-// import { getNormalizedInputs } from '@/utils/strapi/getNormalizedInputs'
 import { apiErrorHandler, NResponseLocal } from '~/srv.utils/errors/api'
 import { httpErrorHandler } from '~/srv.utils/errors/http/axios'
 import { axiosUniversalCatch } from '~/srv.utils/errors/axiosUniversalCatch'
 
-const isDev = process.env.NODE_ENV === 'development'
-// const SRV_CODE_SAMPLES_PROXY_API_BASE_URL = process.env.SRV_CODE_SAMPLES_PROXY_API_BASE_URL || 'https://pravosleva.pro'
-// const baseApiURL = isDev ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-// : 'http://pravosleva.ru/express-helper/pravosleva-bot-2021/autopark-2022' // process.env.API_ENDPOINT || '';
-
-const baseConfig: IAxiosRequestConfig = {
-  baseURL: isDev ? 'http://localhost:3000' : process.env.SRV_CODE_SAMPLES_PROXY_API_BASE_URL || 'https://pravosleva.pro',
-  // headers: {
-  //   'Origin': 'http://localhost:1337',
-  //   'Access-Control-Allow-Origin': '*',
-  // },
-  validateStatus: (_s: number) => true,
-}
-
-
-// const universalErrCatch = (err: any): TLocalResult => {
-//   // @ts-ignore
-//   if (!!window?.Sentry) window.Sentry.captureException(err);
-//   return { isOk: false, data: err };
-// };
-
 class httpClientSingletone {
   static _instance = new httpClientSingletone();
-  // recaptchaV3Controller: any;
   api: IAxiosInstance;
-  // controllers: { [key: string]: any }; // AbortController | null
 
   constructor() {
     if (httpClientSingletone._instance) {
@@ -43,9 +17,13 @@ class httpClientSingletone {
         'Instantiation failed: use httpClientSingletone.getInstance() instead of new.'
       );
     }
+    const baseConfig: IAxiosRequestConfig = {
+      baseURL: 'https://pravosleva.ru',
+      validateStatus: (_s: number) => true,
+    }
+
     this.api = axios.create(baseConfig)
     axiosRetry(this.api, { retries: 10 })
-    // this.controllers = {}
   }
 
   static getInstance() {

@@ -10,6 +10,7 @@ const isProd = process.env.NODE_ENV === 'production'
 require('dotenv').config({ path: join(__dirname, isProd? './.env.production' : './.env.dev') })
 import { rootSocketLogic } from '~/srv.socket-logic'
 import {  slugMapCacheInstance } from '~/srv.utils/cahce/slug-map/slugMap.cahe'
+import clsx from 'clsx'
 
 const next = require('next')
 const { api } = require('~/srv.express-next-api')
@@ -68,10 +69,22 @@ nextApp
   .prepare()
   .then(() => {
     expressApp.use('/express-next-api', (req: IRequest, res: IResponse, next: INextFunction) => {
-      res.startTime('add_slug_chache_instance', 'Inject to req obj')
+      res.startTime(
+        'inject_runtime_deps',
+        clsx(
+          '1) slugMapCacheInstance;',
+          `2) slugMap (${typeof slugMapCacheInstance.slugMapResource.data});`,
+          `3) BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED=${process.env.BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED};`,
+          `4) NOTES_IS_LOCAL_SEARCH_ENABLED=${process.env.NOTES_IS_LOCAL_SEARCH_ENABLED};`,
+          `5) NOTES_IS_REMOTE_SEARCH_ENABLED=${process.env.NOTES_IS_REMOTE_SEARCH_ENABLED};`,
+        )
+      )
       req.slugMapCacheInstance = slugMapCacheInstance
       req.slugMap = slugMapCacheInstance.slugMapResource.data || undefined
-      res.endTime('add_slug_chache_instance')
+      req.isPrivatePagesIncluded = process.env.BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED === '1'
+      req.isLocalSearchEnabled = process.env.NOTES_IS_LOCAL_SEARCH_ENABLED === '1'
+      req.isRemoteSearchEnabled = process.env.NOTES_IS_REMOTE_SEARCH_ENABLED === '1'
+      res.endTime('inject_runtime_deps')
       next()
     })
     expressApp.use('/express-next-api', api)

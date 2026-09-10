@@ -1,0 +1,91 @@
+---
+#_id: ""
+title: "Local note"
+brief: 'DX'
+bg_src: '/static/img/blog/logo-js-850x478.webp'
+bg_size: { w: 850, h: 478 }
+bg_type: 'image/webp'
+
+createdAt: "2026-09-10T08:34:38.846Z"
+updatedAt: "2026-09-11T07:22:31.201Z"
+priority: 5
+
+author: "Den Pol"
+tags: ["exp", "dev"]
+#category: "guides"
+isPrivate: true
+---
+# Code Comparison
+## Var A
+Простой (Обычным текстом, если код короткий и без спецсимволов маркдауна)
+```tsx
+<CodeComparison 
+  hideInputs={true}
+  oldCodeRaw="const port = 3000;
+server.listen(port);"
+  newCodeRaw="const PORT = process.env.PORT || 3000;
+server.listen(PORT);"
+/>
+```
+
+<CodeComparison 
+  hideInputs={true}
+  oldCodeRaw="const port = 3000;
+server.listen(port);"
+  newCodeRaw="const PORT = process.env.PORT || 3000;
+server.listen(PORT);"
+/>
+
+## Var B
+Если код большой, содержит много кавычек, обратных слэшей или JSX-тегов, маркдаун-парсер может запутаться и сломать гидратацию. Чтобы этого не произошло, переведите строки кода в Base64 (например, в консоли браузера через `btoa()`) и вставьте их так:
+```tsx
+<CodeComparison 
+  hideInputs={true} 
+  oldCodeBase64="Y29uc3QgYSA9IDEwOwpjb25zb2xlLmxvZyhhKTs=" 
+  newCodeBase64="Y29uc3QgYSA9IDIwOwpjb25zb2xlLmxvZyhhKTs=" 
+/>
+```
+
+<CodeComparison 
+  hideInputs={true} 
+  oldCodeBase64="Y29uc3QgYSA9IDEwOwpjb25zb2xlLmxvZyhhKTs=" 
+  newCodeBase64="Y29uc3QgYSA9IDIwOwpjb25zb2xlLmxvZyhhKTs=" 
+/>
+
+### Пример
+Вот отличный пример, который наглядно показывает, как наш новый компонент CodeComparison подсветит изменения при оптимизации конфигурационного файла NGINX (например, при включении Gzip-сжатия, кэширования и скрытия технических заголовков для безопасности).Поскольку в коде сервера много кавычек и спецсимволов, мы закодируем старую и новую версии в Base64. Это гарантирует, что парсер Next.js и MDX без проблем соберут страницу, а Web Worker мгновенно выполнит дифф в фоне.
+
+```tsx
+<CodeComparison
+  language="nginx"
+  oldCodeBase64="c2VydmVyIHsKICBsaXN0ZW4gODA7CiAgc2VydmVyX25hbWUgcHJhdm9zbGV2YS5wcm87CgogIGxvY2F0aW9uIC8gewogICAgcHJveHlfcGFzcyBodHRwOi8vbG9jYWxob3N0OjMwMDA7CiAgfQp9"
+  newCodeBase64="c2VydmVyIHsKICBsaXN0ZW4gNDQzIHNzbCBodHRwMjsKICBzZXJ2ZXJfbmFtZSBwcmF2b3NsZXZhLnBybzsKCiAgIyAtLSBPcHRpbWl6YXRpb246IEd6aXAgU21vb3RoaW5nCiAgZ3ppcCBvbjsKICBnemlwX3R5cGVzIHRleHQvcGxhaW4gdGV4dC9jc3MgYXBwbGljYXRpb24vanNvbjsKCiAgIyAtLSBTRU8gJiBDYWNoZSBjb250cm9sIGZvciBzdGF0aWMKICBsb2NhdGlvbiAvc3RhdGljLyB7CiAgICBleHBpcmVzIDM2NWQ7CiAgICBhZGRfaGVhZGVyIENhY2hlLUNvbnRyb2wgInB1YmxpYywgbm8tdHJhbnNmb3JtIjsgCiAgfQoKICBsb2NhdGlvbiAvIHsKICAgIHByb3h5X3Bhc3MgaHR0cDovL2xvY2Fob3N0OjMwMDA7CiAgICBhZGRfaGVhZGVyIFgtQ29udGVudC1UeXBlLU9wdGlvbnMgIm5vc25pZmYiOwogIH0KfQ=="
+/>
+```
+
+#### Оптимизация инфраструктуры: Настройка NGINX под высоконагруженный блог
+
+В процессе разгона сайта в Lighthouse мы полностью переписали серверный конфиг NGINX. Ниже представлено интерактивное сравнение старого базового билда и новой оптимизированной конфигурации с поддержкой Gzip, кэшированием заголовков `Cache-Control` для статики и защитой от краулеров.
+
+<CodeComparison
+  language="nginx"
+  oldCodeBase64="c2VydmVyIHsKICBsaXN0ZW4gODA7CiAgc2VydmVyX25hbWUgcHJhdm9zbGV2YS5wcm87CgogIGxvY2F0aW9uIC8gewogICAgcHJveHlfcGFzcyBodHRwOi8vbG9jYWxob3N0OjMwMDA7CiAgfQp9"
+  newCodeBase64="c2VydmVyIHsKICBsaXN0ZW4gNDQzIHNzbCBodHRwMjsKICBzZXJ2ZXJfbmFtZSBwcmF2b3NsZXZhLnBybzsKCiAgIyAtLSBPcHRpbWl6YXRpb246IEd6aXAgU21vb3RoaW5nCiAgZ3ppcCBvbjsKICBnemlwX3R5cGVzIHRleHQvcGxhaW4gdGV4dC9jc3MgYXBwbGljYXRpb24vanNvbjsKCiAgIyAtLSBTRU8gJiBDYWNoZSBjb250cm9sIGZvciBzdGF0aWMKICBsb2NhdGlvbiAvc3RhdGljLyB7CiAgICBleHBpcmVzIDM2NWQ7CiAgICBhZGRfaGVhZGVyIENhY2hlLUNvbnRyb2wgInB1YmxpYywgbm8tdHJhbnNmb3JtIjsgCiAgfQoKICBsb2NhdGlvbiAvIHsKICAgIHByb3h5X3Bhc3MgaHR0cDovL2xvY2Fob3N0OjMwMDA7CiAgICBhZGRfaGVhZGVyIFgtQ29udGVudC1UeXBlLU9wdGlvbnMgIm5vc25pZmYiOwogIH0KfQ=="
+/>
+
+#### 💎 Как это будет выглядеть на разных устройствах:
+- **На компьютерах (Десктопах):** Воркер сопоставит строки, добавит пустые строки-заглушки напротив блоков `gzip` и `location /static/`, выровняет код идеально по горизонтали, подсветит синтаксис NGINX в палитре Material Oceanic и подставит маркеры `+` и `-`.
+- **На смартфонах (Мобилках):** Колонки растянутся, сработает CSS Scroll Snap с `mandatory`, и читатель сможет плавно свайпать пальцем влево-вправо между старой и новой версиями конфига, а кнопка переключения `Side / Line` позволит мгновенно увидеть диффы в один сплошной поток.
+
+# JSON comparison renderer
+```jsx
+<JSONComparison
+  json1='{"a":1,"b":1,"d":{"d1":1,"e":["one","two"]}}'
+  json2='{"a":1,"b":2,"c":2,"d":{"d1":2,"e":["one","two","three"]}, "z": { "a": { "b": 1, "c": "whatever" } }}'
+/>
+```
+
+<JSONComparison
+  json1='{"a":1,"b":1,"d":{"d1":1,"e":["one","two"]}}'
+  json2='{"a":1,"b":2,"c":2,"d":{"d1":2,"e":["one","two","three"]},"z":{"a":{ "b": 1, "c": "whatever" }}}'
+/>

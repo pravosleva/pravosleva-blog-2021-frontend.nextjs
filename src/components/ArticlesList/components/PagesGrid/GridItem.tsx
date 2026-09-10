@@ -32,7 +32,11 @@ export const GridItem = memo(({ article }: TProps) => {
       className='gridItemBg'
       style={{
         backgroundImage: `url(${url})`,
-        filter: !!bg?.src ? 'none' : 'grayscale(100%)',
+        filter: original.isPrivate
+          ? 'grayscale(100%)'
+          : !!bg?.src
+            ? 'none'
+            : 'grayscale(100%)',
         fontFamily: 'Montserrat, system-ui',
         position: 'relative', // Контекст для абсолютного позиционирования QR-кода
       }}

@@ -1,4 +1,5 @@
 import { ReactiveEngine, withCache, Resource } from '@pravosleva/reactive-engine'
+import path from 'path'
 import { universalHttpClient } from '~/srv.utils/universalHttpClient'
 
 export interface ILocalSlugItem {
@@ -41,8 +42,33 @@ class SlugMapCacheService {
     this.slugMapResource = this.engine.resource(
       withCache(
         async ([triggerValue], _abortSignal) => {
-          console.log(`📡 [SlugMapCacheService:${triggerValue}] Движок пошел по сети к local.slug-map.json...`)
-          const mapResult = await universalHttpClient.getNoApiErr<TLocalSlugMap>('/static/local.slug-map.json')
+          // Проверяем текущий режим сборки приложения
+          const isDev = process.env.NODE_ENV !== 'production'
+
+          // --- РЕЖИМ DEVELOPMENT: Прямое синхронное чтение с диска ---
+          if (isDev) {
+            console.log(`🛠️  [SlugMapCacheService:${triggerValue}] Режим DEV. Читаем local.slug-map.json синхронно с диска...`)
+            try {
+              const fs = require('fs') // Динамический импорт fs, чтобы Webpack не ругался на клиенте
+              const filePath = path.join(process.cwd(), 'public', 'static', 'local.slug-map.json')
+              
+              if (!fs.existsSync(filePath)) {
+                throw new Error(`Файл не найден по пути: ${filePath}`)
+              }
+
+              const fileContents = fs.readFileSync(filePath, 'utf8')
+              const parsedData = JSON.parse(fileContents) as TLocalSlugMap
+
+              return parsedData
+            } catch (fsError) {
+              console.error('❌ [SlugMapCacheService Dev Error] Ошибка чтения файла с диска:', fsError)
+              // Если файл заблокирован или занят процессом сборщика, делаем мягкий фолбек на сеть
+            }
+          }
+          
+          // --- РЕЖИМ PRODUCTION (или фолбек для dev): Стандартный сетевой запрос ---
+          console.log(`📡 [SlugMapCacheService:${triggerValue}] Режим PROD. Запрашиваем local.slug-map.json по сети 👉 ${universalHttpClient.api.defaults.baseURL}`)
+          const mapResult = await universalHttpClient.getNoApiErr<TLocalSlugMap>(`/static/local.slug-map.json?ts=${Date.now()}`)
           if (!mapResult.isOk || !mapResult.response) {
             throw new Error(mapResult.message || 'Не удалось загрузить local.slug-map.json')
           }

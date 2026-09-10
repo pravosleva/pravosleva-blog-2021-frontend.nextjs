@@ -85,7 +85,7 @@ async function generateSitemap() {
     <priority>0.8</priority>
   </url>`);
       });
-      console.log(`[Sitemap] Итого динамических статей добавлено: ${xmlRows.length - 2}`); // Минус базовые статические
+      console.log(`[Sitemap] Итого динамических страниц добавлено: ${xmlRows.length - 2} 👉 те что !(meta.isPrivate || meta.isDraft)`); // Минус базовые статические
     } catch (parseError) {
       console.error('[Sitemap] Ошибка парсинга local.slug-map.json:', parseError);
     }

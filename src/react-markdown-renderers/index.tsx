@@ -17,9 +17,7 @@ export * from './HeadingRenderer'
 export * from './ImageRenderer/ImageRenderer.v0'
 export * from './LinkRenderer/LinkRenderer'
 
-/* =========================================================================
-   ИСПРАВЛЕНО: Динамический импорт изолированного рендерера кода с SSR
-   ========================================================================= */
+// Динамический импорт изолированного рендерера кода с SSR
 const DynamicCodeRenderer = dynamic(
   () => import('./CodeRenderer').then(mod => mod.CodeRendererMaterialOceanic),
   { 

@@ -146,20 +146,20 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
           ].join('; '))
         }
         if (noteResult?.response) {
-          if (!noteResult.response.data.isPrivate) {
-            store.dispatch(setTitle(noteResult.response.data.title || 'Без названия'))
+          // if (!noteResult.response.data.isPrivate) {
+          store.dispatch(setTitle(noteResult.response.data.title || 'Без названия'))
 
-            _pageService.isOk = true
-            _pageService.response = noteResult.response
-            article = {
-              original: { ...noteResult.response.data },
-              slug: note_id,
-              brief: noteResult.response.data.brief || 'DRAFT',
-              bg: noteResult.response.data.bg || defaultBg,
-            }
-          } else {
-            throw new Error(`Неизвестный кейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.data.isPrivate)})`)
+          _pageService.isOk = true
+          _pageService.response = noteResult.response
+          article = {
+            original: { ...noteResult.response.data },
+            slug: note_id,
+            brief: noteResult.response.data.brief || 'DRAFT',
+            bg: noteResult.response.data.bg || defaultBg,
           }
+          // } else {
+          //   throw new Error(`Неизвестный кейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.data.isPrivate)})`)
+          // }
         } else {
           throw new Error('Неизвестный кейс (ответ получен, но невалидный)')
         }

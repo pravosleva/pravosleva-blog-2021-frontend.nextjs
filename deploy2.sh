@@ -1,6 +1,11 @@
 source ./read-env.sh
 
-./refresh-slug-mapping.sh
+# Читаем настройку включения приватных страниц для текущего стенда (например, из .env.stage или .env.production)
+PRIVATE_INCLUDED=$(read_env BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED .env."$1")
+echo "🔧 [Deploy Config] BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED = ${PRIVATE_INCLUDED:-0}"
+# Пробрасываем переменную инлайном прямо в скрипт генерации
+BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED="$PRIVATE_INCLUDED" ./refresh-slug-mapping.sh
+#./refresh-slug-mapping.sh
 
 # 2. Читаем переменную домена карты сайта из файла конфигурации стенда (например, .env.stage или .env.production)
 SITEMAP_HOST=$(read_env BASH_SITEMAP .env."$1")

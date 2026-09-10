@@ -23,7 +23,6 @@ interface ISideBySidePair {
 
 const VIRTUALIZATION_THRESHOLD = 1000
 
-// --- Стили в палитре Material Oceanic ---
 const Container = styled.div`
   width: 100%;
   border-radius: 8px;
@@ -32,13 +31,10 @@ const Container = styled.div`
     transform: translateX(-16px);
     border-radius: 0px;
   }
-  // border: 1px solid #546e7a;
-  
   background-color: #263238;
   overflow: hidden;
   box-sizing: border-box;
 `
-
 const Header = styled.div`
   padding: 10px 16px;
   background-color: #1a2327;
@@ -51,7 +47,6 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
 `
-
 const ToggleButtonGroup = styled.div`
   display: flex;
   background-color: #263238;
@@ -61,7 +56,6 @@ const ToggleButtonGroup = styled.div`
   overflow: hidden;
   width: fit-content;
 `
-
 const ToggleButton = styled.button<{ $active: boolean }>`
   background-color: ${({ $active }) => ($active ? '#546e7a' : 'transparent')};
   color: ${({ $active }) => ($active ? '#89ddff' : '#b0bec5')};
@@ -79,61 +73,19 @@ const ToggleButton = styled.button<{ $active: boolean }>`
     background-color: ${({ $active }) => ($active ? '#546e7a' : 'rgba(84, 110, 122, 0.2)')};
   }
 `
-
 const AutoHeightContainer = styled.div`
   width: 100%;
   height: auto;
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", "Courier New", monospace !important;
 `
-
 interface ICodeLineProps {
   $type: IDiffLine['type'] | 'empty';
   $commaOnly?: boolean;
 }
-
-// const CodeLine = styled.div<ICodeLineProps>`
-//   display: flex;
-//   align-items: center;
-//   width: max-content;
-//   min-width: 100%;
-//   box-sizing: border-box;
-//   height: 24px;
-//   font-family: inherit;
-  
-//   background-color: ${(props: ICodeLineProps) => {
-//     if (props.$commaOnly) return 'rgba(255, 158, 59, 0.15)';
-//     if (props.$type === 'added') return 'rgba(195, 232, 141, 0.12)';
-//     if (props.$type === 'removed') return 'rgba(255, 83, 112, 0.12)';
-//     return 'transparent';
-//   }};
-
-//   border-left: 4px solid ${(props: ICodeLineProps) => {
-//     if (props.$commaOnly) return '#ff9e3b';
-//     if (props.$type === 'added') return '#c3e88d';
-//     if (props.$type === 'removed') return '#ff5370';
-//     return 'transparent';
-//   }};
-
-//   &:hover {
-//     background-color: ${(props: ICodeLineProps) => {
-//       if (props.$commaOnly) return 'rgba(255, 158, 59, 0.25)';
-//       if (props.$type === 'added') return 'rgba(195, 232, 141, 0.22)';
-//       if (props.$type === 'removed') return 'rgba(255, 83, 112, 0.22)';
-//       return 'rgba(84, 110, 122, 0.15)';
-//     }};
-//   }
-// `
-
-// --- Новые Styled-компоненты для вертикального позиционирования и управления ---
 const ScrollWrapper = styled.div`
   position: relative;
   width: 100%;
 `
-
-// --- Новые Styled-компоненты для адаптивного Scroll Snap ---
-
-// Контейнер списка: теперь он растягивается по высоте контента (height: auto),
-// а на мобильных устройствах включает горизонтальный свайп-контейнер для режима Side-by-Side
 const ListWrapper = styled.div<{ $viewMode: 'line' | 'side' }>`
   width: 100%;
   font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace !important;
@@ -225,7 +177,6 @@ const SmartCodeLine = styled.div<ICodeLineProps>`
     }};
   }
 `
-
 const Sign = styled.div<ICodeLineProps>`
   width: 30px;
   min-width: 30px;
@@ -242,7 +193,6 @@ const Sign = styled.div<ICodeLineProps>`
     return '#546e7a';
   }} !important;
 `
-
 const Content = styled.div`
   flex-grow: 1;
   white-space: pre-wrap; 
@@ -264,7 +214,6 @@ const Content = styled.div`
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", "Courier New", monospace !important;
   }
 `
-
 const StatusMessage = styled.div`
   padding: 24px;
   text-align: center;
@@ -548,4 +497,4 @@ export const JSONComparison = ({ json1, json2 }: TProps) => {
   )
 }
 
-JSONComparison.displayName = 'JSONComparison'
+// JSONComparison.displayName = 'JSONComparison'

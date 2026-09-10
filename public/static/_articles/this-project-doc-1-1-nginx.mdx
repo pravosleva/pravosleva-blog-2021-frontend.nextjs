@@ -1,0 +1,272 @@
+---
+_id: "6516aeb4db108f2f99272e1f"
+title: "Doc: NGINX (part 1) // Получаем SSL сертификаты Let's Encrypt при помощи Certbot 🎓 v2023"
+brief: 'DX'
+bg_src: "/static/img/blog/FB_IMG_1788818095960.jpg"
+bg_size: { w: 1904, h: 2538 }
+bg_type: "image/webp"
+
+updatedAt: "2026-09-05T08:14:27.757Z"
+createdAt: "2020-02-11T07:04:27.273Z"
+priority: 0
+
+author: "Den Pol"
+tags: ["this_project", "doc", "nginx", "certbot", "ssl", "pravosleva.pro"]
+#category: "guides"
+isPrivate: true
+---
+# NGINX settingx
+## 2020.2
+`https://pravosleva.pro` (production server)
+### Что такое Certbot?
+Это клиент протокола ACME предназначенный для автоматического управления SSL-сертификатами от Let's Encrypt, он позволяет полностью автоматизировать процесс получения и продления сертификата, а при использовании соответствующих плагинов даже может автоматически конфигурировать веб-сервер или иное, использующее сертификат приложение.
+
+Все дальнейшие инструкции будут предназначены для пользователей актуальных версий Debian и Ubuntu, но многое будет справедливо и для иных дистрибутивов Linux.
+
+## Установка в Ubuntu 14.04/16.04
+
+В отличие от разработчиков Debian в Ubuntu пошли другим путем, оформив Certbot в виде отдельного PPA. Данная технология позволяет любому желающему создать собственный репозиторий и хорошо известна любому пользователю Ubuntu, однако вся ответственность за содержимое PPA лежит только на их авторах, поэтому использовать их следует с определенной долей осмотрительности и осторожности.
+
+Прежде всего установим необходимое для работы с PPA программное обеспечение:
+
+```bash
+apt-get install software-properties-common
+```
+
+Затем добавим нужный PPA:
+```bash
+add-apt-repository ppa:certbot/certbot
+```
+
+Обновим список пакетов:
+```bash
+apt-get update
+```
+
+и установим Certbot:
+```bash
+apt-get install certbot
+```
+
+Последовательность действий для всех дистрибутивов Ubuntu одинаковая, при подключении PPA автоматически определяется выпуск Ubuntu и добавляются нужные репозитории. Точно также можно установить Certbot на промежуточные релизы (16.10 или 17.04) но мы не рекомендуем их использование в производственных средах.
+
+### Подготовка к получению сертификатов
+
+В предыдущей статье цикла мы довольно подробно разбирали работу плагина webroot, который позволяет автоматически получать сертификаты используя уже установленный в системе веб-сервер. Если коротко, то вы указываете путь к корневой директории сайта, для которого получаете сертификат в файловой системе, Certbot создает там необходимую структуру папок и размещает необходимый для проверки файл.
+
+В случае с одним доменом это не вызывает проблем, но если их много или вам требуется сертификат сразу на несколько доменов (основной домен и поддомены), корневые директории у которых отличаются, то у вас возникнут затруднения. Поэтому сам Let's Encrypt рекомендует перейти в таком случае на единую точку подтверждения сертификатов. Сделать это несложно, и мы сейчас расскажем, как.
+
+В доступной для веб-сервера директории создадим отдельную папку, скажем, letsencrypt, которую затем мы будем использовать для всех обслуживаемых доменов и установим ее владельцем веб-сервер:
+
+```bash
+mkdir /var/www/letsencrypt
+chown www-data:www-data /var/www/letsencrypt
+```
+Теперь нам нужно сделать так, чтобы любой запрос вида:
+```bash
+http://example.com/.well-known/acme-challenge
+```
+
+приводил к физическому размещению:
+```bash
+/var/www/letsencrypt/.well-known/acme-challenge
+```
+Это несложно, но для каждого из веб-серверов делается по-разному, ниже мы рассмотрим самые популярные из них.
+
+#### Nginx
+
+Nginx - второй по популярности веб-сервер (и первый среди продвинутых пользователей) предполагает несколько иной подход к настройке. Для каждого виртуального хоста в секцию server следует добавить блок:
+```bash
+location ^~ /.well-known/acme-challenge/ {
+   default_type "text/plain";
+   root /var/www/letsencrypt;
+}
+location = /.well-known/acme-challenge/ {
+   return 404;
+}
+```
+
+### Регистрация в Let's Encrypt
+
+Да, вы не ошиблись, именно регистрация. Обычно этот пункт пропускают, так как регистрация автоматически выполняется при первом получении сертификата. Но так как мы подробно разбираем работу Certbot, то решили коротко коснуться и этого момента.
+
+Регистрация нужна для формирования ключевой пары, которой впоследствии подписываются все запросы, что позволяет удостовериться в подлинности отправителя. Это важно, так как все запросы передаются по открытым каналам и теоретически возможен их перехват и модификация.
+
+Адрес электронной почты указываемый при регистрации используется для рассылки уведомлений, например, при неудачной попытке продления сертификата, поэтому следует указывать рабочий ящик, лучше всего собственный. Один и тот-же адрес можно использовать для регистрации на разных хостах, ограничений по этому параметру нет.
+
+Для регистрации выполните команду
+```bash
+certbot register -m admin@example.com
+```
+
+`--dry-run ` включает тестовый режим, при котором производится симуляция получения сертификата, --webroot - указывает используемый плагин, после ключа -w указываем путь к директории для letsencrypt, а затем через ключ `-d` указываем домены для которых мы получаем сертификат. Как минимум это должно быть основное имя сайта и имя c www, хотя никто не мешает включить вам в сертификат все нужные поддомены или вообще разные домены. Лимит на количество доменов в сертификате равен 100.
+```bash
+certbot certonly --dry-run --webroot -w /var/www/letsencrypt -d pravosleva.pro -d www.pravosleva.pro
+```
+
+После того как тестовый запуск увенчался успехом можно переходить к получению сертификата:
+
+```bash
+certbot certonly --webroot -w /var/www/letsencrypt -d pravosleva.pro -d www.pravosleva.pro
+```
+
+[See original](https://interface31.ru/tech_it/2017/04/poluchaem-sertifikaty-lets-encrypt-pri-pomoshhi-certbot.html)
+
+<Alert type='info' header='See also about Failed Validation Limit' text='too many failed authorizations recently: see https://letsencrypt.org/docs/failed-validation-limit/' />
+
+```bash
+root@pravosleva:/var/www# certbot certonly --webroot -w /var/www/letsencrypt -d pravosleva.pro -d www.pravosleva.pro^C
+root@pravosleva:/var/www# certbot certonly --dry-run --webroot -w /var/www/letsencrypt -d pravosleva.pro -d www.pravosleva.pro
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator webroot, Installer None
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for pravosleva.pro
+http-01 challenge for www.pravosleva.pro
+Using the webroot path /var/www/letsencrypt for all unmatched domains.
+Waiting for verification...
+Cleaning up challenges
+
+IMPORTANT NOTES:
+ - The dry run was successful.
+root@pravosleva:/var/www# certbot certonly --webroot -w /var/www/letsencrypt -d pravosleva.pro -d www.pravosleva.pro
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Plugins selected: Authenticator webroot, Installer None
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for pravosleva.pro
+http-01 challenge for www.pravosleva.pro
+Using the webroot path /var/www/letsencrypt for all unmatched domains.
+Waiting for verification...
+Cleaning up challenges
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/pravosleva.pro/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/pravosleva.pro/privkey.pem
+   Your cert will expire on 2023-12-28. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot
+   again. To non-interactively renew *all* of your certificates, run
+   "certbot renew"
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+```
+
+После этого обновим конфиг:
+
+```bash
+cat 50-pravosleva.pro.conf 
+```
+
+<CodeComparison
+  language="nginx"
+  oldCodeBase64="cm9vdEBwcmF2b3NsZXZhOi9ldGMvbmdpbngvY29uZi5kIyBjYXQgNTAtcHJhdm9zbGV2YS5wcm8uY29uZiAKc2VydmVyIHsKICBsaXN0ZW4gODA7CgogIHNlcnZlcl9uYW1lIHByYXZvc2xldmEucHJvOwoKICBsb2NhdGlvbiBefiAvLndlbGwta25vd24vYWNtZS1jaGFsbGVuZ2UvIHsKICAgIGRlZmF1bHRfdHlwZSAidGV4dC9wbGFpbiI7CiAgICByb290IC92YXIvd3d3L2xldHNlbmNyeXB0OwogIH0KICBsb2NhdGlvbiA9IC8ud2VsbC1rbm93bi9hY21lLWNoYWxsZW5nZS8gewogICAgcmV0dXJuIDQwNDsKICB9Cn0="
+  newCodeBase64="cm9vdEBwcmF2b3NsZXZhOi9ldGMvbmdpbngvY29uZi5kIyBjYXQgNTAtcHJhdm9zbGV2YS5wcm8uY29uZiAKc2VydmVyIHsKICBsaXN0ZW4gODA7CiAgbGlzdGVuIDQ0MyBzc2w7CgogIHNlcnZlcl9uYW1lIHByYXZvc2xldmEucHJvOwogIAogIHNzbF9jZXJ0aWZpY2F0ZSAvZXRjL2xldHNlbmNyeXB0L2xpdmUvcHJhdm9zbGV2YS5wcm8vZnVsbGNoYWluLnBlbTsKICBzc2xfY2VydGlmaWNhdGVfa2V5IC9ldGMvbGV0c2VuY3J5cHQvbGl2ZS9wcmF2b3NsZXZhLnByby9wcml2a2V5LnBlbTsKICBzc2xfcHJvdG9jb2xzICAgICAgICBUTFN2MS4yIFRMU3YxLjEgVExTdjE7CiAgc3NsX3ByZWZlcl9zZXJ2ZXJfY2lwaGVycyBvbjsKICBzc2xfY2lwaGVycyAna0VFQ0RIK0VDRFNBK0FFUzEyOCBrRUVDREgrRUNEU0ErQUVTMjU2IGtFRUNESCtBRVMxMjgga0VFQ0RIK0FFUzI1NiBrRURIK0FFUzEyOCBrRURIK0FFUzI1NiBERVMtQ0JDMy1TSEEgK1NIQSAhYU5VTEwgIWVOVUxMICFMT1cgIU1ENSAhRVhQICFEU1MgIVBTSyAhU1JQICFrRUNESCAhQ0FNRUxMSUEgIVJDNCAhU0VFRCc7CiAgc3NsX3Nlc3Npb25fY2FjaGUgICBzaGFyZWQ6U1NMOjEwbTsKICBzc2xfc2Vzc2lvbl90aW1lb3V0IDEwbTsKCiAgbG9jYXRpb24gXn4gLy53ZWxsLWtub3duL2FjbWUtY2hhbGxlbmdlLyB7CiAgICBkZWZhdWx0X3R5cGUgInRleHQvcGxhaW4iOwogICAgcm9vdCAvdmFyL3d3dy9sZXRzZW5jcnlwdDsKICB9CiAgbG9jYXRpb24gPSAvLndlbGwta25vd24vYWNtZS1jaGFsbGVuZ2UvIHsKICAgIHJldHVybiA0MDQ7CiAgfQp9"
+/>
+
+_Старая версия:_
+```bash
+root@pravosleva:/etc/nginx/conf.d# cat 50-pravosleva.pro.conf 
+server {
+  listen 80;
+  #listen 443 ssl;
+
+  server_name pravosleva.pro;
+  
+  #ssl_certificate /etc/letsencrypt/live/pravosleva.pro/fullchain.pem;
+  #ssl_certificate_key /etc/letsencrypt/live/pravosleva.pro/privkey.pem;
+  #ssl_protocols        TLSv1.2 TLSv1.1 TLSv1;
+  #ssl_prefer_server_ciphers on;
+  #ssl_ciphers 'kEECDH+ECDSA+AES128 kEECDH+ECDSA+AES256 kEECDH+AES128 kEECDH+AES256 kEDH+AES128 kEDH+AES256 DES-CBC3-SHA +SHA !aNULL !eNULL !LOW !MD5 !EXP !DSS !PSK !SRP !kECDH !CAMELLIA !RC4 !SEED';
+  #ssl_session_cache   shared:SSL:10m;
+  #ssl_session_timeout 10m;
+
+  location ^~ /.well-known/acme-challenge/ {
+    default_type "text/plain";
+    root /var/www/letsencrypt;
+  }
+  location = /.well-known/acme-challenge/ {
+    return 404;
+  }
+
+  #location /static {
+  #  root /root/projects/pravosleva-blog-2021-frontend.nextjs/public;
+  #}
+  #location /socket.io {
+  #  proxy_set_header Upgrade $http_upgrade;
+  #  proxy_set_header Connection "upgrade";
+  #  proxy_set_header Host $host;
+  #  proxy_set_header Test "hello world from nginx";
+  #  proxy_pass http://nextjs;
+  #}
+  #location / {
+  #  proxy_set_header   X-Real-IP $remote_addr;
+  #  proxy_pass http://nextjs;
+  #}
+}
+```
+
+## News 2026.9
+`https://pravosleva.ru` (stage server)
+Вынужденный и очень хитрый архитектурный костыль (хак) внутри конфигурации NGINX!
+```nginx
+# -- Stage server --
+location = /_next/image {
+  if ($request_uri ~* "url=(?:%2F|/)?static(?:%2F|/)([^&]+)") {
+      set $raw_image_path $1;
+  }
+  set $clean_path $raw_image_path;
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+  if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+
+  if ($clean_path = "") {
+      return 404;
+  }
+  root /home/projects/pravosleva-blog/frontend.nextjs/public/static;
+  rewrite ^ /$clean_path break;
+  expires 30d;
+  access_log off;
+  add_header Cache-Control "public, max-age=2592000, must-revalidate";
+}
+# --
+```
+Этот фрагмент отвечает за то, чтобы перехватывать запросы к картинкам в обход стандартного серверного оптимизатора Next.js (`/_next/image`), самостоятельно находить файл в папке `public/static` и отдавать его силами самого NGINX. Это снижает нагрузку на Node.js процесс до нуля.
+
+Повторяющиеся строки нужны **для декодирования URL-адресов (URL Decoding)**. Дело в том, что когда Next.js запрашивает картинку, он кодирует путь к ней, превращая слэши / в символы `%2F`. Из-за этого строка пути в переменной выглядит, например, так: `blog%2Flogo%2Flogo-pravosleva.jpg`.
+
+### Почему эти строки повторяются
+В NGINX **нет встроенной функции типа `url_decode()`**, которая могла бы одной командой превратить все `%2F` обратно в слэши `/`. Единственный способ сделать это штатными средствами — использовать регулярные выражения в блоках `if`.
+
+Каждая такая строка:
+```nginx
+if ($clean_path ~* "^(.*)%2F(.*)$") { set $clean_path $1/$2; }
+```
+
+Находит ровно один символ `%2F` (с конца строки) и заменяет его на нормальный слэш `/`.
+- Если в пути к картинке только один уровень вложенности (`blog%2Fimage.jpg`), то сработает первая строка. Остальные увидят, что `%2F` больше нет, и ничего не сделают.
+- Если папки вложены глубже (`static%2Fimg%2Flogo%2Fdog.webp`), то первая строка заменит последний `%2F`, вторая строка — предпоследний, третья — следующий и так далее.
+
+### В чём минус такого подхода?
+Этот хак жестко ограничивает глубину вложенности папок. В вашей конфигурации строка повторяется **4 раза.** Это означает:
+- Если картинка лежит в папке `public/static/img/blog/2026/dog.webp` (4 уровня вложенности: `img`, `blog`, `2026`), то NGINX успешно раскодирует путь и отдаст файл.
+- Если вы создадите еще одну подпапку (5 уровней вложенности), то NGINX не сможет заменить пятый `%2F`, не найдет файл на диске по кривому пути и вернет ошибку `404`.
+
+### Можно ли это оптимизировать?
+Да! Если вы хотите избавиться от этих повторяющихся строк и сделать декодирование бесконечным (для любой глубины папок), в NGINX это принято делать с помощью встроенного модуля Lua или встроенного интерпретатора **Perl**.
+
+Пример, как это красиво решается через встроенный Perl (если он установлен на сервере):
+```nginx
+# В блоке http { ... } вашего nginx.conf объявляется функция:
+perl_set $url_decoded 'sub {
+    my $r = shift;
+    my $uri = $r->uri;
+    $uri =~ s/%2F/\//g; # Заменяет ВСЕ %2F на / за один проход
+    return $uri;
+}';
+```
+Но если сервер старый и ставить туда дополнительные модули Lua/Perl не хочется, то ваш текущий вариант с четырьмя строчками `if` — это **самое простое и рабочее решение,** которое не требует кастомных модулей ядра. Главное — помнить, что нельзя вкладывать файлы картинок глубже 4-х папок!

@@ -8,6 +8,9 @@ declare global {
       io: Server;
       slugMapCacheInstance?: typeof slugMapCacheInstance;
       slugMap?: TLocalSlugMap;
+      isPrivatePagesIncluded?: boolean;
+      isLocalSearchEnabled?: boolean;
+      isRemoteSearchEnabled?: boolean;
     }
     interface Response {
       startTime: (tag: string, msg: string) => void;

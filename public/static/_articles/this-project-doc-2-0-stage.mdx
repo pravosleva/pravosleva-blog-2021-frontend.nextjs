@@ -1,0 +1,489 @@
+---
+_id: "63aee0f7f5887b033b442c10"
+title: "Doc: NGINX + SSL by Letsencrypt for Stage server (part 2.0) // Certbot 2022 exp Let’s Encrypt"
+brief: 'DX'
+bg_src: "/static/img/blog/FB_IMG_1788818095960.jpg"
+bg_size: { w: 1904, h: 2538 }
+bg_type: "image/webp"
+
+createdAt: "2022-12-30T13:00:39.545Z"
+updatedAt: "2026-06-24T15:06:28.844Z"
+priority: 0
+
+author: "Den Pol"
+tags: ["this_project", "doc", "certbot", "ssl", "pravosleva.ru"]
+#category: "guides"
+isPrivate: true
+---
+# 2025.10 pravosleva.ru as proxy
+
+1. Create dir `/home/projects/pravosleva-blog/cert-output`
+2. NGINX settings:
+
+`00-options.conf`
+```nginx
+client_body_timeout 300s;
+client_body_buffer_size 5m;
+client_max_body_size 32m;
+server_tokens off;
+proxy_http_version 1.1;
+#proxy_set_header Upgrade $http_upgrade;
+#proxy_set_header Connection 'upgrade';
+proxy_set_header Host $host;
+#proxy_cache_bypass $http_upgrade;
+
+proxy_connect_timeout 600;
+proxy_send_timeout 600;
+proxy_read_timeout 600;
+send_timeout 600;
+```
+
+`00-upstreams.conf`
+```nginx
+upstream nextjs {
+  server 127.0.0.1:9000 fail_timeout=0 max_fails=0;
+}
+
+#upstream strapi {
+#  server 127.0.0.1:1337 fail_timeout=0 max_fails=0;
+#}
+
+upstream helper {
+  server 127.0.0.1:5000 fail_timeout=0 max_fails=0;
+}
+
+upstream tg-bot {
+  server 127.0.0.1:2021 fail_timeout=0 max_fails=0;
+}
+```
+
+`50-pravosleva.ru.conf`
+```nginx
+server {
+  listen 80;
+  listen 443 ssl;
+
+  #server_name .pravosleva.ru;
+  server_name pravosleva.ru;
+
+  ssl on;
+  ssl_certificate /etc/letsencrypt/live/pravosleva.ru/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/pravosleva.ru/privkey.pem;
+  ssl_protocols        TLSv1.2 TLSv1.1 TLSv1;
+  ssl_prefer_server_ciphers on;
+  ssl_ciphers 'kEECDH+ECDSA+AES128 kEECDH+ECDSA+AES256 kEECDH+AES128 kEECDH+AES256 kEDH+AES128 kEDH+AES256 DES-CBC3-SHA +SHA !aNULL !eNULL !LOW !MD5 !E$
+  ssl_session_cache   shared:SSL:10m;
+  ssl_session_timeout 10m;
+
+  location = /favicon.ico {
+    root /home/projects/pravosleva-blog/frontend/public;
+  }
+  location ~ /.well-known {
+    allow all;
+    root /home/projects/pravosleva-blog/cert-output/;
+  }
+  location / {
+    proxy_set_header Host pravosleva.pro;
+    proxy_pass https://pravosleva.pro;
+    #proxy_redirect https://pravosleva.ru http:s//pravosleva.pro;
+  }
+  location /dist.viselitsa-2023 {
+    index index.html;
+    max_ranges 0;
+    root /home/projects;
+
+    # kill cache
+    add_header Last-Modified $date_gmt;
+    add_header Cache-Control 'no-store, no-cache';
+    if_modified_since off;
+    expires off;
+    etag off;
+  }
+  location /docs {
+    #auth_basic "Private Area";
+    #auth_basic_user_file /var/www/html/.htpasswd;
+    root /home/projects;
+  }
+
+  # --- STRAPI + CRA (hash router)
+  #location /cra/ {
+  #  proxy_pass http://strapi/cra/;
+  #}
+  #location ~ ^/analyze/ {
+  #  #proxy_pass http://strapi/cra/analyze;
+  #  root /home/projects/pravosleva-blog/backend/public/cra/;
+  #}
+  # ---
+  #location /api/uploads {
+  #  rewrite ^/api/(.*)$ /$1 break;
+  #  root /home/projects/pravosleva-blog/backend/public;
+  #}
+  # Old Strapi API:
+  #location /documentation {
+  #  proxy_pass http://strapi;
+  #}
+  #location /plugins {
+  #  proxy_pass http://strapi;
+  #}
+
+  # --- NEXT
+  #location /static {
+  #  root /home/projects/pravosleva-blog/frontend.nextjs/public;
+  #}
+  #location /socket.io {
+  #  proxy_set_header Upgrade $http_upgrade;
+  #  proxy_set_header Connection "upgrade";
+  #  proxy_set_header Host $host;
+  #  proxy_set_header Test "hello world from nginx";
+  #  proxy_pass http://nextjs;
+  #}
+  #location / {
+  #  proxy_set_header   X-Real-IP $remote_addr;
+  #  proxy_pass http://nextjs;
+  #}
+  # ---
+
+  #location /api/ {
+  #  proxy_pass http://strapi/;
+  #}
+  #location /upload {
+  #  proxy_pass http://strapi;
+  #}
+  #location ~ ^/(email|admin|upload|i18n|users-permissions|content-manager|socket.io|content-type-builder)/ {
+  #  proxy_pass http://strapi;
+  #}
+  #location ~ ^/uploads/ {
+  #  root /home/projects/pravosleva-blog/backend/public/;
+  #}
+
+  #location ~ ^/express-helper/auth/signin/(.*)$ {
+  #    proxy_buffering off;
+  #    proxy_redirect  off;
+  #    proxy_set_header  Host  $http_host;
+  #    proxy_set_header  X-Forwarder-For  $remote_addr;
+  #    proxy_set_header  X-Frame-Options  SAMEORIGIN;
+  #    proxy_pass   http://helper/auth/signin/$1;
+  #}
+  #location /express-helper/chat/ {
+  #  root /home/projects/pravosleva-blog/express-helper/server-dist/routers/chat/spa.build/;
+  #}
+
+  #location /storybook {
+  #  root /home/projects/pravosleva-blog/frontend/.next;
+  #}
+
+  #location  ~ ^/cra/(.*)$ {
+  #    proxy_buffering off;
+  #    proxy_redirect  off;
+  #    proxy_set_header  Host  $http_host;
+  #    proxy_set_header  X-Forwarder-For  $remote_addr;
+  #    proxy_set_header  X-Frame-Options  SAMEORIGIN;
+  #    proxy_pass   http://strapi/cra/$1;
+  #}
+
+  #location /tg-bot-2021/ {
+  #  proxy_pass http://tg-bot/;
+  #}
+
+}
+```
+
+`51-gosuslugi.pravosleva.ru.conf`
+```nginx
+server {
+  listen 80;
+  listen 443 ssl;
+  server_name gosuslugi.pravosleva.ru;
+
+  ssl_certificate /etc/letsencrypt/live/pravosleva.ru/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/pravosleva.ru/privkey.pem;
+  ssl_protocols        TLSv1.2 TLSv1.1 TLSv1;
+  ssl_prefer_server_ciphers on;
+  ssl_ciphers 'kEECDH+ECDSA+AES128 kEECDH+ECDSA+AES256 kEECDH+AES128 kEECDH+AES256 kEDH+AES128 kEDH+AES256 DES-CBC3-SHA +SHA !aNULL !eNULL !LOW !MD5 !E$
+  ssl_session_cache   shared:SSL:10m;
+  ssl_session_timeout 10m;
+
+  location / {
+    proxy_set_header Host pravosleva.ru;
+    proxy_pass http://127.0.0.1:80;
+  }
+  location /socket.io {
+    proxy_pass http://helper;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header Host pravosleva.ru;
+  }
+}
+```
+
+`52-www.pravosleva.ru.conf`
+```nginx
+server {
+  listen 80;
+  listen 443 ssl;
+  server_name www.pravosleva.ru;
+
+  #ssl_certificate /etc/letsencrypt/live/pravosleva.ru/fullchain.pem;
+  #ssl_certificate_key /etc/letsencrypt/live/pravosleva.ru/privkey.pem;
+  #ssl_protocols        TLSv1.2 TLSv1.1 TLSv1;
+  #ssl_prefer_server_ciphers on;
+  #ssl_ciphers 'kEECDH+ECDSA+AES128 kEECDH+ECDSA+AES256 kEECDH+AES128 kEECDH+AES256 kEDH+AES128 kEDH+AES256 DES-CBC3-SHA +SHA !aNULL !eNULL !LOW !MD5 !$
+  #ssl_session_cache   shared:SSL:10m;
+  #ssl_session_timeout 10m;
+
+  location ~ /.well-known {
+    allow all;
+    root /home/projects/pravosleva-blog/cert-output/;
+  }
+  location / {
+    proxy_set_header Host pravosleva.pro;
+    proxy_pass https://pravosleva.pro;
+    #proxy_redirect https://pravosleva.ru http:s//pravosleva.pro;
+  }
+
+  location /socket.io {
+    proxy_pass http://helper;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header Host pravosleva.ru;
+  }
+}
+```
+
+*Before:*
+```shell
+certbot certonly --dry-run -d pravosleva.ru -d www.pravosleva.ru -d gosuslugi.pravosleva.ru
+```
+
+*Run this:*
+```shell
+certbot certonly -d pravosleva.ru -d www.pravosleva.ru -d gosuslugi.pravosleva.ru
+```
+
+*Result:*
+```
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+How would you like to authenticate with the ACME CA?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Spin up a temporary webserver (standalone)
+2: Place files in webroot directory (webroot)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+Plugins selected: Authenticator webroot, Installer None
+Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for pravosleva.ru
+Input the webroot for pravosleva.ru: (Enter 'c' to cancel): /home/projects/pravosleva-blog
+Waiting for verification...
+Cleaning up challenges
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/pravosleva.ru-0001/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/pravosleva.ru-0001/privkey.pem
+   Your cert will expire on 2026-01-18. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot
+   again. To non-interactively renew *all* of your certificates, run
+   "certbot renew"
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+```
+
+## ☝️ Notes 2025.10
+```
+You requested these names for the new certificate: pravosleva.ru,
+gosuslugi.pravosleva.ru.
+
+Do you want to expand and replace this existing certificate with the new
+certificate?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+(E)xpand/(C)ancel: E
+Renewing an existing certificate
+Performing the following challenges:
+http-01 challenge for pravosleva.ru
+http-01 challenge for gosuslugi.pravosleva.ru
+Input the webroot for pravosleva.ru: (Enter 'c' to cancel): /home/projects/pravosleva-blog/cert-output
+
+Select the webroot for gosuslugi.pravosleva.ru:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Enter a new webroot
+2: /home/projects/pravosleva-blog/cert-output
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+Waiting for verification...
+Cleaning up challenges
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/pravosleva.ru-0001/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/pravosleva.ru-0001/privkey.pem
+   Your cert will expire on 2026-01-18. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot
+   again. To non-interactively renew *all* of your certificates, run
+   "certbot renew"
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+```
+
+## NOTES 2026.01
+```shell
+root@pravosleva:~# certbot certonly --dry-run -d pravosleva.ru -d www.pravosleva.ru -d gosuslugi.pravosleva.ru
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+How would you like to authenticate with the ACME CA?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Spin up a temporary webserver (standalone)
+2: Place files in webroot directory (webroot)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+Plugins selected: Authenticator webroot, Installer None
+Starting new HTTPS connection (1): acme-staging-v02.api.letsencrypt.org
+Cert not due for renewal, but simulating renewal for dry run
+Renewing an existing certificate
+Performing the following challenges:
+http-01 challenge for gosuslugi.pravosleva.ru
+http-01 challenge for pravosleva.ru
+http-01 challenge for www.pravosleva.ru
+Input the webroot for gosuslugi.pravosleva.ru: (Enter 'c' to cancel): /home/projects/pravosleva-blog/cert-output
+
+Select the webroot for pravosleva.ru:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Enter a new webroot
+2: /home/projects/pravosleva-blog/cert-output
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+
+Select the webroot for www.pravosleva.ru:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Enter a new webroot
+2: /home/projects/pravosleva-blog/cert-output
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+Waiting for verification...
+Cleaning up challenges
+
+IMPORTANT NOTES:
+ - The dry run was successful.
+```
+
+# [Установка сертификата Let’s Encrypt для nginx](http://tau-design.net/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D1%81%D0%B5%D1%80%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%82%D0%B0-lets-encrypt-%D0%B4%D0%BB%D1%8F-nginx/)
+
+## Install
+```bash
+apt-get install certbot
+```
+
+## 🧪 Lets try
+Осуществляем тестовый запуск. Для проверки используем ключ `—dry-run`
+```bash
+certbot certonly --dry-run -d pravosleva.ru -d www.pravosleva.ru
+
+# -> 2 -> 2
+# pravosleva.ru
+# /home/projects/pravosleva-blog/cert-output
+```
+
+## Go to NGINX settings
+```bash
+sudo nano 50-pravosleva.ru.conf
+```
+
+```bash
+server {
+  listen 80;
+  listen 443 ssl;
+  server_name .pravosleva.ru;
+  ssl_certificate /etc/letsencrypt/live/pravosleva.ru/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/pravosleva.ru/privkey.pem;
+
+  location ~ /.well-known {
+    allow all;
+  }
+  # ...
+}
+```
+
+Restart external web server
+```bash
+systemctl restart nginx
+```
+
+## ✅ Generate cert 🔥 🔥 🔥
+```bash
+certbot certonly -d pravosleva.ru -d  www.pravosleva.ru -d gosuslugi.pravosleva.ru
+```
+
+<Alert type='info' header='See also' text='**[Configuring HTTPS servers](http://nginx.org/en/docs/http/configuring_https_servers.html)**' />
+
+## Last gen
+```bash
+certbot certonly -d pravosleva.ru -d  www.pravosleva.ru -d gosuslugi.pravosleva.ru
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+How would you like to authenticate with the ACME CA?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Spin up a temporary webserver (standalone)
+2: Place files in webroot directory (webroot)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+Plugins selected: Authenticator webroot, Installer None
+Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org
+Cert not yet due for renewal
+
+You have an existing certificate that has exactly the same domains or certificate name you requested and isn't close to expiry.
+(ref: /etc/letsencrypt/renewal/pravosleva.ru.conf)
+
+What would you like to do?
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Keep the existing certificate for now
+2: Renew & replace the cert (limit ~5 per 7 days)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): /home/pr2                                 
+Renewing an existing certificate
+Performing the following challenges:
+http-01 challenge for gosuslugi.pravosleva.ru
+http-01 challenge for pravosleva.ru
+http-01 challenge for www.pravosleva.ru
+Input the webroot for gosuslugi.pravosleva.ru: (Enter 'c' to cancel): /home/projects/pravosleva-blog/cert-output
+
+Select the webroot for pravosleva.ru:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Enter a new webroot
+2: /home/projects/pravosleva-blog/cert-output
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+
+Select the webroot for www.pravosleva.ru:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+1: Enter a new webroot
+2: /home/projects/pravosleva-blog/cert-output
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel): 2
+Waiting for verification...
+Cleaning up challenges
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/pravosleva.ru/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/pravosleva.ru/privkey.pem
+   Your cert will expire on 2026-09-22. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot
+   again. To non-interactively renew *all* of your certificates, run
+   "certbot renew"
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+```
+```bash
+systemctl restart nginx
+```

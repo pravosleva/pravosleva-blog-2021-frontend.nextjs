@@ -3,6 +3,9 @@ const path = require('path');
 // Используем gray-matter, который уже есть в зависимостях вашего проекта
 const matter = require('gray-matter');
 
+// Читаем флаг принудительного включения приватных страниц из .env
+const isPrivatePagesIncluded = process.env.BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED === '1';
+
 const ARTICLES_DIR = path.join(process.cwd(), 'public', 'static', '_articles');
 const OUTPUT_FILE = path.join(process.cwd(), 'public', 'static', 'local.slug-map.json');
 
@@ -33,6 +36,13 @@ function generateSlugMap() {
         return;
       }
 
+      // 2. УМНЫЙ ФИЛЬТР ПРИВАТНОСТИ:
+      // Если у статьи стоит isPrivate: true, НО в .env НЕ разрешено их включать — пропускаем её
+      if (data.isPrivate && !isPrivatePagesIncluded) {
+        console.log(`[SlugMap Builder] Статья ${fileName} пропущена (конфиг запрещает isPrivate в этом билде)`);
+        return;
+      }
+
       // Структурируем объект bg, безопасно собирая его из плоских свойств mdx шапки
       const bg = data.bg_src ? {
         src: data.bg_src,
@@ -53,7 +63,8 @@ function generateSlugMap() {
         updatedAt: data.updatedAt || new Date().toISOString(),
         priority: typeof data.priority === 'number' ? data.priority : 0,
         tags: Array.isArray(data.tags) ? data.tags : [],
-        isPrivate: data.isPrivate ?? false,
+        // isPrivate: data.isPrivate ?? false,
+        isPrivate: !!data.isPrivate, // сохраняем флаг булевым значением
         ...restFrontMatter // Динамический проброс любых других кастомных атрибутов
       };
 
@@ -63,7 +74,7 @@ function generateSlugMap() {
   });
 
   // Записываем финальный результат с красивыми отступами в 2 пробела для читаемости
-  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(slugMap), 'utf8');
+  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(slugMap, null, 2), 'utf8');
   console.log(`✨ Успешно создан файл: ${OUTPUT_FILE}`);
   console.log(`📊 Всего проиндексировано статей: ${Object.keys(slugMap).length}`);
 }

@@ -15,6 +15,7 @@ import Head from 'next/head'
 const NEXT_APP_BUILD_DATE = process.env.NEXT_APP_BUILD_DATE || 'No env'
 const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'No env'
 const NEXT_APP_VERSION = process.env.NEXT_APP_VERSION || 'No env'
+const isBuildInfoRequired = process.env.NEXT_SEO === 'https://pravosleva.pro'
 
 type TProps = {
   children: React.ReactNode;
@@ -107,23 +108,30 @@ export const Layout = ({ children, noFooter, isPrivatePage }: TProps) => {
                   Images optimization disabled 👉 <code>{process.env.NEXT_IS_IMAGE_OPTIMIZATION_DISABLED}</code>
                 </div>
                 <div>
-                  Bundle analyzer 👉{' '}
-                  <a
-                    style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
-                    href='/static/analyze/server.html' 
-                    target='_blank'
-                  >
-                    Server
-                  </a>{' '}
-                  |{' '}
-                  <a
-                    style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
-                    href='/static/analyze/client.html' 
-                    target='_blank'
-                  >
-                    Client
-                  </a>
+                  All pages included 👉 <code>{process.env.BASH_NOTES_IS_PRIVATE_PAGES_INCLUDED}</code>
                 </div>
+                {
+                  isBuildInfoRequired && (
+                    <div>
+                      Bundle analyzer 👉{' '}
+                      <a
+                        style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
+                        href='/static/analyze/server.html' 
+                        target='_blank'
+                      >
+                        Server
+                      </a>{' '}
+                      |{' '}
+                      <a
+                        style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
+                        href='/static/analyze/client.html' 
+                        target='_blank'
+                      >
+                        Client
+                      </a>
+                    </div>
+                  )
+                }
               </div>
             </div>
           </ResponsiveBlock>
