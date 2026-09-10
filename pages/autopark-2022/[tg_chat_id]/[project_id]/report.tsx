@@ -47,9 +47,11 @@ export default function MyProjects({
 }) {
   if (userCheckerResponse?.code === 'not_found') return (
     <>
-      {/* <Head>
+      <Head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </Head> */}
+        {/* TODO: Жесткий запрет индексации страницы */}
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
       <ErrorPage message={`Пользователя ${chat_id} не существует. Нужна авторизация через Telegram`} />
     </>
   )
@@ -61,6 +63,8 @@ export default function MyProjects({
     <>
       <Head>
         <title>{projectDataResponse?.name || 'My Car'} | Report</title>
+        {/* TODO: Жесткий запрет индексации страницы */}
+        <meta name="robots" content="noindex, nofollow" />
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_name=${projectDataResponse?.name || 'My Car'}&project_type=autopark_report`} />
         <meta name="application-name" content={projectDataResponse?.name || 'My Car'} />
         <meta name="apple-mobile-web-app-title" content={projectDataResponse?.name || 'My Car'} />

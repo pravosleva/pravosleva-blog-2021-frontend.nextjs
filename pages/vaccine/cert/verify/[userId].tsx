@@ -13,6 +13,10 @@ import { TUserData } from '~/components/covid-trash/like-gosuslugi/UserInfoSecti
 // const api = axios.create({ baseURL: API_URL })
 const isDev = process.env.NODE_ENV === 'development'
 
+/* TODO: Жесткий запрет индексации страницы логина
+  <meta name="robots" content="noindex, nofollow" />
+*/
+
 const VerifyPage = ({ userData, errorMsg }: any) => {
   const [isTimerEnabled, setIsTimerEnabled] = useState<boolean>(true)
   useEffect(() => {

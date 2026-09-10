@@ -35,6 +35,7 @@ const TodoOnline = ({
     <>
       <Head>
         <title>SP | Trade-In report {chat_id}</title>
+        <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
       </Head>
       {

@@ -15,17 +15,26 @@ if [ ! -z "$SITEMAP_HOST" ]; then
   NEXT_APP_SITEMAP_BASE_URL="$SITEMAP_HOST" node ./scripts/generate-sitemap.js
 fi
 
-# -- 3.5. АВТОГЕНЕРАЦИЯ ROBOTS.TXT ПОД КОНКРЕТНЫЙ СТЕНД
+# -- 3.5. #SEO АВТОГЕНЕРАЦИЯ ROBOTS.TXT ПОД КОНКРЕТНЫЙ СТЕНД
 ROBOTS_PATH="./public/robots.txt"
 
 if [ "$1" == "stage" ] || [ "$1" == "ru" ]; then
-  # Если деплоим на стейдж (.ru) — полностью закрываем сайт от роботов, оставляя только sitemap
-  echo -e "User-agent: *\nDisallow: /express-next-api/\n\nSitemap: ${SITEMAP_HOST}/sitemap.xml" > $ROBOTS_PATH
+  # Если деплоим на стейдж (.ru) — по-прежнему наглухо закрываем весь сайт от индексации
+  echo -e "User-agent: *\nDisallow: /\n\nSitemap: ${SITEMAP_HOST}/sitemap.xml" > $ROBOTS_PATH
   echo "[Robots] Сгенерирован защищенный robots.txt для STAGE стенда"
 else
-  # Если деплоим на прод (.pro) — разрешаем полную индексацию, скрывая только API
-  echo -e "User-agent: *\nAllow: /\nDisallow: /express-next-api/\n\nSitemap: ${SITEMAP_HOST}/sitemap.xml" > $ROBOTS_PATH
-  echo "[Robots] Сгенерирован открытый robots.txt для PRODUCTION стенда"
+  # Если деплоим на прод (.pro) — открываем всё, КРОМЕ указанных вами секретных / технических папок
+  echo -e "User-agent: *
+Allow: /
+Disallow: /express-next-api/
+Disallow: /subprojects/auditlist/
+Disallow: /vaccine/
+Disallow: /team-scoring/
+Disallow: /auth/login
+Disallow: /autopark-2022/
+
+Sitemap: ${SITEMAP_HOST}/sitemap.xml" > $ROBOTS_PATH
+  echo "[Robots] Сгенерирован открытый robots.txt с исключениями для PRODUCTION стенда"
 fi
 
 DEPLOY_HOST=$(read_env BASH_DEPLOY_HOST .env."$1")

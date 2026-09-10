@@ -11,6 +11,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 // <ResponsiveBlock isLimited>
 
+/* TODO: Жесткий запрет индексации страницы логина
+  <meta name="robots" content="noindex, nofollow" />
+*/
+
 export default function AuthLogin() {
   return (
     <ResponsiveBlock

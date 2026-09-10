@@ -20,6 +20,10 @@ import { withTranslator } from '~/hocs/withTranslator'
 
 const isProd = process.env.NODE_ENV === 'production'
 
+/* TODO: Жесткий запрет индексации страницы
+  <meta name="robots" content="noindex, nofollow" />
+*/
+
 const RECAPTCHAV3_CLIENT_KEY = process.env.RECAPTCHAV3_CLIENT_KEY || 'ERR:RECAPTCHAV3_CLIENT_KEY'
 const RECAPTCHAV3_VERIFY_URL = process.env.RECAPTCHAV3_VERIFY_URL || 'ERR:RECAPTCHAV3_VERIFY_URL'
 const recaptchaScoreLimit = 0.9

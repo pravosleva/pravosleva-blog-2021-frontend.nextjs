@@ -41,11 +41,18 @@ export default function MyProjects({
   project_id,
   projectDataResponse,
 }: any) {
+  const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
+  const hasItems = useMemo(() => items.length > 0, [items])
+
+  const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
+
   if (userCheckerResponse.code === 'not_found') return (
     <>
-      {/* <Head>
+      <Head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-      </Head> */}
+        {/* TODO: Жесткий запрет индексации страницы */}
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
       <ErrorPage message={`Пользователя ${chat_id} не существует. Нужна авторизация через Telegram`} />
     </>
   )
@@ -53,15 +60,12 @@ export default function MyProjects({
     <ErrorPage message={errorMsg} />
   )
 
-  const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
-  const hasItems = useMemo(() => items.length > 0, [items])
-
-  const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
-
   return (
     <>
       <Head>
         <title>{projectDataResponse?.name || 'My Car'}</title>
+        {/* TODO: Жесткий запрет индексации страницы */}
+        <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_type=autopark`} />
         {/* <script

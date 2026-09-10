@@ -4,6 +4,10 @@ import Head from 'next/head'
 import { getInitialPropsBase, IPageContext, setCommonStore } from '~/utils/next'
 import { wrapper } from '~/store'
 
+/* TODO: Жесткий запрет индексации страницы
+  <meta name="robots" content="noindex, nofollow" />
+*/
+
 const Page = () => {
   return (
     <>

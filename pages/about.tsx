@@ -10,6 +10,10 @@ import { event } from '~/utils/googleAnalitycs'
 import { Alert, Stack } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
+/* TODO (OR NOT?): Жесткий запрет индексации страницы
+  <meta name="robots" content="noindex, nofollow" />
+*/
+
 export default function About() {
   const handleClick = () => {
     try {

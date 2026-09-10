@@ -36,6 +36,7 @@ const TodoOnline = ({
     <>
       <Head>
         <title>AuditList | Online</title>
+        <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
       </Head>
       {

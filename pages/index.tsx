@@ -56,6 +56,10 @@ import { wrapper } from '~/store'
 //   },
 // ]
 
+/* TODO (OR NOT?): Жесткий запрет индексации страницы
+  <meta name="robots" content="noindex, nofollow" />
+*/
+
 const Index = () => {
   return (
     <>
