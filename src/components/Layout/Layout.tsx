@@ -10,6 +10,7 @@ import { CookiePolicyOffer } from '~/components'
 import { ScrollTopBtn } from './components/ScrollTopBtn'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
+import Head from 'next/head'
 
 const NEXT_APP_BUILD_DATE = process.env.NEXT_APP_BUILD_DATE || 'No env'
 const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'No env'
@@ -18,9 +19,15 @@ const NEXT_APP_VERSION = process.env.NEXT_APP_VERSION || 'No env'
 type TProps = {
   children: React.ReactNode;
   noFooter?: boolean;
+  /**
+   * Жесткий запрет индексации страницы
+   *
+   * @type {?boolean}
+   */
+  isPrivatePage?: boolean;
 }
 
-export const Layout = ({ children, noFooter }: TProps) => {
+export const Layout = ({ children, noFooter, isPrivatePage }: TProps) => {
   const styles = useStyles()
   
   // Оптимизация 1: Получаем тему. Чтобы избежать полной перерисовки 
@@ -40,6 +47,11 @@ export const Layout = ({ children, noFooter }: TProps) => {
 
   return (
     <>
+      <Head>
+        {/* Если страница помечена как приватная — принудительно отдаем noindex роботам */}
+        {isPrivatePage && <meta name="robots" content="noindex, nofollow" />}
+      </Head>
+      
       <DesktopHeader />
       <MobileHeader />
       

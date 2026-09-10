@@ -4,10 +4,6 @@ import Head from 'next/head'
 import { getInitialPropsBase, IPageContext, setCommonStore } from '~/utils/next'
 import { wrapper } from '~/store'
 
-/* TODO: Жесткий запрет индексации страницы
-  <meta name="robots" content="noindex, nofollow" />
-*/
-
 const Page = () => {
   return (
     <>
@@ -15,7 +11,7 @@ const Page = () => {
         <title>SP exp</title>
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
       </Head>
-      <Layout>
+      <Layout isPrivatePage>
         <SPSocketLab />
       </Layout>
     </>

@@ -3,13 +3,9 @@ import Link from '~/components/Link'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Layout } from '~/components/Layout'
 
-/* TODO: Жесткий запрет индексации страницы
-  <meta name="robots" content="noindex, nofollow" />
-*/
-
 export default function FeedbackThanks() {
   return (
-    <Layout>
+    <Layout isPrivatePage>
       <Container maxWidth="sm">
         <Box sx={{ py: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
