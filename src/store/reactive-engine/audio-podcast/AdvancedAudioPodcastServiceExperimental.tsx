@@ -231,7 +231,7 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
           this.duration.value = 0;
 
           if (isHlsTarget) await this.initHlsStream(this.radioEl, track);
-          else this.radioEl.src = `${track.url}?_t=${Date.now()}`;
+          else this.radioEl.src = track.url // `${track.url}?_t=${Date.now()}`;
           
           this.radioEl.play()
             .then(() => { 
@@ -292,7 +292,7 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
       if (isHlsTarget) {
         await this.initHlsStream(this.radioEl, track);
       } else {
-        this.radioEl.src = `${track.url}?_t=${Date.now()}`;
+        this.radioEl.src = track.url // `${track.url}?_t=${Date.now()}`;
         this.radioEl.load();
       }
 
@@ -404,6 +404,7 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
     try {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       this.audioCtx = new AudioContextClass();
+      
       this.analyser = this.audioCtx.createAnalyser();
       this.analyser.fftSize = 256;
       this.analyser.smoothingTimeConstant = 0.8;
@@ -413,7 +414,9 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
       this.analyser.connect(this.audioCtx.destination);
       console.log('🔮 [Audio Context А]: Успешно привязан к подкастам.');
     } catch (e) {
-      console.error('Не удалось запустить аудио-контекст подкастов:', e);
+      // Предотвращаем падение всего сервиса! 
+      console.warn('⚠️ [Audio Context А]: Браузер заблокировал контекст. Ожидание клика.', e);
+      this.audioCtx = null; // Позволит повторить попытку при следующем клике Play
     }
   }
 

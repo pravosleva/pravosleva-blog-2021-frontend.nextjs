@@ -265,19 +265,20 @@ export class AudioPodcastService extends AbstractService {
       const updatedQueue = [...currentQueue, track];
       this.queue.value = updatedQueue;
       this.saveQueueToStorage(updatedQueue);
-
-      // Мгновенно обновляем массив очереди во всех параллельных вкладках
       this.broadcast('queue_updated', updatedQueue);
     }
 
     const activeTrack = this.currentTrack.value || (this.queue.value.length > 0 ? this.queue.value[0] : null);
     const isCurrentActive = activeTrack?.id === track.id;
 
-    if (isCurrentActive) {
+    // Проверяем, был ли тег аудио "холодным" (без установленного src)
+    const isAudioElementCold = !this.audioEl.src || this.audioEl.src === window.location.href;
+
+    if (isCurrentActive && !isAudioElementCold) {
       if (this.audioEl.paused) {
         this.audioEl.play().then(() => {
           this.isPlaying.value = true;
-          this.broadcast('someone_started_playback'); // Глушим другие вкладки при возобновлении
+          this.broadcast('someone_started_playback');
         }).catch(() => {
           this.isPlaying.value = false;
         });
@@ -286,27 +287,31 @@ export class AudioPodcastService extends AbstractService {
         this.isPlaying.value = false;
       }
     } else {
-      // Чистое переключение на совершенно другой трек подкаста
+      // ЧИСТОЕ ПЕРЕКЛЮЧЕНИЕ / ХОЛОДНЫЙ СТАРТ
       this.currentTrack.value = track;
       this.saveActiveTrackToStorage(track.id);
-      
-      // Оповещаем другие вкладки о смене активного трека
       this.broadcast('active_track_changed', track);
 
       this.isPlayerVisible.value = true;
       this.isPlayerMinimized.value = false;
       this.duration.value = 0;
-
-      // Мгновенное включение индикатора буферизации
       this.isBuffering.value = true; 
 
-      // Упреждающая очистка ошибок до физического старта воспроизведения
       const errors = { ...this.trackErrors.value };
       delete errors[track.id];
       this.trackErrors.value = errors; 
 
-      // Возвращаемся к стандартному, стабильному нативному HTML5 аудио-потоку
+      // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ ДЛЯ ИНКОГНИТО ---
+      // Если элемент холодный, принудительно очищаем его, чтобы сбросить сетевую гонку с Service Worker
+      if (isAudioElementCold) {
+        this.audioEl.removeAttribute('src');
+        this.audioEl.load();
+      }
+
+      // Задаем новый URL подкаста
       this.audioEl.src = track.url;
+      
+      // Вызываем нативный .load(), чтобы заставить браузер полностью пересчитать Range-запросы
       this.audioEl.load();
 
       const savedTime = this.getTrackProgress(track.id);
@@ -314,13 +319,20 @@ export class AudioPodcastService extends AbstractService {
         this.audioEl.currentTime = savedTime;
       }
 
-      this.audioEl.play().then(() => {
-        this.isPlaying.value = true;
-        this.broadcast('someone_started_playback'); // Глушим другие вкладки при старте нового трека
-      }).catch(() => {
-        this.isPlaying.value = false;
-        this.isBuffering.value = false; // Страховка: тушим лоадер, если промис play отклонен
-      });
+      // Даем браузеру микропаузу (setTimeout 0) для стабилизации CORS и воркера перед запуском
+      setTimeout(() => {
+        if (!this.audioEl) return;
+        
+        this.audioEl.play().then(() => {
+          this.isPlaying.value = true;
+          this.isBuffering.value = false;
+          this.broadcast('someone_started_playback');
+        }).catch((err) => {
+          console.warn('▶️ [Audio Engine] Холодный старт перехвачен Autoplay Policy:', err.message);
+          this.isPlaying.value = false;
+          this.isBuffering.value = false; // Тушим лоадер, чтобы избежать бесконечного зависания
+        });
+      }, 50);
     }
   }
 

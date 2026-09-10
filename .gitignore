@@ -29,8 +29,8 @@ deploy-app-config.json
 !/server.dist/.gitkeep
 
 # pwa
-/public/service-worker.*
-/public/workbox-*
+/public/**/service-worker.*
+/public/**/workbox-*
 /public/static/analyze/*
 
 # SEO

@@ -56,6 +56,7 @@ async function generateSitemap() {
   });
 
   // 2. Читаем сгенерированную JSON-карту локальных статей
+    // 2. Читаем сгенерированную ранее JSON карту локальных статей
   const slugMapPath = path.join(process.cwd(), 'public', 'static', 'local.slug-map.json');
   
   if (fs.existsSync(slugMapPath)) {
@@ -64,19 +65,25 @@ async function generateSitemap() {
       const slugMapping = JSON.parse(rawData);
 
       Object.entries(slugMapping).forEach(([slugKey, meta]) => {
+        // 1. Пропускаем приватные статьи и черновики
         if (meta.isPrivate || meta.isDraft) return;
+
+        // 2. КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Исключаем служебные файлы (например, _no-index.audio-exp)
+        if (slugKey.startsWith('_no-index.')) {
+          console.log(`[Sitemap Filter] Скрытый файл исключен из карты сайта: ${slugKey}`);
+          return; // Пропускаем эту итерацию цикла
+        }
 
         const articlePath = `/p/${slugKey}`;
 
-        // На случай, если слаг статьи совпадает с каким-то из запрещенных путей
         if (!isUrlAllowed(articlePath)) {
           console.log(`[Sitemap Filter] Исключена статья из-за совпадения пути: ${articlePath}`);
           return;
         }
 
         const lastModDate = meta.updatedAt 
-          ? meta.updatedAt.split('T')[0] 
-          : new Date().toISOString().split('T')[0];
+          ? meta.updatedAt.split('T') 
+          : new Date().toISOString().split('T');
 
         xmlRows.push(`  <url>
     <loc>${cleanBaseUrl}${articlePath}</loc>
@@ -85,7 +92,7 @@ async function generateSitemap() {
     <priority>0.8</priority>
   </url>`);
       });
-      console.log(`[Sitemap] Итого динамических страниц добавлено: ${xmlRows.length - 2} 👉 те что !(meta.isPrivate || meta.isDraft)`); // Минус базовые статические
+      console.log(`[Sitemap] Успешно добавлено локальных статей из JSON: ${xmlRows.length - staticPages.length}`);
     } catch (parseError) {
       console.error('[Sitemap] Ошибка парсинга local.slug-map.json:', parseError);
     }

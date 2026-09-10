@@ -98,16 +98,20 @@ const customRuntimeCaching = [
   // 1. ПРАВИЛО ДЛЯ АУДИО (ПОДКАСТЫ): Жесткий CacheFirst с поддержкой Range Requests
   {
     urlPattern: /\.(?:mp3|wav|ogg|m4a)(?:\?.*)?$/i,
-    // handler: 'CacheFirst',
-    handler: 'StaleWhileRevalidate',
+    handler: 'CacheFirst',
+    // handler: 'StaleWhileRevalidate',
+    /* NOTE: Чтобы подкасты играли мгновенно с первого клика в инкогнито без зависаний,
+    мы должны перевести .mp3 файлы на единственную поддерживаемую для медиа-потоков
+    стратегию воркера — CacheFirst с обязательным плагином RangeRequestsPlugin.
+    */
     options: {
       cacheName: 'podcast-audio-cache',
       expiration: {
         maxEntries: 10, // Храним максимум 10 последних подкастов
         maxAgeSeconds: 60 * 60 * 24 * 30, // 30 дней
       },
-      // ИСПРАВЛЕНО: Синтаксис плагинов для старых версий Workbox / next-pwa
-      // Мы передаем имя плагина строкой, без обертки в объект { name }, либо массив готовых объектов
+      // ДЕКЛАРАТИВНОЕ РЕШЕНИЕ: Просто передаем объект с именем плагина 'RangeRequests'
+      // Компилятор GenerateSW сам превратит это в рабочий инстанс на этапе билда!
       plugins: [
         {
           // По спецификации Workbox Webpack Plugin, для декларативного описания
@@ -118,7 +122,8 @@ const customRuntimeCaching = [
         }
       ],
       cacheableResponse: {
-        statuses: [0, 200],
+        // ОБЯЗАТЕЛЬНО добавляем статус 206 (Partial Content)
+        statuses: [0, 200, 206],
       },
     },
   },
@@ -145,15 +150,15 @@ const customRuntimeCaching = [
 ]
 
 const nextConfig = {
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/reactive-engine/',
-        permanent: false, // <-- Важно! Это отдаст статус 302
-      },
-    ]
-  },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: '/',
+  //       destination: '/reactive-engine/',
+  //       permanent: false, // <-- Важно! Это отдаст статус 302
+  //     },
+  //   ]
+  // },
   images: {
     // Полное отключение оптимизации на лету, если флаг равен true
     unoptimized: disableImageOptimization,
@@ -172,12 +177,12 @@ const nextConfig = {
   },
   productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
   pwa: {
-    dest: 'public', // NOTE: By default to .next
+    dest: 'public', // Куда физически сложатся файлы
     runtimeCaching: customRuntimeCaching,
     register: true,
-    // Обратите внимание на scope: если ваши подкасты и страницы лежат и на главном руте /, 
-    // scope лучше убрать или поставить '/', чтобы PWA защищал весь сайт целиком
     disable: isDev,
+    // NOTE: Обратите внимание на scope: если ваши подкасты и страницы лежат и на главном руте /, 
+    // scope лучше убрать или поставить '/', чтобы PWA защищал весь сайт целиком
     scope: '/blog/',
     sw: 'service-worker.js',
   },

@@ -9,7 +9,7 @@ const { join } = require('path')
 const isProd = process.env.NODE_ENV === 'production'
 require('dotenv').config({ path: join(__dirname, isProd? './.env.production' : './.env.dev') })
 import { rootSocketLogic } from '~/srv.socket-logic'
-import {  slugMapCacheInstance } from '~/srv.utils/cahce/slug-map/slugMap.cahe'
+import { slugMapCacheInstance } from '~/srv.utils/cahce/slug-map/slugMap.cahe'
 import clsx from 'clsx'
 
 const next = require('next')
@@ -100,19 +100,21 @@ nextApp
 
       res.endTime('express-side-info')
 
-      if (pathname === '/sw.js' || /^\/(workbox|worker|fallback)-\w+\.js$/.test(pathname)) {
-        res.startTime('express-side-info-2', 'Will be intercepted by nextApp.serveStatic')
-        res.endTime('express-side-info-2')
-        const filePath = join(__dirname, '.next', pathname)
-        nextApp.serveStatic(req, res, filePath)
-      } else {
-        res.startTime('express-side-info-3', 'Will be intercepted by nextHanlder')
-        res.endTime('express-side-info-3')
-        return nextHanlder(req, res, parsedUrl)
+      // УМНЫЙ ПЕРЕХВАТ ЗАГОРЛОВКА: Файлы отдаст сам Next.js из папки public, 
+      // но Express подмешает важнейший заголовок авторизации scope!
+      if (pathname === '/service-worker.js' || pathname === '/sw.js') {
+        res.setHeader('Service-Worker-Allowed', '/blog/')
       }
+
+      // Передаем управление стандартному хендлеру Next.js
+      res.startTime('express-side-info-3', 'Will be intercepted by nextHanlder')
+      const result = nextHanlder(req, res, parsedUrl)
+      res.endTime('express-side-info-3')
+      
+      return result
     })
 
-    server.listen(PORT, (err: any) => {
+    server.listen(PORT, (err: unknown) => {
       state.startsCounter += 1
 
       if (err) throw err
@@ -138,9 +140,9 @@ nextApp
         .catch((err) => err)
     })
   })
-  .catch(async (ex: any) => {
+  .catch(async (ex: unknown) => {
     state.errsCounter += 1
-    console.error(ex.stack)
+    console.error((ex as Error).stack)
     const ts = new Date().getTime()
     if (!isDev) await axios
       .post('http://pravosleva.pro/tg-bot-2021/notify/kanban-2021/reminder/send', {
@@ -149,7 +151,7 @@ nextApp
         ts,
         eventCode: 'aux_service',
         about: `\`/frontend.nextjs@${packageJson.version}\`\n⛔ Errored`,
-        targetMD: `\`\`\`json\n${ex.stack}\`\`\``,
+        targetMD: `\`\`\`json\n${(ex as Error).stack}\`\`\``,
       })
       .then((res) => res.data)
       .catch((err) => err)
