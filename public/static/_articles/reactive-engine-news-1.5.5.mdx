@@ -2,9 +2,12 @@
 _id: "6a7f1677f7929b4140542039"
 title: "Reactive Engine: Обзор версии 1.5.5"
 brief: 'JS в действии'
-bg_src: '/static/img/blog/coca-cola.webp'
-bg_size: { w: 1080,h: 1080 }
-bg_type: 'image/webp'
+# bg_src: '/static/img/blog/coca-cola.webp'
+# bg_size: { w: 1080,h: 1080 }
+# bg_type: 'image/webp'
+bg_src: '/static/img/blog/FB_IMG_1789122725718.jpg'
+bg_size: { w: 1904,h: 2538 }
+bg_type: 'image/jpg'
 
 createdAt: "2026-08-14T13:21:59.816Z"
 updatedAt: "2026-08-27T13:45:38.820Z"
@@ -38,7 +41,7 @@ _Добавлю музычки чтоб нескучно было:_
 
 | Фреймворк / Критерий | Вес (Gzip) | Скачиваний в неделю (npm) | Архитектурная модель | Микрозадачный батчинг | Рантайм-линтер | Изоляция инстансов | Порог входа | Зависимость от UI |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **[Reactive Engine](https://github.com/garage-13/reactive-engine)** | **~5.4 kB** | **<100 (Internal Beta)** | **Атомарная Push/Pull (Signals + Proxy)** | **Да (Монолитные транзакции)** | **Да (`__performance_advice__`)** | **Да (`instanceName`)** | **Низкий (UMD-скрипт)** | **Абсолютно независим** |
+| **[Reactive Engine](https://github.com/garage-13/reactive-engine)** | **~5.4 kB** | **\<100 (Internal Beta)** | **Атомарная Push/Pull (Signals + Proxy)** | **Да (Монолитные транзакции)** | **Да (`__performance_advice__`)** | **Да (`instanceName`)** | **Низкий (UMD-скрипт)** | **Абсолютно независим** |
 | **[RxJS v7](https://github.com/reactivex/rxjs)** | ~18.0 kB | ~46 000 000+ | Стримы (Observable Push) | Нет | Нет | Да | Очень высокий | Абсолютно независим |
 | **[Redux Toolkit](https://github.com/reduxjs/redux-toolkit)** | ~11.5 kB | ~10 500 000+ | Монолитно-иммутабельная (Flux) | Нет | Нет | Нет (строго один Store) | Высокий | Независим |
 | **[Zustand](https://github.com/pmndrs/zustand)** | ~1.2 kB | ~5 500 000+ | Плоский синглтон-стейт (Flux-like) | Нет (React-батчинг) | Нет | Ограничено | Средний | Практически независим |
@@ -54,6 +57,8 @@ _Добавлю музычки чтоб нескучно было:_
 > Внутри Vue 3 на самом деле есть глубоко встроенный асинхронный батчинг на микрозадачах (микробатчинг), но он работает строго на слое обновления UI и реакций (`watch` / `nextTick`), а не на слое самих данных.
 
 Колонка скачиваний наглядно демонстрирует рыночную зрелость технологий. Гиганты вроде **RxJS** и **Redux Toolkit** удерживают лидерство за счет огромной легаси-базы. Библиотека **@pravosleva/reactive-engine** при околонулевом весе предоставляет функционал батчинга на уровне **MobX**, атомарность на уровне **Reatom** и встроенный инструмент аудита кода.
+
+![Rhubarbes lab (fb group)](/static/img/blog/FB_IMG_1789122725718.jpg "404 City")
 
 <ControlsBox
   controlsJson='[
