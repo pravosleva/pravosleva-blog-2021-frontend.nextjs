@@ -1,0 +1,362 @@
+---
+title: "SEO: Как правильно запустить индексацию сайта в Yandex (2026)"
+brief: "Практический кейс тотального разгона Web Vitals на стеке: Next.js 11 (Webpack 5), Express, TypeScript, Web API Workers. Рассказываю, как полностью разгрузить основной поток браузера (Main Thread) от тяжелой аналитики Яндекс.Метрики, перенеся отправку хит-пакетов в изолированный **Dedicated Web Worker**. Разбираем физику протокола *Yandex.Metrika Hit HTTP API*, побеждаем блокировки CORS без использования Partytown, сохраняем триггеры мгновенного SEO-обхода страниц роботами YandexBot и создаем снайперский инжектор отладочных скриптов для успешного прохождения проверок в личном кабинете"
+bg_src: "/static/img/blog/FB_IMG_1787608253773.jpg"
+bg_size: { w: 2048, h: 2048 }
+bg_type: "image/jpg"
+
+createdAt: "2026-09-11T12:51:32.523Z"
+updatedAt: "2026-09-11T12:51:32.523Z"
+priority: 4
+
+author: "Den Pol"
+tags: ["nextjs", "yandex", "seo", "performance"]
+category: "guides"
+isPrivate: false
+---
+# Инструкция: Как правильно запустить индексацию сайта в Yandex (2026)
+
+Краткое техническое руководство по выводу бэкенд-приложений (Next.js / Express) в поисковую выдачу Яндекса, прохождению верификации роботов (YandexBot) и мгновенному ускорению индексации.
+
+> Это статья про внутреннее развитие этого сайта
+`robots.txt` — это текстовый файл, который содержит параметры индексирования сайта для роботов поисковых систем. В `robots.txt` можно ограничить индексирование роботами страниц сайта, что может снизить нагрузку на сайт и ускорить его работу.
+
+> [!info] **Примечание**
+>
+> Ограниченные в `robots.txt` страницы могут участвовать в поиске Яндекса. Чтобы удалить страницы из поиска, укажите директиву noindex в HTML-коде страницы или настройте HTTP-заголовок. Не ограничивайте такие страницы в `robots.txt`, чтобы робот Яндекса смог их проиндексировать и обнаружить ваши указания. Подробно см. в разделе [Как удалить страницы из поиска](https://yandex.ru/support/webmaster/ru/yandex-indexing/removing-from-index?lang=ru).
+
+## [Требования](https://yandex.ru/support/webmaster/ru/controlling-robot/robots-txt?lang=ru#requirement) к файлу robots.txt
+
+Роботы Яндекса корректно обрабатывают `robots.txt`, если:
+- Размер файла не превышает 500 КБ.
+- Это TXT-файл с названием robots — robots.txt.
+- Файл размещен в корневом каталоге сайта.
+   * Файл доступен для роботов: Сервер, на котором размещен сайт, отвечает HTTP-кодом состояния `200 OK`.
+   * Файл `robots.txt` перенаправляет на другой `robots.txt`, для которого сервер возвращает код `200 OK`.
+
+| Директива | Что делает |
+| :- | :- |
+| `User‑agent` (*) | Указывает на робота, для которого действуют перечисленные в `robots.txt` правила. |
+| `Disallow` | Запрещает обход разделов или отдельных страниц сайта. |
+| `Sitemap` | Указывает путь к файлу **Sitemap,** который размещен на сайте. |
+| `Clean-param` | Указывает роботу, что URL страницы содержит параметры (например, UTM-метки), которые не нужно учитывать при индексировании. |
+| `Allow` | Разрешает индексирование разделов или отдельных страниц сайта. |
+
+_(*) - Обязательная директива._
+
+Наиболее часто вам могут понадобиться директивы `Disallow`, `Sitemap` и `Clean-param`. Например:
+```text
+User-agent: * #указывает, для каких роботов установлены директивы
+Disallow: /bin/ # запрещает ссылки из "Корзины с товарами".
+Disallow: /search/ # запрещает ссылки страниц встроенного на сайте поиска
+Disallow: /admin/ # запрещает ссылки из панели администратора
+Sitemap: http://example.com/sitemap # указывает роботу на файл Sitemap для сайта
+Clean-param: ref /some_dir/get_book.pl
+```
+
+> [!info] **Примечание**
+>
+> Робот учитывает регистр в написании подстрок (имя или путь до файла, имя робота) и не учитывает регистр в названиях директив.
+
+## Шаг 1. Подготовка эталонной карты сайта `sitemap.xml`
+
+Благодаря исправлению синтаксиса XML-схемы по международному стандарту, ваша карта сайта полностью готова для робота **YandexBot**. Убедитесь, что открывающий тег в `public/sitemap.xml` содержит три полных атрибута:
+
+```xml
+<urlset xmlns="http://sitemaps.org" xmlns:xsi="http://w3.org" xsi:schemaLocation="http://sitemaps.org http://sitemaps.org/sitemap.xsd">
+```
+*Все даты `<lastmod>` должны быть строго в формате `YYYY-MM-DD` без времени и запятых.*
+
+## Шаг 2. Добавление в Яндекс.Вебмастер и верификация через Express
+
+1. Зайдите в [Яндекс.Вебмастер](https://yandex.ru) и добавьте ваш боевой домен `https://pravosleva.pro` (стейдж домен `.ru` добавлять не нужно, он закрыт в robots.txt).
+2. Выберите способ подтверждения **«HTML-файл»** и скопируйте имя файла (например, `yandex_700ec9d3e17fe342.html`).
+3. Создайте этот файл в локальной папке **`public/`** вашего проекта.
+4. На сервере в Express-миддлваре (файл `run.ts`) настройте **изолированный Early Return перехват**, чтобы отдавать файл верификации напрямую из дискового кэша Next.js без оверхеда и лишних бэкенд-метрик:
+
+```ts
+if (pathname === '/yandex_700ec9d3e17fe342.html') {
+  const fileName = pathname.replace(/^\//, '')
+  const filePath = join(process.cwd(), 'public', fileName)
+  return nextApp.serveStatic(req, res, filePath)
+}
+```
+5. Запустите деплой (`yarn build:prod && bash deploy2.sh production`) и нажмите кнопку **«Проверить»** в Вебмастере. Права подтверждены.
+
+## Шаг 3. Передача карты сайта
+
+1. В левом меню Яндекс.Вебмастера перейдите в раздел **«Настройка индексирования» 👉 «Файлы Sitemap»**.
+2. Вставьте прямую ссылку: `https://pravosleva.pro` и нажмите **«Добавить»**.
+3. Файл уйдет в очередь на обход и будет полностью обработан роботом в течение 1–3 дней.
+
+## Шаг 4. Включение мгновенного обхода через **Яндекс.Метрику**
+
+В отличие от Google, Яндекс умеет отправлять робота на страницы сайта мгновенно, используя данные счетчика веб-аналитики.
+
+1. Зайдите в личный кабинет **Яндекс.Метрики** в настройки вашего счетчика.
+2. Перейдите в раздел **«Настройка» 👉 вкладка «Дополнительно»**.
+3. Включите чекбокс **«Обход страниц роботом Яндекса»** и сохраните изменения.
+4. Вернитесь в Яндекс.Вебмастер в раздел **«Настройки» 👉 «Счетчики Метрики»** и привяжите данный счетчик к вашему сайту.
+
+**Результат:** Как только вы опубликуете новую `.mdx` статью и сами откроете её в браузере (или её откроет первый читатель), счетчик Метрики мгновенно стриггерит YandexBot. Робот прилетит и проиндексирует страницу за считанные часы, не дожидаясь планового планового сканирования XML-карты.
+
+# 📁 Оптимизация Web Vitals: Перенос Яндекс.Метрики в изолированный Web Worker на Next.js (Webpack 5)
+
+Стандартные счетчики аналитики (включая Яндекс.Метрику) инициализируются в основном потоке браузера (Main Thread). Скрипт `tag.js` весит прилично, активно парсит DOM-дерево, отслеживает координаты мыши для Вебвизора и совершает тяжелые математические расчеты. Это приводит к значительному ухудшению метрик **TBT (Total Blocking Time)** и **INP (Interaction to Next Paint)** в Google Lighthouse, снижая краулинговый бюджет сайта.
+
+В этом руководстве описан процесс полной изоляции Яндекс.Метрики: вынос логики трекинга во второй поток процессора (**Dedicated Web Worker**), чистая отправка пакетов через **HTTP Hit API** без скачивания внешних JS-библиотек, обход CORS-блокировок и сохранение диагностических инструментов для роботов Яндекса.
+
+## Архитектура системы (Сплит-потоки аналитики)
+
+Вместо использования громоздких прокси-библиотек вроде Partytown, мы расширили существующий в проекте паттерн изолированных трекеров. Система разделена на три независимых слоя:
+1. **Клиентский React-мост (`_app.tsx`)**: собирает легкие метаданные окружения (разрешение экрана, язык, реферер) и шлет их через `postMessage` в фоновые потоки.
+2. **`analytics-worker.js`**: изолированный поток для трекинга Google Analytics 4.
+3. **`analytics-worker.yandex.js`**: изолированный поток, общающийся напрямую с HTTP-шлюзом Яндекс.Метрики.
+
+## Шаг 1. Реализация изолированного воркера Яндекс.Метрики
+
+Создаем файл по адресу `public/static/analytics/analytics-worker.yandex.js`. Воркер принимает события просмотров страниц, формирует валидный упакованный пакет метаданных `browser-info` и выполняет чистый `fetch` без кастомных заголовков (имитируя классический пиксель-картинку).
+
+`public/static/common/src/analytics/analytics-worker.yandex.js`
+
+> В проекте настроена минификация при сборке: `public/static/common/src/*` 👉 `public/static/common/min/*`
+
+```javascript
+let currentYandexId = null;
+
+self.onmessage = function(event) {
+  const { type, payload } = event.data || {};
+
+  switch (type) {
+    case 'init':
+      if (payload && payload.yandexId) {
+        currentYandexId = payload.yandexId;
+        console.log(`📻 [Yandex Worker]: Успешно инициализирован для ID: ${currentYandexId}`);
+      }
+      break;
+
+    case 'track_pageview':
+      if (currentYandexId && payload) {
+        sendYandexHit({
+          yandexId: currentYandexId,
+          url: payload.url,
+          referrer: payload.referrer,
+          title: payload.title,
+          screenResolution: payload.screenResolution,
+          userLanguage: payload.userLanguage
+        });
+      }
+      break;
+
+    default:
+      break;
+  }
+};
+
+function sendYandexHit(data) {
+  try {
+    // Формируем эталонную строку метаданных браузера
+    // ar:1 -> Авторизованное действие (Критично! Сигнал роботу YandexBot для мгновенного SEO-обхода страниц)
+    // v:265 -> Версия протокола ядра Метрики
+    const timestamp = Math.floor(Date.now() / 1000);
+    const browserInfo = `ar:1:v:265:la:${data.userLanguage || 'ru'}:s:${data.screenResolution || '1920x1080x24'}:st:${timestamp}`;
+    const __url = [
+      'https://mc.yandex.ru',
+      'watch',
+      data.yandexId,
+    ].join('/')
+    const url = new URL(__url);
+    
+    // Наполняем Query-параметры согласно HTTP-протоколу Яндекса
+    url.searchParams.set('page-url', data.url);
+    url.searchParams.set('page-ref', data.referrer || '');
+    url.searchParams.set('browser-info', browserInfo);
+    url.searchParams.set('t', data.title || '');
+    url.searchParams.set('rn', Math.floor(Math.random() * 1000000000));
+
+    // Важно: Отправляем чистый fetch без кастомных заголовков Headers.
+    // Это исключает preflight OPTIONS-запросы и полностью обходит блокировки CORS.
+    fetch(url.toString(), { method: 'GET' })
+      .then(() => console.log('✅ [Yandex Worker]: Хит Метрики успешно доставлен.'))
+      .catch(err => console.error('❌ [Yandex Worker]: Ошибка сети (CORS/Блокировщик):', err.message));
+  } catch (e) {
+    console.error('❌ [Yandex Worker]: Ошибка сборки пакета:', e);
+  }
+}
+```
+
+## Шаг 2. Интеграция распределительного моста в `pages/_app.tsx`
+
+Модифицируем главный файл приложения Next.js. Мы поднимаем оба воркера параллельно, обогащаем `payload` данными экрана, языка и реферера, а также добавляем **снайперский диагностический инжектор**. Он будет подгружать официальный `tag.js` в Main Thread *исключительно* тогда, когда вы или автоматический робот Яндекса перейдете по служебным ссылкам верификации статуса.
+
+`pages/_app.tsx`
+
+```tsx
+import React, { useEffect, useRef } from 'react'
+import { metrics } from '~/constants'
+
+function AppWithRedux(props: MyAppProps) {
+  const { Component, pageProps } = props;
+  const router = useRouter()
+  const workerRef = useRef<Worker | null>(null);
+  const yandexWorkerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    const GA_ID = metrics.GA_TRACKING_ID;
+    const YANDEX_ID = metrics.YANDEX_COUNTER_ID || '112502329';
+    
+    if (process.env.NODE_ENV !== 'production' || typeof window === 'undefined') return;
+
+    // 1. Инициализируем фоновые потоки
+    const gaWorker = new Worker(`/static/common/min/analytics/metrics-worker.google.js?t=${Date.now()}`);
+    workerRef.current = gaWorker;
+    gaWorker.postMessage({ type: 'init', payload: { gaId: GA_ID, gaApiSecret: 'changeit', isDebug: false } });
+
+    const yandexWorker = new Worker(`/static/common/min/analytics/metrics-worker.yandex.js?t=${Date.now()}`);
+    yandexWorkerRef.current = yandexWorker;
+    yandexWorker.postMessage({ type: 'init', payload: { yandexId: YANDEX_ID } });
+
+    let clientId = localStorage.getItem('blog_ga_client_id');
+    if (!clientId) {
+      clientId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem('blog_ga_client_id', clientId);
+    }
+
+    // Метод динамического сбора параметров окружения
+    const getBrowserPayload = (url: string) => {
+      const screenRes = `${window.screen.width}x${window.screen.height}x${window.screen.colorDepth}`;
+      const userLang = (window.navigator.language || (window.navigator as any).userLanguage || 'ru').toLowerCase().split('-')[0];
+      return {
+        url: window.location.origin + url,
+        title: window.document.title,
+        referrer: window.document.referrer,
+        screenResolution: screenRes,
+        userLanguage: userLang,
+        clientId
+      };
+    };
+
+    // 2. Распределительный мост событий
+    const handleAnalyticsEvent = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const { type, payload } = customEvent.detail || {};
+
+      if (type === 'pageview') {
+        const browserPayload = getBrowserPayload(payload.url);
+        if (gaWorker) gaWorker.postMessage({ type: 'track_pageview', payload: browserPayload });
+        if (yandexWorker) yandexWorker.postMessage({ type: 'track_pageview', payload: browserPayload });
+      }
+
+      if (type === 'event' && gaWorker) {
+        gaWorker.postMessage({
+          type: 'track_event',
+          payload: { action: payload.action, params: payload.params, clientId }
+        });
+      }
+    };
+    window.addEventListener('blog_analytics_event', handleAnalyticsEvent);
+
+    // Первичный трекинг холодного старта и SPA роутинга
+    pageview(window.location.pathname);
+    const handleRouteChange = (url: string) => setTimeout(() => pageview(url), 70);
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    // NOTE: ИНЖЕКТОР ДИАГНОСТИКИ (0ms Main Thread Overhead):
+    // Позволяет успешно проходить проверки Яндекс.Вебмастера и кабинета Метрики.
+    // Внедряет tag.js строго при наличии служебных query-параметров.
+    const urlParams = new URLSearchParams(window.location.search);
+    const isYandexDebug = urlParams.get('_ym_debug') === '2' || urlParams.get('_ym_debug') === '1';
+    const isYandexStatusCheck = urlParams.get('_ym_status-check') === String(YANDEX_ID);
+
+    let yandexScript: HTMLScriptElement | null = null;
+
+    // NOTE: Включаем нативный тег, если сработал ХОТЬ ОДИН из диагностических параметров Яндекса
+    if ((isYandexDebug || isYandexStatusCheck) && !!window) {
+      // 1. Создаем официальный тег скрипта Яндекса на лету
+      yandexScript = window.document.createElement('script');
+      yandexScript.type = 'text/javascript';
+      yandexScript.async = true;
+      yandexScript.src = ['https://mc.yandex.ru', 'metrika', 'tag.js'].join('/');
+      
+      // 2. Инициализируем его в браузере
+      window.ym = window.ym || function() { 
+        if (window.ym) {
+          window.ym.a = window.ym.a || [];
+          window.ym.a.push(arguments);
+        }
+      };
+      window.ym.l = Date.now();
+      window.ym(YANDEX_COUNTER_ID, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true });
+
+      window.document.head.appendChild(yandexScript);
+      console.log('📻 [Yandex Debug Mode]: Официальный tag.js временно внедрен в Main Thread для проверки кабинета.');
+    }
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+      window.removeEventListener('blog_analytics_event', handleAnalyticsEvent);
+      if (gaWorker) gaWorker.terminate();
+      if (yandexWorker) yandexWorker.terminate();
+      if (yandexScript && window.document.head.contains(yandexScript)) {
+        window.document.head.removeChild(yandexScript);
+      }
+    };
+  }, [router.events, router.query]);
+```
+
+## Шаг 3. Безупречная типизация в `types.d.ts`
+
+Чтобы расширить интерфейс глобального объекта `Window` без падений линтера и синтаксических ошибок `Property or signature expected`, используем паттерн **Гибридного типа** (Hybrid Type) внутри существующего файла определений `types.d.ts`:
+
+`types.d.ts`
+
+<CodeComparison 
+  hideInputs={true}
+  language='js'
+  oldCodeBase64="Ly8gMS4g0J7QsdGK0Y/QstC70Y/QtdC8INC00LjQutGD0Y4g0LrQsNGA0YLRgyAod2lsZGNhcmQpINC00LvRjyBDU1Mg0LzQvtC00YPQu9C10Lkg0Lggc2lkZS1lZmZlY3Qg0LjQvNC/0L7RgNGC0L7QsgpkZWNsYXJlIG1vZHVsZSAnKi5jc3MnIHsKICBjb25zdCBjb250ZW50OiB7IFtjbGFzc05hbWU6IHN0cmluZ106IHN0cmluZyB9OwogIGV4cG9ydCBkZWZhdWx0IGNvbnRlbnQ7Cn0="
+  newCodeBase64="Ly8gMS4g0J7QsdGK0Y/QstC70Y/QtdC8INC00LjQutGD0Y4g0LrQsNGA0YLRgyAod2lsZGNhcmQpINC00LvRjyBDU1Mg0LzQvtC00YPQu9C10Lkg0Lggc2lkZS1lZmZlY3Qg0LjQvNC/0L7RgNGC0L7QsgpkZWNsYXJlIG1vZHVsZSAnKi5jc3MnIHsKICBjb25zdCBjb250ZW50OiB7IFtjbGFzc05hbWU6IHN0cmluZ106IHN0cmluZyB9OwogIGV4cG9ydCBkZWZhdWx0IGNvbnRlbnQ7Cn0KCi8vIDIuINCg0LDRgdGI0LjRgNGP0LXQvCDQs9C70L7QsdCw0LvRjNC90YvQuSDQuNC90YLQtdGA0YTQtdC50YEgV2luZG93INC00LvRjyDQu9C10L3QuNCy0L7QuSDQvtGC0LvQsNC00LrQuCDQr9C90LTQtdC60YEu0JzQtdGC0YDQuNC60LgKLy8g0JjRgdC/0L7Qu9GM0LfRg9C10Lwg0LPQu9C+0LHQsNC70YzQvdC+0LUg0L/RgNC+0YHRgtGA0LDQvdGB0YLQstC+INC40LzQtdC9LCDRh9GC0L7QsdGLINGC0LjQv9GLINCx0YvQu9C4INC00L7RgdGC0YPQv9C90Ysg0LLQviDQstGB0LXRhSDQutC+0LzQv9C+0L3QtdC90YLQsNGFCmludGVyZmFjZSBXaW5kb3cgewogIHltPzogewogICAgKC4uLmFyZ3M6IGFueVtdKTogdm9pZDsKICAgIGE/OiBhbnlbXTsKICAgIGw/OiBudW1iZXI7CiAgfTsKfQ=="
+/>
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="Яндекс.Метрика"
+text="**[Посетители](https://metrika.yandex.ru/stat/order_management?id=112502329&period=week&group=day&isMinSamplingEnabled=false&currency=RUB&attr=%7B%22attributionId%22%3A%22LastSign%22%2C%22isCrossDevice%22%3Atrue%7D&isUndefinedEnabled=false)**
+&nbsp;
+**[Условия использования сервиса Яндекс Метрика и AppMetrica](https://yandex.ru/legal/metrica_termsofuse/ru/)**"
+/>
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="Яндекс.Вебмастер"
+text="**[Оптимизация | Диагностика](https://webmaster.yandex.ru/site/https:pravosleva.pro:443/optimization/checklist/)**
+&nbsp;
+**[Эфф. | Статистика запросов](https://webmaster.yandex.ru/site/https:pravosleva.pro:443/efficiency/statistics/?deviceType=ALL_DEVICES&dateTo=2026-09-09T00%3A00%3A00%2B03%3A00&dateFrom=2026-08-09T00%3A00%3A00%2B03%3A00&period=DAY&searchLocation=ALL_LOCATIONS_ORGANIC)**
+&nbsp;
+**[Индексирование | Структура сайта](https://webmaster.yandex.ru/site/https:pravosleva.pro:443/indexing/sitetree/)**
+&nbsp;
+**[Инструменты | Анализ файлов Sitemap](https://webmaster.yandex.ru/site/https:pravosleva.pro:443/tools/sitemap/?tab=url)**
+&nbsp;
+**[Представление в поиске | Отзывы и рейтинг в поиске](https://webmaster.yandex.ru/site/https:pravosleva.pro:443/serp-snippets/reviews-in-search/?orderBy=FRESH_REVIEW_COUNT&orderDirection=desc)**"
+/>
+
+# Результаты оптимизации
+1. **Lighthouse Performance:** Тяжелый сторонний код Метрики полностью изолирован. Основной поток свободен для рендеринга UI компонентов и скриптов подкастов.
+2. **Автоматический SEO-краулинг запущен:** Благодаря передаче `ar:1`, шлюз Яндекса мгновенно распознает SPA переходы и отправляет роботов-обходчиков YandexBot индексировать новые `.mdx` статьи за считанные часы.
+3. **Пройдена официальная проверка статуса счетчика:** При переходах робота по ссылкам верификации вида `?_ym_status-check=112502329&_ym_lang=ru`, Next.js на лету поднимает отладочный модуль, рисует на экране плашку Метрики и успешно переводит статус счетчика в личном кабинете в зеленую зону.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "С чего все началось | Архитектурный разбор PWA: Разгон аудио-стриминга и магия CacheFirst в Next.js",
+      "type": "link",
+      "link": "/p/pravosleva-blog-0-1-pwa-settings"
+    },
+    {
+      "title": "START_NEW_TAB",
+      "label": "SEO: Как правильно запустить индексацию сайта в Google (2026)",
+      "type": "link",
+      "link": "/p/_no-index.pravosleva-blog-0-1-seo-google-2026"
+    }
+  ]'
+/>

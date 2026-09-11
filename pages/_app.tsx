@@ -49,22 +49,7 @@ function AppWithRedux(props: MyAppProps) {
 
   const router = useRouter()
 
-  // useEffect(() => {
-  //   const handleRouteChange = (url: string) => {
-  //     pageview(url)
-  //   }
-  //   // When the component is mounted, subscribe to router changes
-  //   // and log those page views
-  //   router.events.on('routeChangeComplete', handleRouteChange)
-
-  //   // If the component is unmounted, unsubscribe
-  //   // from the event with the `off` method
-  //   return () => {
-  //     router.events.off('routeChangeComplete', handleRouteChange)
-  //   }
-  // }, [router.events])
-
-  // -- NOTE: Optimization
+  // -- NOTE: Optimization exp
   useEffect(() => {
     // Находим на клиенте тег со стилями, который прилетел с сервера
     const jssStyles = document.querySelector('#jss-server-side');
@@ -75,86 +60,163 @@ function AppWithRedux(props: MyAppProps) {
   }, []);
   // --
 
-
-  // -- NOTE: Вариант Б. Честный изолированный Web Worker (Для отправки кастомных ивентов)
-  const workerRef = useRef<Worker | null>(null);
+  // -- NOTE: Web Worker (Для отправки кастомных ивентов)
   useEffect(() => {
     const GA_ID = metrics.GA_TRACKING_ID;
-    if (process.env.NODE_ENV !== 'production' || !GA_ID || typeof window === 'undefined') return;
+    const YANDEX_COUNTER_ID = metrics.YANDEX_COUNTER_ID;
+    if (process.env.NODE_ENV !== 'production' || !GA_ID || typeof window === 'undefined' || process.env.NEXT_METRICS_ENABLED !== '1') return;
 
-    // 1. Поднимаем Web Worker
-    const worker = new Worker(`/static/analytics/analytics-worker.js?t=${Date.now()}`);
-    workerRef.current = worker;
+    // 1. Инициализируем ссылки под два независимых воркера
+    let gaWorker: Worker | null = null;
+    let yandexWorker: Worker | null = null;
 
-    // Генерируем или восстанавливаем clientId сессии
+    try {
+      // Google Analytics 4
+      gaWorker = new Worker(`/static/common/min/analytics/metrics-worker.google.js?t=${Date.now()}`);
+      gaWorker.postMessage({ 
+        type: 'init', 
+        payload: { gaId: GA_ID, gaApiSecret: GA_API_SECRET, isDebug: false } 
+      });
+    } catch (e) {
+      console.error('❌ Не удалось запустить Google Analytics Worker:', e);
+    }
+
+    try {
+      // Поднимаем новый выделенный воркер Яндекс.Метрики
+      yandexWorker = new Worker(`/static/common/min/analytics/metrics-worker.yandex.js?t=${Date.now()}`);
+      yandexWorker.postMessage({ 
+        type: 'init', 
+        payload: { yandexId: YANDEX_COUNTER_ID } 
+      });
+    } catch (e) {
+      console.error('❌ Не удалось запустить Yandex Metrika Worker:', e);
+    }
+
+    // Восстанавливаем или создаем clientId для GA сессии
     let clientId = localStorage.getItem('blog_ga_client_id');
     if (!clientId) {
       clientId = Math.random().toString(36).substring(2) + Date.now().toString(36);
       localStorage.setItem('blog_ga_client_id', clientId);
     }
 
-    const isDebugMode = new URLSearchParams(window.location.search).get('ga4_debug') === '1';
+    // Сборщик системных параметров для Яндекса
+    const getBrowserPayload = (url: string) => {
+      const screenRes = typeof window !== 'undefined' ? `${window.screen.width}x${window.screen.height}x${window.screen.colorDepth}` : '1920x1080x24';
+      const userLang = typeof window !== 'undefined' ? (window.navigator.language || (window.navigator as any).userLanguage || 'ru').toLowerCase().split('-') : 'ru';
+      const referrer = typeof window !== 'undefined' ? window.document.referrer : '';
+      const title = typeof window !== 'undefined' ? window.document.title : '';
 
-    // 2. Инициализируем воркер токеном
-    worker.postMessage({ type: 'init', payload: { gaId: GA_ID, gaApiSecret: GA_API_SECRET, isDebug: isDebugMode } });
+      return {
+        url: window.location.origin + url,
+        title,
+        referrer,
+        screenResolution: screenRes,
+        userLanguage: userLang,
+        clientId
+      };
+    };
 
-    // ЦЕНТРАЛЬНЫЙ МОСТ: Ловим кастомные события из утилиты и шлем их в Worker
+    // 2. РАСПРЕДЕЛИТЕЛЬНЫЙ МОСТ: Прокидываем события по нужным воркерам
     const handleAnalyticsEvent = (e: Event) => {
       const customEvent = e as CustomEvent;
       const { type, payload } = customEvent.detail || {};
 
       if (type === 'pageview') {
-        worker.postMessage({
-          type: 'track_pageview',
-          // Добавляем title в payload для воркера
-          payload: { url: payload.url, title: payload.title, clientId } 
-        });
+        const browserPayload = getBrowserPayload(payload.url);
+        
+        // Шлем просмотр страницы в GA
+        if (gaWorker) {
+          gaWorker.postMessage({ type: 'track_pageview', payload: browserPayload });
+        }
+        // Шлем просмотр страницы в Яндекс
+        if (yandexWorker) {
+          yandexWorker.postMessage({ type: 'track_pageview', payload: browserPayload });
+        }
       }
 
       if (type === 'event') {
-        worker.postMessage({
-          type: 'track_event',
-          payload: { action: payload.action, params: payload.params, clientId }
-        });
+        // Кастомные клики и ивенты отправляем в GA воркер
+        if (gaWorker) {
+          gaWorker.postMessage({
+            type: 'track_event',
+            payload: { action: payload.action, params: payload.params, clientId }
+          });
+        }
       }
     };
     window.addEventListener('blog_analytics_event', handleAnalyticsEvent);
 
-    // 3. Логируем первый просмотр страницы при холодном старте
+    // Первичный запуск при холодном старте
     pageview(window.location.pathname);
 
-    // 4. Логируем просмотры при SPA-переходах Next.js
+    // Отслеживание SPA переходов Next.js
     const handleRouteChange = (url: string) => {
-      // В SPA-переходах query параметр может сохраниться или исчезнуть. 
-      // Если вам нужно динамически обновлять флаг дебага при переходах, 
-      // раскомментируйте строку ниже для повторной отправки флага в воркер:
-      const updatedDebug = new URLSearchParams(window.location.search).get('ga4_debug') === '1';
-      worker.postMessage({ type: 'update_debug', payload: { isDebug: updatedDebug } });
-      
-      // Небольшой таймаут дает Next.js (Head/NextSeo) время обновить document.title в DOM
-      setTimeout(() => pageview(url), 50);
+      setTimeout(() => pageview(url), 70);
     };
-
     router.events.on('routeChangeComplete', handleRouteChange);
 
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
       window.removeEventListener('blog_analytics_event', handleAnalyticsEvent);
-      worker.terminate();
-      workerRef.current = null;
+      
+      if (gaWorker) gaWorker.terminate();
+      if (yandexWorker) yandexWorker.terminate();
     };
   }, [router.events]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || process.env.NEXT_METRICS_ENABLED !== '1') return;
+
+    const YANDEX_COUNTER_ID = metrics.YANDEX_COUNTER_ID;
+
+    // Вытаскиваем параметры из строки запроса
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Проверяем первый отладочный флаг (?_ym_debug=1 или 2)
+    const isYandexDebug = urlParams.get('_ym_debug') === '2' || urlParams.get('_ym_debug') === '1';
+    
+    // Проверяем второй флаг проверки статуса (?_ym_status-check=your-counter-id)
+    const isYandexStatusCheck = urlParams.get('_ym_status-check') === String(YANDEX_COUNTER_ID);
+
+    let yandexScript: HTMLScriptElement | null = null;
+
+    // NOTE: Включаем нативный тег, если сработал ХОТЬ ОДИН из диагностических параметров Яндекса
+    if ((isYandexDebug || isYandexStatusCheck) && !!window) {
+      // 1. Создаем официальный тег скрипта Яндекса на лету
+      yandexScript = window.document.createElement('script');
+      yandexScript.type = 'text/javascript';
+      yandexScript.async = true;
+      yandexScript.src = ['https://mc.yandex.ru', 'metrika', 'tag.js'].join('/');
+      
+      // 2. Инициализируем его в браузере
+      window.ym = window.ym || function() { 
+        if (window.ym) {
+          window.ym.a = window.ym.a || [];
+          window.ym.a.push(arguments);
+        }
+      };
+      window.ym.l = Date.now();
+      window.ym(YANDEX_COUNTER_ID, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true });
+
+      window.document.head.appendChild(yandexScript);
+      console.log('📻 [Yandex Debug Mode]: Официальный tag.js временно внедрен в Main Thread для проверки кабинета.');
+    }
+
+    return () => {
+      if (yandexScript && window.document.head.contains(yandexScript)) {
+        window.document.head.removeChild(yandexScript);
+      }
+    };
+  }, [router.query]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     // ... ваш старый рабочий код воркера аналитики без изменений ...
 
-    /* =========================================================================
-      СНАЙПЕРСКИЙ КЛИЕНТСКИЙ ИНЖЕКТОР (ZERO LIGHTHOUSE OVERHEAD):
-      Eruda больше никогда не запустится автоматически для роботов Lighthouse и пользователей.
-      Скрипт активируется строго по секретному query-параметру ?eruda_debug=1.
-      ========================================================================= */
+    // NOTE: КЛИЕНТСКИЙ ИНЖЕКТОР (ZERO LIGHTHOUSE OVERHEAD):
+    // Eruda больше никогда не запустится автоматически для роботов Lighthouse и пользователей.
+    // Скрипт активируется строго по секретному query-параметру ?eruda_debug=1.
     const urlParams = new URLSearchParams(window.location.search);
     const isDebugMode = urlParams.get('eruda_debug') === '1';
 
@@ -170,7 +232,7 @@ function AppWithRedux(props: MyAppProps) {
 
     // Очистка ресурсов при размонтировании приложения
     return () => {
-      // ... ваша старая очистка роутера аналитики ...
+      // ...старая очистка роутера аналитики (вынесена в отдельный эффект)
       if (erudaWrapper && window.document.body.contains(erudaWrapper)) {
         window.document.body.removeChild(erudaWrapper);
       }

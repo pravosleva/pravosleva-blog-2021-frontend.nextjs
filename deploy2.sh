@@ -57,7 +57,7 @@ REMOTE_ROOT=$(read_env BASH_REMOTE_ROOT .env."$1")
 # - Формируем динамические пути на основе прочитанного
 deploy_path_build_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/.next"
 deploy_path_public_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/public"
-#deploy_path_server_dist_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/server.dist"
+deploy_path_server_dist_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/server.dist"
 #deploy_path_node_modules_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/node_modules"
 #deploy_path_config_file="${DEPLOY_HOST}:${REMOTE_ROOT}/next.config.js"
 #deploy_path_package_json_file="${DEPLOY_HOST}:${REMOTE_ROOT}/package.json"
@@ -73,7 +73,7 @@ rsync -av --delete \
 echo '-- 🚀 SOURCE DIRECTORIES EXCLUDED SUCCESSFULLY' &&
 # -/
 # - Others
-#rsync -av --delete server.dist/ $deploy_path_server_dist_dir &&
+rsync -av --delete server.dist/ $deploy_path_server_dist_dir &&
 #rsync -av --delete node_modules/ $deploy_path_node_modules_dir &&
 # -/
 # - Явное копирвание конфигов и прочего вспомогательного

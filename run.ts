@@ -88,26 +88,41 @@ nextApp
       next()
     })
     expressApp.use('/express-next-api', api)
-    expressApp.use('/e-api', api)
+    // expressApp.use('/e-api', api)
 
     expressApp.all('*', (req: IRequest, res: IResponse) => {
+      const parsedUrl = parse(req.url, true)
+      const { pathname } = parsedUrl
+
+      // -- Special for Yandex: 
+      // NOTE: Перехват для верификации Яндекса и Гугла:
+      // Принудительно читаем файл из физической папки public/ на сервере 
+      // и отдаем его через служебный метод serveStatic в обход роутера страниц Next.js
+      if (pathname === '/yandex_700ec9d3e17fe342.html' || (pathname && pathname.startsWith('/google') && pathname.endsWith('.html'))) {
+        const fileName = pathname.replace(/^\//, '')
+        // NOTE: Вычисляем путь относительно __dirname скомпилированного run.js (выходим на уровень вверх)
+        const filePath = join(__dirname, '..', 'public', fileName)
+        res.startTime('express-verification-proxy', `Serving verification HTML from public folder for pathname=${pathname} | filePath=${filePath}`)
+        console.log(`📡 [Verification MW] Папка: ${pathname} | Абсолютный путь на диске: ${filePath}`)
+        res.endTime('express-verification-proxy')
+        return nextApp.serveStatic(req, res, filePath)
+      }
+      // --
+
       res.startTime('express-side-info', 'INFO: Was intercepted by express')
       req.io = enhancedIO
       // req.crossDeviceState = crossDeviceState
 
-      const parsedUrl = parse(req.url, true)
-      const { pathname } = parsedUrl
-
       res.endTime('express-side-info')
 
-      // УМНЫЙ ПЕРЕХВАТ ЗАГОРЛОВКА: Файлы отдаст сам Next.js из папки public, 
+      // NOTE: Перехват заголовка - Файлы отдаст сам Next.js из папки /public, 
       // но Express подмешает важнейший заголовок авторизации scope!
       if (pathname === '/service-worker.js' || pathname === '/sw.js') {
         res.setHeader('Service-Worker-Allowed', '/blog/')
       }
 
       // Передаем управление стандартному хендлеру Next.js
-      res.startTime('express-side-info-3', 'Will be intercepted by nextHanlder')
+      res.startTime('express-side-info-3', `Will be intercepted by nextHanlder fro pathname=${pathname}`)
       const result = nextHanlder(req, res, parsedUrl)
       res.endTime('express-side-info-3')
       
