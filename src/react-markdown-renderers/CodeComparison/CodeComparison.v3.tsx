@@ -254,7 +254,7 @@ export const CodeComparison = ({ oldCodeBase64, newCodeBase64, oldCodeRaw, newCo
     <Container className='code-comparison'>
       <Header>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>💻 Code Comparison</span>
+          <span>Code</span>
           {isProcessing && <span style={{ color: '#ff9e3b', fontSize: '11px' }}>⚡ Расчет...</span>}
         </div>
         <ToggleButtonGroup>
