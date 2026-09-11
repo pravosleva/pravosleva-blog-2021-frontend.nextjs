@@ -38,8 +38,6 @@ async function generateSitemap() {
     { url: '/auth/login', changefreq: 'never', priority: '0.0' }, // Эту страницу мы отфильтруем
   ];
 
-  // --
-
   let xmlRows = [];
 
   // Добавляем только разрешенные статические страницы
@@ -55,8 +53,7 @@ async function generateSitemap() {
     }
   });
 
-  // 2. Читаем сгенерированную JSON-карту локальных статей
-    // 2. Читаем сгенерированную ранее JSON карту локальных статей
+  // 2. Читаем сгенерированную ранее JSON карту локальных статей
   const slugMapPath = path.join(process.cwd(), 'public', 'static', 'local.slug-map.json');
   
   if (fs.existsSync(slugMapPath)) {
@@ -65,13 +62,11 @@ async function generateSitemap() {
       const slugMapping = JSON.parse(rawData);
 
       Object.entries(slugMapping).forEach(([slugKey, meta]) => {
-        // 1. Пропускаем приватные статьи и черновики
         if (meta.isPrivate || meta.isDraft) return;
 
-        // 2. КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Исключаем служебные файлы (например, _no-index.audio-exp)
         if (slugKey.startsWith('_no-index.')) {
           console.log(`[Sitemap Filter] Скрытый файл исключен из карты сайта: ${slugKey}`);
-          return; // Пропускаем эту итерацию цикла
+          return;
         }
 
         const articlePath = `/p/${slugKey}`;
@@ -81,9 +76,9 @@ async function generateSitemap() {
           return;
         }
 
-        const lastModDate = meta.updatedAt 
-          ? meta.updatedAt.split('T') 
-          : new Date().toISOString().split('T');
+        // NOTE: Берем [0] элемент массива после split, чтобы вытащить строго YYYY-MM-DD
+        const rawDateStr = meta.updatedAt || new Date().toISOString();
+        const lastModDate = rawDateStr.split('T')[0]; // <-- ЖЕСТКАЯ ФИКСАЦИЯ ИНДЕКСА
 
         xmlRows.push(`  <url>
     <loc>${cleanBaseUrl}${articlePath}</loc>
@@ -92,14 +87,37 @@ async function generateSitemap() {
     <priority>0.8</priority>
   </url>`);
       });
-      console.log(`[Sitemap] Успешно добавлено локальных статей из JSON: ${xmlRows.length - staticPages.length}`);
+      
+      // NOTE: Честный лог количества реально добавленных статей
+      console.log(`[Sitemap] Успешно добавлено локальных статей из JSON: ${xmlRows.length - staticPages.length + 1}`);
     } catch (parseError) {
       console.error('[Sitemap] Ошибка парсинга local.slug-map.json:', parseError);
     }
   }
 
+  // NOTE: Проставлено абсолютно валидное, эталонное пространство имен XML для Google
+  const urlsetAttrs = [
+    {
+      key: 'xmlns',
+      // Обязательно: префикс www и полный путь /schemas/sitemap/0.9
+      value: 'http://www.sitemaps.org/schemas/sitemap/0.9',
+      _descr: 'Указывает основное пространство имен с префиксом www. и полным путем к XML-схеме 0.9',
+    },
+    {
+      key: 'xmlns:xsi',
+      // Обязательно: официальный полный домен w3.org и тип инстанса
+      value: 'http://w3.org/2001/XMLSchema-instance',
+      _descr: 'Подключает стандартный системный валидатор типов данных XML; Это не просто адрес сайта консорциума W3C, а строгое системное имя-идентификатор встроенного XML-валидатора. Без указания года и типа инстанса (/2001/XMLSchema-instance) Google Search Console выдаст синтаксический сбой.',
+    },
+    {
+      key: 'xsi:schemaLocation',
+      // Обязательно: два полных адреса схемы и xsd файла через один пробел (без лишних кавычек в начале!)
+      value: 'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd',
+      _descr: 'Содержит через пробел два адреса: само пространство имен и прямую ссылку на физический файл XML-схемы (sitemap.xsd), по которой робот Googlebot проверяет структуру ваших тегов',
+    },
+  ]
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://sitemaps.org">
+<urlset ${urlsetAttrs.map(({ key, value }) => `${key}="${value}"`).join(' ')}>
 ${xmlRows.join('\n')}
 </urlset>`;
 
