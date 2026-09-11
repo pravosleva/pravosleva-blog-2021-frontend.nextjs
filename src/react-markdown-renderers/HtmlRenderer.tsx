@@ -17,9 +17,15 @@ const DynamicEdnaExp = dynamic(
 )
 import dynamic from 'next/dynamic'
 import { CodeComparison } from './CodeComparison'
+import { PWACacheManager } from './PWACacheManager'
 
 const DynamicAlert = dynamic(
   () => import('~/react-markdown-renderers/Alert/Alert.v4').then(mod => mod.Alert),
+  { ssr: true }
+)
+
+const DynamicPWACacheManager = dynamic(
+  () => import('~/react-markdown-renderers/PWACacheManager/PWACacheManager').then(mod => mod.PWACacheManager),
   { ssr: true }
 )
 
@@ -90,6 +96,7 @@ const componentTransforms = {
     </ErrorBoundary>
   ),
   Podcast: (props: any) => <Podcast {...props} />,
+  PWACacheManager: () => <DynamicPWACacheManager />,
   EdnaExp: DynamicEdnaExp,
 }
 
