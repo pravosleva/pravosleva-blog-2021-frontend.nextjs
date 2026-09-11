@@ -2,8 +2,11 @@
 #_id: ""
 title: "PWA: Как удалось пофиксить баг с вечной буферизацией audio при первом воспроизведении после перехода на вкладке инкогнито"
 brief: "Работа над ошибками и буквально пару слов о стратегии кэширования PWA"
-bg_src: "/static/img/blog/FB_IMG_1788818203291.jpg"
-bg_size: { w: 1904, h: 2538 }
+# bg_src: "/static/img/blog/FB_IMG_1788818203291.jpg"
+# bg_size: { w: 1904, h: 2538 }
+# bg_type: "image/jpg"
+bg_src: "/static/img/blog/FB_IMG_1787608253773.jpg"
+bg_size: { w: 2048, h: 2048 }
 bg_type: "image/jpg"
 
 createdAt: "2026-09-10T12:51:32.523Z"
@@ -13,7 +16,7 @@ priority: 5
 author: "Den Pol"
 tags: ["pwa", "cache", "audio"]
 category: "guides"
-isPrivate: false
+isPrivate: true
 ---
 > Это статья про внутреннее развитие этого сайта
 
@@ -88,17 +91,6 @@ isPrivate: false
 }
 ```
 
-<ControlsBox
-  controlsJson='[
-    {
-      "title": "PREV",
-      "label": "Архитектурный разбор PWA: Разгон аудио-стриминга и магия CacheFirst в Next.js",
-      "type": "link",
-      "link": "/p/pravosleva-blog-0-1-pwa-settings"
-    }
-  ]'
-/>
-
 ## Деталь для изучения
 В чмсле причин фикса наличия файла Сервис-Воркера по [нужному урлу](https://pravosleva.pro/service-worker.js):
 
@@ -109,4 +101,15 @@ isPrivate: false
   language='ts'
   oldCodeBase64="ZXhwcmVzc0FwcC5hbGwoJyonLCAocmVxOiBJUmVxdWVzdCwgcmVzOiBJUmVzcG9uc2UpID0+IHsKICByZXMuc3RhcnRUaW1lKCdleHByZXNzLXNpZGUtaW5mbycsICdJTkZPOiBXYXMgaW50ZXJjZXB0ZWQgYnkgZXhwcmVzcycpCiAgcmVxLmlvID0gZW5oYW5jZWRJTwogIC8vIHJlcS5jcm9zc0RldmljZVN0YXRlID0gY3Jvc3NEZXZpY2VTdGF0ZQoKICBjb25zdCBwYXJzZWRVcmwgPSBwYXJzZShyZXEudXJsLCB0cnVlKQogIGNvbnN0IHsgcGF0aG5hbWUgfSA9IHBhcnNlZFVybAoKICByZXMuZW5kVGltZSgnZXhwcmVzcy1zaWRlLWluZm8nKQoKICBpZiAocGF0aG5hbWUgPT09ICcvc3cuanMnIHx8IC9eXC8od29ya2JveHx3b3JrZXJ8ZmFsbGJhY2spLVx3K1wuanMkLy50ZXN0KHBhdGhuYW1lKSkgewogICAgcmVzLnN0YXJ0VGltZSgnZXhwcmVzcy1zaWRlLWluZm8tMicsICdXaWxsIGJlIGludGVyY2VwdGVkIGJ5IG5leHRBcHAuc2VydmVTdGF0aWMnKQogICAgcmVzLmVuZFRpbWUoJ2V4cHJlc3Mtc2lkZS1pbmZvLTInKQogICAgY29uc3QgZmlsZVBhdGggPSBqb2luKF9fZGlybmFtZSwgJy5uZXh0JywgcGF0aG5hbWUpCiAgICBuZXh0QXBwLnNlcnZlU3RhdGljKHJlcSwgcmVzLCBmaWxlUGF0aCkKICB9IGVsc2UgewogICAgcmVzLnN0YXJ0VGltZSgnZXhwcmVzcy1zaWRlLWluZm8tMycsICdXaWxsIGJlIGludGVyY2VwdGVkIGJ5IG5leHRIYW5sZGVyJykKICAgIHJlcy5lbmRUaW1lKCdleHByZXNzLXNpZGUtaW5mby0zJykKICAgIHJldHVybiBuZXh0SGFubGRlcihyZXEsIHJlcywgcGFyc2VkVXJsKQogIH0KfSk="
   newCodeBase64="ZXhwcmVzc0FwcC5hbGwoJyonLCAocmVxOiBJUmVxdWVzdCwgcmVzOiBJUmVzcG9uc2UpID0+IHsKICByZXMuc3RhcnRUaW1lKCdleHByZXNzLXNpZGUtaW5mbycsICdJTkZPOiBXYXMgaW50ZXJjZXB0ZWQgYnkgZXhwcmVzcycpCiAgcmVxLmlvID0gZW5oYW5jZWRJTwogIC8vIHJlcS5jcm9zc0RldmljZVN0YXRlID0gY3Jvc3NEZXZpY2VTdGF0ZQoKICBjb25zdCBwYXJzZWRVcmwgPSBwYXJzZShyZXEudXJsLCB0cnVlKQogIGNvbnN0IHsgcGF0aG5hbWUgfSA9IHBhcnNlZFVybAoKICByZXMuZW5kVGltZSgnZXhwcmVzcy1zaWRlLWluZm8nKQoKICAvLyDQo9Cc0J3Qq9CZINCf0JXQoNCV0KXQktCQ0KIg0JfQkNCT0J7Qm9Ce0JLQmtCQOiDQpNCw0LnQu9GLINC+0YLQtNCw0YHRgiDRgdCw0LwgTmV4dC5qcyDQuNC3INC/0LDQv9C60LggcHVibGljLCAKICAvLyDQvdC+IEV4cHJlc3Mg0L/QvtC00LzQtdGI0LDQtdGCINCy0LDQttC90LXQudGI0LjQuSDQt9Cw0LPQvtC70L7QstC+0Log0LDQstGC0L7RgNC40LfQsNGG0LjQuCBzY29wZSEKICBpZiAocGF0aG5hbWUgPT09ICcvc2VydmljZS13b3JrZXIuanMnIHx8IHBhdGhuYW1lID09PSAnL3N3LmpzJykgewogICAgcmVzLnNldEhlYWRlcignU2VydmljZS1Xb3JrZXItQWxsb3dlZCcsICcvYmxvZy8nKQogIH0KCiAgLy8g0J/QtdGA0LXQtNCw0LXQvCDRg9C/0YDQsNCy0LvQtdC90LjQtSDRgdGC0LDQvdC00LDRgNGC0L3QvtC80YMg0YXQtdC90LTQu9C10YDRgyBOZXh0LmpzCiAgcmVzLnN0YXJ0VGltZSgnZXhwcmVzcy1zaWRlLWluZm8tMycsICdXaWxsIGJlIGludGVyY2VwdGVkIGJ5IG5leHRIYW5sZGVyJykKICBjb25zdCByZXN1bHQgPSBuZXh0SGFubGRlcihyZXEsIHJlcywgcGFyc2VkVXJsKQogIHJlcy5lbmRUaW1lKCdleHByZXNzLXNpZGUtaW5mby0zJykKICAKICByZXR1cm4gcmVzdWx0Cn0p"
+/>
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "Архитектурный разбор PWA: Разгон аудио-стриминга и магия CacheFirst в Next.js",
+      "type": "link",
+      "link": "/p/pravosleva-blog-0-1-pwa-settings"
+    }
+  ]'
 />

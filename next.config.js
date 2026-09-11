@@ -2,7 +2,7 @@ const webpack = require('webpack')
 const path = require('path')
 const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
-const CleanCSS = require('clean-css')
+const CleanCSS = require('clean-css') // Убедитесь, что пакет clean-css добавлен в package.json
 
 const fs = require('fs')
 const dotenv = require('dotenv')
@@ -51,38 +51,52 @@ location = /_next/image {
 const isDev = process.env.NODE_ENV === 'development'
 
 function minifyStaticCSS() {
-  const srcDir = path.resolve(process.cwd(), 'public/static/css')
-  const destDir = path.resolve(srcDir, 'min')
+  // Формируем чистые и независимые абсолютные пути от корня проекта
+  const srcDir = path.resolve(process.cwd(), 'public/static/css/src')
+  const destDir = path.resolve(process.cwd(), 'public/static/css/min')
 
-  // Проверяем существование исходной папки
-  if (!fs.existsSync(srcDir)) return
+  // Проверяем существование исходной папки с исходниками
+  if (!fs.existsSync(srcDir)) {
+    console.warn('⚠️  [CSS Minifier]: Папка исходников css/src отсутствует. Пропускаем.')
+    return
+  }
 
-  // Создаем папку min, если её нет
+  // Создаем целевую папку min, если её ещё нет на диске
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true })
   }
 
   const files = fs.readdirSync(srcDir)
-  const cssMinifier = new CleanCSS({ level: 2 }) // Максимальный уровень сжатия (оптимизация селекторов)
+  const cssMinifier = new CleanCSS({ level: 2 }) // Максимальный уровень сжатия
 
   files.forEach((file) => {
-    // Обрабатываем только .css файлы, игнорируя вложенные папки
+    // Обрабатываем только .css файлы, полностью игнорируя вложенные папки
     if (file.endsWith('.css')) {
       const srcPath = path.join(srcDir, file)
       const destPath = path.join(destDir, file)
       
-      const inputCss = fs.readFileSync(srcPath, 'utf8')
-      const minified = cssMinifier.minify(inputCss)
+      try {
+        const inputCss = fs.readFileSync(srcPath, 'utf8')
+        const minified = cssMinifier.minify(inputCss)
 
-      if (minified.styles) {
-        fs.writeFileSync(destPath, minified.styles, 'utf8')
+        if (minified.styles) {
+          fs.writeFileSync(destPath, minified.styles, 'utf8')
+        }
+        
+        // Если минификатор выдал предупреждения или ошибки — выведем их в консоль для DX
+        if (minified.errors.length > 0 || minified.warnings.length > 0) {
+          console.warn(`⚠️  [CSS Minifier] Проблемы в файле ${file}:`, minified.errors, minified.warnings)
+        }
+      } catch (fileError) {
+        console.error(`❌ [CSS Minifier] Ошибка обработки файла ${file}:`, fileError)
       }
     }
   })
-  console.log('⚡ [CSS Minifier]: Static CSS files optimized successfully.')
+  
+  console.log('⚡ [CSS Minifier]: Static CSS files optimized successfully in public/static/css/min/*')
 }
 
-// Запускаем минификацию перед инициализацией Next.js
+// Запускаем минификацию перед инициализацией конфигурации Next.js
 minifyStaticCSS()
 
 // Создаем кастомные правила кэширования, расширяя стандартные от next-pwa
@@ -176,6 +190,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96],
   },
   productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
+  publicExcludes: ['!static/css/src/**/*'], // Хотя теперь этого даже не потребуется, ведь на сервере папки src и так не будет!
   pwa: {
     dest: 'public', // Куда физически сложатся файлы
     runtimeCaching: customRuntimeCaching,

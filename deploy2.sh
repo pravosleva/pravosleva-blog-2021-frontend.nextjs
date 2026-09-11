@@ -65,7 +65,14 @@ echo '-- 🚄 DEPLOY STARTED' &&
 
 # -- Копирование директорий
 rsync -av --delete .next/ $deploy_path_build_dir &&
-rsync -av --delete public/ $deploy_path_public_dir &&
+
+# -- Копирование директорий с чистым разделением папок
+# Мы просто говорим rsync: «Скопируй всю папку public, но наглухо проигнорируй папку src»
+rsync -av --delete \
+  --exclude="static/css/src/" \
+  public/ $deploy_path_public_dir &&
+echo '-- 🚀 CSS SRC EXCLUDED & DIRECTORIES COPIED SUCCESSFULLY' &&
+
 rsync -av --delete server.dist/ $deploy_path_server_dist_dir &&
 #rsync -av --delete node_modules/ $deploy_path_node_modules_dir &&
 

@@ -111,7 +111,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
           {/* Главный широкоформатный баннер статьи */}
           {!!article.bg && (
             <ResponsiveBlock isLimitedForDesktop>
-              <div ref={bannerRef} className={styles['external-article-wrapper']}>
+              <div ref={bannerRef} className={clsx(styles['external-article-wrapper'], 'fade-in-effect')}>
                 <article
                   className='article-wrapper'
                   style={{ position: 'relative', overflow: 'hidden' }}
