@@ -18,7 +18,7 @@ class httpClientSingletone {
       );
     }
     const baseConfig: IAxiosRequestConfig = {
-      baseURL: 'https://pravosleva.ru',
+      baseURL: 'https://pravosleva.pro',
       validateStatus: (_s: number) => true,
     }
 
