@@ -53,33 +53,35 @@ fi
 # -- Базовый путь на удаленном сервере
 REMOTE_ROOT=$(read_env BASH_REMOTE_ROOT .env."$1")
 
-# -- Формируем динамические пути на основе прочитанного
+# -- Копирование директорий
+# - Формируем динамические пути на основе прочитанного
 deploy_path_build_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/.next"
 deploy_path_public_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/public"
-deploy_path_server_dist_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/server.dist"
+#deploy_path_server_dist_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/server.dist"
 #deploy_path_node_modules_dir="${DEPLOY_HOST}:${REMOTE_ROOT}/node_modules"
 #deploy_path_config_file="${DEPLOY_HOST}:${REMOTE_ROOT}/next.config.js"
 #deploy_path_package_json_file="${DEPLOY_HOST}:${REMOTE_ROOT}/package.json"
-
 echo '-- 🚄 DEPLOY STARTED' &&
-
-# -- Копирование директорий
+# -/
 rsync -av --delete .next/ $deploy_path_build_dir &&
-
-# -- Копирование директорий с чистым разделением папок
-# Мы просто говорим rsync: «Скопируй всю папку public, но наглухо проигнорируй папку src»
+# - Копирование директорий с чистым разделением папок
+# Мы просто говорим rsync: «Скопируй всю папку public, но наглухо проигнорируй конкретные директории с исходниками»
 rsync -av --delete \
   --exclude="static/css/src/" \
+  --exclude="static/common/src/" \
   public/ $deploy_path_public_dir &&
-echo '-- 🚀 CSS SRC EXCLUDED & DIRECTORIES COPIED SUCCESSFULLY' &&
-
-rsync -av --delete server.dist/ $deploy_path_server_dist_dir &&
+echo '-- 🚀 SOURCE DIRECTORIES EXCLUDED SUCCESSFULLY' &&
+# -/
+# - Others
+#rsync -av --delete server.dist/ $deploy_path_server_dist_dir &&
 #rsync -av --delete node_modules/ $deploy_path_node_modules_dir &&
-
-# -- Явное копирвание конфигов и прочего вспомогательного
+# -/
+# - Явное копирвание конфигов и прочего вспомогательного
 #rsync -av .env."$1" "${DEPLOY_HOST}:${REMOTE_ROOT}/.env.$1" &&
 rsync -av .env.production "${DEPLOY_HOST}:${REMOTE_ROOT}/.env.production" &&
 #rsync -av next.config.js $deploy_path_config_file &&
 #rsync -av package.json $deploy_path_package_json_file &&
+# -/
+# --
 
 echo '-- 🏁 DEPLOY COMPLETED'

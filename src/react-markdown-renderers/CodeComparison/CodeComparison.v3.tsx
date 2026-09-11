@@ -227,7 +227,7 @@ export const CodeComparison = ({ oldCodeBase64, newCodeBase64, oldCodeRaw, newCo
   const workerRef = useRef<Worker | null>(null)
 
   useEffect(() => {
-    workerRef.current = new Worker('/static/common/render/code-diff.worker-3.js')
+    workerRef.current = new Worker('/static/common/min/render/code-diff.worker-3.js')
     workerRef.current.onmessage = (e: MessageEvent) => {
       const { resultOld, resultNew, resultUnified } = e.data
       setDiffOld(resultOld)

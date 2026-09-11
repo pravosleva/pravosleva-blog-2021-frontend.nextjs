@@ -1,6 +1,6 @@
 // NOTE: https://github.com/liriliri/eruda
 
-// /static/common/eruda.custom.js
+// /static/common/min/eruda.custom.js
 
 class CustomErudaSingletone {
   constructor() {
@@ -23,7 +23,7 @@ class CustomErudaSingletone {
        процессора (Main Thread) будет полностью свободен. Нагрузка на TBT = 0 мс!
        ========================================================================= */
     const startLoading = () => {
-      const src = '/static/common/eruda@2.10.0.min.js';
+      const src = '/static/common/min/eruda@2.10.0.min.js';
       const script = window.document.createElement('script');
       script.src = src;
       script.async = true;

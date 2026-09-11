@@ -162,7 +162,7 @@ function AppWithRedux(props: MyAppProps) {
 
     if (isDebugMode) {
       erudaWrapper = window.document.createElement('script');
-      erudaWrapper.src = '/static/common/eruda.custom.js';
+      erudaWrapper.src = '/static/common/min/eruda.custom.js';
       erudaWrapper.async = true;
       window.document.body.appendChild(erudaWrapper);
       console.log('🛠️ [Eruda Engine]: Режим отладки активирован через URL параметр.');
@@ -243,7 +243,7 @@ function AppWithRedux(props: MyAppProps) {
                         3. По каскаду они перекроют футер страницы, так как лежат внутри того же контекста наложения. */}
                     <GlobalPodcastSidebarButton />
                     <GlobalAudioPlayer />
-                    {/* <Script src="/static/common/eruda.custom.js" strategy="lazyOnload" /> */}
+                    {/* <Script src="/static/common/min/eruda.custom.js" strategy="lazyOnload" /> */}
                   </ThemeProvider>
                 </SCThemeProvider>
               </CacheProvider>

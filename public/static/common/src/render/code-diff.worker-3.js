@@ -1,5 +1,3 @@
-// public/static/workers/code-diff.worker.js
-
 self.onmessage = function (e) {
   const { oldCode, newCode } = e.data;
 

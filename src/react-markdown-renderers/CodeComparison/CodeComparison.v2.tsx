@@ -329,8 +329,7 @@ export const CodeComparison = ({
   const rightPaneRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    workerRef.current = new Worker('/static/common/render/code-diff.worker-2.js')
-
+    workerRef.current = new Worker('/static/common/min/render/code-diff.worker-2.js')
     workerRef.current.onmessage = (e: MessageEvent) => {
       const { resultOld, resultNew, resultUnified } = e.data
       setDiffOld(resultOld)

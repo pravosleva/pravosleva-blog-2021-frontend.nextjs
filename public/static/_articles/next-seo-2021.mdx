@@ -311,7 +311,7 @@ const isDebugMode = urlParams.get('eruda_debug') === '1';
 
 if (isDebugMode) {
   const erudaWrapper = window.document.createElement('script');
-  erudaWrapper.src = '/static/common/eruda.custom.js';
+  erudaWrapper.src = '/min/eruda.custom.js';
   erudaWrapper.async = true;
   window.document.body.appendChild(erudaWrapper);
 }
