@@ -6,7 +6,7 @@ const bg = {
   //   w: 850,
   //   h: 300,
   // },
-  src: 'https://pravosleva.pro/static/img/blog/git-transparent-2.webp',
+  src: 'https://pravosleva.pro/static/img/blog/git.webp',
   size: {
     w: 512,
     h: 512,

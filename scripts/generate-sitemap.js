@@ -18,11 +18,12 @@ async function generateSitemap() {
 
   // Массив регулярных выражений для страниц, которые КАТЕГОРИЧЕСКИ нельзя индексировать
   const disallowedPatterns = [
-    /^\/subprojects\/auditlist/, // Исключает /subprojects/auditlist и все подстраницы /*
-    /^\/vaccine/,               // Исключает /vaccine и все подстраницы /*
-    /^\/team-scoring/,          // Исключает /team-scoring и все подстраницы /*
-    /^\/auth\/login$/,          // Исключает строго страницу авторизации
-    /^\/autopark-2022/          // Исключает /autopark-2022 и все подстраницы /*
+    /^\/subprojects\/auditlist/, // Исключает /subprojects/auditlist и все подстраницы
+    /^\/vaccine/, // Исключает /vaccine и все подстраницы
+    /^\/team-scoring/, // Исключает /team-scoring и все подстраницы
+    /^\/auth\/login$/, // Исключает строго страницу авторизации
+    /^\/autopark-2022/, // Исключает /autopark-2022 и все подстраницы
+    /^\/feedback/, // Исключает /feedback и все подстраницы
   ];
 
   // Вспомогательная функция проверки: разрешен ли URL для sitemap.xml
@@ -32,9 +33,8 @@ async function generateSitemap() {
 
   // 1. Статические страницы сайта
   const staticPages = [
-    { url: '', changefreq: 'daily', priority: '1.0' },
+    // { url: '', changefreq: 'daily', priority: '1.0' },
     { url: '/blog', changefreq: 'daily', priority: '0.9' },
-    { url: '/feedback', changefreq: 'monthly', priority: '0.5' },
     { url: '/auth/login', changefreq: 'never', priority: '0.0' }, // Эту страницу мы отфильтруем
   ];
 

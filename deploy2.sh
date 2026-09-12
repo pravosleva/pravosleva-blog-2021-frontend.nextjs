@@ -29,14 +29,19 @@ if [ "$1" == "stage" ] || [ "$1" == "ru" ]; then
   echo "[Robots] Сгенерирован защищенный robots.txt для STAGE стенда"
 else
   # Если деплоим на прод (.pro) — открываем всё, КРОМЕ указанных вами секретных / технических папок
+  # 1. Disallow: /feedback/ -> полностью закрывает форму обратной связи и ее подстраницы
+  # 2. Disallow: /$         -> наглухо закрывает от индексации чистый корень с редиректом
+  # 3. Allow: /blog          -> явно разрешает индексировать блог (наша новая главная точка входа)
   echo -e "User-agent: *
-Allow: /
+Allow: /blog
 Disallow: /express-next-api/
 Disallow: /subprojects/auditlist/
 Disallow: /vaccine/
 Disallow: /team-scoring/
 Disallow: /auth/login
 Disallow: /autopark-2022/
+Disallow: /feedback/
+Disallow: /$
 
 Sitemap: ${SITEMAP_HOST}/sitemap.xml" > $ROBOTS_PATH
   echo "[Robots] Сгенерирован открытый robots.txt с исключениями для PRODUCTION стенда"
