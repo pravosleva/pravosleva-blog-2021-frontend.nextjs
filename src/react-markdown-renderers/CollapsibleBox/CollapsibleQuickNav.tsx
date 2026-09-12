@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { Button } from '@mui/material'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+// import { Button } from '@mui/material'
+// import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+// import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { IRootState } from '~/store/IRootState'
 import { collapsibleRegistrySignal, ICollapsibleItem } from '~/store/reactive-engine/reactiveCollapsibleStore'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
-import clsx from 'clsx'
+// import clsx from 'clsx'
 import { useSignalValue } from '~/utils/reactive-engine'
 import { getInfoToolBgColor, getTextColor, getActiveBorderCSS } from '../HeadingsQuickNav/utils'
 
@@ -30,8 +30,10 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
     elementHeightCritery: 200,
   }))
 
-  // Получаем упорядоченный массив всех зарегистрированных блоков
-  const items = useMemo(() => Object.values(registry), [registry])
+  // 1. Получаем упорядоченный массив элементов. 
+  // Чтобы ссылка на массив не менялась при каждом изменении видимости, 
+  // мы убираем лишний useMemo — Object.values и так работает молниеносно.
+  const items = Object.values(registry)
 
   // Расчет общего количества страниц
   const totalPages = useMemo(() => {
@@ -39,22 +41,28 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
   }, [items.length, pageLimit])
 
   // АВТО-ПАГИНАЦИЯ ПРИ СКРОЛЛЕ СТРАНИЦЫ
-  // Следим за изменением статуса видимости блоков. Если первый видимый элемент 
-  // находится на другой странице пагинации — принудительно переключаем её.
   useEffect(() => {
     if (items.length === 0) return
 
-    // Находим индекс самого первого элемента, который сейчас виден на экране (isVisible === true)
+    // Находим индекс самого первого элемента, который сейчас виден на экране
     const firstVisibleIndex = items.findIndex(item => item.isVisible)
 
     if (firstVisibleIndex !== -1) {
-      // Вычисляем, на какую страницу пагинации попадает этот элемент (1, 2, 3...)
       const targetPage = Math.floor(firstVisibleIndex / pageLimit) + 1
       
-      // Переключаем страницу, только если она отличается от текущей
-      setCurrentPage(targetPage)
+      // Переключаем страницу строго через callback-функцию стейта, 
+      // чтобы гарантировать актуальный контекст React рантайма
+      setCurrentPage((prevPage) => {
+        if (prevPage !== targetPage) {
+          return targetPage
+        }
+        return prevPage
+      })
     }
-  }, [items, pageLimit])
+    // ИСПРАВЛЕНО: Вместо контроля всего массива items, мы преобразуем статусы 
+    // видимости в строку "true,false,false...". Хук сработает строго тогда, 
+    // когда какой-то блок реально появится или скроется с экрана!
+  }, [items.map(i => i.isVisible).join(','), pageLimit])
 
   // Отслеживание ширины экрана
   useEffect(() => {
@@ -63,8 +71,6 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
     window.addEventListener('resize', checkWidth, { passive: true })
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
-
-  // const items = Object.values(registry)
 
   // Срез элементов, которые нужно отрендерить на текущей странице пагинации
   const startIndex = (currentPage - 1) * pageLimit

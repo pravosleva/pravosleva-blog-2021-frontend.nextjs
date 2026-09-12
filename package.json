@@ -1,6 +1,6 @@
 {
   "name": "frontend.nextjs",
-  "version": "5.2.4-c",
+  "version": "5.2.4-c1",
   "private": true,
   "engines": {
     "node": ">=16.18.0 <=18.x.x",
