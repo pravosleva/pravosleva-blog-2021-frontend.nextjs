@@ -1,0 +1,23 @@
+```javascript
+// Было (Universal Analytics v1):
+const eventParams = {
+  v: '1',
+  tid: currentGaId,
+  t: 'event',            
+  ea: payload.action, // Event Action -> Имя действия
+  ec: 'Рантайм Блога', // Event Category -> Категория
+  el: JSON.stringify(payload.params) // Event Label -> Сжатый JSON-строкой контекст
+};
+
+// Стало (Google Analytics 4):
+const ga4Payload = {
+  client_id: payload.clientId,
+  events: [{
+    name: payload.action, // Имя события теперь на верхнем уровне
+    params: {
+      ...payload.params, // Плоский объект параметров (например, { search_term: "next.js" })
+      event_category: 'Рантайм Блога' // Бывшая категория передается обычным свойством
+    }
+  }]
+};
+```
