@@ -257,7 +257,7 @@ function AppWithRedux(props: MyAppProps) {
         <meta name="theme-color" content="#0162c8" />
         
         {/* Каноническая ссылка по умолчанию (страницы смогут перебивать её своим уникальным URL) EXAMPLE: href='https://pravosleva.pro/' */}
-        <link rel="canonical" href={process.env.NEXT_SEO} />
+        {/* <link rel="canonical" href={process.env.NEXT_SEO} /> */}
 
         {/* Facebook Meta Tags */}
         <meta property="og:url" content={process.env.NEXT_SEO} />

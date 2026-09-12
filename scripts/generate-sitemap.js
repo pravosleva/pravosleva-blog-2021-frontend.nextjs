@@ -89,7 +89,7 @@ async function generateSitemap() {
       });
       
       // NOTE: Честный лог количества реально добавленных статей
-      console.log(`[Sitemap] Успешно добавлено локальных статей из JSON: ${xmlRows.length - staticPages.length + 1}`);
+      console.log(`[Sitemap] Успешно добавлено локальных статей из JSON для индексации: ${xmlRows.length - staticPages.length + 1}`);
     } catch (parseError) {
       console.error('[Sitemap] Ошибка парсинга local.slug-map.json:', parseError);
     }

@@ -14,17 +14,6 @@ import { NextPageContext } from 'next'
 import { Store } from 'redux'
 import { NCodeSamplesSpace } from '~/types'
 
-// Интерфейс для маппинга старых и новых путей в slugMap
-interface ISlugMappingItem {
-  id: string | number;
-  brief?: string;
-  bg?: {
-    src: string;
-    size: { w: number; h: number };
-    type: string;
-  };
-}
-
 // Строгое описание пропсов, приходящих в компонент страницы
 interface IBlogArticleSlugProps {
   _pageService: TPageService;
@@ -53,7 +42,44 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
   }
 
   const canonicalUrl = `${process.env.NEXT_SEO}/p/${article.slug}`
-  const thisPageUrl = `${process.env.NEXT_SEO}/p/${article.slug}`
+  const __defaultDescr = 'Найдётся всё что не нашлось ранее, если оно действительно нужно'
+  // Константа дефолтного логотипа (ИСПРАВЛЕНО: добавлен разделительный слэш между доменом и статикой)
+  const defaultLogoUrl = `${process.env.NEXT_SEO}/static/img/logo/logo-pravosleva.jpg`  
+  // Читаем переопределенные мета-данные из front-matter шапки статьи
+  const customMeta: NCodeSamplesSpace.TNote['meta'] = article.original?.meta || undefined
+  // 1. Мета-теги, использующие атрибут "name"
+  const nameMeta = {
+    description: customMeta?.description || article.brief || __defaultDescr,
+    "twitter:domain": "pravosleva.pro",
+    "twitter:url": canonicalUrl,
+    "twitter:title": customMeta?.["og:title"] || article.original?.title || title,
+    "twitter:description": customMeta?.["og:description"] || article.brief || __defaultDescr,
+    "twitter:card": article.bg ? "summary_large_image" : "summary",
+    "twitter:image": article.bg?.src || defaultLogoUrl,
+  }
+
+  // 2. Мета-теги, использующие атрибут "property" (Open Graph / Спецификация Профилей)
+  const propertyMeta = {
+    "og:type": customMeta?.["og:type"] || "website",
+    "og:title": customMeta?.["og:title"] || article.original?.title || title,
+    "og:description": customMeta?.["og:description"] || article.brief || __defaultDescr,
+    "og:url": canonicalUrl,
+    "og:site_name": "PravoSleva | Blog",
+    "og:locale": customMeta?.["og:locale"] || 'ru_RU',
+    "og:locale:alternate": customMeta?.["og:locale:alternate"] || undefined,
+    "profile:first_name": customMeta?.["profile:first_name"] || undefined,
+    "profile:last_name": customMeta?.["profile:last_name"] || undefined,
+    "profile:username": customMeta?.["profile:username"] || undefined,
+    "article:section": article.original?.category || undefined,
+    "article:publisher": process.env.NEXT_SEO,
+
+    "og:image": article.bg?.src || defaultLogoUrl,
+    "og:image:secure_url": article.bg?.src || defaultLogoUrl,
+    "og:image:width": !!article.bg?.size.w ? String(article.bg.size.w) : undefined,
+    "og:image:height": !!article.bg?.size.h ? String(article.bg.size.h) : undefined,
+    "og:image:type": !!article.bg?.type ? String(article.bg.type) : undefined,
+    "og:image:alt": 'img',
+  }
 
   return (
     <>
@@ -62,55 +88,19 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
         <meta name="description" content={article.brief || 'Найдётся всё что не нашлось ранее, если оно действительно нужно'} />
 
         {/* --- Open Graph / Facebook Meta Tags --- */}
-        {/* ЖЕЛЕЗОБЕТОННОЕ SEO-ПРАВИЛО: Роботы будут индексировать эту страницу ТОЛЬКО под доменом .pro */}
         <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:url" content={thisPageUrl} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={article.original.title} />
-        <meta property="og:locale" content="ru_RU" />
-        <meta property="article:publisher" content={process.env.NEXT_SEO} />
-        <meta property="article:section" content={article.original.title} />
-        <meta property="og:locale:alternate" content="be_BY" />
-        <meta property="og:locale:alternate" content="kk_KZ" />
-        <meta property="og:locale:alternate" content="tt_RU" />
-        <meta property="og:locale:alternate" content="uk_UA" />
-        <meta property="og:locale:alternate" content="en_US" />
 
-        <meta property="og:description" content={article.brief || ''} />
-        {article.bg ? (
-          <>
-            <meta property="og:image" content={article.bg.src} />
-            <meta property="og:image:secure_url" content={article.bg.src} />
-            <meta property='og:image:width' content={String(article.bg.size.w)} />
-            <meta property='og:image:height' content={String(article.bg.size.h)} />
-            <meta property='og:image:type' content={article.bg.type} />
-            <meta property="og:image:alt" content="img alt sample" />
-          </>
-        ) : (
-          <>
-            <meta property="og:image" content="https://pravosleva.prostatic/img/logo/logo-pravosleva.jpg" />
-            <meta property="og:image:secure_url" content="https://pravosleva.prostatic/img/logo/logo-pravosleva.jpg" />
-          </>
-        )}
+        {/* --- Рендеринг стандартных тегов (атрибут name) --- */}
+        {Object.entries(nameMeta).map(([key, value]) => {
+          if (!value) return null
+          return <meta key={key} name={key} content={String(value)} />
+        })}
 
-        <meta property="og:site_name" content="PravoSleva // Blog" />
-
-        {/* --- Twitter Meta Tags --- */}
-        <meta property="twitter:domain" content="pravosleva.pro" />
-        <meta property="twitter:url" content={thisPageUrl} />
-        <meta name="twitter:title" content={article.original.title} />
-        <meta name="twitter:description" content={article.brief || ''} />
-        {article.bg ? (
-          <>
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:image" content={article.bg.src} />
-          </>
-        ) : (
-          <>
-            <meta name="twitter:card" content="summary" />
-            <meta name="twitter:image" content="https://pravosleva.prostatic/img/logo/logo-pravosleva.jpg" />
-          </>
-        )}
+        {/* --- Рендеринг Open Graph тегов (атрибут property) --- */}
+        {Object.entries(propertyMeta).map(([key, value]) => {
+          if (!value) return null
+          return <meta key={key} property={key} content={String(value)} />
+        })}
       </Head>
       <Layout>
         <Article _pageService={_pageService} article={article} />

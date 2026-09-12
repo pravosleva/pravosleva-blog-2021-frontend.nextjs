@@ -7,6 +7,20 @@ export namespace NCodeSamplesSpace {
     createdAt: string; // NOTE: 2023-08-01T10:00:59.251Z
     updatedAt: string; // NOTE: 2023-09-22T07:54:01.264Z
     priority: number;
+    meta?: {
+      description: string;
+      "og:type": string;
+      "og:title": string;
+      "og:description": string;
+      "og:image"?: string;
+      "og:url"?: string;
+      "profile:first_name": string;
+      "profile:last_name": string;
+      "profile:username": string;
+      "og:locale"?: string;
+      "og:locale:alternate"?: string;
+    };
+    category?: string;
   }
   export type TNotesListResponse = {
     success: boolean;

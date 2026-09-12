@@ -55,12 +55,7 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         <title>Pravosleva | Blog</title>
         <meta name="description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
 
-        {/* Каноническая ссылка по умолчанию (страницы смогут перебивать её своим уникальным URL) */}
-        <link
-          rel="canonical"
-          // href='https://pravosleva.pro/'
-          href={process.env.NEXT_SEO}
-        />
+        <link rel="canonical" href={`${process.env.NEXT_SEO}/blog`} />
 
         {/* Facebook Meta Tags */}
         <meta property="og:url" content={process.env.NEXT_SEO} />

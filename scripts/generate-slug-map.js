@@ -76,7 +76,7 @@ function generateSlugMap() {
   // Записываем финальный результат с красивыми отступами в 2 пробела для читаемости
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(slugMap, null, 2), 'utf8');
   console.log(`✨ Успешно создан файл: ${OUTPUT_FILE}`);
-  console.log(`📊 Всего проиндексировано статей: ${Object.keys(slugMap).length}`);
+  console.log(`📊 Всего статей для отображения и переходов: ${Object.keys(slugMap).length}`);
 }
 
 generateSlugMap();
