@@ -47,40 +47,70 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
     </Layout>
   )
 
+  const canonicalUrl = `${process.env.NEXT_SEO}/blog`
+  const __defaultDescr = 'Найдётся всё что не нашлось ранее, если оно действительно нужно'
+  
+  // Исправленный абсолютный путь к дефолтному логотипу блога (без склеек)
+  const defaultLogoUrl = `${process.env.NEXT_SEO}/static/img/logo/logo-pravosleva.jpg`
+
+  // 1. Мета-теги, использующие стандартный атрибут "name" (SEO + Twitter)
+  const nameMeta = {
+    description: __defaultDescr,
+    "twitter:card": "summary_large_image",
+    "twitter:domain": "pravosleva.pro",
+    "twitter:url": canonicalUrl,
+    "twitter:title": "Pravosleva | Blog",
+    "twitter:description": __defaultDescr,
+    "twitter:image": defaultLogoUrl,
+  }
+
+  // 2. Мета-теги, использующие атрибут "property" (Open Graph / Facebook спецификация)
+  const propertyMeta = {
+    "og:url": canonicalUrl,
+    "og:type": "website",
+    "og:site_name": "PravoSleva",
+    "og:title": "Pravosleva | Blog",
+    "og:description": __defaultDescr,
+    "og:image": defaultLogoUrl,
+    "og:image:secure_url": defaultLogoUrl,
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:type": "image/jpeg",
+    "og:locale": "ru_RU",
+    // Списком объявляем альтернативные локали без дублирования
+    "og:locale:alternate": ["be_BY", "kk_KZ", "tt_RU", "uk_UA", "en_US"],
+  }
+
   return (
     <>
       <Head>
-        {/* -- NOTE: Meta */}
-        {/* <!-- HTML Meta Tags --> */}
+        {/* TODO: Синхронизируем title с глобальным Redux-стейтом метаданных */}
         <title>Pravosleva | Blog</title>
-        <meta name="description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
+        
+        {/* Нативная каноническая ссылка */}
+        <link rel="canonical" href={canonicalUrl} />
 
-        <link rel="canonical" href={`${process.env.NEXT_SEO}/blog`} />
+        {/* --- Автоматический рендеринг nameMeta (SEO & Twitter) --- */}
+        {Object.entries(nameMeta).map(([key, value]) => {
+          if (!value) return null
+          return <meta key={key} name={key} content={String(value)} />
+        })}
 
-        {/* Facebook Meta Tags */}
-        <meta property="og:url" content={process.env.NEXT_SEO} />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content="ru_RU" />
-        <meta property="og:locale:alternate" content="be_BY" />
-        <meta property="og:locale:alternate" content="kk_KZ" />
-        <meta property="og:locale:alternate" content="tt_RU" />
-        <meta property="og:locale:alternate" content="uk_UA" />
-        <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:locale:alternate" content="en_US" />
-        <meta property="og:title" content="Blog" />
-        <meta property="og:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
-        <meta property="og:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="og:site_name" content="PravoSleva" />
+        {/* --- Автоматический рендеринг propertyMeta (Open Graph) --- */}
+        {Object.entries(propertyMeta).map(([key, value]) => {
+          if (!value) return null
+          
+          // Безопасный рендеринг массива альтернативных локалей
+          if (Array.isArray(value)) {
+            return value.map((locale) => (
+              <meta key={`${key}-${locale}`} property={key} content={locale} />
+            ))
+          }
+          
+          return <meta key={key} property={key} content={String(value)} />
+        })}
 
-        {/* <!-- Twitter Meta Tags --> */}
-        <meta name="twitter:card" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        <meta property="twitter:domain" content="pravosleva.pro" />
-        <meta property="twitter:url" content="https://pravosleva.pro/blog" />
-        <meta name="twitter:title" content="Blog" />
-        <meta name="twitter:description" content='Найдётся всё что не нашлось ранее, если оно действительно нужно' />
-        <meta name="twitter:image" content="https://pravosleva.pro/static/img/logo/logo-pravosleva.jpg" />
-        {/* -- Meta Tags Generated via https://www.opengraph.xyz -- */}
-
+        {/* Специфические бандлы стилей поисковых заголовков */}
         <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" />
         <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" />
       </Head>
