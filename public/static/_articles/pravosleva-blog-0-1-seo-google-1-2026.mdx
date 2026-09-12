@@ -15,7 +15,7 @@ tags: ["nextjs", "google", "seo", "google_search_console", "performance", "ga4",
 category: "guides"
 isPrivate: false
 ---
-## Основной поток (Main Thread) против Web Worker: Разница в рантайме
+## Main Thread vs Web Worker: Разница в рантайме
 
 Главная проблема классической интеграции Google Analytics через тег `<script src=".../gtag/js">` заключается в том, что JavaScript по своей природе **однопоточен**. Когда тяжелая сторонняя библиотека начинает скачиваться, парситься и выполняться, она полностью захватывает единственный поток интерфейса (Main Thread). В этот момент браузер физически не может реагировать на действия пользователя: клики по кнопкам плеера подкастов зависают, анимации начинают рваться, а показатели **TBT (Total Blocking Time)** и **INP (Interaction to Next Paint)** в Lighthouse улетают в красную зону.
 
