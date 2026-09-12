@@ -25,22 +25,3 @@ const ga4Payload = {
   }]
 };
 ```
-
-code-samples.space `esosystem.prod.config.js`
-```js
-module.exports = {
-  apps : [{
-    name: 'notes-2020-next-mongoose',
-    cwd: __dirname + '/.',
-    script: 'yarn',
-    args: 'start:prod',
-    interpreter: 'none',
-    env: {
-      MONGO_URI: 'MONGO_URI=mongodb+srv://admin:fishmonkey1@cluster0.oepos.mongodb.net/notes-2020-next-mongoose?retryWrites=true&w=majority',
-      JWT_SECRET: 'JWTSecretForExample',
-      EXPRESS_JWT_MAXAGE_IN_DAYS: 3,
-      NEXT_APP_QR_BASE_URL: 'http://code-samples.space',
-    }
-  }],
-};
-```

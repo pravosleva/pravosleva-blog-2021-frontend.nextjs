@@ -40,3 +40,4 @@ deploy-app-config.json
 
 # tmp
 **/*/__vx.tsx
+.tmp*
