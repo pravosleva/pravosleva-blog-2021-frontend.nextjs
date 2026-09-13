@@ -19,6 +19,8 @@ tags: ["react", "reactivity", "reactive_engine"]
 category: "news"
 isPrivate: false
 ---
+> Эта статья про развитие движка **[ReactiveEngine](https://www.npmjs.com/package/@pravosleva/reactive-engine)** в рамках которого рассматриваются фундаментальные вещи во Frontend разработке.
+
 ## Топ-3 тезиса
 ### Экономия на операциях с памятью (Garbage Collection)
 В React при каждом изменении стейта компонент вызывается как функция заново. Это значит, что **в памяти заново создаются тысячи временных JS-объектов, описывающих Virtual DOM**. Затем **React тратит ресурсы CPU на их сравнение (reconciliation)**, а после — **нагружает Garbage Collector (сборщик мусора)**, чтобы эти объекты удалить. Движок **[ReactiveEngine](https://www.npmjs.com/package/@pravosleva/reactive-engine)** создает прокси-обертку один раз при инициализации. При изменении данных память не забивается временным мусором, так как обновление идет напрямую в целевой узел DOM.
