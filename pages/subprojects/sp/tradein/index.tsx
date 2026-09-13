@@ -10,6 +10,7 @@ const Page = () => {
       <Head>
         <title>SP exp</title>
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
+        <link rel="stylesheet" href="/static/css/min/mapbox-gl@2.6.1.min.css" />
       </Head>
       <Layout isPrivatePage>
         <SPSocketLab />

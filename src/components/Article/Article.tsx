@@ -21,13 +21,15 @@ import { StickyArticleHeaderComponent } from './StickyArticleHeader'
 import { DesktopOnly, MobileOnly } from './render-utils'
 import Image from 'next/image' // Оптимизатор картинок Next.js
 
-/* =========================================================================
-   РАЗГРУЗКА БАНДЛА СТРАНИЦЫ: Переводим тяжелые виджеты на ленивую загрузку (SSR: false).
-   Браузер вообще не будет скачивать и парсить их JS-код при первой загрузке,
-   что освободит Main Thread для мгновенной фиксации LCP и снизит TBT!
-   ========================================================================= */
+// РАЗГРУЗКА БАНДЛА СТРАНИЦЫ: Переводим тяжелые виджеты на ленивую загрузку (SSR: false).
+// Браузер вообще не будет скачивать и парсить их JS-код при первой загрузке,
+// что освободит Main Thread для мгновенной фиксации LCP и снизит TBT!
 const DynamicCollapsibleQuickNav = dynamic(
   () => import('~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNav').then(m => m.CollapsibleQuickNav),
+  { ssr: false }
+)
+const DynamicCollapsibleQuickNavMobile = dynamic(
+  () => import('~/react-markdown-renderers/CollapsibleBox/CollapsibleQuickNavMobile.v4').then(m => m.CollapsibleQuickNavMobile),
   { ssr: false }
 )
 const DynamicHeadingsQuickNav = dynamic(
@@ -91,6 +93,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
       {isMounted && (
         <>
           <DynamicCollapsibleQuickNav pageLimit={5} />
+          <DynamicCollapsibleQuickNavMobile /> 
           <DynamicHeadingsQuickNav currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={13} actualSlug={slug} />
           <DynamicHeadingsQuickNavMobile currentTheme={currentTheme} levels={['h1', 'h2', 'h3', 'h4']} pageLimit={10} actualSlug={slug} />
         </>

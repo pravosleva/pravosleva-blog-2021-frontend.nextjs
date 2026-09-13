@@ -126,7 +126,7 @@ const MobileHeader = memo(({
               <a href='/' target='_self' style={{ lineHeight: '40px' }}>R-ENGINE</a>
             </li>
 
-            {!isBrowserMemoryMonitorEnabled && (
+            {/* !isBrowserMemoryMonitorEnabled && (
               <li
                 className='fade-in-effect'
                 style={{
@@ -145,7 +145,7 @@ const MobileHeader = memo(({
                   <MemoryIcon />
                 </LangLink>
               </li>
-            )}
+            )*/ }
 
             {!!suppoerLocales &&
               suppoerLocales.length > 0 &&

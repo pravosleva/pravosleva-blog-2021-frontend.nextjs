@@ -280,14 +280,14 @@ body main.dark ~ .mobile-podcast-fab-trigger {
   position: fixed !important;
   display: flex !important;
   left: auto !important;
-  right: 20px !important;
+  right: 8px !important;
   bottom: 290px !important;
   
   /* Поднимаем на максимальную высоту, чтобы кнопка гарантированно была НАД футером */
   z-index: 99999 !important; 
   
-  width: 48px !important;
-  height: 48px !important;
+  width: 42px !important;
+  height: 42px !important;
   border-radius: 50% !important;
   /* background-color: #111111 !important; */
   border: 1px solid rgba(255, 255, 255, 0.15) !important;

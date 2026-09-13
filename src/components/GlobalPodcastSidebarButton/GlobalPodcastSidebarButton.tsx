@@ -3,9 +3,13 @@ import { useAudioPodcast } from '../../store/reactive-engine/audio-podcast/hooks
 import clsx from 'clsx'
 import liveStatusBadgeStyles from '~/components/GlobalAudioPlayer/components/LiveStatusBadge/LiveStatusBadge.module.scss'
 import { event } from '~/utils/googleAnalitycs'
+import HeadphonesIcon from '@mui/icons-material/Headphones'
+import CloseIcon from '@mui/icons-material/Close'
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
+import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 export const GlobalPodcastSidebarButton = () => {
-  // const { queue, isPlayerVisible, isPlayerMinimized, setPlayerVisible, setPlayerMinimized, currentTrack } = useAudioPodcast()
   const { 
     queue, 
     isPlayerVisible, 
@@ -20,44 +24,8 @@ export const GlobalPodcastSidebarButton = () => {
     isBuffering,
     isCurrentTrackLiveStream,
   } = useAudioPodcast()
-  // const [progressPercent, setProgressPercent] = useState(0)
-  // const [isPlaying, setIsPlaying] = useState(false)
 
-  // Отслеживаем прогресс аудио для SVG-круга
-  // useEffect(() => {
-  //   const checkAudioElement = () => {
-  //     const audioEl = document.querySelector('.blog-audio-player-container audio') as HTMLAudioElement
-  //     if (audioEl) {
-  //       const updateProgress = () => {
-  //         if (audioEl.duration) {
-  //           setProgressPercent((audioEl.currentTime / audioEl.duration) * 100)
-  //         }
-  //         setIsPlaying(!audioEl.paused)
-  //       }
-  //       audioEl.addEventListener('timeupdate', updateProgress)
-  //       audioEl.addEventListener('play', updateProgress)
-  //       audioEl.addEventListener('pause', updateProgress)
-        
-  //       return () => {
-  //         audioEl.removeEventListener('timeupdate', updateProgress)
-  //         audioEl.removeEventListener('play', updateProgress)
-  //         audioEl.removeEventListener('pause', updateProgress)
-  //       }
-  //     }
-  //   }
-
-  //   const timer = setTimeout(checkAudioElement, 250)
-  //   return () => clearTimeout(timer)
-  // }, [isPlayerVisible, currentTrack?.id])
-
-  // Расчет кругового прогресса для SVG (2 * pi * 18 = 113.09)
-  // ИСПРАВЛЕНО: Оптимальные параметры круга для SVG 46x46 пикселей.
-  // Центр строго в точке 23, радиус 20. Длина окружности = 2 * pi * 20 = 125.66
-  // const radius = 20
-  // const strokeDasharray = 2 * Math.PI * radius
-  // const strokeDashoffset = strokeDasharray - (progressPercent / 100) * strokeDasharray
-
-  // ИСПРАВЛЕНО: Декларативно вычисляем процент прогресса на основе сигналов сервиса
+  // Декларативно вычисляем процент прогресса на основе сигналов сервиса
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
 
   // Параметры для идеального SVG-круга 46x46
@@ -66,19 +34,6 @@ export const GlobalPodcastSidebarButton = () => {
   const strokeDashoffset = strokeDasharray - (progressPercent / 100) * strokeDasharray
 
   // Логика клика по FAB-кнопке
-  // const handleFabClick = () => {
-  //   if (!isPlayerVisible) {
-  //     // Если плеер был совсем закрыт — открываем его в развернутом виде
-  //     setPlayerVisible(true)
-  //     setPlayerMinimized(false)
-  //   } else if (isPlayerMinimized) {
-  //     // Если шторка была свернута — разворачиваем её
-  //     setPlayerMinimized(false)
-  //   } else {
-  //     // Если шторка уже открыта — жесткий триггер закрытия (скрываем плеер полностью)
-  //     setPlayerVisible(false)
-  //   }
-  // }
   const handleFabClick = () => {
     event({
       action: 'player_fab_click', // Название события для GA4
@@ -125,31 +80,21 @@ export const GlobalPodcastSidebarButton = () => {
     }
   }, [currentTrack, isPlaying, isBuffering, trackErrors])
 
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  // const infoToolBgColor = getInfoToolBgColor({ currentTheme })
+  const textColor = getTextColor({ currentTheme })
+
   // ИСПРАВЛЕНО: Кнопка должна рендериться ВСЕГДА, если в очереди есть треки!
   if (queue.length === 0) return null
 
   return (
     <div 
       className="mobile-podcast-fab-trigger"
+      style={{
+        // backgroundColor: infoToolBgColor,
+        color: textColor,
+      }}
       onClick={handleFabClick}
-      // style={{
-      //   position: 'fixed',
-      //   left: '20px', // Слева по ТЗ
-      //   bottom: '20px',
-      //   width: '48px',
-      //   height: '48px',
-      //   borderRadius: '50%',
-      //   backgroundColor: '#111111',
-      //   border: '1px solid rgba(255, 255, 255, 0.15)',
-      //   boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-      //   zIndex: 2100, // Поверх шторки
-      //   cursor: 'pointer',
-      //   display: 'none', // Включается медиа-запросом в CSS на мобилках
-      //   alignItems: 'center',
-      //   justifyContent: 'center',
-      //   userSelect: 'none',
-      //   WebkitTapHighlightColor: 'transparent',
-      // }}
     >
       {/* Круговой SVG прогресс-бар */}
       {/* ИСПРАВЛЕНО: SVG центрирован идеально через абсолютные координаты и transform */}
@@ -185,14 +130,18 @@ export const GlobalPodcastSidebarButton = () => {
       )}
 
       {/* Иконка внутри кнопки */}
-      <div style={{ zIndex: 2, fontSize: '1.2em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        style={{
+          zIndex: 2, fontSize: '1.2em', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
         {
           isBuffering
           ? (
             <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--buffering'])} />
           )
           : (isPlayerVisible && !isPlayerMinimized)
-            ? <span style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1em' }}>✕</span>
+            ? <CloseIcon fontSize='small' style={{ color: '#ff4d4d' }} /> /* <span style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1em' }}>✕</span> */
             : isPlaying
               ? currentTrackErrorReason
                 ? <span className={clsx(liveStatusBadgeStyles.statusDot, liveStatusBadgeStyles['statusDot--error'])} />
@@ -208,7 +157,7 @@ export const GlobalPodcastSidebarButton = () => {
                     />
                   )
                   : <span className="rotating-disk-mobile">💿</span>
-              : <span>🎧</span>
+              :  <HeadphonesIcon fontSize='small' /> /* <span>🎧</span> */
         }
       </div>
     </div>

@@ -1,28 +1,20 @@
-import { useState, useRef, useLayoutEffect, useMemo, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import classes from './ClientPerfWidget.module.scss'
 import { linear } from 'math-interpolate'
 import { ProgressBar } from './ProgressBar'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { useSelector, useDispatch } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 import { getHumanizedReadableSize } from '~/utils/getHumanizedReadableSize'
 
+// Импортируем примитивы вашего реактивного фреймворка
+import { AbstractService, ReactiveEngine } from '@pravosleva/reactive-engine'
+import { useSignalValue } from '~/utils/reactive-engine'
+
 type TProps = {
   position: 'top-center';
-}
-
-const getPercentage = ({ x, sum }: { x: number, sum: number }) => {
-  const result = linear({
-    x1: 0,
-    y1: 0,
-    x2: sum,
-    y2: 100,
-    x: x,
-  })
-  return result
 }
 
 type TMainStackItem = {
@@ -30,20 +22,17 @@ type TMainStackItem = {
   totalJSHeapSize: number;
   usedJSHeapSize: number;
 }
-const mainStackLimit = 1000
-// const getMB = (b: number): number => b / (1024 * 1024)
-// const getGB = (b: number): number => b / (1024 * 1024 * 1024)
-const canvasCfg = {
-  width: 200,
-  height: 15,
-}
-const interval = 1 * 100
 
-const getOffsetY = ({ data, fullPx, targetField }: {
-  data: TMainStackItem;
-  fullPx: number;
-  targetField: string;
-}) => {
+const mainStackLimit = 1000
+const canvasCfg = { width: 200, height: 15 }
+const UPDATE_INTERVAL_MS = 100 // Шаг обновления данных
+
+const getPercentage = (x: number, sum: number) => {
+  if (!sum) return 0
+  return linear({ x1: 0, y1: 0, x2: sum, y2: 100, x })
+}
+
+const getOffsetY = (data: TMainStackItem, fullPx: number, targetField: 'total' | 'used') => {
   const { jsHeapSizeLimit: limit, totalJSHeapSize: total, usedJSHeapSize: used } = data
   let hPx = 0
   switch (targetField) {
@@ -53,95 +42,155 @@ const getOffsetY = ({ data, fullPx, targetField }: {
     case 'used':
       hPx = (fullPx * used) / total
       break
-    default:
-      break
   }
-  return { strartY: fullPx - hPx, hPx }
+  return { startY: fullPx - hPx, hPx }
 }
-const getStepX = ({ fullWidthPx, totalStackItems }: {
-  fullWidthPx: number;
-  totalStackItems: number;
-}) => fullWidthPx / (totalStackItems * 2 < 100 ? 100 : totalStackItems * 2)
+
+// 1. ИЗОЛИРОВАННАЯ РЕАКТИВНАЯ СЛУЖБА УПРАВЛЕНИЯ ПАМЯТЬЮ
+class MemoryMonitorService extends AbstractService {
+  // Атомарный сигнал хранения плоских человекочитаемых данных
+  public metrics = this.engine.signal<{
+    limitLabel: string;
+    totalLabel: string;
+    usedLabel: string;
+    usedOfTotalPercent: number;
+    totalOfLimitPercent: number;
+  }>({
+    limitLabel: '0 MB',
+    totalLabel: '0 MB',
+    usedLabel: '0 MB',
+    usedOfTotalPercent: 0,
+    totalOfLimitPercent: 0
+  }, 'perf-widget:signal:metrics')
+}
+
+const perfEngine = new ReactiveEngine({
+  logger: {
+    isEnabled: process.env.NODE_ENV === 'development',
+    filter: /^perf-widget-*/
+  }
+})
 
 export const ClientPerfWidget = (ps: TProps) => {
   const dispatch = useDispatch()
-  const reduxState = useSelector((state: IRootState) => state)
   const isBrowserMemoryMonitorEnabled = useSelector((state: IRootState) => state.customDevTools.browserMemoryMonitor.isEnabled)
-  // const [isWidgetOpened, setIsWidgetOpened] = useState(false)
-  const handleOpenToggle = useCallback(() => {
-    // setIsWidgetOpened((s) => !s)
-    dispatch(toggleBrowserMemoryMonitor())
-  }, [dispatch, reduxState])
+  
+  // Внедряем службу логики и подписываем React только на конечные текстовые метрики
+  const logic = perfEngine.inject(MemoryMonitorService)
+  const currentMetrics = useSignalValue(logic.metrics)
 
-  const [state, setMemState] = useState<any>(null)
-  const [counter, setCounter] = useState<number>(0)
-  const intervalRef = useRef<NodeJS.Timeout>()
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const mainStackRef = useRef<TMainStackItem[]>([])
+  const requestRef = useRef<number>(0)
+  const lastUpdateRef = useRef<number>(0)
 
-  useLayoutEffect(() => {
+  const handleOpenToggle = () => {
+    dispatch(toggleBrowserMemoryMonitor())
+  }
+
+  // ИГРОВОЙ ЦИКЛ ОБНОВЛЕНИЯ МЕТРИК И ОТРИСОВКИ CANVAS (Вне React-шедулера)
+  useEffect(() => {
     // @ts-ignore
-    if (!window.performance?.memory) return
+    const memEngine = window.performance?.memory
+    if (!memEngine) return
 
-    intervalRef.current = setInterval(() => {
-      setCounter((s) => s + 1)
-    }, interval)
+    const loop = (timestamp: number) => {
+      // Квантование времени: выполняем расчет строго раз в 100 мс
+      if (timestamp - lastUpdateRef.current >= UPDATE_INTERVAL_MS) {
+        lastUpdateRef.current = timestamp
+
+        const limit = memEngine.jsHeapSizeLimit
+        const total = memEngine.totalJSHeapSize
+        const used = memEngine.usedJSHeapSize
+
+        // 1. Идемпотентно пушим данные в цикличный стек истории
+        const currentStack = mainStackRef.current
+        if (currentStack.length >= mainStackLimit) {
+          currentStack.shift()
+        }
+        currentStack.push({ jsHeapSizeLimit: limit, totalJSHeapSize: total, usedJSHeapSize: used })
+
+        // 2. Атомарно обновляем текстовые сигналы для прогрессбаров
+        logic.metrics.value = {
+          limitLabel: getHumanizedReadableSize({ bytes: limit, decimals: 1 }),
+          totalLabel: getHumanizedReadableSize({ bytes: total, decimals: 1 }),
+          usedLabel: getHumanizedReadableSize({ bytes: used, decimals: 1 }),
+          usedOfTotalPercent: getPercentage(used, total),
+          totalOfLimitPercent: getPercentage(total, limit)
+        }
+
+        // 3. Прямая синхронная отрисовка Canvas без setTimeout и просадок FPS
+        const canvas = canvasRef.current
+        if (canvas) {
+          const ctx = canvas.getContext('2d')
+          if (ctx) {
+            // Быстрый сброс контекста без утечек памяти
+            ctx.clearRect(0, 0, canvasCfg.width, canvasCfg.height)
+            ctx.beginPath()
+
+            const totalItems = currentStack.length
+            const stepX = canvasCfg.width / (totalItems * 2 < 100 ? 100 : totalItems * 2)
+            let x = 0
+
+            // Высокопроизводительный In-place цикл рендеринга пикселей графиков
+            for (let i = 0; i < totalItems; i++) {
+              const data = currentStack[i]
+
+              // Отрезок Used
+              const c1 = getOffsetY(data, canvasCfg.height, 'used')
+              ctx.rect(x, c1.startY, stepX, c1.hPx)
+              x += stepX
+
+              // Отрезок Total
+              const c2 = getOffsetY(data, canvasCfg.height, 'total')
+              ctx.rect(x, c2.startY, stepX, c2.hPx)
+              x += stepX
+            }
+            ctx.fillStyle = currentMetrics.usedOfTotalPercent > 85 ? '#ff4d4d' : 'rgba(57, 229, 172, 0.4)'
+            ctx.fill()
+          }
+        }
+      }
+
+      // Рекурсивно запрашиваем следующий кадр у видеокарты устройства
+      requestRef.current = requestAnimationFrame(loop)
+    }
+
+    // Запускаем игровой цикл трекинга
+    requestRef.current = requestAnimationFrame(loop)
 
     return () => {
-      if (!!intervalRef.current) clearInterval(intervalRef.current)
+      if (requestRef.current) cancelAnimationFrame(requestRef.current)
     }
-  }, [])
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  useLayoutEffect(() => {
-    // @ts-ignore
-    // if (!window.performance?.memory) return
-    const memState = window.performance?.memory
-    const isCorrect = !!memState?.jsHeapSizeLimit && !!memState?.totalJSHeapSize && !!memState?.usedJSHeapSize
+  }, [isBrowserMemoryMonitorEnabled, currentMetrics.usedOfTotalPercent])
 
-    if (isCorrect) setMemState({
-      jsHeapSizeLimit: memState.jsHeapSizeLimit,
-      totalJSHeapSize: memState.totalJSHeapSize,
-      usedJSHeapSize: memState.usedJSHeapSize
-    })
-    if (isCorrect) {
-      if (mainStackRef.current.length < mainStackLimit) mainStackRef.current.push(memState)
-      else {
-        mainStackRef.current.shift()
-        mainStackRef.current.push(memState)
-      }
-      if (!!canvasRef.current) {
-        const cfg = canvasCfg
-        const ctx = canvasRef.current.getContext('2d')
-        let x = 0
-        const stepX = getStepX({ fullWidthPx: cfg.width, totalStackItems: mainStackRef.current.length })
-        if (!!ctx) setTimeout(() => {
-          // @ts-ignore
-          ctx.reset()
-          mainStackRef.current.forEach((data) => {
-            const c1 = getOffsetY({ data, fullPx: cfg.height, targetField: 'used' })
-            // NOTE: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect
-            ctx.rect(x, c1.strartY, stepX, c1.hPx)
-            // ctx.fill()
-            x += stepX
+  // @ts-ignore
+  const isSupported = typeof window !== 'undefined' && !!window.performance?.memory
 
-            const c2 = getOffsetY({ data, fullPx: cfg.height, targetField: 'total' })
-            ctx.rect(x, c2.strartY, stepX, c2.hPx)
-            // ctx.fill()
-            x += stepX
-          })
-          ctx.fill()
-        }, 0)
-      }
-    }
-  }, [counter])
+  // Вставьте этот метод внутрь компонента ClientPerfWidget для проверки:
+  // const triggerMemoryLeakTest = () => {
+  //   console.log('🔥 [Stress Test]: Начинаем спамить в кучу (Heap)...');
+    
+  //   // Создаем глобальный массив-утечку, который сборщик мусора не сможет удалить
+  //   (window as any).__leakData = (window as any).__leakData || [];
+    
+  //   // Каждые 50 мс забиваем память огромными строками
+  //   const leakInterval = setInterval(() => {
+  //     for (let i = 0; i < 5000; i++) {
+  //       (window as any).__leakData.push(new Array(1000).join('X-OXYGEN-MEM-SPAM-'));
+  //     }
+  //   }, 50);
 
-  const _limit = useMemo(() => (state?.jsHeapSizeLimit || 0), [state?.jsHeapSizeLimit])
-  const limitHumanized = useMemo(() => getHumanizedReadableSize({ bytes: _limit, decimals: 1 }), [_limit])
-  const _total = useMemo(() => (state?.totalJSHeapSize || 0), [state?.totalJSHeapSize])
-  const totalHumanized = useMemo(() => getHumanizedReadableSize({ bytes: _total, decimals: 1 }), [_total])
-  const _used = useMemo(() => (state?.usedJSHeapSize || 0), [state?.usedJSHeapSize])
-  const usedHumanized = useMemo(() => getHumanizedReadableSize({ bytes: _used, decimals: 0 }), [_used])
-  const totalOfLimit = useMemo(() => getPercentage({ x: _total, sum: _limit }), [_total, _limit])
-  const usedOfTotal = useMemo(() => getPercentage({ x: _used, sum: _total }), [_used, _total])
+  //   // Останавливаем утечку через 3 секунды, чтобы не обрушить вкладку смартфона
+  //   setTimeout(() => {
+  //     clearInterval(leakInterval);
+  //     console.log('🛑 [Stress Test]: Спам завершен. Ждем ленивого тика мобильного Хрома...');
+  //   }, 3000);
+  // }
+
+  if (!isSupported) {
+    return <div className={classes.wrapper} style={{ fontWeight: 'bold', padding: '0px 8px' }}>Memory stat isnt supported</div>
+  }
 
   return (
     <div
@@ -150,7 +199,6 @@ export const ClientPerfWidget = (ps: TProps) => {
         classes.stack1,
         classes.fixedBox,
         {
-          // [classes.bottomCenter]: ps.position === 'bottom-center',
           [classes.topCenter]: ps.position === 'top-center',
           [classes.isClosed]: !isBrowserMemoryMonitorEnabled,
           [classes.isOpened]: isBrowserMemoryMonitorEnabled,
@@ -158,52 +206,29 @@ export const ClientPerfWidget = (ps: TProps) => {
         'backdrop-blur--lite',
       )}
     >
-      {
-        !!state ? (
-          <>
-            <canvas ref={canvasRef} className={classes.canvas} height={canvasCfg.height} width={canvasCfg.width} />
-            <div className={classes.stack0}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                <span><b>Used</b> of Total</span>
-                <span>{totalHumanized}</span>
-              </div>
-              <ProgressBar value={usedOfTotal} label={usedHumanized} />
-            </div>
+      <canvas ref={canvasRef} className={classes.canvas} height={canvasCfg.height} width={canvasCfg.width} />
+      
+      <div className={classes.stack0}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span><b>Used</b> of Total</span>
+          <span>{currentMetrics.totalLabel}</span>
+        </div>
+        <ProgressBar value={currentMetrics.usedOfTotalPercent} label={currentMetrics.usedLabel} />
+      </div>
 
-            <div className={classes.stack0}>
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                <span><b>Total</b> of Limit</span>
-                <span>{limitHumanized}</span>
-              </div>
-              <ProgressBar value={totalOfLimit} label={totalHumanized} />
-            </div>
-          </>
-        ) : (
-          <div style={{ fontWeight: 'bold', padding: '0px 8px' }}>Memory stat isnt supported</div>
-        )
-      }
-      {
-        isBrowserMemoryMonitorEnabled && (
-          <button
-            className={clsx(
-              classes.absoluteToggler,
-              // 'backdrop-blur--lite',
-            )}
-            onClick={handleOpenToggle}
-          >
-            {/* <span>⚙️</span>
-            <span>Memory</span> */}
-            {/*
-              isBrowserMemoryMonitorEnabled ? <ExpandLessIcon style={{ fontSize: '16px' }} /> : <ExpandMoreIcon style={{ fontSize: '16px' }} />
-            */}
-            <ExpandLessIcon style={{ fontSize: '16px' }} />
-          </button>
-        )
-      }
+      <div className={classes.stack0}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span><b>Total</b> of Limit</span>
+          <span>{currentMetrics.limitLabel}</span>
+        </div>
+        <ProgressBar value={currentMetrics.totalOfLimitPercent} label={currentMetrics.totalLabel} />
+      </div>
+
+      {isBrowserMemoryMonitorEnabled && (
+        <button className={classes.absoluteToggler} onClick={handleOpenToggle}>
+          <ExpandLessIcon style={{ fontSize: '16px' }} />
+        </button>
+      )}
     </div>
   )
 }

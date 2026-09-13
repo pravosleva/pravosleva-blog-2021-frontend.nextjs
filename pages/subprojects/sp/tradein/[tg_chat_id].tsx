@@ -37,6 +37,7 @@ const TodoOnline = ({
         <title>SP | Trade-In report {chat_id}</title>
         <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
+        <link rel="stylesheet" href="/static/css/min/mapbox-gl@2.6.1.min.css" />
       </Head>
       {
         _pageService.isOk

@@ -20,7 +20,7 @@ import Head from 'next/head'
 // import '../public/static/css/min/fix.sweetalert2.css'
 // import '../public/static/css/min/block-quotes.css'
 // import '../public/static/css/min/sp-nw-2022.css'
-import { ClientPerfWidget } from '~/components'
+// import { ClientPerfWidget } from '~/components'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
 import { setTheme } from '~/store/reducers/globalTheme'
 import { GlobalAudioPlayer } from '~/components/GlobalAudioPlayer'
@@ -298,7 +298,7 @@ function AppWithRedux(props: MyAppProps) {
                     {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
                     <CssBaseline />
                     <Component {...pageProps} />
-                    <ClientPerfWidget position='top-center' />
+                    {/* <ClientPerfWidget position='top-center' /> */}
                     {/* ИСПРАВЛЕНО: Плеер и кнопка перенесены СЮДА.
                         1. Они рендерятся строго на клиенте (нет ошибок гидратации).
                         2. Находятся внутри ThemeProvider и CssBaseline (стили применятся эталонно).
