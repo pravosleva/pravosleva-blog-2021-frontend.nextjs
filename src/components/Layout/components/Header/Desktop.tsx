@@ -2,7 +2,7 @@ import React, { memo, useCallback, useState } from 'react'
 import Headroom from 'react-headroom'
 import styled from 'styled-components'
 import Link from 'next/link'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { MenuModal } from './components/MenuModal'
 import { useUnscrolledBody } from '~/hooks/useUnscrolledBody'
 import { ThemeToggler } from '../ThemeToggler'
@@ -11,8 +11,8 @@ import { LangLink } from './components/LangLink'
 import { breakpoints } from '~/mui/theme'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { IRootState } from '~/store/IRootState'
-import MemoryIcon from '@mui/icons-material/Memory'
-import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
+// import MemoryIcon from '@mui/icons-material/Memory'
+// import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 
 // Переносим повторяющиеся инлайновые стили в styled-компонент, 
 // чтобы React не пересоздавал объекты стилей на каждом рендере.
@@ -76,16 +76,16 @@ const _DesktopHeader = memo(({
   suppoerLocales,
   currentLang,
 }: IDesktopHeaderProps) => {
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   
   // Оптимизация 1: Селекторы вытаскивают только примитивы, рендер сработает только при реальном изменении
   const isAuthenticated = !!useSelector((state: IRootState) => state.userInfo?.fromServer?.id)
-  const isBrowserMemoryMonitorEnabled = !!useSelector((state: IRootState) => state.customDevTools.browserMemoryMonitor.isEnabled)
+  // const isBrowserMemoryMonitorEnabled = !!useSelector((state: IRootState) => state.customDevTools.browserMemoryMonitor.isEnabled)
 
-  const toggleBrowserMemoryMonitorDevTools = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    dispatch(toggleBrowserMemoryMonitor())
-  }, [dispatch])
+  // const toggleBrowserMemoryMonitorDevTools = useCallback((e: React.MouseEvent) => {
+  //   e.preventDefault()
+  //   dispatch(toggleBrowserMemoryMonitor())
+  // }, [dispatch])
 
   const [isMenuOpened, setIsMenuOpened] = useState(false)
   const { onBlockScrollBody } = useUnscrolledBody(false)
@@ -118,7 +118,7 @@ const _DesktopHeader = memo(({
                   </Link>
                 </li>
 
-                {!isBrowserMemoryMonitorEnabled && (
+                {/* !isBrowserMemoryMonitorEnabled && (
                   <NavItem
                     className="fade-in-effect"
                     onClick={toggleBrowserMemoryMonitorDevTools}
@@ -131,7 +131,7 @@ const _DesktopHeader = memo(({
                       <MemoryIcon />
                     </LangLink>
                   </NavItem>
-                )}
+                ) */}
 
                 {suppoerLocales.map((lang) => (
                   <NavItem key={lang.label}>
