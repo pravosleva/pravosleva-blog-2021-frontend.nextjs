@@ -11,6 +11,7 @@ import { ScrollTopBtn } from './components/ScrollTopBtn'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import Head from 'next/head'
+import Link from 'next/link'
 
 const NEXT_APP_BUILD_DATE = process.env.NEXT_APP_BUILD_DATE || 'No env'
 const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'No env'
@@ -133,6 +134,9 @@ export const Layout = ({ children, noFooter, isPrivatePage }: TProps) => {
                     </div>
                   )
                 }
+                <div style={{ whiteSpace: 'pre', color: '#fff', fontStyle: 'italic' }}>
+                  <Link href="/p/cv-ru">Резюме разработчика Полторацкого</Link>
+                </div>
               </div>
             </div>
           </ResponsiveBlock>
