@@ -83,7 +83,7 @@ type TLogicProps = {
 
 const delay = (ms: number) => new Promise((res, _rej) => setTimeout(res, ms))
 
-const Logic = ({ room }: TLogicProps) => {
+const Logic = memo(({ room }: TLogicProps) => {
   const router = useRouter()
 
   // -- NOTE: External logic
@@ -1315,7 +1315,7 @@ const Logic = ({ room }: TLogicProps) => {
       </div>
     )
   }
-}
+})
 
 type TProps = {
   room: number;

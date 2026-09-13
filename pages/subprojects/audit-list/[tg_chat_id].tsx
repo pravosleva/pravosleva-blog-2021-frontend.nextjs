@@ -1,5 +1,3 @@
-// import Container from '@mui/material/Container'
-// import Box from '@mui/material/Box'
 import { wrapper } from '~/store'
 import { NextPageContext as INextPageContext } from 'next'
 import Head from 'next/head'
@@ -9,11 +7,7 @@ import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { enableBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-
-// const isDev = process.env.NODE_ENV === 'development'
-// const baseURL = isDev
-//   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-//   : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
+import { memo } from 'react'
 
 interface IPageContext extends INextPageContext {
   req: any;
@@ -24,11 +18,7 @@ type TPageService = {
   message?: string;
 }
 
-const TodoOnline = ({
-  chat_id,
-  _pageService,
-  // ...restProps
-}: {
+const TodoOnline = ({ chat_id, _pageService }: {
   chat_id: number;
   _pageService: TPageService;
 }) => {

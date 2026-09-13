@@ -83,10 +83,9 @@ export const AuditGrid = memo(({
 }: TAuditListProps) => {
   const styles = useStyles()
   const isServer = useMemo(() => typeof window === 'undefined', [typeof window])
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 
   if (isServer) return <CircularIndeterminate />
-
-  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
 
   return (
     <WithStateContext>

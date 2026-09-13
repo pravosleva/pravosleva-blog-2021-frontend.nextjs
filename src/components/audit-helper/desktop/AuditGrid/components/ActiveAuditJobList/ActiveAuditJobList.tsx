@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 import { JobList } from '~/components/audit-helper/mobile/AuditList/AuditItem/JobList'
 import { useStore, TDesktopAuditState } from '~/components/audit-helper/desktop/AuditGrid/WithStateContext'
 import { TAudit, TSubJob, IJob } from '~/components/audit-helper'
@@ -53,7 +53,7 @@ type TProps = {
 }
 
 
-export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
+export const ActiveAuditJobList = memo(({ audits, onUpdateAuditComment, onAddJob, onAddSubjob, onToggleJobDone, onRemoveJob, onToggleSubjob, isEditable }: TProps) => {
   // const externalStyles = useExternalGridStyles()
   const [activeAuditId, _setStore] = useStore((store: TDesktopAuditState) => store.activeAuditId)
   const targetJobs = useMemo<IJob[]>(() => {
@@ -162,4 +162,4 @@ export const ActiveAuditJobList = ({ audits, onUpdateAuditComment, onAddJob, onA
       )
     default: return null
   }
-}
+})
