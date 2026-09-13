@@ -19,7 +19,7 @@ export const ImageRenderer = ({ alt, src, title }: IProps) => {
     width: 0,
     height: 0,
     tags: [],
-    title: title || alt || 'Изображение', // <-- Заголовок лайтбокса
+    title: title || undefined, // <-- Заголовок лайтбокса
     caption: alt || ''                    // <-- Нижнее описание в лайтбоксе
   }), [src, alt])
 

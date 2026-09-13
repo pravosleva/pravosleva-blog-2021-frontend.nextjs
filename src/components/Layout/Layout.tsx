@@ -134,8 +134,10 @@ export const Layout = ({ children, noFooter, isPrivatePage }: TProps) => {
                     </div>
                   )
                 }
-                <div style={{ whiteSpace: 'pre', color: '#fff', fontStyle: 'italic' }}>
-                  <Link href="/p/cv-ru">Резюме разработчика Полторацкого</Link>
+                <div style={{ whiteSpace: 'pre', fontStyle: 'italic' }}>
+                  <Link href='/p/cv-ru' as='/p/cv-ru'>
+                    <a style={{ color: '#fff', opacity: 0.4 }}>Резюме разработчика Полторацкого</a>
+                  </Link>
                 </div>
               </div>
             </div>
