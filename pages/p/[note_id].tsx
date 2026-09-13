@@ -12,7 +12,7 @@ import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { NextPageContext } from 'next'
 import { Store } from 'redux'
 import { NCodeSamplesSpace } from '~/types'
-import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { UniversalContainer } from '~/components/special-content/UniversalContainer'
 import { ContentLockedSvg } from '~/components/special-content/error/ContentLockedSvg'
 import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
 
@@ -40,7 +40,7 @@ const BlogArticleSlug = ({ _pageService, article, statusCode }: IBlogArticleSlug
   if (statusCode === 401) {
     return (
       <Layout>
-        <UniversalContainer>
+        <UniversalContainer isForLayout={true} hasBreadcrumbs={true}>
           <AuthorizationRequired401Svg message={_pageService?.message} />
         </UniversalContainer>
       </Layout>
@@ -51,7 +51,7 @@ const BlogArticleSlug = ({ _pageService, article, statusCode }: IBlogArticleSlug
   if (!_pageService?.isOk || !article) {
     return (
       <Layout>
-        <UniversalContainer>
+        <UniversalContainer isForLayout={true} hasBreadcrumbs={true}>
           <ContentLockedSvg message={_pageService?.message} />
         </UniversalContainer>
       </Layout>

@@ -14,7 +14,7 @@ import { IRootState } from '~/store/IRootState'
 import { setActiveProject, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { CreateNewItem } from '~/components/Autopark2022/components/TheProject/components/CreateNewItem'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { UniversalContainer } from '~/components/special-content/UniversalContainer'
 import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -63,7 +63,7 @@ export default function MyProjectDetail({
           <meta name="robots" content="noindex, nofollow" />
           <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         </Head>
-        <UniversalContainer>
+        <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
           <AuthorizationRequired401Svg 
             message={_pageService?.message || `Пользователя ${chat_id} не существует. Требуется инициализация сессии через Telegram-бот.`} 
           />
@@ -78,7 +78,7 @@ export default function MyProjectDetail({
 
   if (errorMsg || !_pageService?.isOk) {
     return (
-      <UniversalContainer>
+      <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
         <AuthorizationRequired401Svg message={errorMsg || _pageService?.message || 'Неизвестная ошибка рантайма.'} />
         <pre style={{ fontSize: 'x-small',
           whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы

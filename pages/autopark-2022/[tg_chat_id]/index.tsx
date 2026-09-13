@@ -12,7 +12,7 @@ import { CreateNewProject } from '~/components/Autopark2022/components/ProjectLi
 import { setUserCheckerResponse, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { UniversalContainer } from '~/components/special-content/UniversalContainer'
 import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -56,7 +56,7 @@ export default function MyProjects({
           <meta name="robots" content="noindex, nofollow" />
           <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         </Head>
-        <UniversalContainer>
+        <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
           <AuthorizationRequired401Svg 
             message={_pageService?.message || `Пользователя ${chat_id} не существует. Требуется инициализация сессии через Telegram-бот.`} 
           />
@@ -68,7 +68,7 @@ export default function MyProjects({
   // КЕЙС Б: Системная ошибка рантайма / падение базы данных
   if (errorMsg || !_pageService?.isOk) {
     return (
-      <UniversalContainer>
+      <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
         <AuthorizationRequired401Svg message={errorMsg || _pageService?.message || 'Неизвестная ошибка рантайма.'} />
       </UniversalContainer>
     )

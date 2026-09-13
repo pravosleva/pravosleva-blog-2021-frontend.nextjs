@@ -1,12 +1,12 @@
 import React from 'react'
 import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
-import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { UniversalContainer } from '~/components/special-content/UniversalContainer'
 import { Layout } from '~/components/Layout'
 
 const Custom404Page = () => {
   return (
     <Layout>
-      <UniversalContainer>
+      <UniversalContainer isForLayout={true} hasBreadcrumbs={false}>
         <AuthorizationRequired401Svg />
       </UniversalContainer>
     </Layout>

@@ -65,12 +65,12 @@ export default class MyDocument extends Document {
           <link rel="stylesheet" href="/static/prismjs/themes/prism-material-theme.min.css" />
           <link rel="stylesheet" href="/static/css/min/variant.react-image-ligthbox.v2.css" />
 
-          <link href="/static/css/min/article.css" rel="stylesheet" />
-          <link href="/static/css/min/audio-podcast.css?v=0" rel="stylesheet" />
-          <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" />
-          <link href="/static/css/min/audio-podcast-preview.css" rel="stylesheet" />
+          <link href="/static/css/min/article.css" rel="stylesheet" fetchpriority="high" />
+          <link href="/static/css/min/audio-podcast.css?v=0" rel="stylesheet" fetchpriority="high" />
+          <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" fetchpriority="high" />
+          <link href="/static/css/min/audio-podcast-preview.css" rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
-          <link href="/static/css/min/controls-box.css" rel="stylesheet" />
+          <link href="/static/css/min/controls-box.css" rel="stylesheet" fetchpriority="high" />
           <link rel="stylesheet" href="/static/css/min/edna-exp-container.css" fetchpriority="high" />
           <link rel="stylesheet" href="/static/css/min/code.css?v=0" fetchpriority="high" />
 

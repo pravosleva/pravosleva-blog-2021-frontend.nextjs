@@ -11,7 +11,7 @@ import { TArticle } from '~/components/Article'
 import { NCodeSamplesSpace } from '~/types'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { UniversalContainer } from '~/components/special-content/UniversalContainer'
 import { ContentLockedSvg } from '~/components/special-content/error/ContentLockedSvg'
 
 type TPageService = {
@@ -35,7 +35,7 @@ const BlogIndex = ({ _pageService, list }: IBlogIndexProps) => {
   if (!_pageService?.isOk) {
     return (
       <Layout>
-        <UniversalContainer>
+        <UniversalContainer isForLayout={true} hasBreadcrumbs={true}>
           <ContentLockedSvg message={_pageService?.message || 'ERR: No _pageService.message'} />
         </UniversalContainer>
       </Layout>
@@ -99,8 +99,8 @@ const BlogIndex = ({ _pageService, list }: IBlogIndexProps) => {
         })}
 
         {/* Специфические бандлы стилей поисковых заголовков */}
-        <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" />
-        <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" />
+        <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" fetchpriority="high"  />
+        <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" fetchpriority="high" />
       </Head>
       <Layout>
         <ArticlesList

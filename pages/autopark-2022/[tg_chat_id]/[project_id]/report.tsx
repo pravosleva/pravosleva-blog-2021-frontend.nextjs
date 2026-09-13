@@ -10,7 +10,7 @@ import { Report } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
 import { TUserCheckerResponse, setActiveProject, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { UniversalContainer } from '~/components/special-content/UniversalContainer'
 import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
@@ -61,7 +61,7 @@ export default function MyProjectReport({
           <meta name="robots" content="noindex, nofollow" />
           <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         </Head>
-        <UniversalContainer>
+        <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
           <AuthorizationRequired401Svg 
             message={_pageService?.message || `Пользователя ${chat_id} не существует. Требуется авторизация через Telegram-бот.`} 
           />
@@ -72,7 +72,7 @@ export default function MyProjectReport({
 
   if (errorMsg || !_pageService?.isOk) {
     return (
-      <UniversalContainer>
+      <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
         <AuthorizationRequired401Svg message={errorMsg || _pageService?.message || 'Неизвестная ошибка рантайма.'} />
       </UniversalContainer>
     )

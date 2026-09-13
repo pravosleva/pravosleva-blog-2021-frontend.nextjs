@@ -9,7 +9,7 @@ import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { UniversalContainer } from '~/components/special-content/UniversalContainer'
 import { PageNotFound404Svg } from '~/components/special-content/error/PageNotFound404Svg'
 
 type TPageService = {
@@ -35,7 +35,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: IBlogQSTProps) => {
   if (!_pageService?.isOk) {
     return (
       <Layout>
-        <UniversalContainer>
+        <UniversalContainer isForLayout={true} hasBreadcrumbs={true}>
           <PageNotFound404Svg message={_pageService?.message || 'ERR: No _pageService.message'} />
         </UniversalContainer>
       </Layout>
@@ -102,8 +102,8 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: IBlogQSTProps) => {
         })}
 
         {/* Специфические бандлы стилей поисковых заголовков */}
-        <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" />
-        <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" />
+        <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" fetchpriority="high"  />
+        <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" fetchpriority="high"  />
       </Head>
       <Layout>
         <ArticlesList
