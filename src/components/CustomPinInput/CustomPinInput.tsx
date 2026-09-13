@@ -8,10 +8,8 @@ import {
   CardContent,
   Typography,
 } from '@mui/material'
-import PinInput from './components/PinInput' // 'react-pin-input'
+import PinInput from './components/PinInput'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-// import Link from '~/components/Link'
-// import LoadingButton from '@mui/lab/LoadingButton'
 import axios from 'axios'
 import { groupLog } from '~/utils/groupLog'
 import axiosRetry from 'axios-retry'
@@ -81,17 +79,11 @@ export const CustomPinInput = ({
   return (
     <>
       <Card sx={{ width: '100%' }}>
-        <CardContent>
-          {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            One time password
-          </Typography> */}
+        <CardContent style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <Typography variant="h6" component="div" mb={1}>
             Введите одноразовый пароль
           </Typography>
-          {/* <Typography sx={{ mb: 1 }} color="text.secondary">
-            Пароль можно получить через Telegram bot
-          </Typography> */}
-          <Box sx={{ mb: 1 }}>
+          <Box>
             <PinInput
               length={4}
               initialValue=""
@@ -111,9 +103,6 @@ export const CustomPinInput = ({
               }}
             />
           </Box>
-          {/* <Typography variant="body2">
-            Пароль можно получить через Telegram bot
-          </Typography> */}
           {!!errMsg && (
             <Alert variant="filled" severity="error">
               {errMsg}
@@ -147,32 +136,12 @@ export const CustomPinInput = ({
             justifyContent: 'space-between',
           }}
         >
-          {/* <Button size="small">Learn More</Button> */}
-          {/*
-          <LoadingButton
-            // disabled={isLoading}
-            loading={isLoading}
-            endIcon={<ArrowForwardIcon />}
-            variant="contained"
-            color='primary'
-            component={Link}
-            noLinkStyle
-            href='https://t.me/pravosleva_bot?start=autopark'
-            target='_blank'
-          >
-            Get Password
-          </LoadingButton>
-          */}
           <Button
-            // disabled={isLoading}
             disabled={true}
             endIcon={<ArrowForwardIcon />}
             variant="contained"
             color='primary'
             onClick={handleSendPasswordToUser}
-          // noLinkStyle
-          // href='https://t.me/pravosleva_bot?start=autopark'
-          // target='_blank'
           >
             Send Password
           </Button>

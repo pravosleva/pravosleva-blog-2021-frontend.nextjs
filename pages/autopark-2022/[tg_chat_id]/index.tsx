@@ -1,17 +1,19 @@
-import { useMemo } from 'react'
-import { Autopark2022 } from '~/components/Autopark2022'
-import { wrapper } from '~/store'
-import { setUserCheckerResponse } from '~/store/reducers/autopark'
+import React, { useMemo } from 'react'
 import Head from 'next/head'
-import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
-import { ErrorPage } from '~/components/ErrorPage'
 import { useSelector } from 'react-redux'
-import { IRootState } from '~/store/IRootState'
-import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTimeLoginFormBtn'
+import { Store } from 'redux'
 import { Container } from '@mui/material'
-import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { wrapper } from '~/store'
+import { IRootState } from '~/store/IRootState'
+import { NextPageContext } from 'next'
+import { Autopark2022 } from '~/components/Autopark2022'
+import { OneTimeLoginFormBtn } from '~/components/Autopark2022/components/OneTimeLoginFormBtn'
 import { CreateNewProject } from '~/components/Autopark2022/components/ProjectList/components/CreateNewProject'
-import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
+import { setUserCheckerResponse, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { autoparkHttpClient } from '~/utils/autoparkHttpClient'
+import { getInitialPropsBase, setCommonStore } from '~/utils/next'
+import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -24,131 +26,173 @@ type TPageService = {
   hasAuthenticated: boolean;
 }
 
+interface IMyProjectsProps {
+  userCheckerResponse: any;
+  errorMsg: string | null;
+  chat_id: string;
+  _pageService: TPageService;
+  statusCode?: number;
+}
+
 export default function MyProjects({
   userCheckerResponse,
   errorMsg,
   chat_id,
-  // _pageService,
-}: any) {
-  const isBrowser = useMemo(() => typeof window !== 'undefined', [typeof window])
+  _pageService,
+  statusCode
+}: IMyProjectsProps) {
+  const isBrowser = useMemo(() => typeof window !== 'undefined', [])
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
 
-  if (userCheckerResponse?.code === 'not_found') return (
-    <>
-      <Head>
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-        {/* TODO: Жесткий запрет индексации страницы */}
-        <meta name="robots" content="noindex, nofollow" />
-      </Head>
-      <ErrorPage message={`Пользователя ${chat_id} не существует. Нужна авторизация через Telegram`} />
-    </>
-  )
-  if (!!errorMsg) return (
-    <ErrorPage message={errorMsg} />
-  )
+  // =========================================================================
+  // 🛡️ ЗАЩИТНЫЙ БАРЬЕР UI-СЛОЯ ОШИБОК И АВТОРИЗАЦИИ (Стандартизация под SVG 401)
+  // =========================================================================
+  
+  // КЕЙС A: Пользователь не найден в базе данных бота Autopark
+  if (userCheckerResponse?.code === 'not_found' || statusCode === 401) {
+    return (
+      <>
+        <Head>
+          <meta name="robots" content="noindex, nofollow" />
+          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        </Head>
+        <UniversalContainer>
+          <AuthorizationRequired401Svg 
+            message={_pageService?.message || `Пользователя ${chat_id} не существует. Требуется инициализация сессии через Telegram-бот.`} 
+          />
+        </UniversalContainer>
+      </>
+    )
+  }
+
+  // КЕЙС Б: Системная ошибка рантайма / падение базы данных
+  if (errorMsg || !_pageService?.isOk) {
+    return (
+      <UniversalContainer>
+        <AuthorizationRequired401Svg message={errorMsg || _pageService?.message || 'Неизвестная ошибка рантайма.'} />
+      </UniversalContainer>
+    )
+  }
 
   return (
     <>
       <Head>
-        <title>AutoPark</title>
-        {/* TODO: Жесткий запрет индексации страницы */}
+        <title>AutoPark | Панель управления</title>
+        {/* Жёсткий запрет индексации приватной панели роботами */}
         <meta name="robots" content="noindex, nofollow" />
-        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_type=autopark`} />
-        {/* <script
-          type="text/javascript"
-          defer
-          dangerouslySetInnerHTML={{
-            __html: `if (typeof customEruda !== 'undefined') setTimeout(customEruda.initIfNecessary, 1000);`,
-          }}
-        /> */}
       </Head>
+      
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-        <Container maxWidth="xs">
+        <Container maxWidth="xs" style={{ paddingTop: '24px' }}>
           <Autopark2022 chat_id={chat_id} />
         </Container>
-        {
-          isBrowser && (
-            <div
-              style={{
-                marginTop: 'auto',
-                position: 'sticky',
-                bottom: '0px',
-                // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
-                zIndex: 2,
-                padding: '16px',
-                paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
-                // backgroundColor: '#fff',
-                // borderTop: '1px solid lightgray',
-              }}
-              className='backdrop-blur--lite'
-            >
-              {isOneTimePasswordCorrect ? (
-                <CreateNewProject chat_id={chat_id} />
-              ) : (
-                <OneTimeLoginFormBtn
-                  chat_id={chat_id}
-                />
-              )}
-            </div>
-          )
-        }
+        
+        {isBrowser && (
+          <div
+            style={{
+              marginTop: 'auto',
+              position: 'sticky',
+              bottom: '0px',
+              zIndex: 2,
+              padding: '16px',
+              paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
+            }}
+            className='backdrop-blur--lite'
+          >
+            {isOneTimePasswordCorrect ? (
+              <CreateNewProject chat_id={chat_id} />
+            ) : (
+              <OneTimeLoginFormBtn chat_id={chat_id} />
+            )}
+          </div>
+        )}
       </div>
     </>
-  );
+  )
 }
 
 MyProjects.getInitialProps = wrapper.getInitialPageProps(
-  // @ts-ignore
-  (store) => async (ctx: any) => {
+  (store: Store) => async (ctx: NextPageContext): Promise<IMyProjectsProps | any> => {
     const { query } = ctx
-    const { tg_chat_id } = query
-    let errorMsg = null
+    
+    // СНАЙПЕРСКАЯ ВАЛИДАЦИЯ: Проверяем, что пришла строка и она преобразуется в валидное число
+    const isQueryValidNumber = typeof query?.tg_chat_id === 'string' && !Number.isNaN(Number(query.tg_chat_id))
+    
+    // Для логики и сетевых запросов используем чистую строку, если она валидна
+    const tg_chat_id = isQueryValidNumber ? String(query?.tg_chat_id) : undefined
+    
+    let errorMsg: string | null = null
+    let statusCode = 200
+    let result = null
 
-    const result = await autoparkHttpClient.getUserData({
-      tg: {
-        chat_id: tg_chat_id,
-      }
-    })
+    if (!!tg_chat_id) {
+      // 1. Делаем запрос к API-серверу для валидации существования аккаунта в ТГ-боте
+      result = await autoparkHttpClient.getUserData({
+        tg: {
+          chat_id: Number(tg_chat_id), // Передаем число на бэкенд, как он и ожидает
+        }
+      })
       .then((res) => res)
       .catch((err) => err.message || 'Unknown err (GIPP)')
 
-    if (result?.ok === true || result?.ok === false) store.dispatch(setUserCheckerResponse(result))
-    if (typeof result === 'string') errorMsg = result
+      if (result?.ok === true || result?.ok === false) {
+        store.dispatch(setUserCheckerResponse(result))
+      }
+      
+      // Если пользователя нет в базе данных бота
+      if (result?.code === 'not_found') {
+        if (ctx.res) ctx.res.statusCode = 401
+        statusCode = 401
+      }
 
-    // - NOTE: Quick auth
+      if (typeof result === 'string') {
+        errorMsg = result
+      }
+    }
+
+    // 2. Логика быстрой проверки JWT-токенов одноразового пароля
     const _pageService: TPageService = {
       isOk: true,
       hasAuthenticated: false,
     }
+    
     const baseProps = await getInitialPropsBase(ctx)
+    
     switch (true) {
-      case !tg_chat_id || isNaN(Number(tg_chat_id)):
+      case !tg_chat_id:
+        _pageService.isOk = false
         _pageService.hasAuthenticated = false
-        _pageService.message = `Incorrect page param (number expected), received: \`${tg_chat_id}\``
+        _pageService.message = `Неверный параметр идентификатора (ожидалось число), получено: \`${query?.tg_chat_id}\``
+        if (ctx.res) ctx.res.statusCode = 400
+        statusCode = 400
         break
-      // NOTE: For ssr only?
-      case baseProps.authData.oneTime.jwt.isAuthorized: {
+        
+      case baseProps.authData.oneTime.jwt.isAuthorized:
         _pageService.hasAuthenticated = true
         store.dispatch(setIsOneTimePasswordCorrect(true))
         break
-      }
-      case baseProps.authData.oneTime.jwt._service.isErrored: {
+        
+      case baseProps.authData.oneTime.jwt._service.isErrored:
         _pageService.hasAuthenticated = false
-        _pageService.message = baseProps.authData.oneTime.jwt._service.message || 'ERR1 (No err.message)'
+        _pageService.message = baseProps.authData.oneTime.jwt._service.message || 'Ошибка авторизации сессии (JWT Errored)'
+        if (ctx.res) ctx.res.statusCode = 401
+        statusCode = 401
         break
-      }
+        
       default:
         break
     }
-    // -
+
+    setCommonStore({ store, baseProps })
 
     return {
       userCheckerResponse: result,
       errorMsg,
-      isUserExists: result?.ok,
-      chat_id: tg_chat_id,
+      isUserExists: result ? result.ok : false,
+      chat_id: tg_chat_id || String(query?.tg_chat_id || ''), // Гарантируем тип string для UI-компонентов
       _pageService,
+      statusCode
     }
   }
 )

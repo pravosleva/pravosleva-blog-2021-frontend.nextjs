@@ -1,37 +1,18 @@
-// import {
-//   // Box,
-//   // Container,
-//   // Stack,
-//   // <Stack spacing={1}>
-//   Typography,
-// } from '@mui/material'
-// import Link from '~/components/Link'
-// import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-
-// import React, { useState, useCallback, useEffect } from 'react'
-// import { useDispatch } from 'react-redux'
-// import { Recaptcha } from '~/components/Recaptcha'
-// import { useInput } from '~/hooks/useInput'
-import { Layout } from '~/components/Layout'
-// import styled from 'styled-components'
-// import { useRouter } from 'next/router'
-// import { loadReCaptcha } from 'react-recaptcha-v3'
-// import { universalHttpClient } from '~/utils/universalHttpClient'
-// import { showAsyncToast } from '@/actions'
-// import { withTranslator } from '~/hocs/withTranslator'
-// import { metrics } from '@/constants'
-import { wrapper } from '~/store'
-import { universalHttpClient } from '~/utils/universalHttpClient'
-import { NCodeSamplesSpace } from '~/types'
-import { ArticlesList } from '~/components/ArticlesList'
-import { ErrorPage } from '~/components/ErrorPage'
-// import { slugMap } from '~/constants/blog/slugMap'
-import { TArticle } from '~/components/Article'
+import React from 'react'
 import Head from 'next/head'
-import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
-import { setCommonStore } from '~/utils/next'
-
-// const isProd = process.env.NODE_ENV === 'production'
+import { useSelector } from 'react-redux'
+import { Store } from 'redux'
+import { wrapper } from '~/store'
+import { IRootState } from '~/store/IRootState'
+import { setTitle } from '~/store/reducers/pageMeta'
+import { Layout } from '~/components/Layout'
+import { ArticlesList } from '~/components/ArticlesList'
+import { TArticle } from '~/components/Article'
+import { NCodeSamplesSpace } from '~/types'
+import { universalHttpClient } from '~/utils/universalHttpClient'
+import { getInitialPropsBase, setCommonStore } from '~/utils/next'
+import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { ContentLockedSvg } from '~/components/special-content/error/ContentLockedSvg'
 
 type TPageService = {
   isOk: boolean;
@@ -39,18 +20,30 @@ type TPageService = {
   response?: NCodeSamplesSpace.TNotesListResponseModified;
 }
 
-const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: TArticle[]; }) => {
-  if (!_pageService?.isOk) return (
-    <Layout>
-      <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'} />
-      <pre>{JSON.stringify({ _pageService }, null, 2)}</pre>
-    </Layout>
-  )
+interface IBlogIndexProps {
+  _pageService: TPageService;
+  list: TArticle[];
+}
+
+const BlogIndex = ({ _pageService, list }: IBlogIndexProps) => {
+  // Синхронизируем заголовок с глобальным Redux-стейтом метаданных страницы
+  const { title } = useSelector((state: IRootState) => state.pageMeta)
+
+  // =========================================================================
+  // 🛡️ ЗАЩИТНЫЙ БАРЬЕР UI-СЛОЯ ОШИБОК (Стандартизация под UniversalContainer)
+  // =========================================================================
+  if (!_pageService?.isOk) {
+    return (
+      <Layout>
+        <UniversalContainer>
+          <ContentLockedSvg message={_pageService?.message || 'ERR: No _pageService.message'} />
+        </UniversalContainer>
+      </Layout>
+    )
+  }
 
   const canonicalUrl = `${process.env.NEXT_SEO}/blog`
   const __defaultDescr = 'Найдётся всё что не нашлось ранее, если оно действительно нужно'
-  
-  // Исправленный абсолютный путь к дефолтному логотипу блога (без склеек)
   const defaultLogoUrl = `${process.env.NEXT_SEO}/static/img/logo/logo-pravosleva.jpg`
 
   // 1. Мета-теги, использующие стандартный атрибут "name" (SEO + Twitter)
@@ -77,17 +70,13 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
     "og:image:height": "630",
     "og:image:type": "image/jpeg",
     "og:locale": "ru_RU",
-    // Списком объявляем альтернативные локали без дублирования
     "og:locale:alternate": ["be_BY", "kk_KZ", "tt_RU", "uk_UA", "en_US"],
   }
 
   return (
     <>
       <Head>
-        {/* TODO: Синхронизируем title с глобальным Redux-стейтом метаданных */}
-        <title>Pravosleva | Blog</title>
-        
-        {/* Нативная каноническая ссылка */}
+        <title>{title || 'Pravosleva | Blog'}</title>
         <link rel="canonical" href={canonicalUrl} />
 
         {/* --- Автоматический рендеринг nameMeta (SEO & Twitter) --- */}
@@ -100,7 +89,6 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
         {Object.entries(propertyMeta).map(([key, value]) => {
           if (!value) return null
           
-          // Безопасный рендеринг массива альтернативных локалей
           if (Array.isArray(value)) {
             return value.map((locale) => (
               <meta key={`${key}-${locale}`} property={key} content={locale} />
@@ -116,7 +104,6 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
       </Head>
       <Layout>
         <ArticlesList
-          // _pageService={_pageService}
           list={list}
           searchQueryTitle={{
             original: 'ALL',
@@ -131,14 +118,11 @@ const BlogIndex = ({ _pageService, list }: { _pageService: TPageService; list: T
 }
 
 BlogIndex.getInitialProps = wrapper.getInitialPageProps(
-  // @ts-ignore
-  (store) => async (ctx: any) => {
+  (store: Store) => async (ctx: any): Promise<IBlogIndexProps> => {
     const baseProps = await getInitialPropsBase(ctx)
     // const { query: { tg_chat_id } } = ctx
-    // let errorMsg = null
-    const _pageService: TPageService = {
-      isOk: false,
-    }
+    const _pageService: TPageService = { isOk: false }
+    let list: TArticle[] = []
 
     // const result = await autoparkHttpClient.checkJWT({
     //   tested_chat_id: tg_chat_id,
@@ -149,16 +133,17 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
     // if (result?.ok === true) store.dispatch(setIsOneTimePasswordCorrect(true))
     // if (typeof result === 'string') errorMsg = result
 
+    // Запрашиваем плоский список статей с прокси-эндпоинта Express
     const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponseModified>('/express-next-api/code-samples-proxy/api/notes')
-    let list: TArticle[] = []
 
     switch (true) {
       case notesResult.ok && !!notesResult.response:
+        // Устанавливаем базовое название раздела в Redux-стейт метаданных
+        store.dispatch(setTitle('Pravosleva | Blog'))
+        
         _pageService.isOk = true
         _pageService.response = notesResult.response
-        list = !!notesResult.response?.data
-          ? notesResult.response?.data
-          : []
+        list = notesResult.response?.data ? notesResult.response.data : []
         break
       default:
         _pageService.isOk = false

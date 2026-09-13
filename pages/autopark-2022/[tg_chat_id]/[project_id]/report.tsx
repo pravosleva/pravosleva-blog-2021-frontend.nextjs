@@ -1,71 +1,90 @@
-import * as React from 'react';
-import {
-  // Box,
-  Button,
-  Container,
-  Grid,
-} from '@mui/material'
-import Link from '~/components/Link';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import axios from 'axios';
-// import { TheProject } from '~/components/Autopark2022/components'
-import { wrapper } from '~/store'
-import { TUserCheckerResponse, setActiveProject } from '~/store/reducers/autopark'
-import { Report } from '~/components/Autopark2022/components'
+import * as React from 'react'
 import Head from 'next/head'
-import { ErrorPage } from '~/components/ErrorPage'
-import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
-import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase';
-// import { ResponsiveBlock } from '~/mui/ResponsiveBlock';
+import { Store } from 'redux'
+import { NextPageContext } from 'next'
+import axios from 'axios'
+import { Button, Container, Grid } from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import Link from '~/components/Link'
+import { Report } from '~/components/Autopark2022/components'
+import { wrapper } from '~/store'
+import { TUserCheckerResponse, setActiveProject, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { getInitialPropsBase, setCommonStore } from '~/utils/next'
+import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
   : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
-const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
+const api = axios.create({ baseURL, validateStatus: (_s: number) => true })
 
 type TPageService = {
   isOk: boolean;
   message?: string;
 }
 
-export default function MyProjects({
-  userCheckerResponse,
-  errorMsg,
-  chat_id,
-  project_id,
-  projectDataResponse,
-}: {
+interface IMyProjectReportProps {
   userCheckerResponse: TUserCheckerResponse;
-  errorMsg?: string;
-  chat_id: string;
-  project_id: string;
   projectDataResponse: {
     name: string;
     description: string;
   } | null;
-}) {
-  if (userCheckerResponse?.code === 'not_found') return (
-    <>
-      <Head>
-        <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-        {/* TODO: Жесткий запрет индексации страницы */}
-        <meta name="robots" content="noindex, nofollow" />
-      </Head>
-      <ErrorPage message={`Пользователя ${chat_id} не существует. Нужна авторизация через Telegram`} />
-    </>
-  )
-  if (!!errorMsg) return (
-    <ErrorPage message={errorMsg} />
-  )
+  errorMsg: string | null;
+  chat_id: string;
+  project_id: string;
+  _pageService: TPageService;
+  statusCode?: number;
+}
+
+export default function MyProjectReport({
+  userCheckerResponse,
+  projectDataResponse,
+  errorMsg,
+  chat_id,
+  project_id,
+  _pageService,
+  statusCode
+}: IMyProjectReportProps) {
+  const isBrowser = typeof window !== 'undefined'
+  const baseProps = useSelector((s: IRootState) => s.baseProps)
+
+  // =========================================================================
+  // 🛡️ ЗАЩИТНЫЙ БАРЬЕР UI-СЛОЯ ОШИБОК И АВТОРИЗАЦИИ (Стандартизация под SVG 401)
+  // =========================================================================
+  if (userCheckerResponse?.code === 'not_found' || statusCode === 401) {
+    return (
+      <>
+        <Head>
+          <meta name="robots" content="noindex, nofollow" />
+          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        </Head>
+        <UniversalContainer>
+          <AuthorizationRequired401Svg 
+            message={_pageService?.message || `Пользователя ${chat_id} не существует. Требуется авторизация через Telegram-бот.`} 
+          />
+        </UniversalContainer>
+      </>
+    )
+  }
+
+  if (errorMsg || !_pageService?.isOk) {
+    return (
+      <UniversalContainer>
+        <AuthorizationRequired401Svg message={errorMsg || _pageService?.message || 'Неизвестная ошибка рантайма.'} />
+      </UniversalContainer>
+    )
+  }
 
   return (
     <>
       <Head>
-        <title>{projectDataResponse?.name || 'My Car'} | Report</title>
-        {/* TODO: Жесткий запрет индексации страницы */}
+        <title>{projectDataResponse?.name || 'My Car'} | Отчет</title>
+        {/* Жёсткий запрет индексации приватного отчёта в поисковиках */}
         <meta name="robots" content="noindex, nofollow" />
-        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_name=${projectDataResponse?.name || 'My Car'}&project_type=autopark_report`} />
+        <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_name=${encodeURIComponent(projectDataResponse?.name || 'My Car')}&project_type=autopark_report`} />
         <meta name="application-name" content={projectDataResponse?.name || 'My Car'} />
         <meta name="apple-mobile-web-app-title" content={projectDataResponse?.name || 'My Car'} />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -73,72 +92,30 @@ export default function MyProjects({
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-tap-highlight" content="no" />
-        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
-        {/* <script
-          type="text/javascript"
-          defer
-          dangerouslySetInnerHTML={{
-            __html: `if (typeof customEruda !== 'undefined') setTimeout(customEruda.initIfNecessary, 1000);`,
-          }}
-        /> */}
-        {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
       </Head>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          // justifyContent: 'center',
-          // alignItems: 'center',
-          minHeight: '100dvh',
-          // border: '1px solid red',
-          width: '100%',
-        }}
-      >
-        {/* <ResponsiveBlock
-          style={{
-            border: '1px dashed red',
-            width: '100%',
-
-            // position: 'sticky',
-            // top: 0,
-          }}
-          isLimitedForDesktop
-          isPaddedMobile
-          className='backdrop-blur--lite'
-        >
-          
-        </ResponsiveBlock> */}
-
-        <Container maxWidth="xs">
-          {/* <Box
-            sx={{ pt: 2, pb: 2,
-            }}
-            style={{ fontWeight: 'bold' }}
-          >
-            <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
-          </Box> */}
-
+      
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', width: '100%' }}>
+        <Container maxWidth="xs" style={{ paddingTop: '16px' }}>
           <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
 
-          {
-            typeof window !== 'undefined' && (
-              <Report
-                chat_id={chat_id}
-                project_id={project_id}
-              />
-            )
-          }
+          {isBrowser && (
+            <Report chat_id={chat_id} project_id={project_id} />
+          )}
+
+          <pre style={{ fontSize: 'x-small',
+            whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
+            wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
+          }}>{JSON.stringify({ _pageService, baseProps }, null, 2)}</pre>
         </Container>
+        
         <div
           style={{
             marginTop: 'auto',
             position: 'sticky',
             bottom: '0px',
-            // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
             zIndex: 2,
             padding: '16px',
             paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
-            // backgroundColor: '#fff',
             borderTop: '1px solid lightgray',
           }}
           className='backdrop-blur--lite'
@@ -179,92 +156,131 @@ export default function MyProjects({
   )
 }
 
-MyProjects.getInitialProps = wrapper.getInitialPageProps(
-  // @ts-ignore
-  (store) => async (ctx: any) => {
+MyProjectReport.getInitialProps = wrapper.getInitialPageProps(
+  (store: Store) => async (ctx: NextPageContext): Promise<IMyProjectReportProps | any> => {
     const { query } = ctx
-    const { tg_chat_id: chat_id, project_id } = query
-    let errorMsg = null
-
-    const fetchUserData = async () => {
-      const result = await api
-        .post('/check-user', {
-          tg: {
-            chat_id,
-          }
-        })
-        .then((res) => {
-          // console.log(res)
-          return res.data
-        })
-        .catch((err) => typeof err === 'string' ? err : err.message || 'No err.message')
-
-      // if (Array.isArray(result) && result.length > 0 && !!result[0]?.id) return result[0]
-      if (typeof result === 'string') errorMsg = result
-
-      return result
-    }
-
-    const userDataResult = await fetchUserData()
-
-    // console.log(result)
-
-    const fetchProjectData = async () => {
-      const result = await api
-        .post('/project/get-data', {
-          chat_id,
-          project_id,
-        })
-        .then((res) => {
-          // console.log(res.data)
-          return res.data
-        })
-        .catch((err) => typeof err === 'string' ? err : err.message || 'No err.message')
-
-      // if (Array.isArray(result) && result.length > 0 && !!result[0]?.id) return result[0]
-      if (typeof result === 'string') errorMsg = result
-
-      return result
-    }
-
+    
+    // Снайперская валидация параметра: проверяем, что пришла строка и она парсится в число
+    const isQueryValidNumber = typeof query?.tg_chat_id === 'string' && !Number.isNaN(Number(query.tg_chat_id))
+    const chat_id = isQueryValidNumber ? String(query?.tg_chat_id) : undefined
+    const project_id = typeof query?.project_id === 'string' ? query.project_id : ''
+    
+    let errorMsg: string | null = null
+    let statusCode = 200
+    let userDataResult = null
     let projectDataResult = null
 
-    if (!errorMsg)
-      projectDataResult = await fetchProjectData()
-
-    if (!!projectDataResult?.ok && !!projectDataResult.projectData)
-      store.dispatch(setActiveProject(projectDataResult.projectData))
-
-    // - NOTE: Quick auth
-    const _pageService: TPageService = {
-      isOk: true,
-    }
+    // 1. Быстрая проверка JWT-сессии одноразового пароля
+    const _pageService: TPageService = { isOk: true }
     const baseProps = await getInitialPropsBase(ctx)
+
+    // =========================================================================
+    // 🛡️ КЛИЕНТСКИЙ + СЕРВЕРНЫЙ МОСТ АВТОРИЗАЦИИ НА СТРАНИЦЕ ОТЧЕТА
+    // =========================================================================
+    let isAuthorized = baseProps?.authData?.oneTime?.jwt?.isAuthorized === true
+
+    // >>>>>>> [МАРКЕР НАЧАЛА]: ВТОРОЙ ВАРИАНТ (ФРОНТЕНД-ПАТЧ КЛИЕНТСКИХ КУК) >>>>>>>
+    // КОГДА ЗАХОТИТЕ ПОПРОБОВАТЬ ПЕРВЫЙ ВАРИАНТ (БЭКЕНД ПАТЧ PATH=/), ПОЛНОСТЬЮ ЗАКОММЕНТИРУЙТЕ БЛОК НИЖЕ:
+    if (typeof window !== 'undefined' && !isAuthorized) {
+      const hasAuthCookie = document.cookie.includes('token') || 
+                            document.cookie.includes('jwt') || 
+                            document.cookie.includes('session')
+      if (hasAuthCookie) {
+        isAuthorized = true
+      }
+    }
+
+    const reduxState = store.getState() as IRootState
+    if (reduxState.autopark.isOneTimePasswordCorrect === true) {
+      isAuthorized = true
+    }
+    // <<<<<<< [МАРКЕР КОНЦА]: КОНЕЦ БЛОКА КЛИЕНТСКОГО ПАТЧА ФРОНТЕНДА <<<<<<<
+    /* -- NOTE: На случай когда захотим попробовать патч на стороене бэка:
+    // В коде Express-бэкенда (pravosleva-bot-2021) при успешном check-password:
+      res.cookie('your_jwt_cookie_name', token, {
+        maxAge: 1000 * 60 * 60 * 24, // 24 часа
+        httpOnly: true,             // Защита от XSS
+        secure: true,               // Только по HTTPS
+        sameSite: 'lax',
+        path: '/'                   // 🔥 КРИТИЧЕСКИЙ ФИКС: Делает куку доступной для всего сайта!
+      });
+    -- */
+
+    // Единый, оптимизированный блок сбора данных (Выполняется без дублирования!)
+    if (!!chat_id) {
+      // Синхронизируем флаг с Redux, чтобы соседние роуты знали об успешном входе
+      if (isAuthorized) {
+        store.dispatch(setIsOneTimePasswordCorrect(true))
+      }
+
+      // Проверяем существование аккаунта в ТГ-боте
+      userDataResult = await api
+        .post('/check-user', {
+          tg: { chat_id: Number(chat_id) }
+        })
+        .then((res) => res.data)
+        .catch((err) => typeof err === 'string' ? err : err.message || 'No err.message')
+
+      if (typeof userDataResult === 'string') {
+        errorMsg = userDataResult
+      }
+      
+      if (userDataResult?.code === 'not_found') {
+        if (ctx.res) ctx.res.statusCode = 401
+        statusCode = 401
+      }
+
+      // Сбор данных по автомобилю для шапки отчёта
+      if (!errorMsg && statusCode !== 401) {
+        projectDataResult = await api
+          .post('/project/get-data', { chat_id: Number(chat_id), project_id })
+          .then((res) => res.data)
+          .catch((err) => typeof err === 'string' ? err : err.message || 'No err.message')
+
+        if (typeof projectDataResult === 'string') {
+          errorMsg = projectDataResult
+        }
+      }
+    }
+
+    if (!!projectDataResult?.ok && !!projectDataResult.projectData) {
+      store.dispatch(setActiveProject(projectDataResult.projectData))
+    }
+
     switch (true) {
-      case !chat_id || isNaN(Number(chat_id)):
-        _pageService.message = `Incorrect page param (number expected), received: \`${chat_id}\``
+      case !chat_id:
+        _pageService.isOk = false
+        _pageService.message = `Incorrect page param (number expected), received: \`${query?.tg_chat_id}\``
+        if (ctx.res) ctx.res.statusCode = 400
+        statusCode = 400
         break
-      // NOTE: For ssr only?
-      case baseProps.authData.oneTime.jwt.isAuthorized: {
+        
+      case baseProps.authData.oneTime.jwt.isAuthorized:
         store.dispatch(setIsOneTimePasswordCorrect(true))
         break
-      }
-      case baseProps.authData.oneTime.jwt._service.isErrored: {
+        
+      case baseProps.authData.oneTime.jwt._service.isErrored:
+        _pageService.isOk = false
         _pageService.message = baseProps.authData.oneTime.jwt._service.message || 'ERR1 (No err.message)'
+        if (ctx.res) ctx.res.statusCode = 401
+        statusCode = 401
         break
-      }
+        
       default:
         break
     }
-    // -
+
+    setCommonStore({ store, baseProps })
 
     return {
-      userCheckerResponse: userDataResult,
+      userCheckerResponse: userDataResult || { ok: false },
       projectDataResponse: projectDataResult?.projectData || null,
       errorMsg,
-      isUserExists: userDataResult?.ok,
-      chat_id, project_id,
+      isUserExists: userDataResult ? userDataResult.ok : false,
+      chat_id: chat_id || String(query?.tg_chat_id || ''), // Гарантируем тип string для UI шаблонов
+      project_id,
       _pageService,
+      statusCode
     }
   }
 )

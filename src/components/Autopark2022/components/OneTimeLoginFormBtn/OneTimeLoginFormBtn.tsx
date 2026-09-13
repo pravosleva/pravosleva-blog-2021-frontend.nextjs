@@ -4,7 +4,6 @@ import { CustomPinInput } from '~/components/CustomPinInput'
 import { useDebounce } from '~/hooks/useDebounce'
 import { IRootState } from '~/store/IRootState'
 import axios from 'axios'
-// import KeyIcon from '@mui/icons-material/Key';
 import axiosRetry from 'axios-retry'
 import { groupLog } from '~/utils/groupLog'
 import { useDispatch, useSelector } from 'react-redux'
@@ -57,7 +56,6 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const passwordRef = useRef<string>('')
   const debouncedCounter = useDebounce(count, 1000)
-  // const [isPasswordCorrect, setIsPasswordCorrect] = useState(false)
   const [apiErr, setApiErr] = useState<string>('')
   const userCheckerResponse = useSelector((state: IRootState) => state.autopark.userCheckerResponse)
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
@@ -74,7 +72,6 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   if (!isBrowser) return null
 
   useEffect(() => {
-    // console.log('debouncedCounter', debouncedCounter)
     if (!!passwordRef.current) { // !userCheckerResponse?.ok
       setIsLoading(true)
       setApiErr('')
@@ -117,13 +114,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
   const countInc = useCallback(() => {
     setCount((s) => ++s)
   }, [setCount])
-  // const handleChange = useCallback((ev: any) => {
-  //   // console.log(ev.target.value)
-  //   passwordRef.current = ev.target.value
-  //   countInc()
-  // }, [countInc])
   const handlePinInputComplete = useCallback((value, _index) => {
-    // console.log(value, index)
     setIsLoading(true)
     passwordRef.current = value
     countInc()
@@ -149,11 +140,6 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
           />
         )
       }
-      {/* isLoading && (
-        <div>
-          <em>Loading...</em>
-        </div>
-      ) */}
     </>
   )
 }

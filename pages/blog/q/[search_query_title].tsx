@@ -1,47 +1,50 @@
-import { TArticle } from '~/components/Article'
-import { universalHttpClient } from '~/utils/universalHttpClient';
+import React from 'react'
 import Head from 'next/head'
-// import { convertToPlainText } from '~/utils/markdown/convertToPlainText';
-import { ErrorPage } from '~/components/ErrorPage';
-import { Layout } from '~/components/Layout';
+import { Store } from 'redux'
 import { wrapper } from '~/store'
+import { Layout } from '~/components/Layout'
 import { ArticlesList } from '~/components/ArticlesList'
-// import { slugMap } from '~/constants/blog/slugMap'
+import { TArticle } from '~/components/Article'
 import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
+import { universalHttpClient } from '~/utils/universalHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
+import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { PageNotFound404Svg } from '~/components/special-content/error/PageNotFound404Svg'
 
-// const isProd = process.env.NODE_ENV === 'production'
+type TPageService = {
+  isOk: boolean;
+  message?: string;
+  response?: NCodeSamplesSpace.TNotesListResponseModified;
+}
 
-type TPageProps = {
-  _pageService: {
-    isOk: boolean;
-    message?: string;
-    response?: NCodeSamplesSpace.TNotesListResponseModified;
-  };
+interface IBlogQSTProps {
+  _pageService: TPageService;
   list: TArticle[];
   searchQueryTitle: {
     original: string;
     withoutSpaces: string;
     normalized: string;
-  },
+  }
 }
 
-const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
-  if (!_pageService?.isOk) return (
-    <Layout>
-      <ErrorPage
-        message={_pageService?.message || 'ERR: No _pageService.message'}
-      >
-        <pre>{JSON.stringify({ _pageService, list }, null, 2)}</pre>
-      </ErrorPage>
-    </Layout>
-  )
+const BlogQST = ({ _pageService, list, searchQueryTitle }: IBlogQSTProps) => {
+  // =========================================================================
+  // 🛡️ ЗАЩИТНЫЙ БАРЬЕР UI-СЛОЯ ОШИБОК (Стандартизация под PageNotFound404Svg)
+  // =========================================================================
+  if (!_pageService?.isOk) {
+    return (
+      <Layout>
+        <UniversalContainer>
+          <PageNotFound404Svg message={_pageService?.message || 'ERR: No _pageService.message'} />
+        </UniversalContainer>
+      </Layout>
+    )
+  }
 
   // Склеиваем параметры поиска на домен .pro со строгим энкодингом query-компонента
   const thisPageUrl = `${process.env.NEXT_SEO}/blog/q/${encodeURIComponent(searchQueryTitle.withoutSpaces)}`
   const defaultLogoUrl = `${process.env.NEXT_SEO}/static/img/logo/logo-pravosleva.jpg`
-
   const queryName = searchQueryTitle.normalized
 
   // 1. Мета-теги, использующие стандартный атрибут "name" (SEO + Twitter)
@@ -68,7 +71,6 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
     "og:image:height": "630",
     "og:image:type": "image/jpeg",
     "og:locale": "ru_RU",
-    // Декларативный список альтернативных локалей без дублирования en_US
     "og:locale:alternate": ["be_BY", "kk_KZ", "tt_RU", "uk_UA", "en_US"],
   }
 
@@ -105,7 +107,6 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
       </Head>
       <Layout>
         <ArticlesList
-          // _pageService={_pageService}
           list={list}
           searchQueryTitle={searchQueryTitle}
         />
@@ -115,77 +116,55 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: TPageProps) => {
 }
 
 BlogQST.getInitialProps = wrapper.getInitialPageProps(
-  // @ts-ignore
-  (store) => async (ctx: any) => {
-    const { query: { search_query_title } } = ctx
-    // let errorMsg = null
-    const _pageService: {
-      isOk: boolean;
-      message?: string;
-      response?: NCodeSamplesSpace.TNotesListResponseModified;
-    } = {
-      isOk: false
-    }
+  (store: Store) => async (ctx: any): Promise<IBlogQSTProps> => {
+    const search_query_title = ctx.query?.search_query_title
+    
+    const _pageService: TPageService = { isOk: false }
     let list: TArticle[] = []
 
     const withoutSpaces = typeof search_query_title === 'string' ? search_query_title.replace(/\s/g, '') : ''
     const normalized = !!withoutSpaces
-      ? search_query_title.replace(/\s/g, '')
-        .split(',')
-        // .map((tag: any) => !!tag && typeof tag === 'string' ? decodeURIComponent(tag) : '')
-        // .filter((normalizedTag: string) => !!normalizedTag)
-        .join(', ')
+      ? search_query_title.replace(/\s/g, '').split(',').join(', ')
       : ''
-
-    // console.log(`withoutSpaces -> ${withoutSpaces}`)
-    // console.log(`normalized -> ${normalized}`)
-    // console.log(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
 
     switch (true) {
       case !!withoutSpaces: {
+        // Записываем поисковые параметры в Redux-редюсер siteSearch
         store.dispatch(addSQT({
-          original: search_query_title,
+          original: String(search_query_title),
           withoutSpaces,
           normalized,
         }))
-        const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponseModified>(`/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`)
+
+        const notesResult = await universalHttpClient.get<NCodeSamplesSpace.TNotesListResponseModified>(
+          `/express-next-api/code-samples-proxy/api/notes?q_title_all_words=${encodeURIComponent(withoutSpaces)}`
+        )
+
         if (notesResult.ok && !!notesResult?.response?.data && Array.isArray(notesResult.response.data)) {
           _pageService.isOk = true
           _pageService.response = notesResult.response
-          // list = [...notesResult.response.data.map(({ _id, ...rest }: NCodeSamplesSpace.TNote) => ({
-          //   original: {
-          //     _id,
-          //     ...rest,
-          //   },
-          //   slug: slugMap.get(_id)?.slug || null,
-          //   brief: slugMap.get(_id)?.brief || null,
-          //   bg: slugMap.get(_id)?.bg || null,
-          // }))]
-          list = !!notesResult.response?.data
-          ? notesResult.response?.data
-          : []
+          list = notesResult.response.data
         } else {
           _pageService.isOk = false
           _pageService.response = notesResult?.response
-          _pageService.message = notesResult?.message || 'No notesResult?.message'
+          _pageService.message = notesResult?.message || 'Ошибка выполнения поискового запроса на бэкенде.'
         }
-      }
         break
+      }
       default:
         _pageService.isOk = false
-        _pageService.message = 'Кажется, нет такой заметки, но она скоро обязательно появится...'
+        _pageService.message = 'Строка поиска пуста. Кажется, нет такой заметки, но она скоро обязательно появится...'
         break
     }
 
     const baseProps = await getInitialPropsBase(ctx)
-
     setCommonStore({ store, baseProps })
 
     return {
       _pageService,
       list,
       searchQueryTitle: {
-        original: search_query_title,
+        original: String(search_query_title || ''),
         withoutSpaces,
         normalized,
       },

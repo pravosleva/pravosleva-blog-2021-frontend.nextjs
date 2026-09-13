@@ -2,7 +2,6 @@ import React from 'react'
 import { Article, TArticle, TPageService } from '~/components/Article'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 import Head from 'next/head'
-import { ErrorPage } from '~/components/ErrorPage'
 import { Layout } from '~/components/Layout'
 import { wrapper } from '~/store'
 // import { slugMapping } from '~/constants/blog/slugMap'
@@ -13,11 +12,15 @@ import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { NextPageContext } from 'next'
 import { Store } from 'redux'
 import { NCodeSamplesSpace } from '~/types'
+import { UniversalContainer } from '~/components/special-content/error/UniversalContainer'
+import { ContentLockedSvg } from '~/components/special-content/error/ContentLockedSvg'
+import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
 
 // Строгое описание пропсов, приходящих в компонент страницы
 interface IBlogArticleSlugProps {
   _pageService: TPageService;
   article: TArticle | null;
+  statusCode?: number; // НОВОЕ: Проп для проброса HTTP-статуса в UI слой
 }
 
 const defaultBg = {
@@ -26,28 +29,40 @@ const defaultBg = {
   type: 'image/webp'
 }
 
-const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
+const BlogArticleSlug = ({ _pageService, article, statusCode }: IBlogArticleSlugProps) => {
   const { title } = useSelector((state: IRootState) => state.pageMeta)
 
-  // Оптимизация 1: Защитный барьер. Если статья не найдена или упала с ошибкой,
-  // мы прерываем выполнение до того, как Head попытается прочитать свойства из null.
+  // =========================================================================
+  // 🔥 РАСШИРЕННЫЙ ЗАЩИТНЫЙ БАРЬЕР UI-СЛОЯ ОШИБОК
+  // =========================================================================
+  
+  // КЕЙС 1: Если бэкенд или проверка прав выкинули статус 401 (Unauthorized)
+  if (statusCode === 401) {
+    return (
+      <Layout>
+        <UniversalContainer>
+          <AuthorizationRequired401Svg message={_pageService?.message} />
+        </UniversalContainer>
+      </Layout>
+    )
+  }
+
+  // КЕЙС 2: Стандартная ошибка отсутствия статьи или закрытия на редактирование (500/404)
   if (!_pageService?.isOk || !article) {
     return (
       <Layout>
-        <ErrorPage message={_pageService?.message || 'ERR: No _pageService.message'}>
-          <pre>{JSON.stringify({ _pageService, article }, null, 2)}</pre>
-        </ErrorPage>
+        <UniversalContainer>
+          <ContentLockedSvg message={_pageService?.message} />
+        </UniversalContainer>
       </Layout>
     )
   }
 
   const canonicalUrl = `${process.env.NEXT_SEO}/p/${article.slug}`
   const __defaultDescr = 'Найдётся всё что не нашлось ранее, если оно действительно нужно'
-  // Константа дефолтного логотипа (ИСПРАВЛЕНО: добавлен разделительный слэш между доменом и статикой)
-  const defaultLogoUrl = `${process.env.NEXT_SEO}/static/img/logo/logo-pravosleva.jpg`  
-  // Читаем переопределенные мета-данные из front-matter шапки статьи
+  const defaultLogoUrl = `${process.env.NEXT_SEO}/static/img/logo/logo-pravosлева.jpg`  
   const customMeta: NCodeSamplesSpace.TNote['meta'] = article.original?.meta || undefined
-  // 1. Мета-теги, использующие атрибут "name"
+  
   const nameMeta = {
     description: customMeta?.description || article.brief || __defaultDescr,
     "twitter:domain": "pravosleva.pro",
@@ -58,7 +73,6 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
     "twitter:image": article.bg?.src || defaultLogoUrl,
   }
 
-  // 2. Мета-теги, использующие атрибут "property" (Open Graph / Спецификация Профилей)
   const propertyMeta = {
     "og:type": customMeta?.["og:type"] || "website",
     "og:title": customMeta?.["og:title"] || article.original?.title || title,
@@ -86,17 +100,13 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
       <Head>
         <title>{title}</title>
         <meta name="description" content={article.brief || 'Найдётся всё что не нашлось ранее, если оно действительно нужно'} />
-
-        {/* --- Open Graph / Facebook Meta Tags --- */}
         <link rel="canonical" href={canonicalUrl} />
 
-        {/* --- Рендеринг стандартных тегов (атрибут name) --- */}
         {Object.entries(nameMeta).map(([key, value]) => {
           if (!value) return null
           return <meta key={key} name={key} content={String(value)} />
         })}
 
-        {/* --- Рендеринг Open Graph тегов (атрибут property) --- */}
         {Object.entries(propertyMeta).map(([key, value]) => {
           if (!value) return null
           return <meta key={key} property={key} content={String(value)} />
@@ -112,44 +122,48 @@ const BlogArticleSlug = ({ _pageService, article }: IBlogArticleSlugProps) => {
 BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
   (store: Store) => async (ctx: NextPageContext): Promise<IBlogArticleSlugProps> => {
     const rawNoteId = ctx.query?.note_id
-    // Оптимизация 2: Превращаем непредсказуемый query-параметр в чистую строку
     const note_id = typeof rawNoteId === 'string' ? rawNoteId : ''
 
     const _pageService: TPageService = { isOk: false }
     let article: TArticle | null = null
+    let statusCode = 200 // По умолчанию всё хорошо
 
-    // Приведение карты slugMapping к безопасному индексному типу Record
-    // const typedSlugMapping = slugMapping as Record<string, ISlugMappingItem | undefined>
-    // const matchedMapping = note_id ? typedSlugMapping[note_id] : undefined
-    
-    // NOTE: Прямой поиск статьи по её системному ID из URL
-    // See also: GET https://pravosleva.ru/express-next-api/code-samples-proxy/api/notes/instructions.local
     if (!note_id) {
       _pageService.isOk = false
       _pageService.message = 'Идентификатор заметки пуст или невалиден'
     } else {
       const noteResult = await universalHttpClient.get<NCodeSamplesSpace.TLocalNoteResponse>(`/express-next-api/code-samples-proxy/api/notes/${note_id}`)
+      
       try {
         if (!noteResult?.ok) {
-          throw new Error([
-            'getInitialProps: Не удалось получить статью. Возможно, автор закрыл ее на редактирование, либо ее не существует'
-          ].join('; '))
+          throw new Error('getInitialProps: Не удалось получить статью. Возможно, автор закрыл ее на редактирование, либо ее не существует')
         }
+        
         if (noteResult?.response) {
-          // if (!noteResult.response.data.isPrivate) {
-          store.dispatch(setTitle(noteResult.response.data.title || 'Без названия'))
+          const noteData = noteResult.response.data;
+
+          // =========================================================================
+          // 🛡️ РУБЕЖ ПРОВЕРКИ ПРИВАТНОСТИ БЭКЕНДА
+          // =========================================================================
+          if (noteData.isPrivate) {
+            // Жёстко выставляем HTTP статус 401 на уровне Node.js сервера (для SEO краулеров)
+            if (ctx.res) {
+              ctx.res.statusCode = 401;
+            }
+            statusCode = 401;
+            throw new Error('У вас нет прав для просмотра этой приватной заметки. Требуется авторизация.')
+          }
+
+          store.dispatch(setTitle(noteData.title || 'Без названия'))
 
           _pageService.isOk = true
           _pageService.response = noteResult.response
           article = {
-            original: { ...noteResult.response.data },
+            original: { ...noteData },
             slug: note_id,
-            brief: noteResult.response.data.brief || 'DRAFT',
-            bg: noteResult.response.data.bg || defaultBg,
+            brief: noteData.brief || 'DRAFT',
+            bg: noteData.bg || defaultBg,
           }
-          // } else {
-          //   throw new Error(`Неизвестный кейс (ответ получен, но не соответствует ожидаемым стандартам - isPrivate is ${String(noteResult.response.data.isPrivate)})`)
-          // }
         } else {
           throw new Error('Неизвестный кейс (ответ получен, но невалидный)')
         }
@@ -158,6 +172,11 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
         _pageService.isOk = false
         _pageService.response = noteResult?.response
         _pageService.message = error?.message || 'Unknown error occurred'
+        
+        // Если это не наша явная 401 ошибка, проставляем стандартный сбой
+        if (statusCode !== 401) {
+          statusCode = 500;
+        }
       }
     }
 
@@ -167,6 +186,7 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
     return {
       _pageService,
       article,
+      statusCode, // Пробрасываем статус-код в React-компонент
     }
   }
 )
