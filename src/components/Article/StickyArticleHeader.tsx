@@ -160,7 +160,7 @@ export const StickyArticleHeaderComponent = memo(({ currentTheme, linkColor, art
         <StickySeparator>•</StickySeparator>
         <StickyHeaderTitle>{article?.original?.title}</StickyHeaderTitle>
         {!!article?.original?.createdAt && (
-          <small style={{ fontSize: 'smal', opacity: 0.4, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+          <small style={{ fontSize: '.9em', opacity: 0.4, marginLeft: 'auto', whiteSpace: 'nowrap' }}>
             {getFormatedDate2(new Date(article.original.createdAt))}
           </small>
         )}
