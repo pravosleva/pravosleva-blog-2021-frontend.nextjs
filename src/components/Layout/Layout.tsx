@@ -15,6 +15,7 @@ import Head from 'next/head'
 const NEXT_APP_BUILD_DATE = process.env.NEXT_APP_BUILD_DATE || 'No env'
 const NEXT_APP_GIT_SHA1 = process.env.NEXT_APP_GIT_SHA1 || 'No env'
 const NEXT_APP_VERSION = process.env.NEXT_APP_VERSION || 'No env'
+const NEXT_APP_GIT_BRANCH = process.env.NEXT_APP_GIT_BRANCH || 'No env'
 const isBuildInfoRequired = process.env.NEXT_SEO === 'https://pravosleva.pro'
 
 type TProps = {
@@ -96,7 +97,7 @@ export const Layout = ({ children, noFooter, isPrivatePage }: TProps) => {
                   Ver. <code>{NEXT_APP_VERSION}</code> Last build {NEXT_APP_BUILD_DATE}
                 </div>
                 <div>
-                  GIT SHA1 <code>{NEXT_APP_GIT_SHA1}</code>
+                  GIT branch <code>{NEXT_APP_GIT_BRANCH}</code> sha1 <code>{NEXT_APP_GIT_SHA1}</code>
                 </div>
                 <div>
                   Local search 👉 <code>{process.env.NOTES_IS_LOCAL_SEARCH_ENABLED}</code>
