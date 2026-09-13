@@ -18,6 +18,7 @@ const {
   NEXT_APP_BUILD_DATE,
   NEXT_APP_VERSION,
   NEXT_APP_GIT_SHA1,
+  NEXT_APP_GIT_BRANCH,
 } = process.env
 
 // Читаем переменную отключения оптимизации (приводим строку "true" к булеву типу)
@@ -327,6 +328,7 @@ const nextConfig = {
     NEXT_APP_BUILD_DATE,
     NEXT_APP_VERSION,
     NEXT_APP_GIT_SHA1,
+    NEXT_APP_GIT_BRANCH,
     ...env,
   },
 }

@@ -102,8 +102,8 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: IBlogQSTProps) => {
         })}
 
         {/* Специфические бандлы стилей поисковых заголовков */}
-        <link href="/static/css/min/blog_sqt_[search_query_title].css" rel="stylesheet" fetchpriority="high"  />
-        <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css" rel="stylesheet" fetchpriority="high"  />
+        <link href="/static/css/min/blog_sqt_[search_query_title].css?v=0" rel="stylesheet" fetchpriority="high"  />
+        <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css?v=0" rel="stylesheet" fetchpriority="high"  />
       </Head>
       <Layout>
         <ArticlesList
