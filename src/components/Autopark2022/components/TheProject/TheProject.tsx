@@ -109,63 +109,67 @@ export const TheProject = ({
       {!!activeProject?.description && <div>{activeProject.description}</div>}
       {/* <pre>{JSON.stringify(activeProject, null, 2)}</pre> */}
 
-      <List dense>
-        {items.map((item: any) => {
-          const { id, name, description, mileage } = item
+      {items.length === 0 && <em>Здесь пока ничего нет...</em>}
 
-          return (
-            <ListItem
-              sx={{
-                pl: 0,
-                pr: 0,
-              }}
-              key={id}
-              secondaryAction={
-                (isOneTimePasswordCorrect || isDev)
-                ? (
-                  <div style={{ transform: 'translateX(16px)' }}>
-                    <ProjectMenu
-                      onDelete={() => {
-                        handleDelete(id)
-                      }}
-                      onEdit={() => {
-                        handleEdit(item)
-                      }}
-                    />
-                    {/* <IconButton edge="end" aria-label="edit" onClick={} sx={{ mr: 1 }}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton edge="end" aria-label="delete" onClick={()}>
-                      <DeleteIcon />
-                    </IconButton> */}
-                  </div>
-                ) : null
-              }
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <BuildIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={name}
-                secondary={
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column'
-                    }}
-                  >
-                    <div>{description}</div>
-                    <div>{mileage.last} / {mileage.delta}</div>
-                  </div>
+      {items.length > 0 && (
+        <List dense>
+          {items.map((item: any) => {
+            const { id, name, description, mileage } = item
+
+            return (
+              <ListItem
+                sx={{
+                  pl: 0,
+                  pr: 0,
+                }}
+                key={id}
+                secondaryAction={
+                  (isOneTimePasswordCorrect || isDev)
+                  ? (
+                    <div style={{ transform: 'translateX(16px)' }}>
+                      <ProjectMenu
+                        onDelete={() => {
+                          handleDelete(id)
+                        }}
+                        onEdit={() => {
+                          handleEdit(item)
+                        }}
+                      />
+                      {/* <IconButton edge="end" aria-label="edit" onClick={} sx={{ mr: 1 }}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton edge="end" aria-label="delete" onClick={()}>
+                        <DeleteIcon />
+                      </IconButton> */}
+                    </div>
+                  ) : null
                 }
-              />
-            </ListItem>
-          )
-        })}
-      </List>
-
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <BuildIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={name}
+                  secondary={
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                    >
+                      <div>{description}</div>
+                      <div>{mileage.last} / {mileage.delta}</div>
+                    </div>
+                  }
+                />
+              </ListItem>
+            )
+          })}
+        </List>
+      )}
+      
       <EditModal
         key={activeItem.id}
         isOpened={isEditModalOpened}

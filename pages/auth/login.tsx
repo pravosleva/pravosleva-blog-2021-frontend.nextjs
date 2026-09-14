@@ -24,7 +24,7 @@ import { AuthSuccessSvg } from '~/components/special-svg-content/success/AuthSuc
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-  : 'http://pravosleva.pro'
+  : 'https://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
 
 const api = axios.create({
   baseURL,

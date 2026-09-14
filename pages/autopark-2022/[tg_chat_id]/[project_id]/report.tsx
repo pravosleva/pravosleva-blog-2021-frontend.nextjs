@@ -94,13 +94,11 @@ export default function MyProjectReport({
         <meta name="msapplication-tap-highlight" content="no" />
       </Head>
       
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', width: '100%' }}>
-        <Container maxWidth="xs" style={{ paddingTop: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100dvh', width: '100%' }}>
+        <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
 
-          {isBrowser && (
-            <Report chat_id={chat_id} project_id={project_id} />
-          )}
+          {isBrowser && <Report chat_id={chat_id} project_id={project_id} />}
 
           <pre style={{ fontSize: 'x-small',
             whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
@@ -195,14 +193,15 @@ MyProjectReport.getInitialProps = wrapper.getInitialPageProps(
       isAuthorized = true
     }
     // <<<<<<< [МАРКЕР КОНЦА]: КОНЕЦ БЛОКА КЛИЕНТСКОГО ПАТЧА ФРОНТЕНДА <<<<<<<
+
     /* -- NOTE: На случай когда захотим попробовать патч на стороене бэка:
     // В коде Express-бэкенда (pravosleva-bot-2021) при успешном check-password:
       res.cookie('your_jwt_cookie_name', token, {
         maxAge: 1000 * 60 * 60 * 24, // 24 часа
-        httpOnly: true,             // Защита от XSS
-        secure: true,               // Только по HTTPS
+        httpOnly: true, // Защита от XSS
+        secure: true, // Только по HTTPS
         sameSite: 'lax',
-        path: '/'                   // 🔥 КРИТИЧЕСКИЙ ФИКС: Делает куку доступной для всего сайта!
+        path: '/', // 🔥 КРИТИЧЕСКИЙ ФИКС: Делает куку доступной для всего сайта!
       });
     -- */
 

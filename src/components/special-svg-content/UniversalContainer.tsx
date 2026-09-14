@@ -11,6 +11,7 @@ interface IUniversalContainerProps {
 const Wrapper = styled.div<{ isForLayout: boolean; hasBreadcrumbs: boolean }>`
   display: flex;
   flex-direction: column;
+  gap: 16px;
   justify-content: center;
   align-items: center;
   width: 100%;

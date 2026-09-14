@@ -67,7 +67,8 @@ export default function MyProjectDetail({
           <AuthorizationRequired401Svg 
             message={_pageService?.message || `Пользователя ${chat_id} не существует. Требуется инициализация сессии через Telegram-бот.`} 
           />
-          <pre style={{ fontSize: 'x-small',
+          <pre style={{
+            fontSize: 'x-small',
             whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
             wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
           }}>{JSON.stringify({ _pageService, baseProps }, null, 2)}</pre>
@@ -80,7 +81,8 @@ export default function MyProjectDetail({
     return (
       <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
         <AuthorizationRequired401Svg message={errorMsg || _pageService?.message || 'Неизвестная ошибка рантайма.'} />
-        <pre style={{ fontSize: 'x-small',
+        <pre style={{
+          fontSize: 'x-small',
           whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
           wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
         }}>{JSON.stringify({ _pageService, baseProps }, null, 2)}</pre>
@@ -97,8 +99,8 @@ export default function MyProjectDetail({
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_type=autopark`} />
       </Head>
       
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-        <Container maxWidth="xs" style={{ paddingTop: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100dvh' }}>
+        <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
 
           <TheProject chat_id={chat_id} project_id={project_id} />
