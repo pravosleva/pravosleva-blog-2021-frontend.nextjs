@@ -24,7 +24,7 @@ export const EdnaSpaceStatusSwitcher: React.FC<IEdnaSpaceStatusSwitcherProps> = 
       case 'idle':
         return {
           title: 'Станция в режиме ожидания',
-          desc: 'Внешний сервис Edna находится в спящем режиме рантайма. Инициализируйте запуск для отправки сигнала на орбиту.',
+          desc: 'Внешний сервис находится в спящем режиме рантайма. Инициализируйте запуск для отправки сигнала на орбиту.',
           color: isDark ? '#00b7ff' : '#0162c8'
         }
       case 'worker-delay':
@@ -36,7 +36,7 @@ export const EdnaSpaceStatusSwitcher: React.FC<IEdnaSpaceStatusSwitcherProps> = 
       case 'fetching':
         return {
           title: 'Загрузка внешнего пакета',
-          desc: 'Потоковый шлюз загружает UMD-сборку скрипта стороннего сервиса с удаленного CDN.',
+          desc: 'Потоковый шлюз загружает UMD-сборку скрипта стороннего сервиса с удаленного CDN...',
           color: '#ff9f43'
         }
       case 'injecting':
