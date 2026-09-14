@@ -1,6 +1,6 @@
 import React from 'react'
-import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
+import { AuthorizationRequired401Svg } from '~/components/special-svg-content/error/AuthorizationRequired401Svg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 import { Layout } from '~/components/Layout'
 
 const Custom404Page = () => {

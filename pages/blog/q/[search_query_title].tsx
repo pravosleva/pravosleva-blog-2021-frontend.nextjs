@@ -9,8 +9,8 @@ import { NCodeSamplesSpace } from '~/types'
 import { addSQT } from '~/store/reducers/siteSearch'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
-import { PageNotFound404Svg } from '~/components/special-content/error/PageNotFound404Svg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
+import { PageNotFound404Svg } from '~/components/special-svg-content/error/PageNotFound404Svg'
 
 type TPageService = {
   isOk: boolean;

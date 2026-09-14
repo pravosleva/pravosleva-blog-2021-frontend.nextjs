@@ -101,7 +101,7 @@
   margin-top: 1em;
 }
 
-.description-markdown pre {
+.description-markdown pre:not(.no-margin-bottom) {
   border-radius: 8px;
   margin-bottom: 1.45rem !important;
 }

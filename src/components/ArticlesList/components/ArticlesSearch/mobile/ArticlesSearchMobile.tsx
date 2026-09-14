@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-// import { getLabelBgColor, getTextColor, getActiveBorderCSS, getActiveBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
-import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
+import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
 import { pluralize } from '~/utils/string-tools/pluralize';
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop';

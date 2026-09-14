@@ -1,6 +1,6 @@
 import React from 'react'
-import { ServerError500Svg } from '~/components/special-content/error/ServerError500Svg'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
+import { ServerError500Svg } from '~/components/special-svg-content/error/ServerError500Svg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 import { Layout } from '~/components/Layout'
 
 const Custom500Page = () => {

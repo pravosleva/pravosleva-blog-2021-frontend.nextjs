@@ -23,7 +23,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
     handleScrollTo,
     getHeadingButtonColor,
     getLabelBgColor,
-    getTextColor,
+    getFabTriggerTextColor,
     getInfoToolBgColor,
     getInfoToolTextColor,
   } = useHeadingsNavigation({
@@ -40,7 +40,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
     window.addEventListener('resize', checkWidth, { passive: true })
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
-  const textColor = getTextColor({ currentTheme })
+  const textColor = getFabTriggerTextColor({ currentTheme })
   // const buttonBgColor = getLabelBgColor({ currentTheme })
   const bgColor = getInfoToolBgColor({ currentTheme })
   // const buttonBgColor = getLabelBgColor({ currentTheme })

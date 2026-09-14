@@ -5,7 +5,6 @@ import { event } from '~/utils/googleAnalitycs'
 import { AudioVisualizer } from './components/AudioVisualizer'
 import { getTechnicalErrorText } from './utils/getTechnicalErrorText'
 import { LiveStatusBadge } from './components'
-// import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import liveStatusBadgeStyles from './components/LiveStatusBadge/LiveStatusBadge.module.scss'
 
 const formatAudioTime = (seconds: number): string => {

@@ -23,7 +23,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     handleScrollTo,
     getHeadingButtonColor,
     getLabelBgColor,
-    getTextColor,
+    getFabTriggerTextColor,
     getActiveBorderCSS,
     getActiveBgColor,
     getInfoToolBgColor,
@@ -67,7 +67,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           borderRadius: '12px',
           // backgroundColor: getInfoToolBgColor({ currentTheme }),
           backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
-          color: getTextColor({ currentTheme }),
+          color: getFabTriggerTextColor({ currentTheme }),
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
           border: isDarkTheme ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
           backdropFilter: 'blur(10px)',
@@ -129,7 +129,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           backgroundColor: isDarkTheme ? '#1e1e1e' : '#f9f9f9',
           // backgroundColor: getInfoToolBgColor({ currentTheme }),
           // backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
-          color: getTextColor({ currentTheme }),
+          color: getFabTriggerTextColor({ currentTheme }),
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
           padding: '20px 16px 32px 16px',
@@ -222,7 +222,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              style={{ padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: getTextColor({ currentTheme }) }}
+              style={{ padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: getFabTriggerTextColor({ currentTheme }) }}
             >
               ← Назад
             </button>
@@ -241,7 +241,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
                 backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', 
                 border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', 
                 borderRadius: '8px', 
-                color: getTextColor({ currentTheme }) 
+                color: getFabTriggerTextColor({ currentTheme }) 
               }}
             >
               Вперед →

@@ -1,9 +1,9 @@
-export const getTextColor = ({ currentTheme }: { currentTheme: string }) => {
+export const getFabTriggerTextColor = ({ currentTheme }: { currentTheme: string }) => {
   switch (currentTheme) {
     case 'light':
       return '#000'
     case 'gray':
-      return 'inherit'
+      return '#fff'
     case 'hard-gray':
       return '#fff'
     case 'dark':

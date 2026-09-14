@@ -2,10 +2,10 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm'
 import { theNotePageRenderers } from '~/react-markdown-renderers'
-
 import { EdnaScriptService, TLoadingStatus } from './EdnaScriptService'
 import { ednaEngine } from './ednaEngine'
 import { useEdna } from './useEdna'
+import { EdnaSpaceStatusSwitcher } from './components/EdnaSpaceStatusSwitcher'
 
 interface IEdnaExpProps {
   scriptUrl: string;
@@ -56,44 +56,67 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
         gap: '16px',
       }}
     >
-      <h3>🧪 Тестовый стенд: Реактивный инжект виджетов</h3>
+      <b>🧪 Тестовый стенд: Реактивный инжект виджетов</b>
       
-      <div>
+      <div style={{ fontStyle: 'italic' }}>
         <ReactMarkdown plugins={[gfm]} renderers={theNotePageRenderers} children={documentationMd} />
       </div>
-      
-      <div><strong>Абсолютный URL скрипта:</strong> <code>{scriptUrl}</code></div>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <strong>Текущий статус виджета:</strong>
-        <span style={{ padding: '4px 10px', borderRadius: '16px', fontSize: 'small', fontWeight: 'bold', backgroundColor: getStatusColor(status), color: '#fff', textTransform: 'uppercase' }}>
+
+      {/* РЕНДЕРИНГ КОСМИЧЕСКИХ СТАТУСОВ НА ОСНОВЕ СОСТОЯНИЯ АВТОМАТА */}
+      <div style={{ /* padding: '24px 0', */ width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <EdnaSpaceStatusSwitcher status={status} />
+      </div>
+
+      {
+        (!!warning || !!error) && (
+          <div style={{
+            width: '100%',
+            maxWidth: '450px', margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+          }}>
+            {warning && (
+              <div style={{
+                padding: '8px', backgroundColor: 'rgba(255,165,0,0.15)', borderLeft: '4px solid #ffa500', color: '#ffa500', fontSize: '13px', borderRadius: '4px' }}>
+                {warning}
+              </div>
+            )}
+
+            {error && (
+              <div style={{
+                padding: '8px', backgroundColor: 'rgba(214,52,53,0.15)', borderLeft: '4px solid #d63435', color: '#ff6b6b', fontSize: '13px', borderRadius: '4px' }}>
+                <strong>🚨 Ошибка:</strong> {error}
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      <div style={{
+        width: '100%',
+        maxWidth: '450px', margin: '0 auto',
+        position: 'relative',
+      }}>
+        <pre className='no-margin-bottom' style={{
+          marginBottom: '0 !important',
+          fontSize: 'small',
+          fontWeight: 'bold',
+          whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
+          wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
+        }}>{JSON.stringify({ scriptUrl, 'window.ThreadsWidget.isReady': isWidgetApiReady, status, error }, null, 2)}</pre>
+        <span
+          style={{
+            padding: '4px 10px', borderRadius: '16px', fontSize: 'small', fontWeight: 'bold',
+            backgroundColor: getStatusColor(status), color: '#fff', textTransform: 'uppercase',
+            position: 'absolute',
+            top: '-8px',
+            right: '-8px',
+          }}>
           {status}
         </span>
       </div>
-
-      {warning && (
-        <div style={{ padding: '8px', backgroundColor: 'rgba(255,165,0,0.15)', borderLeft: '4px solid #ffa500', color: '#ffa500', fontSize: '13px', borderRadius: '4px' }}>
-          {warning}
-        </div>
-      )}
-
-      {error && (
-        <div style={{ padding: '8px', backgroundColor: 'rgba(214,52,53,0.15)', borderLeft: '4px solid #d63435', color: '#ff6b6b', fontSize: '13px', borderRadius: '4px' }}>
-          <strong>🚨 Ошибка:</strong> {error}
-        </div>
-      )}
-
-      <div>
-        <strong>Статус <code>window.ThreadsWidget.isReady</code> 👉 </strong>{' '}
-        {isWidgetApiReady ? (
-          <span style={{ color: '#00b273', fontWeight: 'bold' }}>Готов к работе (isReady: true) ✅</span>
-        ) : status === 'polling-api' ? (
-          <span style={{ color: '#ff8a53' }}>Поллинг переменной (интервал 2с...) 🔄</span>
-        ) : (
-          <span style={{ opacity: 0.5 }}>Спит / Ожидает загрузки 😴</span>
-        )}
-      </div>
-
+      
       {/* Кнопки жизненного цикла загрузки */}
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {
@@ -101,14 +124,16 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
             <button
               onClick={logic.reset}
               style={{
-                padding: '6px 14px', borderRadius: '24px',
+                padding: '6px 14px',
+                borderRadius: '24px',
                 border: '1px solid #00b7ff',
                 backgroundColor: 'transparent',
                 color: '#00b7ff',
                 fontWeight: 'bold',
-                cursor: 'pointer',
                 fontSize: '0.85em',
                 fontFamily: 'Montserrat, system-ui',
+
+                cursor: 'pointer',
               }}
             >
               Сбросить состояние
@@ -117,11 +142,18 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
             <button
               onClick={handleStartInitialization}
               disabled={isActionDisabled}
-              style={{ padding: '6px 14px', borderRadius: '24px', border: 'none',
+              style={{
+                padding: '6px 14px',
+                borderRadius: '24px',
+                border: 'none',
                 backgroundColor: '#00b7ff',
                 color: '#fff',
-                fontSize: '0.85em', fontWeight: 'bold', cursor: isActionDisabled ? 'not-allowed' : 'pointer', opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s',
+                fontSize: '0.85em',
+                fontWeight: 'bold',
                 fontFamily: 'Montserrat, system-ui',
+                
+                cursor: isActionDisabled ? 'not-allowed' : 'pointer',
+                opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s',
               }}
             >
               Инициализировать подгрузку
@@ -130,24 +162,120 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
         }
       </div>
 
+      {/* ========================================================================= */}
+      {/* 🎮 ЖИВОЙ НЕОНОВЫЙ ПУЛЬТ УПРАВЛЕНИЯ API КОСМИЧЕСКОГО ВИДЖЕТА */}
+      {/* ========================================================================= */}
       <div 
+        className="edna-api-dashboard"
         style={{ 
-          paddingTop: '16px',
-          borderTop: '1px solid rgba(255,255,255,0.1)',
+          // paddingTop: '24px',
+          // borderTop: '1px solid rgba(255,255,255,0.1)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '16px',
+          gap: '20px',
+          position: 'relative',
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        <div style={{ opacity: isWidgetApiReady ? 1 : 0.4 }}>🎮 Пульт управления API виджета (из React в window):</div>
+        {/* Шапка пульта с динамическим индикатором питания системы */}
+        <div 
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px',
+            fontFamily: 'Montserrat, sans-serif',
+            fontWeight: 'bold',
+            fontSize: '0.95rem',
+            letterSpacing: '0.5px',
+            // color: isWidgetApiReady ? '#00b7ff' : 'rgba(255,255,255,0.4)',
+            opacity: isWidgetApiReady ? 1 : 0.4,
+            transition: 'color 0.3s ease'
+          }}
+        >
+          <span>{isWidgetApiReady ? '⚡' : '💤'}</span>
+          <span>ЦЕНТРАЛЬНЫЙ ПУЛЬТ УПРАВЛЕНИЯ API ВИДЖЕТА</span>
+          
+          {/* Пульсирующий диод статуса питания пульта */}
+          <span 
+            style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: isWidgetApiReady ? '#00b273' : '#555',
+              boxShadow: isWidgetApiReady ? '0 0 10px #00b273, 0 0 4px #00b273' : 'none',
+              marginLeft: 'auto',
+              display: 'inline-block',
+              animation: isWidgetApiReady ? 'html-led-glow 1s ease-in-out infinite' : 'none'
+            }}
+          />
+        </div>
         
-        {/* Отображение прочитанного из window состояния */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', gap: '8px', opacity: isWidgetApiReady ? 1 : 0.4 }}>
-          <div>Текущий счетчик в виджете: <code>{widgetBadge}</code></div>
-          <div>Текущая тема виджета: <code>{widgetTheme.toUpperCase()}</code></div>
+        {/* ИНТЕРАКТИВНЫЕ КАРТОЧКИ-ИНДИКАТОРЫ СОСТОЯНИЯ WINDOW РАНТАЙМА */}
+        <div 
+          style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
+            gap: '12px',
+            opacity: isWidgetApiReady ? 1 : 0.35,
+            filter: isWidgetApiReady ? 'blur(0px)' : 'blur(1px)',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          {/* Индикатор Счетчик (Badge) */}
+          <div 
+            style={{
+              padding: '12px 16px',
+              borderRadius: '12px',
+              backgroundColor: isWidgetApiReady ? 'rgba(0, 183, 255, 0.06)' : 'rgba(255,255,255,0.02)',
+              border: isWidgetApiReady ? '1px solid rgba(0, 183, 255, 0.25)' : '1px solid rgba(255,255,255,0.05)',
+              boxShadow: isWidgetApiReady ? 'inset 0 0 12px rgba(0, 183, 255, 0.05)' : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <span style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', fontFamily: 'Montserrat' }}>
+              Счетчик уведомлений
+            </span>
+            <code style={{ width: 'fit-content', fontSize: '1.1rem', fontWeight: 'bold', color: isWidgetApiReady ? '#fff' : 'inherit', fontFamily: 'monospace' }}>
+              {isWidgetApiReady ? widgetBadge : 'OFFLINE'}
+            </code>
+          </div>
+
+          {/* Индикатор Тема (Theme) */}
+          <div 
+            style={{
+              padding: '12px 16px',
+              borderRadius: '12px',
+              backgroundColor: isWidgetApiReady ? (widgetTheme === 'dark' ? 'rgba(255, 142, 83, 0.06)' : 'rgba(0, 178, 115, 0.06)') : 'rgba(255,255,255,0.02)',
+              border: isWidgetApiReady ? (widgetTheme === 'dark' ? '1px solid rgba(255, 142, 83, 0.25)' : '1px solid rgba(0, 178, 115, 0.25)') : '1px solid rgba(255,255,255,0.05)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <span style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', fontFamily: 'Montserrat' }}>
+              Активный режим скина
+            </span>
+            <code style={{ width: 'fit-content', fontSize: '1.1rem', fontWeight: 'bold', color: isWidgetApiReady ? '#fff' : 'inherit', fontFamily: 'monospace' }}>
+              {isWidgetApiReady ? widgetTheme.toUpperCase() : 'DISCONNECTED'}
+            </code>
+          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        {/* СОРЕВНОВАТЕЛЬНЫЕ ТЕХНОЛОГИЧЕСКИЕ КНОПКИ ДЕЙСТВИЯ ПУЛЬТА */}
+        <div 
+          style={{ 
+            display: 'flex', 
+            gap: '10px', 
+            flexWrap: 'wrap',
+            opacity: isWidgetApiReady ? 1 : 0.4,
+            transition: 'opacity 0.3s ease'
+          }}
+        >
+          {/* Кнопка 1: Инкремент баджа уведомлений */}
           <button
             onClick={logic.callWidgetIncrement}
             disabled={!isWidgetApiReady}
@@ -155,35 +283,60 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
               padding: '6px 14px',
               borderRadius: '24px',
               border: 'none',
-              backgroundColor: '#00b7ff',
+              // backgroundColor: '#00b7ff',
               color: '#fff',
               fontSize: '0.85em',
               fontWeight: 'bold',
-              cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
-              opacity: isWidgetApiReady ? 1 : 0.4,
               fontFamily: 'Montserrat, system-ui',
+
+              // border: 'none',
+              backgroundColor: isWidgetApiReady ? '#00b7ff' : '#444',
+              // color: '#fff',
+              // fontSize: '0.85em',
+              // fontWeight: 'bold',
+              cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
+              // fontFamily: 'Montserrat, system-ui',
+              boxShadow: isWidgetApiReady ? '0 4px 14px rgba(0, 183, 255, 0.3)' : 'none',
+              transform: 'translateY(0px)',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              WebkitTapHighlightColor: 'transparent',
             }}
+            onMouseOver={(e) => isWidgetApiReady && (e.currentTarget.style.backgroundColor = '#00a3e0')}
+            onMouseOut={(e) => isWidgetApiReady && (e.currentTarget.style.backgroundColor = '#00b7ff')}
           >
-            ➕ Добавить уведомление (API)
+            🚀 Отправить инкремент (API)
           </button>
 
+          {/* Кнопка 2: Переключатель инверсии тем виджета */}
           <button
             onClick={logic.callWidgetToggleTheme}
             disabled={!isWidgetApiReady}
             style={{
               padding: '6px 14px',
               borderRadius: '24px',
-              border: '1px solid #00b7ff',
-              backgroundColor: 'transparent',
-              color: '#00b7ff',
+              // border: 'none',
+              // backgroundColor: '#00b7ff',
+              // color: '#fff',
               fontSize: '0.85em',
               fontWeight: 'bold',
-              cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
-              opacity: isWidgetApiReady ? 1 : 0.4,
               fontFamily: 'Montserrat, system-ui',
+              
+              // padding: '10px 18px',
+              // borderRadius: '14px',
+              border: isWidgetApiReady ? '1px solid #00b7ff' : '1px solid #555',
+              backgroundColor: 'transparent',
+              color: isWidgetApiReady ? '#00b7ff' : '#666',
+              // fontSize: '0.85em',
+              // fontWeight: 'bold',
+              cursor: isWidgetApiReady ? 'pointer' : 'not-allowed',
+              // fontFamily: 'Montserrat, system-ui',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              WebkitTapHighlightColor: 'transparent',
             }}
+            onMouseOver={(e) => isWidgetApiReady && (e.currentTarget.style.backgroundColor = 'rgba(0, 183, 255, 0.08)')}
+            onMouseOut={(e) => isWidgetApiReady && (e.currentTarget.style.backgroundColor = 'transparent')}
           >
-            🌗 Переключить тему виджета (API)
+            🌗 Инвертировать скин
           </button>
         </div>
       </div>

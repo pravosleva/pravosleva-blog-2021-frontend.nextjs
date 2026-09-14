@@ -7,7 +7,7 @@ import HeadphonesIcon from '@mui/icons-material/Headphones'
 import CloseIcon from '@mui/icons-material/Close'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
-import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getFabTriggerTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 export const GlobalPodcastSidebarButton = () => {
   const { 
@@ -82,7 +82,7 @@ export const GlobalPodcastSidebarButton = () => {
 
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   // const infoToolBgColor = getInfoToolBgColor({ currentTheme })
-  const textColor = getTextColor({ currentTheme })
+  const textColor = getFabTriggerTextColor({ currentTheme })
 
   // ИСПРАВЛЕНО: Кнопка должна рендериться ВСЕГДА, если в очереди есть треки!
   if (queue.length === 0) return null

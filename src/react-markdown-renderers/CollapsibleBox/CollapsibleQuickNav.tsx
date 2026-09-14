@@ -8,7 +8,7 @@ import { collapsibleRegistrySignal, ICollapsibleItem } from '~/store/reactive-en
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
 // import clsx from 'clsx'
 import { useSignalValue } from '~/utils/reactive-engine'
-import { getInfoToolBgColor, getTextColor, getActiveBorderCSS } from '../HeadingsQuickNav/utils'
+import { getInfoToolBgColor, getFabTriggerTextColor } from '../HeadingsQuickNav/utils'
 
 const standardDesktopOffsetTop = 50 + 16
 interface CollapsibleQuickNavProps {
@@ -91,7 +91,7 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
   //       return '#000'
   //   }
   // }, [currentTheme])
-  const textColor = getTextColor({ currentTheme })
+  const textColor = getFabTriggerTextColor({ currentTheme })
   const buttonBgColor = useMemo(() => {
     switch (currentTheme) {
       case 'light':

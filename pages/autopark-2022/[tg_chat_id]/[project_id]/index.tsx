@@ -14,8 +14,8 @@ import { IRootState } from '~/store/IRootState'
 import { setActiveProject, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { CreateNewItem } from '~/components/Autopark2022/components/TheProject/components/CreateNewItem'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
-import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
+import { AuthorizationRequired401Svg } from '~/components/special-svg-content/error/AuthorizationRequired401Svg'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev

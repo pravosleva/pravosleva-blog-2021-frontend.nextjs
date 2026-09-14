@@ -12,9 +12,9 @@ import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { NextPageContext } from 'next'
 import { Store } from 'redux'
 import { NCodeSamplesSpace } from '~/types'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
-import { ContentLockedSvg } from '~/components/special-content/error/ContentLockedSvg'
-import { AuthorizationRequired401Svg } from '~/components/special-content/error/AuthorizationRequired401Svg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
+import { ContentLockedSvg } from '~/components/special-svg-content/error/ContentLockedSvg'
+import { AuthorizationRequired401Svg } from '~/components/special-svg-content/error/AuthorizationRequired401Svg'
 
 // Строгое описание пропсов, приходящих в компонент страницы
 interface IBlogArticleSlugProps {

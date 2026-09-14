@@ -16,9 +16,9 @@ import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/au
 
 import axios from 'axios'
 import axiosRetry from 'axios-retry'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
-import { PageNotFound404Svg } from '~/components/special-content/error/PageNotFound404Svg'
-import { AuthSuccessSvg } from '~/components/special-content/success/AuthSuccessSvg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
+import { PageNotFound404Svg } from '~/components/special-svg-content/error/PageNotFound404Svg'
+import { AuthSuccessSvg } from '~/components/special-svg-content/success/AuthSuccessSvg'
 // import { Layout } from '~/components/Layout'
 
 const isDev = process.env.NODE_ENV === 'development'

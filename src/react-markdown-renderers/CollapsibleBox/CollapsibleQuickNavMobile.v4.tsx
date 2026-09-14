@@ -10,7 +10,7 @@ import { IRootState } from '~/store/IRootState'
 import { collapsibleRegistrySignal, ICollapsibleItem } from '~/store/reactive-engine/reactiveCollapsibleStore'
 import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
 import { useSignalValue } from '~/utils/reactive-engine'
-import { getInfoToolBgColor, getTextColor } from '../HeadingsQuickNav/utils'
+import { getInfoToolBgColor, getFabTriggerTextColor } from '../HeadingsQuickNav/utils'
 
 import { AbstractService, ReactiveEngine } from '@pravosleva/reactive-engine'
 
@@ -180,7 +180,7 @@ export const CollapsibleQuickNavMobile: React.FC = () => {
 
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const infoToolBgColor = getInfoToolBgColor({ currentTheme })
-  const textColor = getTextColor({ currentTheme })
+  const textColor = getFabTriggerTextColor({ currentTheme })
 
   const { prev: prevTarget, next: nextTarget } = targets
   // 1. Проверяем, доехали ли мы физически до первого блока статьи

@@ -1,6 +1,6 @@
 import React from 'react'
-import { PageNotFound404Svg } from '~/components/special-content/error/PageNotFound404Svg'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
+import { PageNotFound404Svg } from '~/components/special-svg-content/error/PageNotFound404Svg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 import { Layout } from '~/components/Layout'
 
 const Custom404Page = () => {

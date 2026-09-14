@@ -11,8 +11,8 @@ import { TArticle } from '~/components/Article'
 import { NCodeSamplesSpace } from '~/types'
 import { universalHttpClient } from '~/utils/universalHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-import { UniversalContainer } from '~/components/special-content/UniversalContainer'
-import { ContentLockedSvg } from '~/components/special-content/error/ContentLockedSvg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
+import { ContentLockedSvg } from '~/components/special-svg-content/error/ContentLockedSvg'
 
 type TPageService = {
   isOk: boolean;
