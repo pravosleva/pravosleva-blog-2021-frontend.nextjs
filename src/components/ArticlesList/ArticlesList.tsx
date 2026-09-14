@@ -16,8 +16,6 @@ type TArticlesListComponentProps = {
     normalized: string;
   };
   isBlogPage?: boolean;
-  // t: (str: string, opts?: any) => string;
-  // currentLang: string;
 }
 
 // Выносим статические инлайновые стили в константы, 
@@ -68,7 +66,7 @@ export const ArticlesList = memo(withTranslator<TArticlesListComponentProps>(({
       </ResponsiveBlock>
 
       <ResponsiveBlock isLimited style={footerSectionStyle} isPaddedMobile>
-        <GoHomeSection t={t} currentLang={currentLang} />
+        <GoHomeSection t={t} currentLang={currentLang} isBlogPage={isBlogPage} />
       </ResponsiveBlock>
 
       {/* Оптимизация 2: Если компоненты поиска внутри используют React.memo, */}

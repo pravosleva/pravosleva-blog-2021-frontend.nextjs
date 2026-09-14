@@ -115,7 +115,7 @@ export const ActiveAuditJobList = memo(({ audits, onUpdateAuditComment, onAddJob
               // border: '1px solid red',
 
               // padding: 'calc(52px + 2px) 2px 0 2px', // NOTE: Special for outline css prop
-              padding: '54px 0 0 0',
+              padding: '16px 0 0 0',
             }}
           >
             <CommentBtn

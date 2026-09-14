@@ -44,11 +44,12 @@ export const useStyles = makeStyles((theme) => ({
   stickyTopPanel: {
     position: 'sticky',
     top: '0px',
-    zIndex: 2,
+    zIndex: 3,
     // @ts-ignore
     // padding: theme.spacing(2, 0, 2, 0),
     // borderBottom: '1px solid lightgray',
     // backgroundColor: '#fff',
+    // border: '1px solid red',
   },
   auditListWrapper: {
     display: 'flex',

@@ -1170,51 +1170,47 @@ const Logic = memo(({ room }: TLogicProps) => {
           }
         </Widget>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-          <ResponsiveBlock
+          <div
             style={{
+              lineHeight: 'inherit',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              border: '2px solid lightgray',
+              backgroundColor: '#fff',
+
               position: 'fixed',
-              top: 0,
-              right: 0,
-              width: '100%',
+              top: '120px',
+              right: '16px',
+              padding: '8px',
+              borderRadius: '24px',
               zIndex: 3,
-              height: '50px',
-              lineHeight: '50px',
             }}
           >
+            <Button
+              size='small'
+              startIcon={<ArrowBackIcon />}
+              variant='outlined'
+              color='primary'
+              component={Link}
+              noLinkStyle
+              href={'/subprojects/audit-list'}
+              target='_self'
+            >
+              Offline
+            </Button>
+            
+            <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold', lineHeight: 1 }}>{room} <span style={{ opacity: 0.5, fontSize: 'small' }}>{completedAuditsLen} / {remoteAudits.length}</span></span>
+            
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', lineHeight: 1, borderTop: '2px solid lightgray',
+                paddingTop: '8px', marginTop: '4px',
               }}
             >
-              <div
-                style={{
-                  lineHeight: 'inherit',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: '16px',
-                }}
-              >
-                <Button
-                  size='small'
-                  startIcon={<ArrowBackIcon />}
-                  variant='outlined'
-                  color='primary'
-                  component={Link}
-                  noLinkStyle
-                  href={'/subprojects/audit-list'}
-                  target='_self'
-                >
-                  Offline
-                </Button>
-                <Brightness1Icon color={isConnected ? 'success' : 'error'} />
-                <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>{room} <span style={{ opacity: 0.5, fontSize: 'small' }}>{completedAuditsLen} / {remoteAudits.length}</span></span>
-              </div>
-              <div>
-                {
-                  isOneTimePasswordCorrect && (
+              {
+                isOneTimePasswordCorrect && (
+                  <span>
                     <IconButton
                       aria-label="autosync-toggler"
                       id="autosync-toggler"
@@ -1226,13 +1222,14 @@ const Logic = memo(({ room }: TLogicProps) => {
                     >
                       <SaveIcon color={isAutoSyncEnabled ? 'success' : 'disabled'} />
                     </IconButton>
-                  )
-                }
-                {MemoizedMenu}
-              </div>
+                  </span>
+                )
+              }
+              <Brightness1Icon color={isConnected ? 'success' : 'error'} />
+              {MemoizedMenu}
             </div>
-          </ResponsiveBlock>
-
+          </div>
+          
           <AuditGrid
             onAddNewAudit={handleAddNewAudit}
             audits={remoteAudits}

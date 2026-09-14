@@ -105,7 +105,7 @@ export const AuditGrid = memo(({
                   // height: '50px',
                   // display: 'flex',
                   // alignItems: 'center',
-                  padding: '52px 0 16px 0',
+                  padding: '16px 0 16px 0',
                   // border: '1px solid red',
                 }}
               >

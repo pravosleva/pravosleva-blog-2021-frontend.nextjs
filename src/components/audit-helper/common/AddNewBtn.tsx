@@ -117,6 +117,7 @@ export const AddNewBtn = ({
       <Button
         startIcon={<AddIcon />}
         fullWidth
+        size='small'
         variant='contained'
         color={muiColor}
         onClick={handleClickOpen}

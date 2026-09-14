@@ -57,9 +57,8 @@ export const useStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
     // fontFamily: 'Montserrat,system-ui,Roboto,Helvetica,Arial,sans-serif',
     // fontWeight: 400,
-    fontSize: '1rem',
-    // lineHeight: 1.5,
-    lineHeight: 2,
+    fontSize: 'small',
+    lineHeight: 1.3,
     letterSpacing: '0.00938em',
   },
   description: {

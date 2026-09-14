@@ -41,7 +41,7 @@ const CustomizedTextField = styled(TextField)({
     // '&.Mui-focused fieldset': {
     //   borderColor: 'green',
     // },
-    borderRadius: '8px',
+    borderRadius: '16px',
   },
 });
 
@@ -98,9 +98,7 @@ export const CommentBtn: React.FC<TProps<{ comment: string; }>> = ({
                 onChange={handleChange}
                 multiline
                 maxRows={4}
-              // sx={{
-              //   borderRadius: '8px',
-              // }}
+                // sx={{ borderRadius: '8px' }}
               />
             </Grid>
 

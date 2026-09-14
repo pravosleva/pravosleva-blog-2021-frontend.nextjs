@@ -242,11 +242,7 @@ export const ToDo2023 = memo(() => {
                   width: '100%',
                 }}
               >
-                <Typography
-                  variant="h5"
-                  display="block"
-                // gutterBottom
-                >
+                <Typography variant="h5" display="block">
                   AuditList ({sizeInfo})
                 </Typography>
                 {
@@ -317,12 +313,9 @@ export const ToDo2023 = memo(() => {
                   marginTop: 'auto',
                   position: 'sticky',
                   bottom: '0px',
-                  // bottom: 'calc(0px + env(safe-area-inset-bottom, 0px))',
                   zIndex: 2,
                   padding: '16px',
                   paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
-                  // backgroundColor: '#fff',
-                  // borderTop: '1px solid lightgray',
                 }}
                 className={clsx('backdrop-blur--lite', 'box-shadow-top__mobile')}
               >
@@ -397,17 +390,20 @@ export const ToDo2023 = memo(() => {
             direction='column'
             alignItems='start'
             spacing={0}
-            sx={{ pt: 12, pb: 0 }}
+            sx={{ pt: 2, pb: 0 }}
           >
             <Typography
               variant="h1"
-              component="h1"
+              // component="h1"
               gutterBottom
               sx={{
                 display: 'flex',
                 flexDirection: 'row',
                 gap: '24px',
                 // border: '1px solid red',
+
+                textAlign: 'center',
+                width: '100%',
               }}
             >
               <span className='truncate'>AuditList</span>
@@ -439,7 +435,7 @@ export const ToDo2023 = memo(() => {
                       color='primary'
                       component={Link}
                       noLinkStyle
-                      href={'/subprojects/audit-list/123'}
+                      href={'/subprojects/audit-list/432590690'}
                       target='_self'
                     >
                       Online
@@ -480,7 +476,7 @@ export const ToDo2023 = memo(() => {
                 )
               }
             </Typography>
-            <em>{sizeInfo}</em>
+            <em style={{ textAlign: 'center' }}>{sizeInfo}</em>
             <div style={{ visibility: 'hidden' }} ref={desktopPageContentTopRef} />
             <AuditGrid
               audits={localAudits}

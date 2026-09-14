@@ -16,6 +16,8 @@ import { CreateNewItem } from '~/components/Autopark2022/components/TheProject/c
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 import { AuthorizationRequired401Svg } from '~/components/special-svg-content/error/AuthorizationRequired401Svg'
+import { Layout } from '~/components/Layout/Layout'
+import { NoInternetConnectionSvg } from '~/components/special-svg-content/error/NoInternetConnectionSvg'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -37,6 +39,7 @@ interface IMyProjectDetailProps {
   project_id: string;
   _pageService: TPageService;
   statusCode?: number;
+  isOffline: boolean;
 }
 
 export default function MyProjectDetail({
@@ -46,12 +49,28 @@ export default function MyProjectDetail({
   chat_id,
   project_id,
   _pageService,
-  statusCode
+  statusCode,
+  isOffline
 }: IMyProjectDetailProps) {
   const items = useSelector((state: IRootState) => state.autopark.activeProject?.items || [])
   const hasItems = useMemo(() => items.length > 0, [items])
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
   const baseProps = useSelector((s: IRootState) => s.baseProps)
+
+  // =========================================================================
+  // 📡 НОВОЕ: ВЕРХНИЙ ИЗОЛИРОВАННЫЙ ОФФЛАЙН-РУБЕЖ (Эффект No Internet)
+  // =========================================================================
+  if (isOffline) {
+    return (
+      <Layout>
+        <UniversalContainer isForLayout={true} hasBreadcrumbs={false}>
+          <NoInternetConnectionSvg 
+            message="Не удалось загрузить данные профиля Autopark из-за отсутствия стабильного интернет-соединения. Проверьте сотовую связь." 
+          />
+        </UniversalContainer>
+      </Layout>
+    )
+  }
 
   // =========================================================================
   // 🛡️ ЗАЩИТНЫЙ БАРЬЕР UI-СЛОЯ ОШИБОК И АВТОРИЗАЦИИ (Стандартизация под SVG 401)
@@ -172,6 +191,7 @@ export default function MyProjectDetail({
   )
 }
 
+/*
 MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
   (store: Store) => async (ctx: NextPageContext): Promise<IMyProjectDetailProps | any> => {
     const { query } = ctx
@@ -185,7 +205,7 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     let statusCode = 200
     let userDataResult = null
     let projectDataResult = null
-
+  
     // Базовый рубеж защиты: если chat_id невалиден — сразу выкидываем ошибку 400
     if (!chat_id) {
       if (ctx.res) ctx.res.statusCode = 400
@@ -203,25 +223,17 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     // Собираем базовые пропсы авторизации и сессии движка
     const baseProps = await getInitialPropsBase(ctx)
 
-    // =========================================================================
-    // 🛡️ ИСПРАВЛЕНО: КЛИЕНТСКИЙ + СЕРВЕРНЫЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ)
-    // =========================================================================
-    
+    // КЛИЕНТСКИЙ + СЕРВЕРНЫЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ)
     // 1. Пытаемся забрать флаг из базового серверного хелпера движка
     let isAuthorized = baseProps?.authData?.oneTime?.jwt?.isAuthorized === true
-
     // 2. Если мы на КЛИЕНТЕ (ctx.req === undefined), извлекаем токен напрямую из браузерных кук!
     if (typeof window !== 'undefined' && !isAuthorized) {
       // Ищем наличие вашего JWT токена (или флага сессии) в document.cookie
       // Предположим, кука авторизации называется 'token' или содержит флаг авторизации
-      const hasAuthCookie = document.cookie.includes('token') || 
-                            document.cookie.includes('jwt') || 
-                            document.cookie.includes('session');
+      const hasAuthCookie = document.cookie.includes('token') || document.cookie.includes('jwt') || document.cookie.includes('session');
       
       // Если кука на месте — восстанавливаем флаг авторизации в рантайме клиента
-      if (hasAuthCookie) {
-        isAuthorized = true
-      }
+      if (hasAuthCookie) isAuthorized = true
     }
 
     // 3. Дополнительная проверка: синхронизируем состояние с Redux-хранилищем
@@ -230,9 +242,7 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
       isAuthorized = true
     }
 
-    // =========================================================================
-    // 🔥 РЕДИРЕКТ НА СТРАНИЦУ ВХОДА (ТЕПЕРЬ СРАБОТАЕТ СТРОГО ЕСЛИ КУК НЕТ ВООБЩЕ)
-    // =========================================================================
+    // РЕДИРЕКТ НА СТРАНИЦУ ВХОДА (ТЕПЕРЬ СРАБОТАЕТ СТРОГО ЕСЛИ КУК НЕТ ВООБЩЕ)
     if (!isAuthorized) {
       const currentPath = ctx.req ? ctx.req.url : window.location.pathname + window.location.search
       const redirectTarget = [
@@ -268,13 +278,9 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
       }
     }
 
-    // =========================================================================
-    // 🛡️ СБОР ДАННЫХ (Выполняется строго ЕСЛИ пользователь успешно авторизован)
-    // =========================================================================
-    
+    // СБОР ДАННЫХ (Выполняется строго ЕСЛИ пользователь успешно авторизован)
     // Проставляем флаг верности одноразового пароля в Redux-редюсер autopark
     store.dispatch(setIsOneTimePasswordCorrect(true))
-
     // Валидация существования аккаунта в ТГ-боте
     userDataResult = await api
       .post('/check-user', {
@@ -288,12 +294,10 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     if (typeof userDataResult === 'string') {
       errorMsg = userDataResult
     }
-    
     if (userDataResult?.code === 'not_found') {
       if (ctx.res) ctx.res.statusCode = 401
       statusCode = 401
     }
-
     // Сбор данных по автомобилю/проекту
     if (!errorMsg && statusCode !== 401) {
       projectDataResult = await api
@@ -308,19 +312,15 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
         errorMsg = projectDataResult
       }
     }
-
     if (!!projectDataResult?.ok && !!projectDataResult?.projectData) {
       store.dispatch(setActiveProject(projectDataResult.projectData))
     }
-
     const _pageService: TPageService = {
       isOk: !errorMsg && statusCode === 200,
       hasAuthenticated: true,
       message: errorMsg || undefined
     }
-
     setCommonStore({ store, baseProps })
-
     return {
       userCheckerResponse: userDataResult || { ok: false },
       projectDataResponse: projectDataResult?.projectData || null,
@@ -330,6 +330,165 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
       project_id,
       _pageService,
       statusCode
+    }
+  }
+)
+*/
+
+MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
+  (store: Store) => async (ctx: NextPageContext): Promise<IMyProjectDetailProps | any> => {
+    const { query } = ctx
+    
+    // 1. Снайперская валидация входящих параметров
+    const isQueryValidNumber = typeof query?.tg_chat_id === 'string' && !Number.isNaN(Number(query.tg_chat_id))
+    const chat_id = isQueryValidNumber ? String(query?.tg_chat_id) : undefined
+    const project_id = typeof query?.project_id === 'string' ? query.project_id : ''
+    
+    let errorMsg: string | null = null
+    let statusCode = 200
+    let userDataResult = null
+    let projectDataResult = null
+    let isOffline = false
+
+    // Базовый рубеж защиты: если chat_id невалиден — сразу выкидываем ошибку 400
+    if (!chat_id) {
+      if (ctx.res) ctx.res.statusCode = 400
+      return {
+        userCheckerResponse: { ok: false },
+        projectDataResponse: null,
+        errorMsg: null,
+        chat_id: String(query?.tg_chat_id || ''),
+        project_id,
+        _pageService: { isOk: false, hasAuthenticated: false, message: `Incorrect page param (number expected), received: \`${query?.tg_chat_id}\`` },
+        statusCode: 400,
+        isOffline: false
+      }
+    }
+
+    let baseProps = null
+    try {
+      // Собираем базовые пропсы авторизации и сессии движка
+      baseProps = await getInitialPropsBase(ctx)
+    } catch (baseErr: any) {
+      // Если упал даже базовый метод — интернет полностью отсутствует
+      isOffline = true
+    }
+
+    // КЛИЕНТСКИЙ + СЕРВЕРНЫЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ)
+    let isAuthorized = baseProps?.authData?.oneTime?.jwt?.isAuthorized === true
+    
+    if (typeof window !== 'undefined' && !isAuthorized) {
+      const hasAuthCookie = document.cookie.includes('token') || document.cookie.includes('jwt') || document.cookie.includes('session');
+      if (hasAuthCookie) isAuthorized = true
+    }
+
+    const reduxState = store.getState() as IRootState
+    if (reduxState.autopark.isOneTimePasswordCorrect === true) {
+      isAuthorized = true
+    }
+
+    // РЕДИРЕКТ НА СТРАНИЦУ ВХОДА (Если сети нет — редирект блокируется, уступая место оффлайн экрану)
+    if (!isAuthorized && !isOffline) {
+      const currentPath = ctx.req ? ctx.req.url : window.location.pathname + window.location.search
+      const redirectTarget = [
+        '/auth/login',
+        '?',
+        [
+          `from=${encodeURIComponent(typeof query.from === 'string' ? query.from : currentPath || '')}`,
+          `chat_id=${chat_id}`
+        ].join('&')
+      ].join('')
+
+      if (ctx.res) {
+        ctx.res.writeHead(302, { Location: redirectTarget })
+        ctx.res.end()
+      } else {
+        const Router = require('next/router').default
+        Router.push(redirectTarget)
+      }
+
+      return {
+        userCheckerResponse: { ok: false },
+        projectDataResponse: null,
+        errorMsg: 'Redirecting to login...',
+        chat_id,
+        project_id,
+        _pageService: { isOk: false, hasAuthenticated: false },
+        statusCode: 302,
+        isOffline: false
+      }
+    }
+
+    // БЕЗОПАСНЫЙ СБОР ДАННЫХ И ПЕРЕХВАТ ИСКЛЮЧЕНИЙ СЕТИ (TRY / CATCH)
+    if (!isOffline) {
+      try {
+        store.dispatch(setIsOneTimePasswordCorrect(true))
+
+        // Валидация существования аккаунта в ТГ-боте
+        const userRes = await api.post('/check-user', { tg: { chat_id: Number(chat_id) } })
+        
+        // Проверяем классический маркер падения интернета в axios (отсутствие кода ответа)
+        if (userRes.status === 0 || !userRes.data) {
+          throw new Error('Network Error')
+        }
+        
+        userDataResult = userRes.data
+
+        if (typeof userDataResult === 'string') {
+          errorMsg = userDataResult
+        }
+        if (userDataResult?.code === 'not_found') {
+          if (ctx.res) ctx.res.statusCode = 401
+          statusCode = 401
+        }
+
+        // Сбор данных по автомобилю/проекту
+        if (!errorMsg && statusCode !== 401) {
+          const projectRes = await api.post('/project/get-data', { chat_id: Number(chat_id), project_id })
+          
+          if (projectRes.status === 0 || !projectRes.data) {
+            throw new Error('Network Error')
+          }
+          
+          projectDataResult = projectRes.data
+
+          if (typeof projectDataResult === 'string') {
+            errorMsg = projectDataResult
+          }
+        }
+
+        if (!!projectDataResult?.ok && !!projectDataResult?.projectData) {
+          store.dispatch(setActiveProject(projectDataResult.projectData))
+        }
+
+      } catch (netError: any) {
+        // Ловим любые падения сокетов, тайм-ауты или ENOTFOUND
+        console.error('🚨 [getInitialProps]: Сбой сетевого соединения.', netError)
+        isOffline = true
+        statusCode = 503 // Статус Service Unavailable для поисковых ботов
+      }
+    }
+
+    const _pageService: TPageService = {
+      isOk: !errorMsg && statusCode === 200 && !isOffline,
+      hasAuthenticated: true,
+      message: errorMsg || undefined
+    }
+
+    if (baseProps) {
+      setCommonStore({ store, baseProps })
+    }
+
+    return {
+      userCheckerResponse: userDataResult || { ok: false },
+      projectDataResponse: projectDataResult?.projectData || null,
+      errorMsg,
+      isUserExists: userDataResult ? userDataResult.ok : false,
+      chat_id,
+      project_id,
+      _pageService,
+      statusCode,
+      isOffline,
     }
   }
 )
