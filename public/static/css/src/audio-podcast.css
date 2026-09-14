@@ -326,6 +326,7 @@ body main.dark ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
     left: auto !important;
     bottom: 290px !important;
     z-index: 99999 !important; /* На мобилке тоже держим в топе */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
   /* Скрываем длинную плашку плеера в мини-режиме, чтобы работала только круглая FAB */
