@@ -101,8 +101,10 @@
   margin-top: 1em;
 }
 
-.description-markdown pre:not(.no-margin-bottom) {
+.description-markdown pre {
   border-radius: 8px;
+}
+.description-markdown pre:not(.no-margin-bottom) {
   margin-bottom: 1.45rem !important;
 }
 @media (max-width: 600px) {
