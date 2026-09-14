@@ -5,6 +5,7 @@ import { IRootState } from '~/store/IRootState'
 import { Button } from '@mui/material'
 import FingerprintIcon from '@mui/icons-material/Fingerprint'
 import Link from '~/components/Link'
+import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 interface IAuthorizationRequiredProps {
   message?: string
@@ -16,9 +17,9 @@ export const AuthorizationRequired401Svg: React.FC<IAuthorizationRequiredProps> 
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
   const primaryColor = isDark ? '#FF8E53' : '#0162c8'
-  const subColor = isDark ? '#3a3a3a' : '#f0f0f0'
-  const textColor = isDark ? '#b0b0b0' : '#4a4a4a'
-  const titleColor = isDark ? '#ffffff' : '#111111'
+  const subColor = getTextColor({ currentTheme })
+  const textColor = getTextColor({ currentTheme })
+  const titleColor = getTextColor({ currentTheme })
 
   // Вычисляем текущий путь для Return URL (работает на клиенте)
   const loginUrlWithFrom = useMemo(() => {

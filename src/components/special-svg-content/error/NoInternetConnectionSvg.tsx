@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
 import { Button } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
+import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils/getTextColor'
 
 interface INoInternetConnectionProps {
   message?: string
@@ -15,9 +16,9 @@ export const NoInternetConnectionSvg: React.FC<INoInternetConnectionProps> = ({
   
   const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
   const primaryColor = isDark ? '#FF8E53' : '#0162c8' // Оранжевый или синий акцент
-  const subColor = isDark ? '#3a3a3a' : '#f0f0f0'
-  const textColor = isDark ? '#b0b0b0' : '#4a4a4a'
-  const titleColor = isDark ? '#ffffff' : '#111111'
+  const subColor = getTextColor({ currentTheme })
+  const textColor = getTextColor({ currentTheme })
+  const titleColor = getTextColor({ currentTheme })
 
   const handleReload = () => {
     if (typeof window !== 'undefined') {

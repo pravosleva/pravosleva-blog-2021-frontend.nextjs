@@ -58,7 +58,7 @@ const fetchSendCode = async ({ chat_id }: { chat_id: string }) => {
 export const CustomPinInput = ({
   handlePinInputComplete,
   isLoading,
-  apiErr,
+  apiErr: _apiErr,
   onCancel: _onCancel,
   chat_id,
 }: TProps) => {
@@ -113,12 +113,12 @@ export const CustomPinInput = ({
               {successMsg}
             </Alert>
           )}
-          <Alert variant='standard' severity="info">
+          {/* <Alert variant='standard' severity="info">
             <Typography variant="body2" component="h3" gutterBottom>
               Функция временно заблокирована в связи с нестабильной работой Telegram
             </Typography>
-          </Alert>
-          {!!apiErr && (
+          </Alert> */}
+          {/*!!apiErr && (
             <Alert
               // sx={{ mb: 2 }}
               variant="filled"
@@ -128,7 +128,7 @@ export const CustomPinInput = ({
                 {apiErr}
               </Typography>
             </Alert>
-          )}
+          ) */}
         </CardContent>
         <CardActions
           style={{

@@ -140,11 +140,12 @@ export default function MyProjectReport({
             <Grid item xs={12}>
               <Button
                 startIcon={<ArrowBackIcon />}
+                endIcon={!_pageService.hasAuthenticated ? <LockIcon /> : <LockOpenIcon />}
                 variant='outlined'
                 color='primary'
                 component={Link}
                 noLinkStyle
-                href={`/autopark-2022/${chat_id}`}
+                href={`/autopark-2022/${chat_id}?from=${encodeURIComponent(`/autopark-2022/${chat_id}/${project_id}/report`)}&to=${encodeURIComponent(`/autopark-2022/${chat_id}`)}`}
                 shallow
                 fullWidth
               >

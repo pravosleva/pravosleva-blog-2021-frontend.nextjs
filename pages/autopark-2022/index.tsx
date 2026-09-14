@@ -1,0 +1,44 @@
+import React, { useMemo } from 'react'
+import Head from 'next/head'
+import { Container } from '@mui/material'
+import { AutoparkHeaderSvg } from '~/components/special-svg-content/projects/autopark/main/AutoparkHeaderSvg';
+import { Layout } from '~/components/Layout';
+
+// const isDev = process.env.NODE_ENV === 'development'
+// const baseURL = isDev
+//   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
+//   : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
+
+type TPageService = {
+  isOk: boolean;
+  message?: string;
+  hasAuthenticated: boolean;
+}
+
+interface IMyProjectsProps {
+  _pageService: TPageService;
+}
+
+export default function MyProjects(_ps: IMyProjectsProps) {
+  
+  return (
+    <>
+      <Head>
+        <title>AutoPark | Панель управления</title>
+        {/* Жёсткий запрет индексации приватной панели роботами */}
+        <meta name="robots" content="noindex, nofollow" />
+        {/* <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_type=autopark`} /> */}
+      </Head>
+      
+      {/* <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+        <Container maxWidth="xs" style={{ paddingTop: '24px' }}>
+          <AutoparkHeaderSvg />
+        </Container>
+      </div> */}
+
+      <Layout>
+        <AutoparkHeaderSvg />
+      </Layout>
+    </>
+  )
+}

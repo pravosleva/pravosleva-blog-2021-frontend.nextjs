@@ -7,17 +7,20 @@ import axios from 'axios'
 import { Alert, Button, Container, Grid } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import LockIcon from '@mui/icons-material/Lock'
+import LockOpenIcon from '@mui/icons-material/LockOpen'
 import Link from '~/components/Link'
 import { TheProject } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
 import { IRootState } from '~/store/IRootState'
-import { setActiveProject, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
+import { setActiveProject, setIsOneTimePasswordCorrect, setUserCheckerResponse } from '~/store/reducers/autopark'
 import { CreateNewItem } from '~/components/Autopark2022/components/TheProject/components/CreateNewItem'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 import { AuthorizationRequired401Svg } from '~/components/special-svg-content/error/AuthorizationRequired401Svg'
 import { Layout } from '~/components/Layout/Layout'
 import { NoInternetConnectionSvg } from '~/components/special-svg-content/error/NoInternetConnectionSvg'
+import { autoparkHttpClient, EAPIUserCode } from '~/utils/autoparkHttpClient'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -56,6 +59,17 @@ export default function MyProjectDetail({
   const hasItems = useMemo(() => items.length > 0, [items])
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
   const baseProps = useSelector((s: IRootState) => s.baseProps)
+
+  // =========================================================================
+  // 🚨 ЖЕСТКИЙ БАРЬЕР ПРИВАТНОСТИ ДЛЯ ИНКОГНИТО (АНТИ-ОБХОД)
+  // =========================================================================
+  if (statusCode === 302 || !_pageService?.hasAuthenticated) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100dvh', fontFamily: 'Montserrat' }}>
+        <span>Перенаправление на страницу авторизации...</span>
+      </div>
+    )
+  }
 
   // =========================================================================
   // 📡 НОВОЕ: ВЕРХНИЙ ИЗОЛИРОВАННЫЙ ОФФЛАЙН-РУБЕЖ (Эффект No Internet)
@@ -157,11 +171,12 @@ export default function MyProjectDetail({
             <Grid item xs={hasItems ? 6 : 12}>
               <Button
                 startIcon={<ArrowBackIcon />}
+                endIcon={!_pageService.hasAuthenticated ? <LockIcon /> : <LockOpenIcon />}
                 variant='outlined'
                 color='primary'
                 component={Link}
                 noLinkStyle
-                href={`/autopark-2022/${chat_id}`}
+                href={`/autopark-2022/${chat_id}?from=${encodeURIComponent(`/autopark-2022/${chat_id}/${project_id}`)}&to=${encodeURIComponent(`/autopark-2022/${chat_id}`)}`}
                 shallow
                 fullWidth
               >
@@ -190,150 +205,6 @@ export default function MyProjectDetail({
     </>
   )
 }
-
-/*
-MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
-  (store: Store) => async (ctx: NextPageContext): Promise<IMyProjectDetailProps | any> => {
-    const { query } = ctx
-    
-    // 1. Снайперская валидация входящих параметров
-    const isQueryValidNumber = typeof query?.tg_chat_id === 'string' && !Number.isNaN(Number(query.tg_chat_id))
-    const chat_id = isQueryValidNumber ? String(query?.tg_chat_id) : undefined
-    const project_id = typeof query?.project_id === 'string' ? query.project_id : ''
-    
-    let errorMsg: string | null = null
-    let statusCode = 200
-    let userDataResult = null
-    let projectDataResult = null
-  
-    // Базовый рубеж защиты: если chat_id невалиден — сразу выкидываем ошибку 400
-    if (!chat_id) {
-      if (ctx.res) ctx.res.statusCode = 400
-      return {
-        userCheckerResponse: { ok: false },
-        projectDataResponse: null,
-        errorMsg: null,
-        chat_id: String(query?.tg_chat_id || ''),
-        project_id,
-        _pageService: { isOk: false, hasAuthenticated: false, message: `Incorrect page param (number expected), received: \`${query?.tg_chat_id}\`` },
-        statusCode: 400
-      }
-    }
-
-    // Собираем базовые пропсы авторизации и сессии движка
-    const baseProps = await getInitialPropsBase(ctx)
-
-    // КЛИЕНТСКИЙ + СЕРВЕРНЫЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ)
-    // 1. Пытаемся забрать флаг из базового серверного хелпера движка
-    let isAuthorized = baseProps?.authData?.oneTime?.jwt?.isAuthorized === true
-    // 2. Если мы на КЛИЕНТЕ (ctx.req === undefined), извлекаем токен напрямую из браузерных кук!
-    if (typeof window !== 'undefined' && !isAuthorized) {
-      // Ищем наличие вашего JWT токена (или флага сессии) в document.cookie
-      // Предположим, кука авторизации называется 'token' или содержит флаг авторизации
-      const hasAuthCookie = document.cookie.includes('token') || document.cookie.includes('jwt') || document.cookie.includes('session');
-      
-      // Если кука на месте — восстанавливаем флаг авторизации в рантайме клиента
-      if (hasAuthCookie) isAuthorized = true
-    }
-
-    // 3. Дополнительная проверка: синхронизируем состояние с Redux-хранилищем
-    const reduxState = store.getState() as IRootState
-    if (reduxState.autopark.isOneTimePasswordCorrect === true) {
-      isAuthorized = true
-    }
-
-    // РЕДИРЕКТ НА СТРАНИЦУ ВХОДА (ТЕПЕРЬ СРАБОТАЕТ СТРОГО ЕСЛИ КУК НЕТ ВООБЩЕ)
-    if (!isAuthorized) {
-      const currentPath = ctx.req ? ctx.req.url : window.location.pathname + window.location.search
-      const redirectTarget = [
-        '/auth/login',
-        '?',
-        [
-          `from=${
-            encodeURIComponent(
-              typeof query.from === 'string'
-              ? query.from
-              : currentPath || '')
-            }`,
-          `chat_id=${chat_id}`
-        ].join('&')
-      ].join('')
-
-      if (ctx.res) {
-        ctx.res.writeHead(302, { Location: redirectTarget })
-        ctx.res.end()
-      } else {
-        const Router = require('next/router').default
-        Router.push(redirectTarget)
-      }
-
-      return {
-        userCheckerResponse: { ok: false },
-        projectDataResponse: null,
-        errorMsg: 'Redirecting to login...',
-        chat_id,
-        project_id,
-        _pageService: { isOk: false, hasAuthenticated: false },
-        statusCode: 302
-      }
-    }
-
-    // СБОР ДАННЫХ (Выполняется строго ЕСЛИ пользователь успешно авторизован)
-    // Проставляем флаг верности одноразового пароля в Redux-редюсер autopark
-    store.dispatch(setIsOneTimePasswordCorrect(true))
-    // Валидация существования аккаунта в ТГ-боте
-    userDataResult = await api
-      .post('/check-user', {
-        tg: {
-          chat_id: Number(chat_id),
-        }
-      })
-      .then((res) => res.data)
-      .catch((err) => typeof err === 'string' ? err : err.message || 'No err.message')
-
-    if (typeof userDataResult === 'string') {
-      errorMsg = userDataResult
-    }
-    if (userDataResult?.code === 'not_found') {
-      if (ctx.res) ctx.res.statusCode = 401
-      statusCode = 401
-    }
-    // Сбор данных по автомобилю/проекту
-    if (!errorMsg && statusCode !== 401) {
-      projectDataResult = await api
-        .post('/project/get-data', {
-          chat_id: Number(chat_id),
-          project_id,
-        })
-        .then((res) => res.data)
-        .catch((err) => typeof err === 'string' ? err : err.message || 'No err.message')
-
-      if (typeof projectDataResult === 'string') {
-        errorMsg = projectDataResult
-      }
-    }
-    if (!!projectDataResult?.ok && !!projectDataResult?.projectData) {
-      store.dispatch(setActiveProject(projectDataResult.projectData))
-    }
-    const _pageService: TPageService = {
-      isOk: !errorMsg && statusCode === 200,
-      hasAuthenticated: true,
-      message: errorMsg || undefined
-    }
-    setCommonStore({ store, baseProps })
-    return {
-      userCheckerResponse: userDataResult || { ok: false },
-      projectDataResponse: projectDataResult?.projectData || null,
-      errorMsg,
-      isUserExists: userDataResult ? userDataResult.ok : false,
-      chat_id,
-      project_id,
-      _pageService,
-      statusCode
-    }
-  }
-)
-*/
 
 MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
   (store: Store) => async (ctx: NextPageContext): Promise<IMyProjectDetailProps | any> => {
@@ -377,8 +248,14 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     // КЛИЕНТСКИЙ + СЕРВЕРНЫЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ)
     let isAuthorized = baseProps?.authData?.oneTime?.jwt?.isAuthorized === true
     
+    // =========================================================================
+    // 🛡️ КЛИЕНТСКИЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ SPA-РОУТИНГА)
+    // =========================================================================
+    // TODO [SECURITY]: 1/2 Текущая проверка через .includes() является поверхностной 
+    // и уязвимой для подделки (XSS / манипуляции в консоли).
+    // Необходима доработка на строгий парсинг токена или вызов валидатора.
     if (typeof window !== 'undefined' && !isAuthorized) {
-      const hasAuthCookie = document.cookie.includes('token') || document.cookie.includes('jwt') || document.cookie.includes('session');
+      const hasAuthCookie = document.cookie.includes('token') || document.cookie.includes('autopark-2022.jwt') || document.cookie.includes('session');
       if (hasAuthCookie) isAuthorized = true
     }
 
@@ -390,11 +267,15 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     // РЕДИРЕКТ НА СТРАНИЦУ ВХОДА (Если сети нет — редирект блокируется, уступая место оффлайн экрану)
     if (!isAuthorized && !isOffline) {
       const currentPath = ctx.req ? ctx.req.url : window.location.pathname + window.location.search
+      const backUrl = typeof query.from === 'string' ? query.from : currentPath
+      const successUrl = typeof query.to === 'string' ? query.to : currentPath
       const redirectTarget = [
         '/auth/login',
         '?',
         [
-          `from=${encodeURIComponent(typeof query.from === 'string' ? query.from : currentPath || '')}`,
+          !!backUrl ? `from=${encodeURIComponent(backUrl)}` : '',
+          (!!backUrl && !successUrl) ? 'back_is_locked_when_unlogged=1' : '',
+          !!successUrl ? `to=${encodeURIComponent(successUrl)}` : '',
           `chat_id=${chat_id}`
         ].join('&')
       ].join('')
@@ -419,35 +300,42 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
       }
     }
 
-    // БЕЗОПАСНЫЙ СБОР ДАННЫХ И ПЕРЕХВАТ ИСКЛЮЧЕНИЙ СЕТИ (TRY / CATCH)
+    // =========================================================================
+    // 📡 БЕЗОПАСНЫЙ СБОР ДАННЫХ И ПЕРЕХВАТ ИСКЛЮЧЕНИЙ СЕТИ (TRY / CATCH)
+    // =========================================================================
     if (!isOffline) {
       try {
         store.dispatch(setIsOneTimePasswordCorrect(true))
 
-        // Валидация существования аккаунта в ТГ-боте
-        const userRes = await api.post('/check-user', { tg: { chat_id: Number(chat_id) } })
+        // 1. Делаем запрос к строго типизированному API-клиенту для валидации пользователя
+        userDataResult = await autoparkHttpClient.getUserData({
+          tg: {
+            chat_id: Number(chat_id),
+          }
+        })
         
-        // Проверяем классический маркер падения интернета в axios (отсутствие кода ответа)
-        if (userRes.status === 0 || !userRes.data) {
-          throw new Error('Network Error')
+        // Перехват маркера сетевого сбоя, сгенерированного клиентом
+        if (userDataResult?.code === EAPIUserCode.ServerError) {
+          throw new Error(userDataResult.message || 'Network Error')
         }
-        
-        userDataResult = userRes.data
 
-        if (typeof userDataResult === 'string') {
-          errorMsg = userDataResult
+        if (userDataResult?.ok === true || userDataResult?.ok === false) {
+          store.dispatch(setUserCheckerResponse(userDataResult))
         }
-        if (userDataResult?.code === 'not_found') {
+        
+        // Если пользователя физически нет в базе данных Telegram-бота
+        if (userDataResult?.code === EAPIUserCode.NotFound) {
           if (ctx.res) ctx.res.statusCode = 401
           statusCode = 401
         }
 
-        // Сбор данных по автомобилю/проекту
+        // 2. Сбор данных по автомобилю/проекту (Только если пользователь существует)
         if (!errorMsg && statusCode !== 401) {
+          // Здесь мы пока оставляем прямой вызов axios.post, но оборачиваем в безопасную проверку
           const projectRes = await api.post('/project/get-data', { chat_id: Number(chat_id), project_id })
           
-          if (projectRes.status === 0 || !projectRes.data) {
-            throw new Error('Network Error')
+          if (projectRes.status === 0 || !projectRes.data || projectRes.data?.code === 'server_error') {
+            throw new Error('Network Error or Upstream Server Error')
           }
           
           projectDataResult = projectRes.data
@@ -463,7 +351,7 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
 
       } catch (netError: any) {
         // Ловим любые падения сокетов, тайм-ауты или ENOTFOUND
-        console.error('🚨 [getInitialProps]: Сбой сетевого соединения.', netError)
+        console.error('🚨 [getInitialProps]: Сбой сетевого соединения на странице машины.', netError)
         isOffline = true
         statusCode = 503 // Статус Service Unavailable для поисковых ботов
       }
@@ -471,7 +359,7 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
 
     const _pageService: TPageService = {
       isOk: !errorMsg && statusCode === 200 && !isOffline,
-      hasAuthenticated: true,
+      hasAuthenticated: isAuthorized,
       message: errorMsg || undefined
     }
 

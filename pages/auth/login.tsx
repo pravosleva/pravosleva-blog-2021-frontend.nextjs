@@ -47,7 +47,8 @@ export default function AuthLogin() {
   
   const returnUrlSuccess = typeof router.query.to === 'string' ? decodeURIComponent(router.query.to) : null
   const returnUrlFail = typeof router.query.from === 'string' ? decodeURIComponent(router.query.from) : null
-  
+  const isBackLockedWhenUnlogged = router.query.back_is_locked_when_unlogged === '1'
+
   // ИСПРАВЛЕНО: Строго проверяем наличие chat_id в query-параметрах
   const chat_id = typeof router.query.chat_id === 'string' ? router.query.chat_id : undefined
 
@@ -142,17 +143,16 @@ export default function AuthLogin() {
             </Button> */}
 
             {/* Рекомендация 2: Вернуться в безопасное место */}
-            <Button 
-              startIcon={<ArrowBackIcon />} 
-              variant="outlined" 
-              color="primary" 
-              component={Link} 
-              noLinkStyle 
-              href="/blog" 
+            <Button
+              startIcon={<ArrowBackIcon />}
+              variant='outlined'
+              color='primary'
+              component={Link}
+              noLinkStyle
+              href="/blog"
               fullWidth
-              style={{ fontFamily: 'Montserrat', fontWeight: 'bold', borderRadius: '12px', padding: '10px 0' }}
             >
-              Вернуться в Блог
+              IT Блог
             </Button>
           </Stack>
 
@@ -182,33 +182,64 @@ export default function AuthLogin() {
               display: 'flex', flexDirection: 'column', gap: '16px',
             }}
           >
-            {returnUrlSuccess ? (
-              <Button 
-                endIcon={<ArrowForwardIcon />} 
-                variant="contained" 
-                color="primary" 
-                component={Link} 
-                noLinkStyle 
+            {returnUrlSuccess && (
+              <Button
+                size='small' 
+                endIcon={<ArrowForwardIcon />}
+                variant='contained'
+                color='primary'
+                component={Link}
+                noLinkStyle
                 href={returnUrlSuccess}
                 fullWidth
-                style={{ fontFamily: 'Montserrat', fontWeight: 'bold', borderRadius: '12px', padding: '10px 0' }}
               >
-                Продолжить чтение
-              </Button>
-            ) : (
-              <Button 
-                startIcon={<ArrowBackIcon />} 
-                variant="outlined" 
-                color="primary" 
-                component={Link} 
-                noLinkStyle 
-                href={returnUrlFail || "/blog"}
-                fullWidth
-                style={{ fontFamily: 'Montserrat', fontWeight: 'bold', borderRadius: '12px', padding: '10px 0' }}
-              >
-                {returnUrlFail ? 'Назад' : 'В блог'}
+                Продолжить
               </Button>
             )}
+
+            {
+              !returnUrlSuccess && !!returnUrlFail && (
+                <Button
+                  size='small'
+                  startIcon={<ArrowBackIcon />}
+                  // endIcon={<ArrowForwardIcon />}
+                  variant='contained'
+                  color='primary'
+                  component={Link}
+                  noLinkStyle
+                  href={returnUrlFail}
+                  fullWidth
+                >
+                  Назад
+                </Button>
+              )
+            }
+
+            <Button
+              size='small' 
+              // startIcon={<ArrowBackIcon />} 
+              variant='outlined'
+              color='primary'
+              component={Link}
+              noLinkStyle 
+              href='/autopark-2022'
+              fullWidth
+            >
+              На Главную в Автопарк
+            </Button>
+
+            <Button
+              size='small' 
+              // startIcon={<ArrowBackIcon />} 
+              variant='outlined'
+              color='secondary'
+              component={Link} 
+              noLinkStyle
+              href='/blog'
+              fullWidth
+            >
+              IT Блог
+            </Button>
 
             <pre style={{ fontSize: 'x-small',
               whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
@@ -242,7 +273,7 @@ export default function AuthLogin() {
           </Typography>
           
           <Typography textAlign='center' variant="body2" color="textSecondary" sx={{ mb: 4, fontFamily: 'Montserrat' }}>
-            Для получения доступа к скрытым материалам или панели Autopark введите ваш PIN-код.
+            Для получения доступа к скрытым материалам или панели Autopark введите PIN.
           </Typography>
 
           <CustomPinInput
@@ -253,18 +284,48 @@ export default function AuthLogin() {
             chat_id={chat_id!}
           />
 
+          {
+            !!returnUrlFail && (
+              <Button
+                disabled={isBackLockedWhenUnlogged}
+                size='small' 
+                startIcon={<ArrowBackIcon />} 
+                variant='contained'
+                color='primary'
+                component={Link} 
+                noLinkStyle 
+                href={returnUrlFail}
+                fullWidth
+              >
+                Назад
+              </Button>
+            )
+          }
+
           <Button
             size='small' 
-            startIcon={<ArrowBackIcon />} 
-            variant="outlined" 
-            color="primary" 
+            // startIcon={<ArrowBackIcon />} 
+            variant='outlined'
+            color='primary'
             component={Link} 
             noLinkStyle 
-            href={returnUrlFail || "/blog"}
+            href='/autopark-2022'
             fullWidth
-            style={{ fontFamily: 'Montserrat', fontWeight: 'bold', borderRadius: '12px', padding: '10px 0' }}
           >
-            {returnUrlFail ? 'Назад' : 'В блог'}
+            На Главную в Автопарк
+          </Button>
+
+          <Button
+            size='small' 
+            // startIcon={<ArrowBackIcon />} 
+            variant='outlined' 
+            color='secondary'
+            component={Link} 
+            noLinkStyle 
+            href='/blog'
+            fullWidth
+          >
+            IT Блог
           </Button>
 
           <pre style={{ fontSize: 'x-small',
