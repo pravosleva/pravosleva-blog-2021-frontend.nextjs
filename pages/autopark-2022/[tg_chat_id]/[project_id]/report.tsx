@@ -5,6 +5,8 @@ import { NextPageContext } from 'next'
 import axios from 'axios'
 import { Button, Container, Grid } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import LockIcon from '@mui/icons-material/Lock'
+import LockOpenIcon from '@mui/icons-material/LockOpen'
 import Link from '~/components/Link'
 import { Report } from '~/components/Autopark2022/components'
 import { wrapper } from '~/store'
@@ -24,6 +26,7 @@ const api = axios.create({ baseURL, validateStatus: (_s: number) => true })
 type TPageService = {
   isOk: boolean;
   message?: string;
+  hasAuthenticated: boolean;
 }
 
 interface IMyProjectReportProps {
@@ -122,11 +125,12 @@ export default function MyProjectReport({
             <Grid item xs={12}>
               <Button
                 startIcon={<ArrowBackIcon />}
+                endIcon={!_pageService.hasAuthenticated ? <LockIcon /> : <LockOpenIcon />}
                 variant='contained'
                 color='secondary'
                 component={Link}
                 noLinkStyle
-                href={`/autopark-2022/${chat_id}/${project_id}`}
+                href={`/autopark-2022/${chat_id}/${project_id}?from=${encodeURIComponent(`/autopark-2022/${chat_id}/${project_id}/report`)}&to=${encodeURIComponent(`/autopark-2022/${chat_id}/${project_id}`)}`}
                 shallow
                 fullWidth
               >
@@ -169,7 +173,7 @@ MyProjectReport.getInitialProps = wrapper.getInitialPageProps(
     let projectDataResult = null
 
     // 1. Быстрая проверка JWT-сессии одноразового пароля
-    const _pageService: TPageService = { isOk: true }
+    const _pageService: TPageService = { isOk: true, hasAuthenticated: false }
     const baseProps = await getInitialPropsBase(ctx)
 
     // =========================================================================
@@ -268,6 +272,8 @@ MyProjectReport.getInitialProps = wrapper.getInitialPageProps(
       default:
         break
     }
+
+    if (isAuthorized) _pageService.hasAuthenticated = true
 
     setCommonStore({ store, baseProps })
 

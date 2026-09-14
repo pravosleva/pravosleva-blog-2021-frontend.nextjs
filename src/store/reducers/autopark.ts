@@ -60,22 +60,17 @@ export const autoparkSlice: any = createSlice({
   initialState,
   reducers: {
     setUserCheckerResponse: (state: any, action: any) => {
-      // console.log('CALLED: setUserCheckerResponse')
-      // console.log(action.payload)
       state.userCheckerResponse = action.payload
       state.x += 1
     },
     setActiveProject: (state: any, action: any) => {
-      // console.log('CALLED: setActiveProject')
       state.activeProject = action.payload
     },
     updateProjects: (state: any, action: any) => {
-      // console.log('CALLED: updateProjects')
       if (!state.userCheckerResponse) state.userCheckerResponse = { projects: action.payload }
       else state.userCheckerResponse.projects = action.payload
     },
-    setIsOneTimePasswordCorrect: (state: any, action: any) => {
-      // console.log('CALLED: setIsOneTimePasswordCorrect')
+    setIsOneTimePasswordCorrect: (state: any, action: { payload: boolean }) => {
       state.isOneTimePasswordCorrect = action.payload
     }
   },

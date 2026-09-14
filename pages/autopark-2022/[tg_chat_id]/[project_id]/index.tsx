@@ -235,7 +235,19 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     // =========================================================================
     if (!isAuthorized) {
       const currentPath = ctx.req ? ctx.req.url : window.location.pathname + window.location.search
-      const redirectTarget = `/auth/login?from=${encodeURIComponent(currentPath || '')}&chat_id=${chat_id}`
+      const redirectTarget = [
+        '/auth/login',
+        '?',
+        [
+          `from=${
+            encodeURIComponent(
+              typeof query.from === 'string'
+              ? query.from
+              : currentPath || '')
+            }`,
+          `chat_id=${chat_id}`
+        ].join('&')
+      ].join('')
 
       if (ctx.res) {
         ctx.res.writeHead(302, { Location: redirectTarget })

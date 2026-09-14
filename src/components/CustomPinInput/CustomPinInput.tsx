@@ -132,6 +132,7 @@ export const CustomPinInput = ({
         </CardContent>
         <CardActions
           style={{
+            borderTop: '1px solid rgba(0,0,0,0.2)',
             display: 'flex',
             justifyContent: 'space-between',
           }}

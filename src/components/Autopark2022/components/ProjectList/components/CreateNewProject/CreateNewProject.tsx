@@ -415,7 +415,7 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
             }
 
             <Box sx={{ mb: 2 }}>
-              <pre>{JSON.stringify({ selectedBrand, selectedModel, selectedTransmission, selectedGeneration, selectedYear }, null, 2)}</pre>
+              <pre style={{ fontSize: 'x-small' }}>{JSON.stringify({ selectedBrand, selectedModel, selectedTransmission, selectedGeneration, selectedYear }, null, 2)}</pre>
             </Box>
 
             <Grid container spacing={2}>

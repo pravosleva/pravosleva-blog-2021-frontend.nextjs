@@ -45,7 +45,8 @@ export default function AuthLogin() {
   const router = useRouter()
   const dispatch = useDispatch()
   
-  const returnUrl = typeof router.query.from === 'string' ? decodeURIComponent(router.query.from) : null
+  const returnUrlSuccess = typeof router.query.to === 'string' ? decodeURIComponent(router.query.to) : null
+  const returnUrlFail = typeof router.query.from === 'string' ? decodeURIComponent(router.query.from) : null
   
   // ИСПРАВЛЕНО: Строго проверяем наличие chat_id в query-параметрах
   const chat_id = typeof router.query.chat_id === 'string' ? router.query.chat_id : undefined
@@ -87,9 +88,9 @@ export default function AuthLogin() {
             dispatch(updateProjects(data.projects))
           }
 
-          if (returnUrl) {
+          if (returnUrlSuccess) {
             setTimeout(() => {
-              router.push(returnUrl)
+              router.push(returnUrlSuccess)
             }, 800)
           }
         } else {
@@ -100,7 +101,7 @@ export default function AuthLogin() {
         setApiErr(err?.message || 'Сбой сетевого шлюза при проверке токена.')
       })
       .finally(() => setIsLoading(false))
-  }, [debouncedCounter, chat_id, returnUrl, dispatch])
+  }, [debouncedCounter, chat_id, returnUrlSuccess, dispatch])
 
   const handlePinInputComplete = useCallback((value: string) => {
     setIsLoading(true)
@@ -154,6 +155,11 @@ export default function AuthLogin() {
               Вернуться в Блог
             </Button>
           </Stack>
+
+          <pre style={{ fontSize: 'x-small',
+            whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
+            wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
+          }}>{JSON.stringify({ returnUrlSuccess, returnUrlFail, 'router.query': router.query }, null, 2)}</pre>
         </UniversalContainer>
       </>
     )
@@ -170,15 +176,20 @@ export default function AuthLogin() {
         <UniversalContainer isForLayout={false} hasBreadcrumbs={false}>
           <AuthSuccessSvg />
           
-          <Box sx={{ mt: 3, width: '100%', maxWidth: '280px', mx: 'auto' }}>
-            {returnUrl ? (
+          <Box
+            sx={{
+              mt: 3, width: '100%', maxWidth: '280px', mx: 'auto',
+              display: 'flex', flexDirection: 'column', gap: '16px',
+            }}
+          >
+            {returnUrlSuccess ? (
               <Button 
                 endIcon={<ArrowForwardIcon />} 
                 variant="contained" 
                 color="primary" 
                 component={Link} 
                 noLinkStyle 
-                href={returnUrl}
+                href={returnUrlSuccess}
                 fullWidth
                 style={{ fontFamily: 'Montserrat', fontWeight: 'bold', borderRadius: '12px', padding: '10px 0' }}
               >
@@ -191,13 +202,18 @@ export default function AuthLogin() {
                 color="primary" 
                 component={Link} 
                 noLinkStyle 
-                href="/blog" 
+                href={returnUrlFail || "/blog"}
                 fullWidth
                 style={{ fontFamily: 'Montserrat', fontWeight: 'bold', borderRadius: '12px', padding: '10px 0' }}
               >
-                В Блог
+                {returnUrlFail ? 'Назад' : 'В блог'}
               </Button>
             )}
+
+            <pre style={{ fontSize: 'x-small',
+              whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
+              wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
+            }}>{JSON.stringify({ returnUrlSuccess, returnUrlFail, 'router.query': router.query }, null, 2)}</pre>
           </Box>
         </UniversalContainer>
       </>
@@ -211,13 +227,21 @@ export default function AuthLogin() {
         <title>Авторизация | Личный кабинет</title>
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-      <ResponsiveBlock isLimited isPaddedMobile>
-        <Box sx={{ py: 6, maxWidth: '360px', mx: 'auto', textAlign: 'center' }}>
-          <Typography variant="h4" component="h1" fontFamily="Montserrat" fontWeight="bold" gutterBottom>
+      <ResponsiveBlock
+        isLimited
+        isPaddedMobile
+      >
+        <Box
+          sx={{
+            py: 6, maxWidth: '360px', mx: 'auto',
+            display: 'flex', flexDirection: 'column', gap: '16px',
+          }}
+        >
+          <Typography textAlign='center' variant="h4" component="h1" fontFamily="Montserrat" fontWeight="bold" gutterBottom>
             Вход в систему
           </Typography>
           
-          <Typography variant="body2" color="textSecondary" sx={{ mb: 4, fontFamily: 'Montserrat' }}>
+          <Typography textAlign='center' variant="body2" color="textSecondary" sx={{ mb: 4, fontFamily: 'Montserrat' }}>
             Для получения доступа к скрытым материалам или панели Autopark введите ваш PIN-код.
           </Typography>
 
@@ -228,6 +252,25 @@ export default function AuthLogin() {
             onCancel={() => router.push('/blog')}
             chat_id={chat_id!}
           />
+
+          <Button
+            size='small' 
+            startIcon={<ArrowBackIcon />} 
+            variant="outlined" 
+            color="primary" 
+            component={Link} 
+            noLinkStyle 
+            href={returnUrlFail || "/blog"}
+            fullWidth
+            style={{ fontFamily: 'Montserrat', fontWeight: 'bold', borderRadius: '12px', padding: '10px 0' }}
+          >
+            {returnUrlFail ? 'Назад' : 'В блог'}
+          </Button>
+
+          <pre style={{ fontSize: 'x-small',
+            whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
+            wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
+          }}>{JSON.stringify({ returnUrlSuccess, returnUrlFail, 'router.query': router.query }, null, 2)}</pre>
         </Box>
       </ResponsiveBlock>
     </>
