@@ -52,7 +52,7 @@ const BlogIndex = ({ _pageService, list }: IBlogIndexProps) => {
     "twitter:card": "summary_large_image",
     "twitter:domain": "pravosleva.pro",
     "twitter:url": canonicalUrl,
-    "twitter:title": "Pravosleva | Blog",
+    "twitter:title": "Pravosleva | IT Blog",
     "twitter:description": __defaultDescr,
     "twitter:image": defaultLogoUrl,
   }
@@ -62,7 +62,7 @@ const BlogIndex = ({ _pageService, list }: IBlogIndexProps) => {
     "og:url": canonicalUrl,
     "og:type": "website",
     "og:site_name": "PravoSleva",
-    "og:title": "Pravosleva | Blog",
+    "og:title": "Pravosleva | IT Blog",
     "og:description": __defaultDescr,
     "og:image": defaultLogoUrl,
     "og:image:secure_url": defaultLogoUrl,
@@ -76,7 +76,7 @@ const BlogIndex = ({ _pageService, list }: IBlogIndexProps) => {
   return (
     <>
       <Head>
-        <title>{title || 'Pravosleva | Blog'}</title>
+        <title>{title || 'Pravosleva | IT Blog'}</title>
         <link rel="canonical" href={canonicalUrl} />
 
         {/* --- Автоматический рендеринг nameMeta (SEO & Twitter) --- */}
@@ -139,7 +139,7 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
     switch (true) {
       case notesResult.ok && !!notesResult.response:
         // Устанавливаем базовое название раздела в Redux-стейт метаданных
-        store.dispatch(setTitle('Pravosleva | Blog'))
+        store.dispatch(setTitle('Pravosleva | IT Blog'))
         
         _pageService.isOk = true
         _pageService.response = notesResult.response

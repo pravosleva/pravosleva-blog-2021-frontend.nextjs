@@ -54,7 +54,7 @@ const Component = compose(
       <meta property='og:image:type' content={img.type} />
       <meta property="og:image:alt" content={img.alt} />
       
-      <meta property="og:site_name" content="Pravosleva" />
+      <meta property="og:site_name" content="Pravosleva IT" />
 
       {/* <!-- Twitter Meta Tags --> */}
       <meta property="twitter:domain" content="pravosleva.pro" />

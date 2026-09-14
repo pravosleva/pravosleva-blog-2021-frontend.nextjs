@@ -77,7 +77,7 @@ const BlogQST = ({ _pageService, list, searchQueryTitle }: IBlogQSTProps) => {
   return (
     <>
       <Head>
-        <title>Поиск: {queryName} | Pravosleva</title>
+        <title>Поиск: {queryName} | Pravosleva IT Blog</title>
         
         {/* Единственная, строго валидная каноническая ссылка на страницу поиска */}
         <link rel="canonical" href={thisPageUrl} />

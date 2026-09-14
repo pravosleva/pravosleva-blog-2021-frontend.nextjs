@@ -1,4 +1,4 @@
-# Pravosleva Blog
+# Pravosleva IT Blog
 Next.js / React / TypeScript
 
 ## News 2026.09 Оптимизация расходов на VPS

@@ -6,7 +6,7 @@ export type TState = {
   title: string;
 };
 export const initialState: TState = {
-  title: 'Pravosleva',
+  title: 'Pravosleva IT Blog',
 }
 
 export const pageMetaSlice: any = createSlice({
