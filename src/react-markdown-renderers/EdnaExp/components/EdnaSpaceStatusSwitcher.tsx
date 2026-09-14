@@ -208,15 +208,7 @@ export const EdnaSpaceStatusSwitcher: React.FC<IEdnaSpaceStatusSwitcherProps> = 
         <h4 style={{ margin: '16px 0 0 0', fontFamily: 'Montserrat, sans-serif', fontWeight: 'bold', fontSize: '1.2rem', color: textColor }}>
           {stateConfig.title}
         </h4>
-        <div
-          style={{ fontSize: 'small',
-            whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
-            wordBreak: 'break-word', // По желанию: переносит слишком длинные слова
-            backgroundColor: 'hsla(0,0%,0%,.04)',
-            padding: '16px',
-            borderRadius: '8px',
-          }}
-        >
+        <div style={{ fontSize: 'small' }}>
           <ReactMarkdown children={stateConfig.desc} />
         </div>
       </div>
