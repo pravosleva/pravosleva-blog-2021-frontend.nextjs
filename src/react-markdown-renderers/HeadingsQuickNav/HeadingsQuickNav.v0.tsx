@@ -252,7 +252,8 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = ({
         color: textColor,
         backdropFilter: 'blur(8px)',
         border: '2px solid lightgray',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+        // boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+        boxShadow: 'rgba(0, 0, 0, 0.2) 0px 6px 16px',
         // По ТЗ компонент НЕ задвигаем наверх, он всегда статичен на top: 120px
         fontSize: 'small',
       }}

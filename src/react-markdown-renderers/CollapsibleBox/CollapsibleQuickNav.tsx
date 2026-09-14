@@ -136,7 +136,8 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
         color: textColor,
         backdropFilter: 'blur(8px)',
         // border: '2px solid lightgray',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+        // boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+        boxShadow: 'rgba(0, 0, 0, 0.2) 0px 6px 16px',
 
         // --- ДИНАМИЧЕСКОЕ СМЕЩЕНИЕ НАВЕРХ ---
         // Переключаем top, opacity и visibility для красивого уезда за экран

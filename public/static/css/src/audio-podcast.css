@@ -11,7 +11,7 @@ body main.light ~ .blog-audio-player-container {
   backdrop-filter: blur(8px);
   background-color: rgba(255, 255, 255, 1);
   /* border-top: 1px solid rgba(0, 0, 0, 0.08); */
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
 }
 body main.light ~ .blog-audio-player-container .player-main-title { color: #111; }
 body main.light ~ .blog-audio-player-container .player-active-title { color: #ff781e; }
@@ -326,7 +326,7 @@ body main.dark ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
     left: auto !important;
     bottom: 290px !important;
     z-index: 99999 !important; /* На мобилке тоже держим в топе */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 16px;
   }
 
   /* Скрываем длинную плашку плеера в мини-режиме, чтобы работала только круглая FAB */
