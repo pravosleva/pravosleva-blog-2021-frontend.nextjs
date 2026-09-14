@@ -45,6 +45,9 @@ const theme = createTheme({
           // Some CSS
           borderRadius: '8px',
           padding: '6px 16px',
+          '&::disabled': {
+            cursor: 'not-allowed'
+          },
         },
         sizeSmall: {
           lineHeight: 1.7,
@@ -63,7 +66,7 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: '8px',
+          borderRadius: '16px',
         },
       },
     },

@@ -59,7 +59,7 @@ export const CustomPinInput = ({
   handlePinInputComplete,
   isLoading,
   apiErr,
-  onCancel,
+  onCancel: _onCancel,
   chat_id,
 }: TProps) => {
   const [errMsg, setErrMsg] = useState<string | null>(null)
@@ -134,10 +134,14 @@ export const CustomPinInput = ({
           style={{
             borderTop: '1px solid rgba(0,0,0,0.2)',
             display: 'flex',
-            justifyContent: 'space-between',
+            // justifyContent: 'space-between',
+            flexDirection: 'column',
+            gap: '8px',
+            padding: '16px',
           }}
         >
           <Button
+            fullWidth
             disabled={true}
             endIcon={<ArrowForwardIcon />}
             variant="contained"
@@ -146,9 +150,9 @@ export const CustomPinInput = ({
           >
             Send Password
           </Button>
-          <Button disabled={isLoading} variant="outlined" color='primary' onClick={onCancel}>
+          {/* <Button style={{ marginLeft: '0px' }} fullWidth disabled={isLoading} variant="outlined" color='secondary' onClick={onCancel}>
             Close
-          </Button>
+          </Button> */}
         </CardActions>
       </Card>
     </>
