@@ -53,7 +53,7 @@ export const EdnaSpaceStatusSwitcher: React.FC<IEdnaSpaceStatusSwitcherProps> = 
         }
       case 'success':
         return {
-          title: 'Шлюз связи активен (Успех)',
+          title: 'Шлюз связи активен',
           desc: 'Инжект завершен. API успешно проинициализировано в `window.ThreadsWidget`. Модуль готов к приему команд.',
           color: '#00b273'
         }

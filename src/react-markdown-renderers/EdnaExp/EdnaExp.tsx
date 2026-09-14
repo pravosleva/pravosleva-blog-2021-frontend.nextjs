@@ -62,104 +62,112 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
         <ReactMarkdown plugins={[gfm]} renderers={theNotePageRenderers} children={documentationMd} />
       </div>
 
-      {/* РЕНДЕРИНГ КОСМИЧЕСКИХ СТАТУСОВ НА ОСНОВЕ СОСТОЯНИЯ АВТОМАТА */}
-      <div style={{ /* padding: '24px 0', */ width: '100%', display: 'flex', justifyContent: 'center' }}>
-        <EdnaSpaceStatusSwitcher status={status} />
-      </div>
-
-      {
-        (!!warning || !!error) && (
+      {/* СЕТКА */}
+      <div
+        style={{
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+          gap: '16px',
+        }}
+      >
+        {/* ЛЕВЫЙ БЛОК: РЕНДЕРИНГ КОСМИЧЕСКИХ СТАТУСОВ НА ОСНОВЕ СОСТОЯНИЯ АВТОМАТА */}
+        <div style={{ /* padding: '24px 0', */ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <EdnaSpaceStatusSwitcher status={status} />
+        </div>
+        {/* ПРАВЫЙ БЛОК */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{
             width: '100%',
-            maxWidth: '450px', margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
+            position: 'relative',
           }}>
-            {warning && (
-              <div style={{
-                padding: '8px', backgroundColor: 'rgba(255,165,0,0.15)', borderLeft: '4px solid #ffa500', color: '#ffa500', fontSize: '13px', borderRadius: '4px' }}>
-                {warning}
-              </div>
-            )}
-
-            {error && (
-              <div style={{
-                padding: '8px', backgroundColor: 'rgba(214,52,53,0.15)', borderLeft: '4px solid #d63435', color: '#ff6b6b', fontSize: '13px', borderRadius: '4px' }}>
-                <strong>🚨 Ошибка:</strong> {error}
-              </div>
-            )}
+            <pre className='no-margin-bottom' style={{
+              marginBottom: '0 !important',
+              fontSize: 'small',
+              fontWeight: 'bold',
+              whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
+              wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
+            }}>{JSON.stringify({ scriptUrl, 'window.ThreadsWidget.isReady': isWidgetApiReady, status, error }, null, 2)}</pre>
+            <span
+              style={{
+                padding: '4px 10px', borderRadius: '16px', fontSize: 'small', fontWeight: 'bold',
+                backgroundColor: getStatusColor(status), color: '#fff', textTransform: 'uppercase',
+                position: 'absolute',
+                top: '-8px',
+                right: '-8px',
+              }}>
+              {status}
+            </span>
           </div>
-        )
-      }
+          {/* Кнопки жизненного цикла загрузки */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {
+              isActionDisabled ? (
+                <button
+                  onClick={logic.reset}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '24px',
+                    border: '1px solid #00b7ff',
+                    backgroundColor: 'transparent',
+                    color: '#00b7ff',
+                    fontWeight: 'bold',
+                    fontSize: '0.85em',
+                    fontFamily: 'Montserrat, system-ui',
 
-      <div style={{
-        width: '100%',
-        maxWidth: '450px', margin: '0 auto',
-        position: 'relative',
-      }}>
-        <pre className='no-margin-bottom' style={{
-          marginBottom: '0 !important',
-          fontSize: 'small',
-          fontWeight: 'bold',
-          whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
-          wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
-        }}>{JSON.stringify({ scriptUrl, 'window.ThreadsWidget.isReady': isWidgetApiReady, status, error }, null, 2)}</pre>
-        <span
-          style={{
-            padding: '4px 10px', borderRadius: '16px', fontSize: 'small', fontWeight: 'bold',
-            backgroundColor: getStatusColor(status), color: '#fff', textTransform: 'uppercase',
-            position: 'absolute',
-            top: '-8px',
-            right: '-8px',
-          }}>
-          {status}
-        </span>
-      </div>
-      
-      {/* Кнопки жизненного цикла загрузки */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-        {
-          isActionDisabled ? (
-            <button
-              onClick={logic.reset}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '24px',
-                border: '1px solid #00b7ff',
-                backgroundColor: 'transparent',
-                color: '#00b7ff',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Сбросить состояние
+                </button>
+              ) : (
+                <button
+                  onClick={handleStartInitialization}
+                  disabled={isActionDisabled}
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '24px',
+                    border: 'none',
+                    backgroundColor: '#00b7ff',
+                    color: '#fff',
+                    fontSize: '0.85em',
+                    fontWeight: 'bold',
+                    fontFamily: 'Montserrat, system-ui',
+                    
+                    cursor: isActionDisabled ? 'not-allowed' : 'pointer',
+                    opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s',
+                  }}
+                >
+                  Инициализировать подгрузку
+                </button>
+              )
+            }
+          </div>
+          {
+            (!!warning || !!error) && (
+              <div style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
                 fontWeight: 'bold',
-                fontSize: '0.85em',
-                fontFamily: 'Montserrat, system-ui',
+              }}>
+                {warning && (
+                  <div style={{
+                    padding: '8px', backgroundColor: 'rgba(255,165,0,0.15)', borderLeft: '4px solid #ffa500', color: '#ffa500', fontSize: 'small', borderRadius: '8px' }}>
+                    {warning}
+                  </div>
+                )}
 
-                cursor: 'pointer',
-              }}
-            >
-              Сбросить состояние
-            </button>
-          ) : (
-            <button
-              onClick={handleStartInitialization}
-              disabled={isActionDisabled}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '24px',
-                border: 'none',
-                backgroundColor: '#00b7ff',
-                color: '#fff',
-                fontSize: '0.85em',
-                fontWeight: 'bold',
-                fontFamily: 'Montserrat, system-ui',
-                
-                cursor: isActionDisabled ? 'not-allowed' : 'pointer',
-                opacity: isActionDisabled ? 0.5 : 1, transition: 'background 0.2s',
-              }}
-            >
-              Инициализировать подгрузку
-            </button>
-          )
-        }
+                {error && (
+                  <div style={{
+                    padding: '8px', backgroundColor: 'rgba(214,52,53,0.15)', borderLeft: '4px solid #d63435', color: '#ff6b6b', fontSize: 'small', borderRadius: '8px' }}>
+                    <strong>🚨 Ошибка:</strong> {error}
+                  </div>
+                )}
+              </div>
+            )
+          }
+        </div>
       </div>
 
       {/* ========================================================================= */}
@@ -214,8 +222,8 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
         <div 
           style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
-            gap: '12px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+            gap: '16px',
             opacity: isWidgetApiReady ? 1 : 0.35,
             filter: isWidgetApiReady ? 'blur(0px)' : 'blur(1px)',
             transition: 'all 0.3s ease'
@@ -225,7 +233,7 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
           <div 
             style={{
               padding: '12px 16px',
-              borderRadius: '12px',
+              borderRadius: '8px',
               backgroundColor: isWidgetApiReady ? 'rgba(0, 183, 255, 0.06)' : 'rgba(255,255,255,0.02)',
               border: isWidgetApiReady ? '1px solid rgba(0, 183, 255, 0.25)' : '1px solid rgba(255,255,255,0.05)',
               boxShadow: isWidgetApiReady ? 'inset 0 0 12px rgba(0, 183, 255, 0.05)' : 'none',
@@ -247,7 +255,7 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
           <div 
             style={{
               padding: '12px 16px',
-              borderRadius: '12px',
+              borderRadius: '8px',
               backgroundColor: isWidgetApiReady ? (widgetTheme === 'dark' ? 'rgba(255, 142, 83, 0.06)' : 'rgba(0, 178, 115, 0.06)') : 'rgba(255,255,255,0.02)',
               border: isWidgetApiReady ? (widgetTheme === 'dark' ? '1px solid rgba(255, 142, 83, 0.25)' : '1px solid rgba(0, 178, 115, 0.25)') : '1px solid rgba(255,255,255,0.05)',
               display: 'flex',

@@ -103,6 +103,7 @@
 
 .description-markdown pre {
   border-radius: 8px;
+  margin-bottom: 0px;
 }
 .description-markdown pre:not(.no-margin-bottom) {
   margin-bottom: 1.45rem !important;

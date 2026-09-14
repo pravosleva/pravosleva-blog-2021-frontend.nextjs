@@ -39,7 +39,7 @@ export class EdnaScriptService extends AbstractService {
 
   public loadScript = (scriptUrl: string, delayMs: number = 2000, pollIntervalMs: number = 2000, maxPollingTimeMs: number = 30000) => {
     if (this.status.value !== 'idle' && this.status.value !== 'failed') {
-      this.warning.value = `⚠️ Попытка повторного инжекта! Скрипт уже обрабатывается. Текущий статус: ${this.status.value}`
+      this.warning.value = `⚠️ Не пытайтесь делать повторный инжект! Скрипт уже обрабатывается. Текущий статус: ${this.status.value}`
       return
     }
 
