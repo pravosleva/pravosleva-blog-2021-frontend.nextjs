@@ -106,7 +106,6 @@ export const AuditGrid = memo(({
                   // display: 'flex',
                   // alignItems: 'center',
                   padding: '16px 0 16px 0',
-                  // border: '1px solid red',
                 }}
               >
                 <AddNewBtn

@@ -1,0 +1,82 @@
+import React, { CSSProperties } from 'react';
+
+interface CatProps {
+  size?: number; // Настройка размера в пикселях
+  color?: string; // Основной цвет кота (например, "#546E7A", "gray", "black")
+  style?: CSSProperties;
+}
+
+export const Cat: React.FC<CatProps> = ({ 
+  size = 40, 
+  color = '#546E7A', // Тёмно-серый цвет по умолчанию
+  style
+}) => {
+  return (
+    <div 
+      className="widget-cactus" 
+      style={{ ...(style || {}), width: size, height: size }}
+    >
+      <svg 
+        xmlns="http://w3.org" 
+        viewBox="0 0 64 64" 
+        width="100%" 
+        height="100%"
+      >
+        <defs>
+          {/* Магия: фильтр, который делает примененный к нему цвет темнее на ~20% */}
+          <filter id="darken-shadow">
+            <feComponentTransfer>
+              <feFuncR type="linear" slope="0.8" />
+              <feFuncG type="linear" slope="0.8" />
+              <feFuncB type="linear" slope="0.8" />
+            </feComponentTransfer>
+          </filter>
+        </defs>
+
+        {/* Хвост — красится в основной цвет, но за счет фильтра становится темнее */}
+        <path 
+          d="M46 54 C54 54, 52 44, 46 44 C42 44, 42 50, 38 52" 
+          fill="none" 
+          stroke={color} 
+          strokeWidth="5" 
+          strokeLinecap="round" 
+          filter="url(#darken-shadow)"
+        />
+        
+        {/* Большое округлое туловище — основной цвет */}
+        <path d="M16 58 C14 40, 22 28, 32 28 C42 28, 50 40, 48 58 Z" fill={color} />
+        
+        {/* Передние лапки — темнее основного цвета за счет фильтра */}
+        <rect x="25" y="48" width="5" height="10" rx="2.5" fill={color} filter="url(#darken-shadow)" />
+        <rect x="34" y="48" width="5" height="10" rx="2.5" fill={color} filter="url(#darken-shadow)" />
+        
+        {/* Маленькая голова — основной цвет */}
+        <circle cx="32" cy="22" r="9" fill={color} />
+        
+        {/* Левое ушко */}
+        <path d="M24 18 L22 10 L29 15 Z" fill={color} filter="url(#darken-shadow)" />
+        <path d="M25 17 L23 12 L28 15 Z" fill="#FFCDD2" /> {/* Розовая серединка */}
+        
+        {/* Правое ушко */}
+        <path d="M40 18 L42 10 L35 15 Z" fill={color} filter="url(#darken-shadow)" />
+        <path d="M39 17 L41 12 L36 15 Z" fill="#FFCDD2" /> {/* Розовая серединка */}
+        
+        {/* Большие выразительные жёлтые глаза */}
+        <circle cx="28.5" cy="21" r="2.2" fill="#FFEB3B" /> {/* Левый жёлтый белок */}
+        <circle cx="28.5" cy="21" r="1" fill="#212121" />   {/* Левый зрачок */}
+        
+        <circle cx="35.5" cy="21" r="2.2" fill="#FFEB3B" /> {/* Правый жёлтый белок */}
+        <circle cx="35.5" cy="21" r="1" fill="#212121" />   {/* Правый зрачок */}
+        
+        {/* Розовый носик */}
+        <polygon points="31,23 33,23 32,24.2" fill="#FF8A80" />
+        
+        {/* Милые усики */}
+        <line x1="21" y1="23" x2="26" y2="23" stroke="#CFD8DC" strokeWidth="1" strokeLinecap="round" />
+        <line x1="22" y1="25" x2="26" y2="24" stroke="#CFD8DC" strokeWidth="1" strokeLinecap="round" />
+        <line x1="43" y1="23" x2="38" y2="23" stroke="#CFD8DC" strokeWidth="1" strokeLinecap="round" />
+        <line x1="42" y1="25" x2="38" y2="24" stroke="#CFD8DC" strokeWidth="1" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+};

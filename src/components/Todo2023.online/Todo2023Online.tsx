@@ -72,6 +72,30 @@ import {
 import clsx from 'clsx'
 import { AddAnythingNewDialog } from './components/TodoConnected/components'
 import { useLightThemeAlways } from '~/hooks/useLightThemeAlways'
+// import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import MenuOpenIcon from '@mui/icons-material/MenuOpen'
+import { Cactus } from './components/Cactus'
+import { Cat } from './components/Cat'
+
+// Функция, которая решает, какой элемент показать сегодня
+const renderWidgetMascot = () => {
+  const currentDay = new Date().getDay();
+  // const currentDay = new Date('2026-09-18').getDay() // MON
+  // const currentDay = new Date('2026-09-18').getDay() // FRI
+
+  switch (currentDay) {
+    case 1: // Понедельник
+      return null; // Ничего не выводим (будет пусто)
+      
+    case 5: // Пятница
+      // Показываем кота, с вашим кастомным инлайновым смещением
+      return <Cat size={70} style={{ transform: 'translateY(calc(-100% + 5px))' }} />;
+      
+    default: // Все остальные дни (Вторник, Среда, Четверг, Суббота, Воскресенье)
+      return <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
+  }
+};
 
 const NEXT_APP_SOCKET_API_ENDPOINT = process.env.NEXT_APP_SOCKET_API_ENDPOINT || 'https://pravosleva.pro'
 const isDev = process.env.NODE_ENV === 'development'
@@ -992,6 +1016,8 @@ const Logic = memo(({ room }: TLogicProps) => {
       audits: remoteAudits,
     }).value
   }, [useCompare([remoteAudits])])
+  const [isMicrowidgetOpened, setIsMicrowidgetOpened] = useState(false)
+  const microwidgetToggle = () => setIsMicrowidgetOpened((s) => !s)
 
   switch (true) {
     case isMobile: return (
@@ -1008,7 +1034,10 @@ const Logic = memo(({ room }: TLogicProps) => {
           />
         </Widget>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
-          <Container maxWidth="xs">
+          <Container
+            // maxWidth="xs"
+            // sx={{ border: '1px dashed red' }}
+          >
             <Stack
               direction='column'
               alignItems='start'
@@ -1171,22 +1200,17 @@ const Logic = memo(({ room }: TLogicProps) => {
         </Widget>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
           <div
-            style={{
-              lineHeight: 'inherit',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              border: '2px solid lightgray',
-              backgroundColor: '#fff',
-
-              position: 'fixed',
-              top: '120px',
-              right: '16px',
-              padding: '8px',
-              borderRadius: '24px',
-              zIndex: 3,
-            }}
+            className={clsx('tools-microwidget--right', { 'opened': isMicrowidgetOpened })}
           >
+            {/* Динамический элемент: тут появится кот, кактус или пустота */}
+            {renderWidgetMascot()}
+            <button className={clsx('toggler', 'backdrop-blur--lite')} onClick={microwidgetToggle}>
+              {
+                isMicrowidgetOpened
+                ? <KeyboardArrowRightIcon fontSize='small' />
+                : <MenuOpenIcon fontSize='small' />
+              }
+            </button>
             <Button
               size='small'
               startIcon={<ArrowBackIcon />}

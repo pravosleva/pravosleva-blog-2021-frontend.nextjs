@@ -52,7 +52,6 @@ export default class MyDocument extends Document {
           
           <link rel="stylesheet" href='/static/css/min/layout.css' fetchpriority="high" />
           <link rel="stylesheet" href='/static/css/min/backdrop-blur.css' />
-          <link rel="stylesheet" href="/static/css/min/audit-list.css" />
           
           {/* Наш главный файл темизации — ему точно нужен высокий приоритет */}
           <link rel="stylesheet" href="/static/css/min/global-theming.css" fetchpriority="high" />
@@ -72,7 +71,7 @@ export default class MyDocument extends Document {
           <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
           <link href="/static/css/min/controls-box.css" rel="stylesheet" fetchpriority="high" />
           <link rel="stylesheet" href="/static/css/min/edna-exp-container.css" fetchpriority="high" />
-          <link rel="stylesheet" href="/static/css/min/code.css?v=1" fetchpriority="high" />
+          <link rel="stylesheet" href="/static/css/min/code.css?v=2" fetchpriority="high" />
 
           {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
           {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}

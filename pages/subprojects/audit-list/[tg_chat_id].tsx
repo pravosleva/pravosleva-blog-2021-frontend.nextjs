@@ -5,9 +5,7 @@ import { Todo2023Online } from '~/components/Todo2023.online/Todo2023Online'
 import { ErrorPage } from '~/components/ErrorPage'
 import { setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import { enableBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
-import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
-// import { memo } from 'react'
 
 interface IPageContext extends INextPageContext {
   req: any;
@@ -28,16 +26,14 @@ const TodoOnline = ({ chat_id, _pageService }: {
         <title>AuditList | Online</title>
         <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
+        <link rel="stylesheet" href="/static/css/src/audit-list.css?v=0" />
       </Head>
       {
         _pageService.isOk
         ? (
-          <ResponsiveBlock
-            isLimited
-            // style={{ paddingBottom: '30px' }}
-          >
+          <div className='audit-list-page-wrapper-2026--with-left-widget'>
             <Todo2023Online room={chat_id} />
-          </ResponsiveBlock>
+          </div>
         ) : (
           <ErrorPage
             message={_pageService.message || 'ERR: No _pageService.message'}
