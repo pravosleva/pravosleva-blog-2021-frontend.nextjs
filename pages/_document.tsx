@@ -55,23 +55,15 @@ export default class MyDocument extends Document {
           
           {/* Наш главный файл темизации — ему точно нужен высокий приоритет */}
           <link rel="stylesheet" href="/static/css/min/global-theming.css" fetchpriority="high" />
-          <link rel="stylesheet" href="/static/css/min/block-quotes.css" fetchpriority="high" />
           
           <link rel="stylesheet" href="/static/css/min/standart-form.css" />
-          <link rel="stylesheet" href="/static/css/min/rippled-btn.css" />
-          <link rel="stylesheet" href="/static/css/min/link-as-rippled-btn.css" />
           <link rel="stylesheet" href="/static/css/min/custom-breadcrumbs.css" />
-          <link rel="stylesheet" href="/static/prismjs/themes/prism-material-theme.min.css" />
           <link rel="stylesheet" href="/static/css/min/variant.react-image-ligthbox.v2.css" />
 
           <link href="/static/css/min/article.css?v=0" rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast.css?v=0" rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast-preview.css" rel="stylesheet" fetchpriority="high" />
-          <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
-          <link href="/static/css/min/controls-box.css" rel="stylesheet" fetchpriority="high" />
-          <link rel="stylesheet" href="/static/css/min/edna-exp-container.css" fetchpriority="high" />
-          <link rel="stylesheet" href="/static/css/min/code.css?v=2" fetchpriority="high" />
 
           {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
           {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}

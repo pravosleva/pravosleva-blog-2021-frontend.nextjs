@@ -76,11 +76,10 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
     <div
       style={{
         display: 'flex',
-        flexDirection: 'column',
-          
+        flexDirection: 'column', 
         // border: '1px solid red',
         boxSizing: 'border-box',
-        maxWidth: '450px',
+        // maxWidth: '450px',
         paddingLeft: '16px',
       }}
     >

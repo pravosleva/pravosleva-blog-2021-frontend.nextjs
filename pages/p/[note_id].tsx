@@ -111,6 +111,16 @@ const BlogArticleSlug = ({ _pageService, article, statusCode }: IBlogArticleSlug
           if (!value) return null
           return <meta key={key} property={key} content={String(value)} />
         })}
+        <link rel="stylesheet" href="/static/prismjs/themes/prism-material-theme.min.css" fetchpriority="high" />
+        <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
+        <link href="/static/css/min/controls-box.css" rel="stylesheet" fetchpriority="high" />
+        <link rel="stylesheet" href="/static/css/min/edna-exp-container.css" fetchpriority="high" />
+        <link rel="stylesheet" href="/static/css/min/code.css?v=3" fetchpriority="high" />
+        <link rel="stylesheet" href="/static/css/min/block-quotes.css" fetchpriority="high" />
+        
+        {/* TODO: Review */}
+        <link rel="stylesheet" href="/static/css/min/rippled-btn.css" />
+        <link rel="stylesheet" href="/static/css/min/link-as-rippled-btn.css" />
       </Head>
       <Layout>
         <Article _pageService={_pageService} article={article} />
