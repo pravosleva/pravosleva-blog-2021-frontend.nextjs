@@ -1,0 +1,169 @@
+// src/components/Svg/GenealogyTreeHeaderSvg.tsx
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { IRootState } from '~/store/IRootState'
+
+interface IGenealogyTreeHeaderProps {
+  message?: string
+}
+
+export const GenealogyTreeHeaderSvg: React.FC<IGenealogyTreeHeaderProps> = ({
+  message = 'Высокопроизводительный инструмент для визуализации реляционных структур данных, построения интерактивных фамильных древ и бесшовного управления связями поколений.'
+}) => {
+  const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
+  const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
+  
+  const primaryColor = isDark ? '#FF8E53' : '#0162c8' // Оранжевый или синий неон
+  const subColor = isDark ? '#3a3a3a' : '#f0f0f0'
+  const textColor = isDark ? '#b0b0b0' : '#4a4a4a'
+  const titleColor = isDark ? '#ffffff' : '#111111'
+
+  return (
+    <div 
+      style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        width: '100%',
+        maxWidth: '550px',
+        margin: '0 auto',
+        textAlign: 'center'
+      }}
+    >
+      {/* 🧬 ГЕНЕТИЧЕСКОЕ ДЕРЕВО (ДВОЙНАЯ СПИРАЛЬ ДНК + ХРОМОСОМЫ XX / XY) */}
+      <svg 
+        viewBox="0 0 800 360" 
+        width="100%" 
+        height="auto" 
+        style={{ display: 'block', margin: '0 auto', overflow: 'visible' }} 
+        xmlns="http://w3.org"
+      >
+        <defs>
+          <filter id="dna-glow-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="6" stdDeviation="5" floodOpacity="0.12" />
+          </filter>
+          
+          <style>
+            {`
+              @keyframes helix-flow {
+                0% { stroke-dashoffset: 40; }
+                100% { stroke-dashoffset: 0; }
+              }
+              @keyframes text-blink {
+                0% { opacity: 0.5; fill-opacity: 0.6; }
+                50% { opacity: 1; fill-opacity: 1; }
+                100% { opacity: 0.5; fill-opacity: 0.6; }
+              }
+              @keyframes dna-float {
+                0% { transform: translateY(0px); }
+                100% { transform: translateY(-6px); }
+              }
+              .dna-stream {
+                stroke-dasharray: 6, 4;
+                animation: helix-flow 1.2s linear infinite;
+              }
+              .chrom-text {
+                animation: text-blink 1.8s ease-in-out infinite alternate;
+              }
+              .molecular-root {
+                animation: dna-float 3s ease-in-out infinite alternate;
+                transform-origin: 400px 180px;
+              }
+            `}
+          </style>
+        </defs>
+
+        {/* Фоновый закругленный блок-подложка */}
+        <rect x="230" y="30" width="340" height="300" rx="28" fill={subColor} filter="url(#dna-glow-shadow)" />
+
+        {/* Главная плавающая группа ДНК-Дерева */}
+        <g className="molecular-root" filter="url(#dna-glow-shadow)">
+          
+          {/* ========================================================================= */}
+          {/* 🧬 ЦЕНТРАЛЬНЫЙ СТВОЛ: ДВОЙНАЯ СПИРАЛЬ И КВАНТОВЫЕ НУКЛЕОТИДЫ */}
+          {/* ========================================================================= */}
+          {/* Горизонтальные перемычки-ступени (Связи оснований) */}
+          <line x1="384" y1="230" x2="416" y2="230" stroke={primaryColor} strokeWidth="2.5" opacity="0.6" />
+          <line x1="382" y1="200" x2="418" y2="200" stroke="#39e5ac" strokeWidth="2.5" opacity="0.6" />
+          <line x1="385" y1="170" x2="415" y2="170" stroke={primaryColor} strokeWidth="2.5" opacity="0.6" />
+
+          {/* Спиральная нить А */}
+          <path d="M 385 245 C 385 220, 415 210, 415 185 C 415 160, 385 150, 385 135" fill="none" stroke={isDark ? '#444' : '#ccc'} strokeWidth="4" strokeLinecap="round" />
+          <path d="M 385 245 C 385 220, 415 210, 415 185 C 415 160, 385 150, 385 135" fill="none" stroke={primaryColor} strokeWidth="2.5" className="dna-stream" />
+
+          {/* Спиральная нить Б */}
+          <path d="M 415 245 C 415 220, 385 210, 385 185 C 385 160, 415 150, 415 135" fill="none" stroke={isDark ? '#444' : '#ccc'} strokeWidth="4" strokeLinecap="round" />
+          <path d="M 415 245 C 415 220, 385 210, 385 185 C 385 160, 415 150, 415 135" fill="none" stroke="#39e5ac" strokeWidth="2.5" className="dna-stream" style={{ animationDelay: '0.6s' }} />
+
+          {/* ========================================================================= */}
+          {/* 🌿 РАЗВЕТВЛЕНИЕ ВЕТВЕЙ (Органическое расхождение двойной спирали) */}
+          {/* ========================================================================= */}
+          {/* Левая ветвь ДНК (К мужской линии) */}
+          <line x1="345" y1="110" x2="375" y2="125" stroke={primaryColor} strokeWidth="2" opacity="0.5" />
+          <path d="M 400 135 Q 360 135, 340 115 T 330 85" fill="none" stroke={isDark ? '#444' : '#ccc'} strokeWidth="3" />
+          <path d="M 400 135 Q 360 135, 340 115 T 330 85" fill="none" stroke={primaryColor} strokeWidth="1.5" className="dna-stream" />
+
+          {/* Правая ветвь ДНК (К женской линии) */}
+          <line x1="455" y1="110" x2="425" y2="125" stroke="#39e5ac" strokeWidth="2" opacity="0.5" />
+          <path d="M 400 135 Q 440 135, 460 115 T 470 85" fill="none" stroke={isDark ? '#444' : '#ccc'} strokeWidth="3" />
+          <path d="M 400 135 Q 440 135, 460 115 T 470 85" fill="none" stroke="#39e5ac" strokeWidth="1.5" className="dna-stream" style={{ animationDelay: '0.4s' }} />
+
+          {/* ========================================================================= */}
+          {/* 🧬 ГЕНЕТИЧЕСКИЕ УЗЛЫ: ТЕКСТОВЫЕ ПОЛОВЫЕ ХРОМОСОМЫ ПОД НЕОНОМ */}
+          {/* ========================================================================= */}
+          
+          {/* КОРЕНЬ: ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ */}
+          <g transform="translate(400, 260)">
+            <circle cx="0" cy="0" r="18" fill={isDark ? '#1a1a1f' : '#ffffff'} stroke={primaryColor} strokeWidth="2.5" />
+            <text x="0" y="4" textAnchor="middle" fontFamily="Montserrat, system-ui, sans-serif" fontWeight="900" fontSize="12" fill={primaryColor} className="chrom-text">
+              YOU
+            </text>
+          </g>
+
+          {/* ЦЕНТР: ПОКОЛЕНИЕ РОДИТЕЛЕЙ (Смешанный хромосомный набор) */}
+          <g transform="translate(400, 135)">
+            <circle cx="0" cy="0" r="16" fill={isDark ? '#1a1a1f' : '#ffffff'} stroke={primaryColor} strokeWidth="2" />
+            <text x="0" y="4" textAnchor="middle" fontFamily="Montserrat, system-ui, sans-serif" fontWeight="900" fontSize="11" fill={primaryColor} className="chrom-text" style={{ animationDelay: '0.4s' }}>
+              XX
+            </text>
+          </g>
+
+          {/* ЛЕВЫЙ ТОП: МУЖСКАЯ ЛИНИЯ ПРЕДКОВ (Отец / Дедушка) */}
+          <g transform="translate(330, 85)">
+            <circle cx="0" cy="0" r="18" fill={isDark ? '#1a1a1f' : '#ffffff'} stroke={primaryColor} strokeWidth="2.5" />
+            {/* Хромосомы XY определяющие мужской пол предков */}
+            <text x="0" y="4" textAnchor="middle" fontFamily="Montserrat, system-ui, sans-serif" fontWeight="900" fontSize="12" fill={primaryColor} className="chrom-text" style={{ animationDelay: '0.8s' }}>
+              XY
+            </text>
+          </g>
+
+          {/* ПРАВЫЙ ТОП: ЖЕНСКАЯ ЛИНИЯ ПРЕДКОВ (Мать / Бабушка) */}
+          <g transform="translate(470, 85)">
+            <circle cx="0" cy="0" r="18" fill={isDark ? '#1a1a1f' : '#ffffff'} stroke="#39e5ac" strokeWidth="2.5" />
+            {/* Хромосомы XX определяющие женский пол предков */}
+            <text x="0" y="4" textAnchor="middle" fontFamily="Montserrat, system-ui, sans-serif" fontWeight="900" fontSize="12" fill="#39e5ac" className="chrom-text" style={{ animationDelay: '1.2s' }}>
+              XX
+            </text>
+          </g>
+
+          {/* Концевые маркеры цепочек нуклеотидов */}
+          <circle cx="385" cy="245" r="4" fill={primaryColor} />
+          <circle cx="415" cy="245" r="4" fill="#39e5ac" />
+
+        </g>
+      </svg>
+
+      {/* ========================================================================= */}
+      {/* 📝 HTML-СЛОЙ С КРУПНЫМ ЧИТАЕМЫМ ТЕКСТОМ И ВЕРТИКАЛЬНЫМ ШАГОМ 1.45rem */}
+      {/* ========================================================================= */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.45rem', padding: '0 16px', marginTop: '0.5rem', width: '100%' }}>
+        <h1 style={{ margin: 0, fontFamily: 'Montserrat, system-ui, sans-serif', fontWeight: 'bold', fontSize: '1.6rem', lineHeight: 1.3, color: titleColor }}>
+          Генеалогическое дерево
+        </h1>
+        <p style={{ margin: 0, fontFamily: 'Montserrat, system-ui, -apple-system, sans-serif', fontWeight: 500, lineHeight: 1.5, color: textColor }}>
+          {message}
+        </p>
+      </div>
+    </div>
+  )
+}

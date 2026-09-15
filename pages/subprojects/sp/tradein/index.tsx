@@ -3,6 +3,8 @@ import { SPSocketLab } from '~/components/SPSocketLab'
 import Head from 'next/head'
 import { getInitialPropsBase, IPageContext, setCommonStore } from '~/utils/next'
 import { wrapper } from '~/store'
+import { TradeInHeaderSvg } from '~/components/special-svg-content/projects/tradein/TradeInHeaderSvg'
+import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 
 const Page = () => {
   return (
@@ -12,7 +14,10 @@ const Page = () => {
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="stylesheet" href="/static/css/min/mapbox-gl@2.6.1.min.css" />
       </Head>
-      <Layout isPrivatePage>
+      <Layout>
+        <UniversalContainer isForLayout={true} hasBreadcrumbs={false}>
+          <TradeInHeaderSvg />
+        </UniversalContainer>
         <SPSocketLab />
       </Layout>
     </>
