@@ -9,7 +9,7 @@ export default () => {
         <title>AuditList | Online</title>
         <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
-        <link rel="stylesheet" href="/static/css/src/audit-list.css?v=0" />
+        <link rel="stylesheet" href="/static/css/min/audit-list.css?v=0" />
       </Head>
     
       {/* <Layout noFooter isPrivatePage> */}
