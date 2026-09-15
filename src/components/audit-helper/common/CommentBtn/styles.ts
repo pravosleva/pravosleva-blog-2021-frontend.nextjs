@@ -129,7 +129,9 @@ export const useStyles = makeStyles((theme) => ({
       // @ts-ignore
       padding: theme.spacing(1, 1, 1, 1),
       // border: '1px solid red'
-    }
+    },
+    whiteSpace: 'pre',
+    wordBreak: 'break-word',
   },
   commentAction: {
     display: 'flex',

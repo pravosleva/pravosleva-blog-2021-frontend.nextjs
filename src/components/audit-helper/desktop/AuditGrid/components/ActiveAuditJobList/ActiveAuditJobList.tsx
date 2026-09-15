@@ -127,7 +127,6 @@ export const ActiveAuditJobList = memo(({ audits, onUpdateAuditComment, onAddJob
                 comment: activeAuditComment || '',
               }}
               onSuccess={({ state }) => {
-                // console.log(state)
                 if (!!activeAuditId) onUpdateAuditComment({
                   auditId: activeAuditId,
                   comment: state.comment,

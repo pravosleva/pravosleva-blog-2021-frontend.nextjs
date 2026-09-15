@@ -27,6 +27,7 @@ const TodoOnline = ({ chat_id, _pageService }: {
         <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         <link rel="stylesheet" href="/static/css/min/audit-list.css?v=1" />
+        <link rel="stylesheet" href="/static/css/min/audit-list.dynamic-cactus.css?v=1" />
       </Head>
       {
         _pageService.isOk

@@ -1,0 +1,64 @@
+/* Внешний контейнер: отвечает ТОЛЬКО за размеры и точное место на бордере */
+.tools-microwidget--right .widget-cactus {
+  position: absolute;
+  top: 0;
+  left: 8px; /* Обновлено по вашей корректировке */
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Внутренний аниматор: отвечает ТОЛЬКО за физику падения */
+.tools-microwidget--right .cactus-animator {
+  width: 100%;
+  height: 100%;
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+
+/* ─── СОСТОЯНИЕ: ВИДЖЕТ ЗАКРЫВАЕТСЯ / ЗАКРЫТ ─── */
+.tools-microwidget--right:not(.opened) .cactus-animator {
+  /* Увеличили общую длительность до 0.75с, чтобы дать кактусу время зависнуть */
+  animation: cactusFall 0.75s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* ─── СОСТОЯНИЕ: ВИДЖЕТ ОТКРЫТ ─── */
+.tools-microwidget--right.opened .cactus-animator {
+  animation: none;
+  transform: none; 
+  opacity: 1;
+}
+
+/* Стили SVG */
+.tools-microwidget--right .widget-cactus svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0px -2px 3px rgba(0, 0, 0, 0.1));
+}
+
+/* ─── ОБНОВЛЕННАЯ ЕСТЕСТВЕННАЯ ФИЗИКА ПАДЕНИЯ ─── */
+@keyframes cactusFall {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  /* ФАЗА 1: Виджет выезжает из-под горшка. 
+     Кактус остаётся на месте экрана за счёт сдвига влево и опасно наклоняется */
+  30% {
+    transform: translateX(-60px) translateY(0) rotate(-20deg);
+    opacity: 1;
+  }
+  /* ФАЗА 2: Кактус полностью потерял опору. 
+     Горизонтальное движение (translateX) ОСТАНАВЛИВАЕТСЯ. 
+     Он заваливается вправо перед падением. */
+  50% {
+    transform: translateX(-60px) translateY(10px) rotate(15deg);
+    opacity: 1;
+  }
+  /* ФАЗА 3: Свободное падение. 
+     Координата X (-40px) НЕ МЕНЯЕТСЯ, поэтому кактус летит СТРОГО ВНИЗ! */
+  100% {
+    transform: translateX(-60px) translateY(150px) rotate(35deg);
+    opacity: 0;
+  }
+}

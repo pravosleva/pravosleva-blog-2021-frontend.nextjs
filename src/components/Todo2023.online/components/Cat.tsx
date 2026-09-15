@@ -13,7 +13,7 @@ export const Cat: React.FC<CatProps> = ({
 }) => {
   return (
     <div 
-      className="widget-cactus" 
+      className="widget-cat" 
       style={{ ...(style || {}), width: size, height: size }}
     >
       <svg 

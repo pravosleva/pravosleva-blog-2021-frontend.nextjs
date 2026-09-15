@@ -77,6 +77,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import MenuOpenIcon from '@mui/icons-material/MenuOpen'
 import { Cactus } from './components/Cactus'
 import { Cat } from './components/Cat'
+import { Flower } from './components/Flower'
 
 // Функция, которая решает, какой элемент показать сегодня
 const renderWidgetMascot = () => {
@@ -85,15 +86,15 @@ const renderWidgetMascot = () => {
   // const currentDay = new Date('2026-09-18').getDay() // FRI
 
   switch (currentDay) {
-    case 1: // Понедельник
+    case 1: // Mon
       return null; // Ничего не выводим (будет пусто)
-      
-    case 5: // Пятница
+    case 3: // Wed
+      return <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
+    case 5: // Fri
       // Показываем кота, с вашим кастомным инлайновым смещением
       return <Cat size={70} color='#666f73' style={{ transform: 'translateY(calc(-100% + 5px))' }} />;
-      
-    default: // Все остальные дни (Вторник, Среда, Четверг, Суббота, Воскресенье)
-      return <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
+    default: // Все остальные дни (Вт, Чт, Сб, Вс)
+      return <Flower size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
   }
 };
 
