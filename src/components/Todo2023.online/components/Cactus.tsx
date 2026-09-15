@@ -1,12 +1,10 @@
 import React, { CSSProperties } from 'react';
 
 interface CactusProps {
-  size?: number; // Настройка размера в пикселях
-  color?: string; // Основной цвет кота (например, "#546E7A", "gray", "black")
+  size?: number;
   style?: CSSProperties;
 }
 
-// 2. Устанавливаем значение по умолчанию (например, 40px)
 export const Cactus: React.FC<CactusProps> = ({ size = 40, style }) => {
   return (
     <div 

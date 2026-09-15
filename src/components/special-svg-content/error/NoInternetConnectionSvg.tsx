@@ -4,6 +4,7 @@ import { IRootState } from '~/store/IRootState'
 import { Button } from '@mui/material'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils/getTextColor'
+import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 interface INoInternetConnectionProps {
   message?: string
@@ -16,7 +17,7 @@ export const NoInternetConnectionSvg: React.FC<INoInternetConnectionProps> = ({
   
   const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
   const primaryColor = isDark ? '#FF8E53' : '#0162c8' // Оранжевый или синий акцент
-  const subColor = getTextColor({ currentTheme })
+  const subColor = getLabelBgColor({ currentTheme })
   const textColor = getTextColor({ currentTheme })
   const titleColor = getTextColor({ currentTheme })
 
@@ -158,7 +159,7 @@ export const NoInternetConnectionSvg: React.FC<INoInternetConnectionProps> = ({
           }}
           fullWidth
         >
-          Перезагрузить страницу
+          Перезагрузить
         </Button>
       </div>
     </div>

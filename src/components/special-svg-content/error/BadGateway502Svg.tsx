@@ -1,6 +1,7 @@
 // src/components/Svg/BadGateway502Svg.tsx
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils/getTextColor'
 import { IRootState } from '~/store/IRootState'
 
@@ -15,7 +16,7 @@ export const BadGateway502Svg: React.FC<IBadGateway502Props> = ({
   
   const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
   const primaryColor = isDark ? '#FF8E53' : '#0162c8' // Оранжевый или синий акцент
-  const subColor = getTextColor({ currentTheme })
+  const subColor = getLabelBgColor({ currentTheme })
   const textColor = getTextColor({ currentTheme })
   const titleColor = getTextColor({ currentTheme })
 

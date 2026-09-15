@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils/getTextColor'
 import { IRootState } from '~/store/IRootState'
+import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 export const ContentLockedSvg: React.FC<{ message?: string }> = ({
   message = 'На странице ведутся технические работы или рефакторинг легаси-кода.',
@@ -11,12 +12,13 @@ export const ContentLockedSvg: React.FC<{ message?: string }> = ({
   // Адаптируем цвета под текущую тему вашего блога (светлая / темная / серая)
   const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
   const primaryColor = isDark ? '#FF8E53' : '#0162c8' // Оранжевый или синий акцент
-  const subColor = getTextColor({ currentTheme })
+  const subColor = getLabelBgColor({ currentTheme })
+  const subBgColor2 = '#ededed'
   const textColor = getTextColor({ currentTheme })
   const titleColor = getTextColor({ currentTheme })
 
   return (
-    <div 
+    <div
       style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -74,8 +76,8 @@ export const ContentLockedSvg: React.FC<{ message?: string }> = ({
         <g className="animated-lock">
           <path d="M350 170 V130 C350 102 372 80 400 80 C428 80 450 102 450 130 V170" fill="none" stroke={primaryColor} strokeWidth="14" strokeLinecap="round" />
           <rect x="330" y="160" width="140" height="110" rx="20" fill={primaryColor} filter="url(#locked-shadow)" />
-          <circle cx="400" cy="205" r="10" fill={subColor} />
-          <path d="M395 210 L392 235 H408 L405 210 Z" fill={subColor} />
+          <circle cx="400" cy="205" r="10" fill={subBgColor2} />
+          <path d="M395 210 L392 235 H408 L405 210 Z" fill={subBgColor2} />
         </g>
       </svg>
 

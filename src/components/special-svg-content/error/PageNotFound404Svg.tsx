@@ -1,6 +1,7 @@
 // src/components/Svg/PageNotFound404Svg.tsx
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils/getTextColor'
 import { IRootState } from '~/store/IRootState'
 
@@ -15,7 +16,7 @@ export const PageNotFound404Svg: React.FC<IPageNotFound404Props> = ({
   
   const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
   const primaryColor = isDark ? '#FF8E53' : '#0162c8'
-  const subColor = getTextColor({ currentTheme })
+  const subColor = getLabelBgColor({ currentTheme })
   const textColor = getTextColor({ currentTheme })
   const titleColor = getTextColor({ currentTheme })
 

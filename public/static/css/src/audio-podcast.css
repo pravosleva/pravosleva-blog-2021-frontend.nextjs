@@ -7,18 +7,24 @@
 .rotating-disk { animation: audioPlayerSpin 4s linear infinite; }
 
 /* ⚪ ТЕМА: LIGHT */
+.blog-audio-player-container,
 body main.light ~ .blog-audio-player-container {
   backdrop-filter: blur(8px);
   background-color: rgba(255, 255, 255, 1);
   /* border-top: 1px solid rgba(0, 0, 0, 0.08); */
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
 }
+.blog-audio-player-container .player-main-title,
 body main.light ~ .blog-audio-player-container .player-main-title { color: #111; }
+.blog-audio-player-container .player-active-title,
 body main.light ~ .blog-audio-player-container .player-active-title { color: #ff781e; }
+.blog-audio-player-container .player-meta-info,
+.blog-audio-player-container .player-meta-info ~ span,
 body main.light ~ .blog-audio-player-container .player-meta-info,
 body main.light ~ .blog-audio-player-container .player-meta-info ~ span {
   color: rgba(0, 0, 0, 0.5);
 }
+.blog-audio-player-container .podcast-inline-btn-queue.in-queue,
 body main.light ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue {
   color: #ff781e;
 }
@@ -33,39 +39,54 @@ body main.light ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queu
   }
 }
 @media (min-width: 769px) {}
+.blog-audio-player-container .player-queue-count,
 body main.light ~ .blog-audio-player-container .player-queue-count { color: #000; }
+.blog-audio-player-container .player-btn-minimize,
 body main.light ~ .blog-audio-player-container .player-btn-minimize { color: rgba(0, 0, 0, 0.5); background: none; border: none; cursor: pointer; }
+.blog-audio-player-container .player-btn-action,
 body main.light ~ .blog-audio-player-container .player-btn-action {
   background: rgba(0, 0, 0, 0.05);
   color: #222; border: none; padding: 4px 12px;
   borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
+.blog-audio-player-container .player-progress-track,
 body main.light ~ .blog-audio-player-container .player-progress-track { background: rgba(0, 0, 0, 0.06); }
+.blog-audio-player-container .player-pagination-btn,
 body main.light ~ .blog-audio-player-container .player-pagination-btn {
   background: rgba(0, 0, 0, 0.04);
   border: none; color: #000;
   padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer;
 }
+.blog-audio-player-container .player-pagination-btn:disabled,
 body main.light ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
+.blog-audio-player-container .player-queue-section,
 body main.light ~ .blog-audio-player-container .player-queue-section {
   /* border-top: 1px solid rgba(0, 0, 0, 0.06); */
 }
+.blog-audio-player-container .player-queue-item,
 body main.light ~ .blog-audio-player-container .player-queue-item {
   /* background-color: rgba(0, 0, 0, 0.02); */
   background-color: rgb(237, 237, 237);
   border: 1px solid transparent;
 }
+.blog-audio-player-container .player-queue-item.active,
 body main.light ~ .blog-audio-player-container .player-queue-item.active {
   background-color: rgba(255, 120, 30, 0.06); border: 1px solid rgba(255, 120, 30, 0.2); }
+.blog-audio-player-container .player-track-link,
 body main.light ~ .blog-audio-player-container .player-track-link { color: #333; font-weight: bold; }
+.blog-audio-player-container .player-track-link.selected,
 body main.light ~ .blog-audio-player-container .player-track-link.selected {
   color: #ff781e;
 }
+.blog-audio-player-container .player-queue-item.active-and-playing,
 body main.light ~ .blog-audio-player-container .player-queue-item.active-and-playing {
   background-color: rgba(57, 229, 172, 0.1); border: 1px solid #39e5ac; }
+.blog-audio-player-container .player-queue-item.active-and-playing > *,
 body main.light ~ .blog-audio-player-container .player-queue-item.active-and-playing > * {
   color: #39e5ac;
 }
+.blog-audio-player-container .player-track-link.broken,
 body main.light ~ .blog-audio-player-container .player-track-link.broken { color: #ff4d4d; text-decoration: line-through; }
+.blog-audio-player-container .player-btn-delete,
 body main.light ~ .blog-audio-player-container .player-btn-delete {
   background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: small; font-weight: bold; }
 

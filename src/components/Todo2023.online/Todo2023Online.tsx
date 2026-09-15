@@ -90,7 +90,7 @@ const renderWidgetMascot = () => {
       
     case 5: // Пятница
       // Показываем кота, с вашим кастомным инлайновым смещением
-      return <Cat size={70} style={{ transform: 'translateY(calc(-100% + 5px))' }} />;
+      return <Cat size={70} color='#666f73' style={{ transform: 'translateY(calc(-100% + 5px))' }} />;
       
     default: // Все остальные дни (Вторник, Среда, Четверг, Суббота, Воскресенье)
       return <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
