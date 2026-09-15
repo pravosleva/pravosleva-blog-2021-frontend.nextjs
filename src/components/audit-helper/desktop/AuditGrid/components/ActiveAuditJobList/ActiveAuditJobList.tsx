@@ -103,9 +103,10 @@ export const ActiveAuditJobList = memo(({ audits, onUpdateAuditComment, onAddJob
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px',
+            gap: '0px',
             minWidth: '100%',
             // border: '1px solid red',
+            // paddingTop: '16px',
           }}
         >
           <div
@@ -115,7 +116,9 @@ export const ActiveAuditJobList = memo(({ audits, onUpdateAuditComment, onAddJob
               // border: '1px solid red',
 
               // padding: 'calc(52px + 2px) 2px 0 2px', // NOTE: Special for outline css prop
-              padding: '16px 0 0 0',
+              padding: '16px 0 32px 0',
+              // border: '1px dashed red',
+              // width: 'calc(100% + 4px)'
             }}
           >
             <CommentBtn

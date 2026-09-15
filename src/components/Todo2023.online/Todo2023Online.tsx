@@ -1198,7 +1198,11 @@ const Logic = memo(({ room }: TLogicProps) => {
             )
           }
         </Widget>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+        <div
+          style={{
+            display: 'flex', flexDirection: 'column', minHeight: '100dvh',
+          }}
+        >
           <div
             className={clsx('tools-microwidget--right', { 'opened': isMicrowidgetOpened })}
           >

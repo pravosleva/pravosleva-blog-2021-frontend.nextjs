@@ -105,7 +105,12 @@ export const AuditGrid = memo(({
                   // height: '50px',
                   // display: 'flex',
                   // alignItems: 'center',
-                  padding: '16px 0 16px 0',
+                  
+                  // border: '1px dashed red',
+                  display: isEditable ? 'block' : 'none',
+
+                  width: 'calc(100% + 16px)',
+                  padding: '16px 8px 16px 8px',
                 }}
               >
                 <AddNewBtn
@@ -154,7 +159,14 @@ export const AuditGrid = memo(({
               />
             )
           }
-          <div className={clsx(styles.auditListWrapper)}>
+          <div
+            className={clsx(styles.auditListWrapper)}
+            style={{
+              width: '100%',
+              margin: '0 auto',
+              // border: '1px solid red',
+            }}
+          >
             {
               !isInitAppInProgress
                 ? audits.length > 0 ? (

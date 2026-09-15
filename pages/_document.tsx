@@ -65,9 +65,10 @@ export default class MyDocument extends Document {
           <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast-preview.css" rel="stylesheet" fetchpriority="high" />
 
+          <link rel="stylesheet" href="/static/css/min/link-as-rippled-btn.css" />
+
           {/* <link href="/static/css/min/animations.css" rel="stylesheet" /> */}
           {/* <link href="/static/css/min/fix.sweetalert2.css" rel="stylesheet" /> */}
-
         </Head>
         <body style={{ fontSize: '0.9em' }}>
           <script

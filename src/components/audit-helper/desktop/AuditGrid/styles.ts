@@ -2,6 +2,7 @@ import { makeStyles } from '@mui/styles'
 
 export const useStyles = makeStyles((theme) => ({
   wrapper: {
+    // border: '1px solid red',
     width: '100%',
     minHeight: '100%',
     display: 'grid',
@@ -29,9 +30,10 @@ export const useStyles = makeStyles((theme) => ({
 
     display: 'flex',
     flexDirection: 'column',
-    // @ts-ignore
-    // gap: theme.spacing(2),
-    gap: '0px',
+    alignItems: 'center',
+
+    gap: '16px',
+    padding: '0px 0 16px 0',
 
     // -- NOTE: Exp?
     // maxHeight: '100dvh',
@@ -84,5 +86,7 @@ export const useStyles = makeStyles((theme) => ({
     // --
     
     display: 'flex',
+
+    // paddingTop: '16px',
   },
 }))

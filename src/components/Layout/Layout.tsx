@@ -85,15 +85,12 @@ export const Layout = ({ children, noFooter, isPrivatePage }: TProps) => {
           <ResponsiveBlock isLimited isPaddedMobile>
             <div className={classes.footerMainBox}>
               <div className={classes.footerSiteInfoBox}>
-                <div>
-                  <a
-                    style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }}
-                    href='https://t.me/pravosleva'
-                  >
+                <div style={{ display: 'inline-flex', gap: '8px' }}>
+                  <a style={{ whiteSpace: 'pre', color: '#fff', fontWeight: 'bold' }} href='https://t.me/pravosleva'>
                     @pravosleva
                   </a>
+                  <div>2018 – {fullYear}</div>
                 </div>
-                <div>2018 – {fullYear}</div>
                 <div>
                   Ver. <code>{NEXT_APP_VERSION}</code> Last build {NEXT_APP_BUILD_DATE}
                 </div>

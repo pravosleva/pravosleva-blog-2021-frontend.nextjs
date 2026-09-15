@@ -119,8 +119,7 @@ const BlogArticleSlug = ({ _pageService, article, statusCode }: IBlogArticleSlug
         <link rel="stylesheet" href="/static/css/min/block-quotes.css" fetchpriority="high" />
         
         {/* TODO: Review */}
-        <link rel="stylesheet" href="/static/css/min/rippled-btn.css" />
-        <link rel="stylesheet" href="/static/css/min/link-as-rippled-btn.css" />
+        {/* <link rel="stylesheet" href="/static/css/min/rippled-btn.css" /> */}
       </Head>
       <Layout>
         <Article _pageService={_pageService} article={article} />
