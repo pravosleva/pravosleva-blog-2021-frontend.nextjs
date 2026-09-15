@@ -226,7 +226,14 @@ export const ToDo2023 = memo(() => {
           <title>AuditList</title>
           {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
         </Head>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100dvh - 40px)' }}>
+        <div
+          style={{
+            display: 'flex', flexDirection: 'column',
+            // NOTE: Если ест хэдер
+            // minHeight: 'calc(100dvh - 40px)',
+            minHeight: '100dvh',
+          }}
+        >
           <Container maxWidth="md">
             <Stack
               direction='column'
@@ -348,11 +355,12 @@ export const ToDo2023 = memo(() => {
                   />
                 </Box>
                 <Stack spacing={2} direction='row' sx={{ width: '100%' }}>
-                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='https://pravosleva.pro' target='_self'>
+                  <Button size='small' fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='https://pravosleva.pro' target='_self'>
                     Home
                   </Button>
                   {lastVisitedOnlinePages?.length > 0 && (
                     <Button
+                      size='small'
                       fullWidth
                       endIcon={<ArrowForwardIcon />}
                       variant='outlined'

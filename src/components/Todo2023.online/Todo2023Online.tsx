@@ -1138,7 +1138,7 @@ const Logic = memo(({ room }: TLogicProps) => {
                     // pb: 2,
                   }}
                 >
-                  <Button fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/audit-list' target='_self'>
+                  <Button size='small' fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/audit-list' target='_self'>
                     Offline
                   </Button>
                 </Box>
@@ -1199,7 +1199,7 @@ const Logic = memo(({ room }: TLogicProps) => {
             >
               Offline
             </Button>
-            
+
             <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold', lineHeight: 1 }}>{room} <span style={{ opacity: 0.5, fontSize: 'small' }}>{completedAuditsLen} / {remoteAudits.length}</span></span>
             
             <div
