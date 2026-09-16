@@ -23,9 +23,9 @@ const {
 
 // Читаем переменную отключения оптимизации (приводим строку "true" к булеву типу)
 const disableImageOptimization = env.NEXT_IS_IMAGE_OPTIMIZATION_DISABLED === '1'
-console.log(`⚙️ disableImageOptimization -> ${String(disableImageOptimization)}`)
+console.log(`🔧 disableImageOptimization -> ${String(disableImageOptimization)}`)
 if (disableImageOptimization) {
-  console.log('⚙️ Отпимизация картинок "на лету" отключена! Не забудьте проверить конфиг NGINX')
+  console.log('🔧 Отпимизация картинок "на лету" отключена! Не забудьте проверить конфиг NGINX')
   console.log(`# -- Stage server (See also: /public/static/_articles/this-project-doc-1-1-nginx.mdx) --
 location = /_next/image {
   if ($request_uri ~* "url=(?:%2F|/)?static(?:%2F|/)([^&]+)") {
