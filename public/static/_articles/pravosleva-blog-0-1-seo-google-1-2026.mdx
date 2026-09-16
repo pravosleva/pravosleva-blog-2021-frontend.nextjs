@@ -1,6 +1,6 @@
 ---
 _id: "6a943f18f7929b4140542052"
-title: "SEO: Аналитика в Next.js | GA4 в веб воркере"
+title: "SEO: Аналитика в Next.js (2026.8) — GA4 в веб воркере"
 brief: "Практическое руководство по разгону Web Vitals в Next.js. Разбираем, как полностью разгрузить основной поток браузера (Main Thread) от тяжелых скриптов Google Analytics 4, перенеся сбор данных и отправку хит-пакетов через Measurement Protocol в изолированный Dedicated Web Worker."
 bg_src: "/static/img/blog/FB_IMG_1787608253773.webp"
 bg_size: { w: 2048, h: 2048 }
@@ -179,3 +179,20 @@ case 'init':
 ```
 
 Теперь при отправке события функция будет вызываться с актуальным контекстом: `sendGA4Event(payload, isDebugMode)`. Если вы случайно передадите неподдерживаемый параметр или забудете `client_id`, Google вернет развернутый массив ошибок прямо в `Console` вашего браузера.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "SEO: Как правильно запустить индексацию сайта в Google (2026.9)",
+      "type": "link",
+      "link": "/p/pravosleva-blog-0-1-seo-google-0-2026"
+    },
+    {
+      "title": "NEXT",
+      "label": "SEO: Детали индексации в Google (2026.9) — Хлебные крошки",
+      "type": "link",
+      "link": "/p/pravosleva-blog-0-1-seo-google-2-2026"
+    }
+  ]'
+/>
