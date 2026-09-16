@@ -13,7 +13,7 @@ type TStickyHeaderProps = {
 
 const stickyHeaderEngine = new ReactiveEngine({
   logger: {
-    isEnabled: true,
+    isEnabled: false,
     isCoreOptimizationDebugEnabled: false,
     instanceName: 'Sticky Header',
   }

@@ -3,6 +3,6 @@ import { ReactiveEngine } from '@pravosleva/reactive-engine' // Подставь
 export const ednaEngine = new ReactiveEngine({
   logger: {
     instanceName: 'EDNA exp',
-    isEnabled: true,
+    isEnabled: false,
   }
 })

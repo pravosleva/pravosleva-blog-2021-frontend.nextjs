@@ -2,7 +2,7 @@ import { ReactiveEngine } from '@pravosleva/reactive-engine'
 
 export const searchEngine = new ReactiveEngine({
   logger: {
-    isEnabled: true,
+    isEnabled: false,
     isCoreOptimizationDebugEnabled: false,
     instanceName: 'Articles Search',
   }

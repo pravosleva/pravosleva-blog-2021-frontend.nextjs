@@ -3,7 +3,7 @@ import { ReactiveEngine, withThrottleComputed } from '@pravosleva/reactive-engin
 // 1. Инициализируем движок в соответствии с ReactiveEngineOptions
 export const reactiveHeadingsEngine = new ReactiveEngine({
   logger: {
-    isEnabled: true,
+    isEnabled: false,
     instanceName: 'Reactive Headings'
   }
 })

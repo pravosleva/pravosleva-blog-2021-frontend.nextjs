@@ -122,7 +122,7 @@ export const AuditItem = memo(({ audit, onUpdateAuditComment, onRemoveAudit, onA
               ? '#666'
               : '#fff',
           zIndex: 2,
-          borderBottom: '1px solid lightgray',
+          borderBottom: '1px solid rgba(203,213,225,1)',
 
           paddingTop: '16px',
           paddingBottom: '16px',

@@ -119,7 +119,7 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
                   if (!isEditable) e.preventDefault()
                   handleToggleSubjob({ subjobId: id })
                 }}
-                // sx={{ fontFamily: 'system-ui' }}
+                sx={{ opacity: status === ESubjobStatus.IS_DONE ? 0.5 : 1 }}
               />
             </li>
           ))

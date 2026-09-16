@@ -160,7 +160,7 @@ export const JobItem = memo(({
         <Badge  color='error' badgeContent={incompleteSubjobsCounter}>
           {Icon}
         </Badge>
-        <div style={{ fontFamily: 'system-ui' }}>{job.name}</div>
+        <div style={{ fontFamily: 'monospace' }}>{job.name}</div>
         <div
           style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row' }}
         >

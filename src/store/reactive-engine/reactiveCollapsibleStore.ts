@@ -9,7 +9,7 @@ export interface ICollapsibleItem {
 // 1. Инициализируем движок в соответствии с ReactiveEngineOptions
 export const collapsibleEngine = new ReactiveEngine({
   logger: {
-    isEnabled: true,
+    isEnabled: false,
     instanceName: 'Collapsible Pinned Boxes'
   }
 })

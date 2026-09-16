@@ -8,7 +8,7 @@ export interface IGalleryRegistryItem extends TNormalizedItem {
 
 export const reactiveGalleryEngine = new ReactiveEngine({
   logger: {
-    isEnabled: true,
+    isEnabled: false,
     instanceName: 'Global Article Gallery'
   }
 })

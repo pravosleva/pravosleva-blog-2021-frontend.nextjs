@@ -2,31 +2,10 @@ import { makeStyles } from '@mui/styles'
 
 export const useStyles = makeStyles((theme) => ({
   commentBox: {
-    // maxWidth: '100%',
     height: '100%',
-    // background: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7))',
-    // @ts-ignore
-    // border: `2px solid ${theme.palette.primary.dark}`,
     border: '2px solid rgba(203,213,225,1)',
-    // borderLeftWidth: '4px',
-    // border: '2px solid lightgray',
-    // color: 'rgba(203,213,225,1)',
-    // @ts-ignore
-    // background: `linear-gradient(90deg, rgba(232,232,232,1) 0%, rgba(255,255,255,1) 70%, rgba(255,255,255,1) 100%)`,
-    // background: `linear-gradient(90deg, ${theme.palette.secondary.light} 0%, rgba(255,255,255,1) 32%, rgba(255,255,255,1) 100%)`,
-    // borderRadius: 'inherit',
-    // @ts-ignore
-    borderRadius: theme.spacing(2), // NOTE: BORDER_EXP
-    // backgroundImage: '',
-    // @ts-ignore
-    // backgroundColor: theme.palette.primary.dark,
-    // @ts-ignore
+    borderRadius: theme.spacing(2),
     padding: theme.spacing(3, 2, 2, 2),
-    // '& > div:not(:last-child)': {
-    //   marginBottom: theme.spacing(2),
-    // },
-    // color: '#fff',
-
     display: 'flex',
     flexDirection: 'column',
     minHeight: '52px',
@@ -35,19 +14,15 @@ export const useStyles = makeStyles((theme) => ({
     fontSize: 'small',
   },
   editableCommentBox: {
-    // @ts-ignore
-    padding: theme.spacing(3, 2, 4, 2),
+    padding: theme.spacing(3, 2, 5, 2),
   },
   absoluteBadgeRight: {
     position: 'absolute',
     top: 0,
     right: 0,
-    // @ts-ignore
-    // backgroundColor: theme.palette.primary.dark,
     backgroundColor: 'rgb(203, 213, 225)',
-    color: '#fff',
+    color: '#1e293b',
     borderRadius: '0 12px 0 16px',
-    // padding: '2px 10px',
     padding: '0px 8px 2px 10px',
     fontSize: '12px',
     lineHeight: '1.5em',
@@ -55,19 +30,9 @@ export const useStyles = makeStyles((theme) => ({
   },
   absoluteControls: {
     position: 'absolute',
-    // @ts-ignore
     bottom: theme.spacing(1),
-    // @ts-ignore
     right: theme.spacing(1),
-    // @ts-ignore
-    // backgroundColor: theme.palette.primary.dark,
     color: '#fff',
-
-    // borderRadius: '8px 0 4px 0',
-    // padding: '2px 10px',
-    // padding: '2px 10px 0px 10px',
-
-    // border: '1px solid red',
     display: 'flex',
     gap: '1px',
 
@@ -76,62 +41,55 @@ export const useStyles = makeStyles((theme) => ({
       cursor: 'pointer',
       fontSize: '12px',
       fontWeight: 'bold',
-      // padding: '0px 10px 2px 10px',
-      // padding: '2px 10px 0px 10px',
       padding: '4px 16px',
     },
     '& button:first-child': {
-      // borderRadius: '8px 0 0 0',
-      // @ts-ignore
       borderRadius: theme.spacing(1, 0, 0, 1),
     },
     '& button:last-child': {
-      // borderRadius: '0 0 4px 0',
-      // @ts-ignore
       borderRadius: theme.spacing(0, 1, 1, 0),
     },
   },
   btnDelete: {
-    // @ts-ignore
-    backgroundColor: theme.palette.error.light,
+    backgroundColor: theme.palette.error.main,
     color: '#fff',
     '&:hover': {
-      // @ts-ignore
       backgroundColor: theme.palette.error.dark,
     },
   },
   btnEdit: {
-    // @ts-ignore
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.main,
     color: '#fff',
     '&:hover': {
-      // @ts-ignore
-      backgroundColor: theme.palette.primary.light,
+      backgroundColor: theme.palette.primary.dark,
     },
   },
   commentTitle: {
-    // fontSize: '13px',
-
     maxWidth: '100%',
   },
   commentDescription: {
-    // marginBottom: 'auto',
-    // @ts-ignore
-    // marginBottom: theme.spacing(3),
+    fontFamily: 'monospace',
+    maxHeight: '92px',
+    overflowY: 'auto',
     height: '100%',
 
     '& > pre': {
-      // border: '1px solid red',
-      // @ts-ignore
       borderRadius: theme.spacing(2, 2, 0, 0),
       marginBottom: 0,
       backgroundColor: 'transparent',
-      // @ts-ignore
       padding: theme.spacing(1, 1, 1, 1),
-      // border: '1px solid red'
+      
+      // 🔥 Важно: защищаем внутренние теги <pre>, если разметка рендерится через них
+      whiteSpace: 'pre-wrap',
+      wordBreak: 'break-word',
     },
-    whiteSpace: 'pre',
-    wordBreak: 'break-word',
+
+    // 🎯 ФИКС 1: Меняем "pre" на "pre-wrap" — это разрешает автоматический перенос строк
+    whiteSpace: 'pre-wrap',
+
+    // 🎯 ФИКС 2: Инструктируем браузер агрессивно разрывать слишком длинные слова/ссылки
+    wordBreak: 'break-word', 
+    overflowWrap: 'break-word',
   },
   commentAction: {
     display: 'flex',
@@ -139,10 +97,7 @@ export const useStyles = makeStyles((theme) => ({
     '& > div': {
       marginLeft: 'auto',
       display: 'flex',
-      // @ts-ignore
       gap: theme.spacing(1),
     },
-    // @ts-ignore
-    // paddingRight: theme.spacing(1),
   },
 }))
