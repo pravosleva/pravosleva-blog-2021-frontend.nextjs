@@ -50,7 +50,7 @@ export default class MyDocument extends Document {
           <link rel="stylesheet" href="/static/css/min/common.css" fetchpriority="high" />
           <link rel="stylesheet" href="/static/css/min/gosuslugi.css" fetchpriority="high" />
           
-          <link rel="stylesheet" href='/static/css/min/layout.css' fetchpriority="high" />
+          <link rel="stylesheet" href={`/static/css/min/layout.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} fetchpriority="high" />
           <link rel="stylesheet" href='/static/css/min/backdrop-blur.css' />
           
           {/* Наш главный файл темизации — ему точно нужен высокий приоритет */}
