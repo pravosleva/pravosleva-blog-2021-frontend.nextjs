@@ -56,7 +56,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
   const { slug } = article
   const { isSearchPanelOpen } = useArticlesSearch()
-  const tagList = useMemo(() => article.tags || [], [article.tags])
+  const tagList = article.tags || []
   const linkColor = useMemo(() => currentTheme === 'hard-gray' ? '#fff' : currentTheme === 'dark' ? '#FF9000': '#0162c8', [currentTheme])
   const MemoizedArticleMarkdown = useMemo(() => {
     return (
@@ -235,7 +235,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                     className={clsx('truncate')}
                     style={{ whiteSpace: 'pre', color: linkColor, WebkitTapHighlightColor: 'transparent' }}
                     key={tag}
-                    href={`/blog/q/${tag.substring(1)}`}
+                    href={`/blog/q/${tag}`}
                   >
                     <span style={{ whiteSpace: 'pre' }} className='truncate'>{tag}</span>
                   </a>
