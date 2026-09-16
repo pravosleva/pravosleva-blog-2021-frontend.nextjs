@@ -73,8 +73,6 @@ export const getNote = async (req: IRequest, res: IResponse) => {
 
     logs.push(`[Cache Info] Время с момента последнего обновления: ${currentCacheAge}`)
 
-    
-
     // 3. БЕЗОПАСНАЯ ОБРАБОТКА ОБЪЕКТА СЛАГОВ
     if (slugMapping && Object.keys(slugMapping).length > 0) {
       const activeMapping = slugMapping as TLocalSlugMap

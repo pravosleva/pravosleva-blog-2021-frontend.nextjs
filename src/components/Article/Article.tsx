@@ -235,7 +235,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
                     className={clsx('truncate')}
                     style={{ whiteSpace: 'pre', color: linkColor, WebkitTapHighlightColor: 'transparent' }}
                     key={tag}
-                    href={`/blog/q/${tag}`}
+                    href={`/blog/q/${encodeURIComponent(tag)}`}
                   >
                     <span style={{ whiteSpace: 'pre' }} className='truncate'>{tag}</span>
                   </a>

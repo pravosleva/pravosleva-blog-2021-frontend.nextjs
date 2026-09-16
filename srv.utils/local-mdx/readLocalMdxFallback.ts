@@ -47,7 +47,8 @@ export const readLocalMdxFallback = (slug: string) => {
         size: data?.bg_size || defaultBg.size,
         type: data?.bg_type || defaultBg.type,
       },
-      brief: data.brief || 'Unset'
+      brief: data.brief || 'Unset',
+      tags: data.tags,
     })
   } catch (error) {
     console.error(`[Express Fallback] Ошибка парсинга файла ${slug}:`, error)
