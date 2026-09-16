@@ -26,8 +26,8 @@ const TodoOnline = ({ chat_id, _pageService }: {
         <title>AuditList | Online</title>
         <meta name="robots" content="noindex, nofollow" />
         {/* <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> */}
-        <link rel="stylesheet" href="/static/css/min/audit-list.css?v=1" />
-        <link rel="stylesheet" href="/static/css/min/audit-list.dynamic-cactus.css?v=1" />
+        <link rel="stylesheet" href={`/static/css/min/audit-list.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} />
+        <link rel="stylesheet" href={`/static/css/min/audit-list.dynamic-cactus.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} />
       </Head>
       {
         _pageService.isOk

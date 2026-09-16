@@ -60,7 +60,7 @@ export default class MyDocument extends Document {
           <link rel="stylesheet" href="/static/css/min/custom-breadcrumbs.css" />
           <link rel="stylesheet" href="/static/css/min/variant.react-image-ligthbox.v2.css" />
 
-          <link href="/static/css/min/audio-podcast.css?v=0" rel="stylesheet" fetchpriority="high" />
+          <link href={`/static/css/min/audio-podcast.css??v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast-preview.css" rel="stylesheet" fetchpriority="high" />
 
