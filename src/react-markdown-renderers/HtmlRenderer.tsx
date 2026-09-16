@@ -57,15 +57,6 @@ const componentTransforms = {
   YoutubeGrid,
   YoutubeInModal,
   YoutubePlayer,
-  Gist: ({ gistId }: { gistId: string }) => (
-    <div
-      style={{
-        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 3px 7px -1px',
-        borderRadius: '8px',
-      }}
-    >
-      <Gist id={gistId} />
-    </div>),
   ImageInNewTab: (props: any) => <ImageInNewTab {...props} />,
   JSONComparison: (props: any) => <JSONComparison {...props} />,
   // РЕГИСТРАЦИЯ: Теперь MDX-парсер знает про кастомный тег CodeComparison
@@ -78,14 +69,16 @@ const componentTransforms = {
       <ImagesGalleryBox itemsJson={props?.itemsJson} />
     </ErrorBoundary>
   ),
-  ImagesGalleryBox2: (props: TImagesGalleryBoxProps) => (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-    // onReset={handleClearText}
-    >
-      <ImagesGalleryBox2 itemsJson={props?.itemsJson} />
-    </ErrorBoundary>
-  ),
+  ImagesGalleryBox2: (props: any) => {
+    // Поддерживаем и новый короткий проп items, и старый легаси itemsJson
+    const rawData = props?.items || props?.itemsJson
+
+    return (
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <ImagesGalleryBox2 itemsData={rawData} previewPosition={props?.previewPosition} />
+      </ErrorBoundary>
+    )
+  },
   CollapsibleBox: (props: any) => <CollapsibleBox {...props} />,
   CardsExample: (props: any) => (
     <ErrorBoundary

@@ -16,9 +16,7 @@ export const useStyles = makeStyles((theme) =>
       columnGap: '16px',
       rowGap: '16px',
       
-      // @ts-ignore
       [theme.breakpoints.down('sm')]: {
-        // border: '1px dashed red',
         width: 'calc(100% + 32px)',
         transform: 'translateX(-16px)',
 
@@ -26,7 +24,6 @@ export const useStyles = makeStyles((theme) =>
         columnGap: '0px',
         rowGap: '0px',
       },
-      // @ts-ignore
       [theme.breakpoints.up('md')]: {
         gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
         '& div:last-child': {
@@ -42,6 +39,7 @@ export const useStyles = makeStyles((theme) =>
           height: '200px',
           width: '100%',
           objectFit: 'cover',
+          // objectPosition: 'left top',
 
           borderRadius: '0px',
           WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
@@ -58,6 +56,12 @@ export const useStyles = makeStyles((theme) =>
           WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
           cursor: 'pointer',
         },
+      },
+      '& > img.left': {
+        objectPosition: 'left top',
+      },
+      '& > img.center': {
+        objectPosition: 'center center',
       },
     },
   })
