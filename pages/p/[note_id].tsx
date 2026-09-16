@@ -111,7 +111,7 @@ const BlogArticleSlug = ({ _pageService, article, statusCode }: IBlogArticleSlug
           if (!value) return null
           return <meta key={key} property={key} content={String(value)} />
         })}
-        
+
         <link href={`/static/css/min/article.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} rel="stylesheet" fetchpriority="high" />
         <link rel="stylesheet" href="/static/prismjs/themes/prism-material-theme.min.css" fetchpriority="high" />
         <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
@@ -174,6 +174,7 @@ BlogArticleSlug.getInitialProps = wrapper.getInitialPageProps(
             slug: note_id,
             brief: noteData.brief || 'DRAFT',
             bg: noteData.bg || defaultBg,
+            tags: noteData.tags || undefined,
           }
         } else {
           throw new Error('Неизвестный кейс (ответ получен, но невалидный)')

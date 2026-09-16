@@ -10,7 +10,6 @@ import { GoHomeSection, BreadCrumbs, WebShareBtn, WebShareDesktopBtn } from '~/c
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
 import clsx from 'clsx'
 import { useBaseStyles } from '~/mui/useBaseStyles'
-import { getTagList } from '~/utils/string-tools/getTagList'
 import { IRootState } from '~/store/IRootState'
 import { useSelector } from 'react-redux'
 import styles from './Article.module.scss'
@@ -57,9 +56,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
 
   const { slug } = article
   const { isSearchPanelOpen } = useArticlesSearch()
-  const tagList = useMemo(() => getTagList({ 
-      originalMsgList: [clsx(article?.original?.title, article?.brief)] 
-  }).sortedList, [article?.original?.title, article?.brief])
+  const tagList = useMemo(() => article.tags || [], [article.tags])
   const linkColor = useMemo(() => currentTheme === 'hard-gray' ? '#fff' : currentTheme === 'dark' ? '#FF9000': '#0162c8', [currentTheme])
   const MemoizedArticleMarkdown = useMemo(() => {
     return (

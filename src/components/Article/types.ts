@@ -12,6 +12,7 @@ export type TArticle = {
     };
     type: string;
   };
+  tags?: string[];
 }
 
 export type TPageService = {
