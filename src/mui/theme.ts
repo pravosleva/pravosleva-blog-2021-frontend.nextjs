@@ -70,34 +70,77 @@ const theme = createTheme({
         },
       },
     },
-    // MuiInput: {
-    //   styleOverrides: {
-    //     root: {
-    //       borderRadius: '8px',
-    //     },
-    //   },
-    // },
-    // MuiTextField: {
-    //   styleOverrides: {
-    //     root: {
-    //       borderRadius: '8px',
-    //     },
-    //   },
-    // },
-    // MuiButtonBase: {
-    //   styleOverrides: {
-    //     root: {
-    //       color: '#cbd5e1',
-    //     },
-    //   },
-    // },
-    // MuiIconButton: {
-    //   styleOverrides: {
-    //     root: {
-    //       color: '#cbd5e1',
-    //     },
-    //   },
-    // },
+    
+    // 🎯 Для инпутов с рамкой (Outlined) — самый популярный дефолтный вариант TextField
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px',
+        },
+      },
+    },
+
+    // 🎯 Для инпутов с нижней линией и фоновой заливкой (Filled)
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px',
+        },
+      },
+    },
+
+    // 🎯 Опционально: если вы используете стандартные выпадающие списки MuiSelect
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px', // Установленный нами ранее радиус самого инпута
+        },
+      },
+      // 🎯 ФИКС ОТСТУПА ДЛЯ SELECT: Пробрасываем смещение во внутреннее меню Popover
+      defaultProps: {
+        MenuProps: {
+          PaperProps: {
+            style: {
+              // Мягко сдвигаем всплывающее окно вниз на 8px
+              marginTop: '8px', 
+            },
+          },
+          // Переопределяем опорные точки позиционирования, 
+          // чтобы меню открывалось СТРОГО под инпутом, а не перекрывало его собой
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'left',
+          },
+          transformOrigin: {
+            vertical: 'top',
+            horizontal: 'left',
+          },
+        },
+      },
+    },
+
+    // 🎯 Скругление выпадающего окна (меню) Autocomplete на 8px
+    MuiAutocomplete: {
+      styleOverrides: {
+        paper: {
+          borderRadius: '8px', // Переопределяет 16px от MuiPaper конкретно для этого меню
+        },
+        // Опционально: скругление чипсов (тегов) внутри множественного выбора Autocomplete (multiple)
+        tag: {
+          borderRadius: '6px',
+        },
+        // 🎯 ФИКС ОТСТУПА: Задаем зазор между инпутом и выпадающим окном
+        popper: {
+          // Использовать !important здесь безопасно и необходимо, 
+          // чтобы перебить динамические инлайн-координаты Popper.js
+          marginTop: '8px !important', 
+          
+          // Дополнительно: можно добавить красивую мягкую тень для глубины
+          filter: 'drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.1))',
+        }
+      },
+    },
+
     MuiChip: {
       styleOverrides: {
         label: {

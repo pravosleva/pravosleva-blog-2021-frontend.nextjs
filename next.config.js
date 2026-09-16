@@ -12,7 +12,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const envFileName = '.env.production'
 const env = dotenv.parse(fs.readFileSync(envFileName))
 
-console.log(env)
+// console.log(env)
 
 const {
   NEXT_APP_BUILD_DATE,
@@ -23,9 +23,9 @@ const {
 
 // Читаем переменную отключения оптимизации (приводим строку "true" к булеву типу)
 const disableImageOptimization = env.NEXT_IS_IMAGE_OPTIMIZATION_DISABLED === '1'
-console.log(`disableImageOptimization -> ${String(disableImageOptimization)}`)
+console.log(`⚙️ disableImageOptimization -> ${String(disableImageOptimization)}`)
 if (disableImageOptimization) {
-  console.log('☝️ Отпимизация картинок "на лету" отключена! Не забудьте проверить конфиг NGINX')
+  console.log('⚙️ Отпимизация картинок "на лету" отключена! Не забудьте проверить конфиг NGINX')
   console.log(`# -- Stage server (See also: /public/static/_articles/this-project-doc-1-1-nginx.mdx) --
 location = /_next/image {
   if ($request_uri ~* "url=(?:%2F|/)?static(?:%2F|/)([^&]+)") {
@@ -188,13 +188,13 @@ const customRuntimeCaching = [
     */
     options: {
       cacheName: 'podcast-audio-cache',
-      // ИНФРАСТРУКТУРА ВАЛИДАЦИИ И ОЧИСТКИ КЭША [5]
+      // Инфраструктура валидации и очистки кэша
       expiration: {
-        maxEntries: 10, // Хранить на устройстве пользователя не более 10 подкастов [5]
-        maxAgeSeconds: 60 * 60 * 24 * 30, // Время жизни файла — 30 дней (60сек * 60мин * 24ч * 30дней) [5]
-        purgeOnQuotaError: true, // Если у смартфона внезапно закончится память — воркер сам мягко сотрет аудио [5]
+        maxEntries: 10, // Хранить на устройстве пользователя не более 10 подкастов
+        maxAgeSeconds: 60 * 60 * 24 * 30, // Время жизни файла — 30 дней (60сек * 60мин * 24ч * 30дней)
+        purgeOnQuotaError: true, // Если у смартфона внезапно закончится память — воркер сам мягко сотрет аудио
       },  
-      // ДЕКЛАРАТИВНОЕ РЕШЕНИЕ: Просто передаем объект с именем плагина 'RangeRequests'
+      // ДЕКЛАРАТИВНОЕ РЕШЕНИЕ: Просто передаем объект
       // Компилятор GenerateSW сам превратит это в рабочий инстанс на этапе билда!
       plugins: [
         {
@@ -216,10 +216,11 @@ const customRuntimeCaching = [
     urlPattern: /\/static\/css\/min\/.*\.css$/i,
     handler: 'StaleWhileRevalidate',
     options: {
-      cacheName: 'static-minified-css',
+      cacheName: 'static-minified-css:v1',
       expiration: {
         maxEntries: 20,
-        maxAgeSeconds: 60 * 60 * 24 * 7,
+        maxAgeSeconds: 60 * 60 * 24 * 3,
+        purgeOnQuotaError: true,
       },
     },
   },
@@ -227,7 +228,13 @@ const customRuntimeCaching = [
     urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|woff2)$/i,
     handler: 'StaleWhileRevalidate',
     options: {
-      cacheName: 'static-assets-images',
+      cacheName: 'static-assets-images:v1',
+      // Защитный рубеж для Core Web Vitals и диска пользователя (иначе будет храниться бессрочно пока не будет сброшен вручную в браузере)
+      expiration: {
+        maxEntries: 50, // Хранить в кэше не более 50 последних просмотренных изображений
+        maxAgeSeconds: 60 * 60 * 24 * 30, // Автоматически удалять картинки старше 30 дней
+        purgeOnQuotaError: true, // Мягко стереть кэш, если у смартфона кончится память
+      },
     },
   },
   ...runtimeCaching,
