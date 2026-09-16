@@ -1,32 +1,12 @@
 import { makeStyles } from '@mui/styles'
-// import { theme } from '~/common/styled-mui/theme'
-// const getIconByType = (type: EType, icon?: string) => {
-//   switch (true) {
-//     case type === EType.success:
-//       return '👌'
-//     case type === EType.warning:
-//       return '⚡'
-//     case type === EType.danger:
-//       return '🔥'
-//     case type === EType.info:
-//       return 'ℹ️'
-//     case type === EType.custom && !!icon:
-//       return '👌'
-//     case type === EType.default:
-//     default:
-//       return '💡'
-//   }
-// }
+import { Theme } from '@mui/material/styles'
 
-export const useStyles = makeStyles((theme) => ({
-  // '& a': {
-  //   color: theme.palette.primary.main,
-  // },
+export const useStyles = makeStyles<Theme>((theme) => ({
   wrapper: {
     fontSize: '0.9em',
   },
 
-  // @ts-ignore
+  // 📱 МОБИЛЬНЫЙ СЛОЙ (Flex-column)
   [theme.breakpoints.down('sm')]: {
     wrapper: {
       display: 'flex',
@@ -35,25 +15,38 @@ export const useStyles = makeStyles((theme) => ({
       gap: '16px',
       justifyContent: 'center',
       alignItems: 'center',
-
-      // display: 'grid',
-      // columnGap: '16px',
-      // rowGap: '16px',
-      // gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+      '& > *': {
+        width: '100%',
+      },
     },
   },
-  // @ts-ignore
+
+  // 🖥️ ДЕСКТОПНЫЙ СЛОЙ (Умные селекторы количества)
   [theme.breakpoints.up('sm')]: {
     wrapper: {
-      // border: '1px dashed black',
       display: 'grid',
       columnGap: '16px',
       rowGap: '16px',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+      gridTemplateColumns: '1fr 1fr', // Базовая сетка из двух колонок
 
-      // '& > *:not(:last-child)': {
-      //   borderRight: '1px solid rgba(0,0,0,0.5)',
-      // },
+      // =========================================================================
+      // 📐 УСЛОВИЕ 1: Первый элемент на всю ширину, ТОЛЬКО ЕСЛИ ВСЕГО ДЕТЕЙ > 2
+      // =========================================================================
+      // Выбираем первый элемент, если он находится на расстоянии 3 или более шагов от конца
+      '& > *:first-child:nth-last-child(n + 3)': {
+        gridColumn: '1 / -1',
+      },
+
+      // =========================================================================
+      // 📐 УСЛОВИЕ 2: Последний элемент на всю ширину, если он один в строке
+      // =========================================================================
+      // Случай А: Если всего элементов > 2 и последний элемент нечетный (например, 3-й)
+      '& > *:first-child:nth-last-child(n + 3) ~ *:last-child:nth-child(odd)': {
+        gridColumn: '1 / -1',
+      },
+
+      // Случай Б: Если элементов всего 2, то они просто делят ширину 50/50.
+      // Ни одно из условий выше не сработает, и они красиво встанут в одну строку.
     },
   },
 }))
