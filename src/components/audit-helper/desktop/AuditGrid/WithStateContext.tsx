@@ -1,5 +1,3 @@
-// import { Socket } from 'socket.io-client'
-// import { TAudit } from '~/components/audit-helper'
 import createFastContext from '~/context/createFastContext'
 
 export type TDesktopAuditState = {

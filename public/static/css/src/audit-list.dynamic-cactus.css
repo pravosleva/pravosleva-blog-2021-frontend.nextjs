@@ -13,12 +13,18 @@
   height: 100%;
   transform-origin: bottom center;
   will-change: transform, opacity;
+
+  /* Гарантируем, что обертка не прячет свисающие хвосты SVG */
+  overflow: visible; 
 }
 
 /* ─── СОСТОЯНИЕ: ВИДЖЕТ ЗАКРЫВАЕТСЯ / ЗАКРЫТ ─── */
 .tools-microwidget--right:not(.opened) .cactus-animator {
   /* Увеличили общую длительность до 0.75с, чтобы дать кактусу время зависнуть */
   animation: cactusFall 0.75s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+
+  /* Отдельное свойство для задержки */
+  animation-delay: 100ms; /* можно записать как 0.1s */
 }
 
 /* ─── СОСТОЯНИЕ: ВИДЖЕТ ОТКРЫТ ─── */

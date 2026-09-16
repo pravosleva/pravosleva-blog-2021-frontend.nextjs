@@ -42,6 +42,10 @@ const CustomizedTextField = styled(TextField)({
     //   borderColor: 'green',
     // },
     borderRadius: '16px',
+    fontFamily: 'monospace',
+    fontSize: 'small',
+    fontWeight: 'bold',
+    padding: '16px',
   },
 });
 

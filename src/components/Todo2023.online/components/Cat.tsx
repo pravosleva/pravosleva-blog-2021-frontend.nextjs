@@ -4,12 +4,14 @@ interface CatProps {
   size?: number; // Настройка размера в пикселях
   color?: string; // Основной цвет кота (например, "#546E7A", "gray", "black")
   style?: CSSProperties;
+  hasPartyHat?: boolean; // 🔥 НОВОЕ: Включает праздничный колпак
 }
 
 export const Cat: React.FC<CatProps> = ({ 
   size = 40, 
   color = '#546E7A', // Тёмно-серый цвет по умолчанию
-  style
+  style,
+  hasPartyHat = false // По умолчанию кот без колпака
 }) => {
   return (
     <div 
@@ -21,6 +23,7 @@ export const Cat: React.FC<CatProps> = ({
         viewBox="0 0 64 64" 
         width="100%" 
         height="100%"
+        style={{ overflow: 'visible' }} // Чтобы помпон не обрезался сверху
       >
         <defs>
           {/* Магия: фильтр, который делает примененный к нему цвет темнее на ~20% */}
@@ -31,6 +34,19 @@ export const Cat: React.FC<CatProps> = ({
               <feFuncB type="linear" slope="0.8" />
             </feComponentTransfer>
           </filter>
+          
+          <style>
+            {`
+              @keyframes hat-bob {
+                0% { transform: translateY(0px); }
+                100% { transform: translateY(-1.5px); }
+              }
+              .party-pompon {
+                animation: hat-bob 0.8s ease-in-out infinite alternate;
+                transform-origin: 32px 4px;
+              }
+            `}
+          </style>
         </defs>
 
         {/* Хвост — красится в основной цвет, но за счет фильтра становится темнее */}
@@ -60,6 +76,34 @@ export const Cat: React.FC<CatProps> = ({
         {/* Правое ушко */}
         <path d="M40 18 L42 10 L35 15 Z" fill={color} filter="url(#darken-shadow)" />
         <path d="M39 17 L41 12 L36 15 Z" fill="#FFCDD2" /> {/* Розовая серединка */}
+
+        {/* ========================================================================= */}
+        {/* 🥳 ПРАЗДНИЧНЫЙ КОЛПАК (Рендерится строго по условию пропса) */}
+        {/* ========================================================================= */}
+        {hasPartyHat && (
+          <g id="cat-party-hat" filter="url(#dna-glow-shadow)">
+            {/* Основание колпака (Конус) — яркий праздничный неон */}
+            <polygon 
+              points="25,15 39,15 32,3" 
+              fill="#FF8E53" // Оранжевый фирменный неон
+              stroke="#ffffff" 
+              strokeWidth="1" 
+              strokeLinejoin="round" 
+            />
+            {/* Диагональные праздничные полоски на колпаке */}
+            <path d="M 28 11 L 35 15" stroke="#39e5ac" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M 30 7 L 37 11" stroke="#FFEB3B" strokeWidth="1.5" strokeLinecap="round" />
+            
+            {/* Анимированный пушистый помпон на макушке конуса */}
+            <circle 
+              cx="32" 
+              cy="3" 
+              r="2.5" 
+              fill="red" // Желтый неон
+              className="party-pompon" 
+            />
+          </g>
+        )}
         
         {/* Большие выразительные жёлтые глаза */}
         <circle cx="28.5" cy="21" r="2.3" fill="#FFEB3B" /> {/* Левый жёлтый белок */}

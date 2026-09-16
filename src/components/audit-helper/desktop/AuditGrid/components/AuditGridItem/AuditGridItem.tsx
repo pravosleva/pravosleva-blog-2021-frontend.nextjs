@@ -61,6 +61,7 @@ export const AuditGridItem = memo(({ audit, isEditable, onRemoveAudit, onEditAud
 
   return (
     <div className={clsx(styles.wrapper, { [styles.activeWrapper]: isAuditActive })}>
+      
       <div className={styles.display}>
         <div className={styles.circleBox}>
           <CircularWithValueLabel
@@ -72,6 +73,7 @@ export const AuditGridItem = memo(({ audit, isEditable, onRemoveAudit, onEditAud
           <div className={styles.description}>{audit.description}</div>
         </div>
       </div>
+
       <div className={styles.actions}>
         {
           isAuditActive && (

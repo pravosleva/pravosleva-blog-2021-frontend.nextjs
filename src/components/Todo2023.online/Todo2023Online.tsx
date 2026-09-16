@@ -78,12 +78,39 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen'
 import { Cactus } from './components/Cactus'
 import { Cat } from './components/Cat'
 import { Flower } from './components/Flower'
+import { Hedera } from './components/Hedera'
+import { RoseVase } from './components/RoseVase'
 
 // Функция, которая решает, какой элемент показать сегодня
 const renderWidgetMascot = () => {
-  const currentDay = new Date().getDay();
+  const today = new Date();
+  // const today = new Date('2026-10-17'); 
+  const currentDay = today.getDay();
+  const currentDate = today.getDate();
+  const currentMonth = today.getMonth(); // Октябрь вернет 9
+
   // const currentDay = new Date('2026-09-18').getDay() // MON
   // const currentDay = new Date('2026-09-18').getDay() // FRI
+
+  // 1. УСЛОВИЕ-ИСКЛЮЧЕНИЕ: Только 17 октября
+  if (currentDate === 17 && currentMonth === 9) {
+    return (
+      <>
+        <Cat
+          hasPartyHat
+          size={80}
+          color='#666f73'
+          style={{ transform: 'translateY(calc(-100% + 6px))', left: '0px' }}
+        />
+        <RoseVase size={60} style={{ transform: 'translateY(calc(-100% + 4px))', left: '43px' }} />
+        <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))', left: '35px' }} />
+        <Hedera
+          size={100}
+          style={{ transform: 'translateY(calc(-100% + 62px))', left: '50px' }}
+        />
+      </>
+    )
+  }
 
   switch (currentDay) {
     case 1: // Mon
@@ -92,7 +119,7 @@ const renderWidgetMascot = () => {
       return <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
     case 5: // Fri
       // Показываем кота, с вашим кастомным инлайновым смещением
-      return <Cat size={70} color='#666f73' style={{ transform: 'translateY(calc(-100% + 5px))' }} />;
+      return <Cat size={80} color='#666f73' style={{ transform: 'translateY(calc(-100% + 6px))' }} />;
     default: // Все остальные дни (Вт, Чт, Сб, Вс)
       return <Flower size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
   }
@@ -1289,6 +1316,7 @@ const Logic = memo(({ room }: TLogicProps) => {
               },
               description: {
                 type: 'text',
+                isMultiline: true,
                 label: 'Описание',
                 inputId: 'audit-description',
                 placeholder: 'Описание',

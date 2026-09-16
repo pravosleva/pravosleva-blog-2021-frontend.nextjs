@@ -91,6 +91,10 @@ body.dark .desktop-job-box {
     
     /* 2. Включаем плавность для изменения трансформации */
     transition: transform 0.3s ease-in-out;
+
+    /* КРИТИЧЕСКИ ВАЖНО: Разрешаем элементам вылезать за пределы виджета, 
+    иначе свисающий плющ срежется пополам верхней рамкой! */
+    overflow: visible; 
   }
   .tools-microwidget--right .toggler {
     border: 2px solid lightgray;

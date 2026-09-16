@@ -25,6 +25,7 @@ type TProps = {
       label: string;
       placeholder: string;
       type: 'rating' | 'list' | 'autocomplete' | React.InputHTMLAttributes<unknown>['type'];
+      isMultiline?: boolean;
       list?: { label: string; value: string; }[];
       defaultValue: string | boolean | number;
       reactHookFormOptions?: TRegisterOptions;
@@ -202,6 +203,7 @@ export const AddAnythingNewDialog = ({
                       id={cfg[key].inputId}
                       label={cfg[key].label}
                       type={cfg[key].type}
+                      multiline={cfg[key].isMultiline}
                       fullWidth
                       variant="standard"
                       error={!!errors[key]}
