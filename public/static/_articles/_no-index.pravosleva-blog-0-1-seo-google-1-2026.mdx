@@ -1,27 +1,75 @@
 ---
-isPrivate: true
-isDraft: true
----
-```javascript
-// Было (Universal Analytics v1):
-const eventParams = {
-  v: '1',
-  tid: currentGaId,
-  t: 'event',            
-  ea: payload.action, // Event Action -> Имя действия
-  ec: 'Рантайм Блога', // Event Category -> Категория
-  el: JSON.stringify(payload.params) // Event Label -> Сжатый JSON-строкой контекст
-};
+title: "SEO: Детали индексации в Google (2026.9) — Хлебные крошки"
+brief: "Хроника устранения критических ошибок микроразметки Schema.org в Google Search Console (GSC) на примере реального кейса блога `pravosleva.pro`. Разбор частых капканов Pages Router в Next.js при рендеринге цепочек `BreadcrumbList`. Как скрытый «ghost»-рендеринг декоративных элементов интерфейса рушит поисковую валидацию и как правильно переписать компоненты на чистый, строго типизированный код."
+bg_src: "/static/img/blog/FB_IMG_1787608253773.webp"
+bg_size: { w: 2048, h: 2048 }
+bg_type: "image/webp"
 
-// Стало (Google Analytics 4):
-const ga4Payload = {
-  client_id: payload.clientId,
-  events: [{
-    name: payload.action, // Имя события теперь на верхнем уровне
-    params: {
-      ...payload.params, // Плоский объект параметров (например, { search_term: "next.js" })
-      event_category: 'Рантайм Блога' // Бывшая категория передается обычным свойством
+createdAt: "2026-09-16T12:51:32.523Z"
+updatedAt: "2026-09-16T12:51:32.523Z"
+priority: 4
+
+author: "Den Pol"
+tags: ["nextjs", "google", "seo", "google_search_console", "performance"]
+category: "guides"
+isPrivate: false
+---
+> Это статья про внутреннее развитие этого сайта в ходе которого затрагиваются и более общие вопросы по разработке
+
+## Ключевые тезисы статьи (О чем пойдет речь)
+- **Анатомия ошибок GSC:** Почему робот Google выдает предупреждения _«Отсутствует поле position»_ и _«Укажите name или item.name»._
+- **Ловушка разделителей:** Как обычные декоративные точки `•` между ссылками ложно регистрируются в Schema.org как пустые узлы навигации и пессимизируют сниппет
+- **Рефакторинг под Next.js:** Пошаговый разбор исправления компонента `BreadCrumbs` с внедрением динамического расчета индексов, изоляции элементов через `aria-hidden` и созданием безопасных тупиковых узлов для текущих страниц 
+- **Инструкция по валидации:** Как правильно отправить исправления на экспресс-перепроверку поисковым роботам для мгновенного восстановления позиций домена в выдаче.
+
+> [!warning] **Все началось с уведомления в Google Search Console**
+>
+> Владельцу ресурса https://pravosleva.pro/
+>
+> На вашем ресурсе обнаружена одна или несколько проблем (2) следующего типа: Строки навигации: структурированные данные. Они перечислены ниже:
+> **Основные критические проблемы\***
+> - Отсутствует поле "position" (в itemListElement)
+> - Укажите "name" или "item.name". (в itemListElement)
+>
+> _* Страницы и функции с критическими проблемами не допускаются к показу в результатах поиска._
+>
+> Советуем вам по мере возможности устранить эти проблемы. Тогда в Google будет показываться больше страниц вашего сайта, а их позиции в результатах поиска улучшатся.
+
+## SEO-Параметры для интеграции в код:
+| Раздел карточки статьи | Текст для копирования в MDX / Код страницы |
+| :--- | :--- |
+| **Заголовок статьи (H1)** | `SEO: Детали индексации в Google (2026.9) — Хлебные крошки` |
+| **Краткий анонс (Brief)** | `Хроника устранения критических ошибок микроразметки Schema.org в Google Search Console (GSC) на примере реального кейса блога pravosleva.pro. Разбор частых капканов Pages Router в Next.js при рендеринге цепочек BreadcrumbList. Статья объясняет, как скрытый «ghost»-рендеринг декоративных элементов интерфейса рушит поисоковую валидацию и как правильно переписать компоненты на чистый, строго типизированный код.` |
+| **Ключевые тезисы статьи** | `• Анатомия ошибок GSC: Почему робот Google выдает предупреждения «Отсутствует поле position» и «Укажите name или item.name».<br>• Ловушка разделителей: Как обычные декоративные точки • между ссылками ложно регистрируются в Schema.org как пустые узлы навигации и пессимизируют сниппет.<br>• Рефакторинг под Next.js: Пошаговый разбор исправления компонента BreadCrumbs с внедрением динамического расчета индексов, изоляции элементов через aria-hidden и созданием безопасных тупиковых узлов для текущих страниц.<br>• Инструкция по валидации: Как правильно отправить исправления на экспресс-перепроверку поисковым роботам для мгновенного восстановления позиций домена в выдаче.` |
+| **`meta:title`** | `SEO: Исправление ошибок Хлебных крошек в Google (2026.9)` |
+| **`meta:description`** | `Практическое руководство по устранению ошибок валидации position и name в Google Search Console для Next.js приложений. Полный рефакторинг Schema.org.` |
+| **`meta:keywords`** | `seo, google search console, schema org, breadcrumbs, breadcrumblist, nextjs, react, микроразметка, хлебные крошки, валидация` |
+| **`og:type`** | `article` |
+| **`robots`** | `index, follow` |
+
+## Решение
+<CodeComparison 
+  hideInputs={true}
+  language='tsx'
+  oldCodeBase64="aW1wb3J0IExpbmsgZnJvbSAnbmV4dC9saW5rJwppbXBvcnQgY2xzeCBmcm9tICdjbHN4JwoKZXhwb3J0IG5hbWVzcGFjZSBOQnJlYWRDcnVtYnMgewogIGV4cG9ydCB0eXBlIFRMZWdlbmRJdGVtID0gewogICAgbGluaz86IHN0cmluZzsKICAgIGxhYmVsQ29kZTogc3RyaW5nOwogICAgbm9UcmFuc2xhdGU/OiBib29sZWFuOwogIH0KICBleHBvcnQgdHlwZSBUUHJvcHMgPSB7CiAgICB0OiAoX3M6IHN0cmluZykgPT4gc3RyaW5nOwogICAgbGVnZW5kOiBUTGVnZW5kSXRlbVtdCiAgfQp9CgpleHBvcnQgY29uc3QgQnJlYWRDcnVtYnMgPSAoewogIHQsCiAgbGVnZW5kCn06IE5CcmVhZENydW1icy5UUHJvcHMpID0+IHsKICByZXR1cm4gKAogICAgPGRpdiBjbGFzc05hbWU9ImJ4X2JyZWFkY3J1bWJzIj4KICAgICAgPHVsPgogICAgICAgIHsKICAgICAgICAgIGxlZ2VuZC5tYXAoKHsgbGluaywgbGFiZWxDb2RlLCBub1RyYW5zbGF0ZSB9LCBpLCBhKSA9PiB7CiAgICAgICAgICAgIGNvbnN0IGlzTGFzdCA9IGkgPT09IGEubGVuZ3RoIC0gMQogICAgICAgICAgICBzd2l0Y2ggKHRydWUpIHsKICAgICAgICAgICAgICBjYXNlICFsaW5rOgogICAgICAgICAgICAgICAgcmV0dXJuICgKICAgICAgICAgICAgICAgICAgPD4KICAgICAgICAgICAgICAgICAgICA8bGkgY2xhc3NOYW1lPXtjbHN4KCd0cnVuY2F0ZScsICd0YXJnZXQnKX0ga2V5PXtgJHtpfWB9PgogICAgICAgICAgICAgICAgICAgICAgPHNwYW4gc3R5bGU9e3sgZm9udFdlaWdodDogJ2JvbGQnLCBmb250RmFtaWx5OiAnTW9udHNlcnJhdCcgfX0+e25vVHJhbnNsYXRlID8gbGFiZWxDb2RlIDogdChsYWJlbENvZGUpfTwvc3Bhbj4KICAgICAgICAgICAgICAgICAgICA8L2xpPgogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICFpc0xhc3QgJiYgKAogICAgICAgICAgICAgICAgICAgICAgICA8bGkgY2xhc3NOYW1lPXtjbHN4KCd0YXJnZXQnKX0ga2V5PXtgJHtpfWB9PgogICAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIHN0eWxlPXt7IGZvbnRXZWlnaHQ6ICdib2xkJyB9fT7igKI8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgIDwvbGk+CiAgICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICA8Lz4KICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICBkZWZhdWx0OgogICAgICAgICAgICAgICAgcmV0dXJuICgKICAgICAgICAgICAgICAgICAgPD4KICAgICAgICAgICAgICAgICAgICA8bGkgaXRlbVByb3A9Iml0ZW1MaXN0RWxlbWVudCIga2V5PXtgJHtsaW5rfS0ke2l9YH0+CiAgICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIGxpbmsgPT09ICcvJwogICAgICAgICAgICAgICAgICAgICAgICA/ICgKICAgICAgICAgICAgICAgICAgICAgICAgICA8YSBpdGVtUHJvcD0iaXRlbSIgaHJlZj17bGlua30gdGFyZ2V0PSdfc2VsZic+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICB7bm9UcmFuc2xhdGUgPyBsYWJlbENvZGUgOiB0KGxhYmVsQ29kZSl9CiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9hPgogICAgICAgICAgICAgICAgICAgICAgICApIDogKAogICAgICAgICAgICAgICAgICAgICAgICAgIDw+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8TGluayBocmVmPXtsaW5rfSBhcz17bGlua30+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxhIGl0ZW1Qcm9wPSJpdGVtIj4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB7bm9UcmFuc2xhdGUgPyBsYWJlbENvZGUgOiB0KGxhYmVsQ29kZSl9CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvYT4KICAgICAgICAgICAgICAgICAgICAgICAgICAgIDwvTGluaz4KICAgICAgICAgICAgICAgICAgICAgICAgICA8Lz4KICAgICAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgPC9saT4KICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAhaXNMYXN0ICYmICgKICAgICAgICAgICAgICAgICAgICAgICAgPGxpIGNsYXNzTmFtZT17Y2xzeCgndGFyZ2V0Jyl9IGtleT17YCR7bGlua30tJHtpfWB9PgogICAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIHN0eWxlPXt7IGZvbnRXZWlnaHQ6ICdib2xkJyB9fT7igKI8L3NwYW4+CiAgICAgICAgICAgICAgICAgICAgICAgIDwvbGk+CiAgICAgICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICA8Lz4KICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgfQogICAgICAgICAgfSkKICAgICAgICB9CiAgICAgIDwvdWw+CiAgICA8L2Rpdj4KICApCn0="
+  newCodeBase64="aW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JwppbXBvcnQgTGluayBmcm9tICduZXh0L2xpbmsnCmltcG9ydCBjbHN4IGZyb20gJ2Nsc3gnCgpleHBvcnQgbmFtZXNwYWNlIE5CcmVhZENydW1icyB7CiAgZXhwb3J0IHR5cGUgVExlZ2VuZEl0ZW0gPSB7CiAgICBsaW5rPzogc3RyaW5nOwogICAgbGFiZWxDb2RlOiBzdHJpbmc7CiAgICBub1RyYW5zbGF0ZT86IGJvb2xlYW47CiAgfQogIGV4cG9ydCB0eXBlIFRQcm9wcyA9IHsKICAgIHQ6IChfczogc3RyaW5nKSA9PiBzdHJpbmc7CiAgICBsZWdlbmQ6IFRMZWdlbmRJdGVtW10KICB9Cn0KCmV4cG9ydCBjb25zdCBCcmVhZENydW1icyA9ICh7CiAgdCwKICBsZWdlbmQKfTogTkJyZWFkQ3J1bWJzLlRQcm9wcykgPT4gewogIHJldHVybiAoCiAgICA8ZGl2IGNsYXNzTmFtZT0iYnhfYnJlYWRjcnVtYnMiPgogICAgICB7Lyog0J7QsdGK0Y/QstC70Y/QtdC8INC60L7RgNC90LXQstC+0Lkg0LrQvtC90YLQtdC50L3QtdGAINGB0L/QuNGB0LrQsCDRgdGC0YDQvtC6INC90LDQstC40LPQsNGG0LjQuCAqL30KICAgICAgPHVsIGl0ZW1TY29wZSBpdGVtVHlwZT0iaHR0cDovL3NjaGVtYS5vcmcvQnJlYWRjcnVtYkxpc3QiPgogICAgICAgIHsKICAgICAgICAgIGxlZ2VuZC5tYXAoKHsgbGluaywgbGFiZWxDb2RlLCBub1RyYW5zbGF0ZSB9LCBpLCBhKSA9PiB7CiAgICAgICAgICAgIGNvbnN0IGlzTGFzdCA9IGkgPT09IGEubGVuZ3RoIC0gMQogICAgICAgICAgICBjb25zdCBpdGVtVGl0bGUgPSBub1RyYW5zbGF0ZSA/IGxhYmVsQ29kZSA6IHQobGFiZWxDb2RlKQogICAgICAgICAgICAKICAgICAgICAgICAgLy8g0JLQsNC70LjQtNC90LDRjyDQv9C+0LfQuNGG0LjRjyDQsiBTY2hlbWEub3JnINC90LDRh9C40L3QsNC10YLRgdGPINGB0YLRgNC+0LPQviDRgSAxCiAgICAgICAgICAgIGNvbnN0IHBvc2l0aW9uSW5kZXggPSBpICsgMSAKCiAgICAgICAgICAgIHJldHVybiAoCiAgICAgICAgICAgICAgPFJlYWN0LkZyYWdtZW50IGtleT17bGluayA/IGAke2xpbmt9LSR7aX1gIDogYG5vLWxpbmstJHtpfWB9PgogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICB7Lyog8J+nrSDQntCh0J3QntCS0J3QntCZINCt0JvQldCc0JXQndCiINCd0JDQktCY0JPQkNCm0JjQmCAo0KHQotCg0J7Qk9CeINCe0JTQmNCdINCd0JAg0KjQkNCTINCm0JjQmtCb0JApICovfQogICAgICAgICAgICAgICAgPGxpIAogICAgICAgICAgICAgICAgICBpdGVtUHJvcD0iaXRlbUxpc3RFbGVtZW50IiAKICAgICAgICAgICAgICAgICAgaXRlbVNjb3BlIAogICAgICAgICAgICAgICAgICBpdGVtVHlwZT0iaHR0cDovL3NjaGVtYS5vcmcvTGlzdEl0ZW0iCiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17Y2xzeCh7ICd0cnVuY2F0ZSB0YXJnZXQnOiAhbGluayB9KX0KICAgICAgICAgICAgICAgID4KICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGxpbmsgPyAoCiAgICAgICAgICAgICAgICAgICAgICAvLyDQmtCV0JnQoSDQkDog0K3Qu9C10LzQtdC90YIg0Y/QstC70Y/QtdGC0YHRjyDQutC70LjQutCw0LHQtdC70YzQvdC+0Lkg0YHRgdGL0LvQutC+0LkKICAgICAgICAgICAgICAgICAgICAgIGxpbmsgPT09ICcvJyA/ICgKICAgICAgICAgICAgICAgICAgICAgICAgPGEgaXRlbVByb3A9Iml0ZW0iIGhyZWY9e2xpbmt9IHRhcmdldD0iX3NlbGYiPgogICAgICAgICAgICAgICAgICAgICAgICAgIHsvKiDwn5SlINCk0JjQmtChIDI6INCe0LHRj9C30LDRgtC10LvRjNC90YvQuSDRgtC10LMg0YEg0LjQvNC10L3QtdC8INC00LvRjyBHb29nbGUgKi99CiAgICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4gaXRlbVByb3A9Im5hbWUiPntpdGVtVGl0bGV9PC9zcGFuPgogICAgICAgICAgICAgICAgICAgICAgICA8L2E+CiAgICAgICAgICAgICAgICAgICAgICApIDogKAogICAgICAgICAgICAgICAgICAgICAgICA8TGluayBocmVmPXtsaW5rfSBhcz17bGlua30gcGFzc0hyZWY+CiAgICAgICAgICAgICAgICAgICAgICAgICAgPGEgaXRlbVByb3A9Iml0ZW0iPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgey8qIPCflKUg0KTQmNCa0KEgMjog0J7QsdGP0LfQsNGC0LXQu9GM0L3Ri9C5INGC0LXQsyDRgSDQuNC80LXQvdC10Lwg0LTQu9GPIEdvb2dsZSAqL30KICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGl0ZW1Qcm9wPSJuYW1lIj57aXRlbVRpdGxlfTwvc3Bhbj4KICAgICAgICAgICAgICAgICAgICAgICAgICA8L2E+CiAgICAgICAgICAgICAgICAgICAgICAgIDwvTGluaz4KICAgICAgICAgICAgICAgICAgICAgICkKICAgICAgICAgICAgICAgICAgICApIDogKAogICAgICAgICAgICAgICAgICAgICAgLy8g0JrQldCZ0KEg0JE6INCf0L7RgdC70LXQtNC90LjQuSDRgtGD0L/QuNC60L7QstGL0Lkg0Y3Qu9C10LzQtdC90YIgKNGC0LXQutGD0YnQsNGPINGB0YLRgNCw0L3QuNGG0LAg0LHQtdC3INGB0YHRi9C70LrQuCkKICAgICAgICAgICAgICAgICAgICAgIC8vINCf0L4g0YHQv9C10YbQuNGE0LjQutCw0YbQuNC4IEdvb2dsZSwg0LTQsNC20LUg0YHRgtGA0LDQvdC40YbQsCDQsdC10Lcg0YHRgdGL0LvQutC4INC00L7Qu9C20L3QsCDQsdGL0YLRjCDRgNCw0LfQvNC10YfQtdC90LAg0LrQsNC6IGl0ZW0KICAgICAgICAgICAgICAgICAgICAgIDxkaXYgaXRlbVByb3A9Iml0ZW0iIHN0eWxlPXt7IGRpc3BsYXk6ICdpbmxpbmUnIH19PgogICAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBpdGVtUHJvcD0ibmFtZSIgc3R5bGU9e3sgZm9udFdlaWdodDogJ2JvbGQnLCBmb250RmFtaWx5OiAnTW9udHNlcnJhdCcgfX0+CiAgICAgICAgICAgICAgICAgICAgICAgICAge2l0ZW1UaXRsZX0KICAgICAgICAgICAgICAgICAgICAgICAgPC9zcGFuPgogICAgICAgICAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgICAgICAgICAgKQogICAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgICB7Lyog8J+UpSDQpNCY0JrQoSAxOiDQntCx0Y/Qt9Cw0YLQtdC70YzQvdGL0Lkg0LzQtdGC0LAt0YLQtdCzINC/0L7Qt9C40YbQuNC4INGN0LvQtdC80LXQvdGC0LAg0LIg0LjQtdGA0LDRgNGF0LjQuCAqL30KICAgICAgICAgICAgICAgICAgPG1ldGEgaXRlbVByb3A9InBvc2l0aW9uIiBjb250ZW50PXtTdHJpbmcocG9zaXRpb25JbmRleCl9IC8+CiAgICAgICAgICAgICAgICA8L2xpPgoKICAgICAgICAgICAgICAgIHsvKiDwn5ug77iPINCk0JjQmtChIDM6INCn0JjQodCi0KvQmSDQoNCQ0JfQlNCV0JvQmNCi0JXQm9CsINCR0JXQlyDQnNCY0JrQoNCe0KDQkNCX0JzQldCi0JrQmCBTQ0hFTUEuT1JHICovfQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAhaXNMYXN0ICYmICgKICAgICAgICAgICAgICAgICAgICA8bGkgY2xhc3NOYW1lPXtjbHN4KCd0YXJnZXQnKX0gYXJpYS1oaWRkZW49InRydWUiPgogICAgICAgICAgICAgICAgICAgICAgPHNwYW4gc3R5bGU9e3sgZm9udFdlaWdodDogJ2JvbGQnLCBwYWRkaW5nOiAnMCA4cHgnIH19PuKAojwvc3Bhbj4KICAgICAgICAgICAgICAgICAgICA8L2xpPgogICAgICAgICAgICAgICAgICApCiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgIDwvUmVhY3QuRnJhZ21lbnQ+CiAgICAgICAgICAgICkKICAgICAgICAgIH0pCiAgICAgICAgfQogICAgICA8L3VsPgogICAgPC9kaXY+CiAgKQp9"
+/>
+
+## Какую пользу принёс этот рефакторинг
+- **100% валидность в Google Search Console:**
+   Каждая крошка теперь содержит строгий мета-тег `<meta itemProp="position" content="..." />` и явный маркер названия страницы `<span itemProp="name">`. Проблемы валидации полностью устранены.
+- **Изоляция разделителей:**
+   Точки `•` больше не прикидываются навигационными узлами `ListItem`. Мы добавили им атрибут `aria-hidden="true"`, чтобы скринридеры слабовидящих пользователей и поисковые роботы вообще игнорировали их, не создавая лишнего шума.
+- **Безопасный тупиковый узел:**
+   Для элементов без ссылки (`!link`) мы внедрили обёртку `itemProp="item"`, внутри которой лежит `itemProp="name"`. Это эталонная разметка `Schema.org` для финальной (текущей) страницы в цепочке крошек.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "SEO: Как правильно запустить индексацию сайта в Google (2026.9)",
+      "type": "link",
+      "link": "/p/_no-index.pravosleva-blog-0-1-seo-google-0-2026"
     }
-  }]
-};
-```
+  ]'
+/>

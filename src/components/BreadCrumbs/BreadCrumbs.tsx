@@ -1,3 +1,4 @@
+import React from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
 
@@ -9,72 +10,78 @@ export namespace NBreadCrumbs {
   }
   export type TProps = {
     t: (_s: string) => string;
-    // lastLabel: string;
     legend: TLegendItem[]
   }
 }
 
 export const BreadCrumbs = ({
   t,
-  // lastLabel,
   legend
 }: NBreadCrumbs.TProps) => {
   return (
     <div className="bx_breadcrumbs">
+      {/* Объявляем корневой контейнер списка строк навигации */}
       <ul itemScope itemType="http://schema.org/BreadcrumbList">
         {
           legend.map(({ link, labelCode, noTranslate }, i, a) => {
-            // const isFirst = i === 0
             const isLast = i === a.length - 1
-            switch (true) {
-              case !link:
-                return (
-                  <>
-                    <li className={clsx('truncate', 'target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${i}`}>
-                      <span style={{ fontWeight: 'bold', fontFamily: 'Montserrat' }}>{noTranslate ? labelCode : t(labelCode)}</span>
-                    </li>
-                    {
-                      !isLast && (
-                        <li className={clsx('target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${i}`}>
-                          <span style={{ fontWeight: 'bold' }}>•</span>
-                        </li>
-                      )
-                    }
-                  </>
-                )
-              default:
-                return (
-                  <>
-                    <li itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${link}-${i}`}>
-                      {
-                        link === '/'
-                        ? (
-                          <a itemProp="item" href={link} target='_self'>
-                            {noTranslate ? labelCode : t(labelCode)}
+            const itemTitle = noTranslate ? labelCode : t(labelCode)
+            
+            // Валидная позиция в Schema.org начинается строго с 1
+            const positionIndex = i + 1 
+
+            return (
+              <React.Fragment key={link ? `${link}-${i}` : `no-link-${i}`}>
+                
+                {/* 🧭 ОСНОВНОЙ ЭЛЕМЕНТ НАВИГАЦИИ (СТРОГО ОДИН НА ШАГ ЦИКЛА) */}
+                <li 
+                  itemProp="itemListElement" 
+                  itemScope 
+                  itemType="http://schema.org/ListItem"
+                  className={clsx({ 'truncate target': !link })}
+                >
+                  {
+                    link ? (
+                      // КЕЙС А: Элемент является кликабельной ссылкой
+                      link === '/' ? (
+                        <a itemProp="item" href={link} target="_self">
+                          {/* 🔥 ФИКС 2: Обязательный тег с именем для Google */}
+                          <span itemProp="name">{itemTitle}</span>
+                        </a>
+                      ) : (
+                        <Link href={link} as={link} passHref>
+                          <a itemProp="item">
+                            {/* 🔥 ФИКС 2: Обязательный тег с именем для Google */}
+                            <span itemProp="name">{itemTitle}</span>
                           </a>
-                        ) : (
-                          <>
-                            {/* @ts-ignore */}
-                            <Link href={link} as={link}>
-                              <a itemProp="item">
-                                {noTranslate ? labelCode : t(labelCode)}
-                              </a>
-                            </Link>
-                          </>
-                        )
-                      }
-                      
-                    </li>
-                    {
-                      !isLast && (
-                        <li className={clsx('target')} itemProp="itemListElement" itemScope itemType="http://schema.org/ListItem" key={`${link}-${i}`}>
-                          <span style={{ fontWeight: 'bold' }}>•</span>
-                        </li>
+                        </Link>
                       )
-                    }
-                  </>
-                )
-            }
+                    ) : (
+                      // КЕЙС Б: Последний тупиковый элемент (текущая страница без ссылки)
+                      // По спецификации Google, даже страница без ссылки должна быть размечена как item
+                      <div itemProp="item" style={{ display: 'inline' }}>
+                        <span itemProp="name" style={{ fontWeight: 'bold', fontFamily: 'Montserrat' }}>
+                          {itemTitle}
+                        </span>
+                      </div>
+                    )
+                  }
+
+                  {/* 🔥 ФИКС 1: Обязательный мета-тег позиции элемента в иерархии */}
+                  <meta itemProp="position" content={String(positionIndex)} />
+                </li>
+
+                {/* 🛠️ ФИКС 3: ЧИСТЫЙ РАЗДЕЛИТЕЛЬ БЕЗ МИКРОРАЗМЕТКИ SCHEMA.ORG */}
+                {
+                  !isLast && (
+                    <li className={clsx('target')} aria-hidden="true">
+                      <span style={{ fontWeight: 'bold', padding: '0 8px' }}>•</span>
+                    </li>
+                  )
+                }
+
+              </React.Fragment>
+            )
           })
         }
       </ul>

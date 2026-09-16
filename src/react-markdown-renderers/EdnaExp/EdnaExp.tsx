@@ -200,8 +200,7 @@ export const EdnaExp: React.FC<IEdnaExpProps> = ({
             transition: 'color 0.3s ease'
           }}
         >
-          <span>{isWidgetApiReady ? '⚡' : '💤'}</span>
-          <span>ЦЕНТРАЛЬНЫЙ ПУЛЬТ УПРАВЛЕНИЯ API ВИДЖЕТА</span>
+          <span>{isWidgetApiReady ? '⚡' : '💤'} Пульт управления API виджета</span>
           
           {/* Пульсирующий диод статуса питания пульта */}
           <span 
