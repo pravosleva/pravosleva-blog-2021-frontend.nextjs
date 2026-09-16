@@ -461,15 +461,6 @@ body main.dark .table-floating-header-wrapper {
   margin-bottom: 8px;
 }
 
-code,
-.inline-code {
-  background: #c84f4f;
-  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
-  color: #fff;
-  padding: 1px 4px;
-  font-weight: bold;
-}
-
 /* --- MOVED FROM CSS-IN-JS --- */
 
 .article-wrapper__big-image-as-container {
