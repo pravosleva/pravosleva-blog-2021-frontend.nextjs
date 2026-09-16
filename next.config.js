@@ -218,7 +218,7 @@ const customRuntimeCaching = [
     options: {
       cacheName: 'static-minified-css:v1',
       expiration: {
-        maxEntries: 20,
+        maxEntries: 50,
         maxAgeSeconds: 60 * 60 * 24 * 3,
         purgeOnQuotaError: true,
       },
