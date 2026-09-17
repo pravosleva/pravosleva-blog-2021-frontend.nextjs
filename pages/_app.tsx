@@ -294,14 +294,16 @@ function AppWithRedux(props: MyAppProps) {
                     <CssBaseline />
                     <Component {...pageProps} />
                     {/* <ClientPerfWidget position='top-center' /> */}
-                    {!isAuditPage && <> (
-                      {/* ИСПРАВЛЕНО: Плеер и кнопка перенесены СЮДА.
-                        1. Они рендерятся строго на клиенте (нет ошибок гидратации).
-                        2. Находятся внутри ThemeProvider и CssBaseline (стили применятся эталонно).
-                        3. По каскаду они перекроют футер страницы, так как лежат внутри того же контекста наложения. */}
-                      <GlobalPodcastSidebarButton />
-                      <GlobalAudioPlayer />
-                    )</>}
+                    {!isAuditPage && (
+                      <>
+                        {/* ИСПРАВЛЕНО: Плеер и кнопка перенесены СЮДА.
+                          1. Они рендерятся строго на клиенте (нет ошибок гидратации).
+                          2. Находятся внутри ThemeProvider и CssBaseline (стили применятся эталонно).
+                          3. По каскаду они перекроют футер страницы, так как лежат внутри того же контекста наложения. */}
+                        <GlobalPodcastSidebarButton />
+                        <GlobalAudioPlayer />
+                      </>
+                    )}
                     {/* <Script src="/static/common/min/eruda.custom.js" strategy="lazyOnload" /> */}
                   </ThemeProvider>
                 </SCThemeProvider>
