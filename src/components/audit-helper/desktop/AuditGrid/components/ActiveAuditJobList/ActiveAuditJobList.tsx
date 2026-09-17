@@ -110,7 +110,7 @@ export const ActiveAuditJobList = memo(({ audits, onUpdateAuditComment, onAddJob
           }}
         >
           {
-            !!activeAuditComment && (
+            (isEditable || !!activeAuditComment) && (
               <div
                 // className={externalStyles.stickyTopPanel}
                 className='fade-in-effect'

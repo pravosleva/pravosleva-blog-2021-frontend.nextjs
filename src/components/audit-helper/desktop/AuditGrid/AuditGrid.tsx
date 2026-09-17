@@ -90,7 +90,12 @@ export const AuditGrid = memo(({
   return (
     <WithStateContext>
       <div className={styles.wrapper}>
-        <div className={clsx(styles.leftSideWrapper)}>
+        <div
+          className={clsx(styles.leftSideWrapper)}
+          style={{
+            paddingTop: !isEditable ? '16px' : undefined
+          }}
+        >
           {
             isEditable ? (
               <div
@@ -143,21 +148,7 @@ export const AuditGrid = memo(({
                   isDisabled={isInitAppInProgress}
                 />
               </div>
-            ) : (
-              <div
-                className={clsx(
-                  styles.stickyTopPanel,
-                  'backdrop-blur--lite',
-                )}
-                style={{
-                  // height: '50px',
-                  // display: 'flex',
-                  // alignItems: 'center',
-                  padding: '45px 0 8px 0',
-                  // border: '1px solid red',
-                }}
-              />
-            )
+            ) : null
           }
           <div
             className={clsx(styles.auditListWrapper)}
