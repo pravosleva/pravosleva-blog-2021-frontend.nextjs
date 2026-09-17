@@ -73,8 +73,8 @@ interface IDesktopHeaderProps {
 
 const _DesktopHeader = memo(({
   setLang,
-  suppoerLocales,
-  currentLang,
+  // suppoerLocales,
+  // currentLang,
 }: IDesktopHeaderProps) => {
   // const dispatch = useDispatch()
   
@@ -133,20 +133,20 @@ const _DesktopHeader = memo(({
                   </NavItem>
                 ) */}
 
-                {suppoerLocales.map((lang) => (
-                  <NavItem key={lang.label}>
-                    {/* Оптимизация 3: Передаем значение через data-lang и убираем лишнюю обертку Link, */}
-                    {/* так как это не переход по страницам, а переключение стейта языка на месте. */}
-                    <LangLink
-                      isCurrentSelection={lang.value === currentLang}
-                      onClick={handleSetLang}
-                      data-lang={lang.value}
-                      title={lang.name}
-                    >
-                      {lang.label}
-                    </LangLink>
-                  </NavItem>
-                ))}
+                {/* Оптимизация 3: Передаем значение через data-lang и убираем лишнюю обертку Link,
+                    так как это не переход по страницам, а переключение стейта языка на месте.
+                  suppoerLocales.map((lang) => (
+                    <NavItem key={lang.label}>
+                      <LangLink
+                        isCurrentSelection={lang.value === currentLang}
+                        onClick={handleSetLang}
+                        data-lang={lang.value}
+                        title={lang.name}
+                      >
+                        {lang.label}
+                      </LangLink>
+                    </NavItem>
+                  )) */}
 
                 <ThemeToggler type="desktop" />
               </ul>

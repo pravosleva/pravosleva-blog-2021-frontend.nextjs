@@ -76,7 +76,7 @@ const Sidebar = styled.div`
     overflow-x: hidden;
   }
   box-sizing: border-box;
-  z-index: 3;
+  z-index: 9;
 `
 
 const STATIC_TAGS = [

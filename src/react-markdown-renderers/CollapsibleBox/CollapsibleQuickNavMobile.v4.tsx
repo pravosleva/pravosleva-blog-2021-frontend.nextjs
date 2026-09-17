@@ -218,7 +218,7 @@ export const CollapsibleQuickNavMobile: React.FC = () => {
         position: 'fixed',
         bottom: '345px', // По вашему дизайну
         right: '8px',    // По вашему дизайну
-        zIndex: 250,
+        zIndex: 4,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -334,6 +334,7 @@ export const CollapsibleQuickNavMobile: React.FC = () => {
           cursor: 'pointer',
           transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           WebkitTapHighlightColor: 'transparent',
+          zIndex: 5,
         }}
         title={isOpen ? "Закрыть навигацию" : "Открыть навигацию по блокам"}
       >

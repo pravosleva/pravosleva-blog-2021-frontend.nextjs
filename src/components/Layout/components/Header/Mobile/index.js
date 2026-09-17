@@ -8,7 +8,7 @@ import { ThemeToggler } from '../../ThemeToggler'
 import { withTranslator } from '@/hocs/withTranslator'
 import { LangLink } from '../components/LangLink'
 import { breakpoints } from '~/mui/theme'
-import MemoryIcon from '@mui/icons-material/Memory'
+// import MemoryIcon from '@mui/icons-material/Memory'
 import { toggleBrowserMemoryMonitor } from '~/store/reducers/customDevTools'
 
 export const MobileHeaderLoader = styled.div`
@@ -89,10 +89,10 @@ const MobileHeader = memo(({
   const dispatch = useDispatch()
   const isBrowserMemoryMonitorEnabled = !!useSelector((state) => state.customDevTools.browserMemoryMonitor.isEnabled)
 
-  const toggleBrowserMemoryMonitorDevTools = useCallback((e) => {
-    e.preventDefault()
-    dispatch(toggleBrowserMemoryMonitor())
-  }, [dispatch])
+  // const toggleBrowserMemoryMonitorDevTools = useCallback((e) => {
+  //   e.preventDefault()
+  //   dispatch(toggleBrowserMemoryMonitor())
+  // }, [dispatch])
 
   // Оптимизация 1: Убираем каррирование. Передаем язык через data-аттрибут
   const handleSetLang = useCallback((e) => {
@@ -109,7 +109,7 @@ const MobileHeader = memo(({
   }, [sidebarToggler])
 
   return (
-    <Headroom style={{ zIndex: 5 }}>
+    <Headroom style={{ zIndex: 10 }}>
       <header style={{ boxShadow: '0 0 4px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.28)' }}>
         <Nav ref={topDocRef}>
           <ul>
@@ -147,11 +147,11 @@ const MobileHeader = memo(({
               </li>
             )*/ }
 
-            {!!suppoerLocales &&
+            {/* Оптимизация 4: Убран лишний Next Link, добавлен data-lang
+              !!suppoerLocales &&
               suppoerLocales.length > 0 &&
               suppoerLocales.map((lang) => (
                 <NavItem key={lang.label}>
-                  {/* Оптимизация 4: Убран лишний Next Link, добавлен data-lang */}
                   <LangLink
                     title={lang.name}
                     isCurrentSelection={lang.value === currentLang}
@@ -161,7 +161,8 @@ const MobileHeader = memo(({
                     {lang.label}
                   </LangLink>
                 </NavItem>
-              ))}
+              ))
+            */}
               
             <ThemeToggler type="mobile" />
             

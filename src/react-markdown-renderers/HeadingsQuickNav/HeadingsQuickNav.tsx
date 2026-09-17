@@ -58,7 +58,7 @@ export const HeadingsQuickNav: React.FC<HeadingsQuickNavProps> = memo(({
         width: '280px',
         maxHeight: '70vh',
         overflowY: 'auto',
-        zIndex: 200,
+        zIndex: 4,
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',

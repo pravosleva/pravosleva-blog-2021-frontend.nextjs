@@ -132,7 +132,7 @@ export const GlobalPodcastSidebarButton = () => {
       {/* Иконка внутри кнопки */}
       <div
         style={{
-          zIndex: 2, fontSize: '1.2em', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 7, fontSize: '1.2em', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
         {

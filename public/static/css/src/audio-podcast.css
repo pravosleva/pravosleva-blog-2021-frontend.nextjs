@@ -305,7 +305,7 @@ body main.dark ~ .mobile-podcast-fab-trigger {
   bottom: 290px !important;
   
   /* Поднимаем на максимальную высоту, чтобы кнопка гарантированно была НАД футером */
-  z-index: 99999 !important; 
+  z-index: 8 !important; 
   
   width: 42px !important;
   height: 42px !important;
@@ -346,7 +346,7 @@ body main.dark ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
     right: 8px !important;
     left: auto !important;
     bottom: 290px !important;
-    z-index: 99999 !important; /* На мобилке тоже держим в топе */
+    z-index: 8 !important; /* На мобилке тоже держим в топе */
     box-shadow: rgba(0, 0, 0, 0.2) 0px 6px 16px;
   }
 
@@ -365,7 +365,7 @@ body main.dark ~ .blog-audio-player-container .mobile-podcast-fab-trigger {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 2000;
+  z-index: 7;
   max-width: 600px;
   margin: 0 auto;
   border-radius: 16px 16px 0 0;

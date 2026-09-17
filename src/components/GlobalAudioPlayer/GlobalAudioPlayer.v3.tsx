@@ -72,7 +72,7 @@ export const GlobalAudioPlayer = () => {
   // Инлайновые стили геометрии и позиционирования (не зависят от темы)
   const containerGeometryStyle: React.CSSProperties = {
     position: 'fixed', bottom: 0, left: 0, right: 0,
-    zIndex: 2000,
+    zIndex: 7,
     backdropFilter: 'blur(8px)', 
     maxWidth: '600px', margin: '0 auto', borderRadius: '16px 16px 0 0',
     transition: 'all 0.2s ease-out',

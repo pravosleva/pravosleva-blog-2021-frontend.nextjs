@@ -255,7 +255,7 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
               <MobileOnly
                 style={{
                   margin: '1.45rem 0px 0px 0px', paddingLeft: '16px',
-                  position: 'sticky', bottom: '76px', zIndex: 10, width: 'fit-content',
+                  position: 'sticky', bottom: '76px', zIndex: 3, width: 'fit-content',
                 }}
               >
                 <div

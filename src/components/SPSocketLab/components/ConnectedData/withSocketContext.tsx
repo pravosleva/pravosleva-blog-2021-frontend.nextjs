@@ -1,4 +1,3 @@
-// import { Socket } from 'socket.io-client'
 import createFastContext from '~/context/createFastContext'
 import {
   OptionsObject as IOptionsObject,

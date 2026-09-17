@@ -57,7 +57,7 @@ export const GlobalAudioPlayer = () => {
       backgroundColor: '#111111',
       color: '#fff',
       boxShadow: '0 -10px 30px rgba(0,0,0,0.7)',
-      zIndex: 2000,
+      zIndex: 7,
       backdropFilter: 'blur(20px)',
       borderTop: '1px solid rgba(255,255,255,0.08)',
       paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 10px)',

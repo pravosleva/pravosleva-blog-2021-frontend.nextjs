@@ -1,22 +1,71 @@
-// src/components/Svg/TradeInHeaderSvg.tsx
-import React from 'react'
+import IconButton from '@mui/material/IconButton'
+import React, { useCallback, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
+import { scrollToIdFactory } from '~/utils/scrollToIdFactory'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 interface ITradeInHeaderProps {
-  message?: string
+  message?: string;
+  showScrollBtn?: boolean;
 }
 
 export const TradeInHeaderSvg: React.FC<ITradeInHeaderProps> = ({
-  message = 'Профессиональный инструмент для автоматизированной оценки стоимости б/у устройств, калькуляции выгоды обмена и мгновенного оформления сделок Trade-in.'
+  message = 'Профессиональный инструмент (демо) для автоматизированной оценки стоимости б/у устройств, калькуляции выгоды обмена и мгновенного оформления сделок Trade-in.',
+  showScrollBtn = false,
 }) => {
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const isDark = currentTheme === 'dark' || currentTheme === 'hard-gray' || currentTheme === 'gray'
   
   const primaryColor = isDark ? '#FF8E53' : '#0162c8' // Оранжевый или синий неон
-  const subColor = isDark ? '#3a3a3a' : '#f0f0f0'
-  const textColor = isDark ? '#b0b0b0' : '#4a4a4a'
-  const titleColor = isDark ? '#ffffff' : '#111111'
+  // const subColor = isDark ? '#3a3a3a' : '#f0f0f0'
+  // const textColor = isDark ? '#b0b0b0' : '#4a4a4a'
+  // const titleColor = isDark ? '#ffffff' : '#111111'
+  const subColor = getLabelBgColor({ currentTheme })
+  const textColor = getTextColor({ currentTheme })
+  const titleColor = getTextColor({ currentTheme })
+
+  const scrollToIdRef = useRef(scrollToIdFactory({
+    timeout: 0,
+    offsetTop: 0,
+    elementHeightCritery: 2, // NOTE: Все что больше 2px по высоте будет проскроллено в топ страницы
+  }))
+  const scrollToContent = useCallback((e: React.MouseEvent<unknown>) => {
+    e.stopPropagation()
+    scrollToIdRef.current({
+      id: 'sp-tradein-target-content',
+      _cfg: {
+        getOffsetTop: ({ targetElm }) => {
+          // НАДЕЖНЫЙ АБСОЛЮТНЫЙ РАСЧЕТ позиции элемента на странице с нуля
+          let absoluteTop = 0
+          let currentElm: HTMLElement | null = targetElm
+          while (currentElm) {
+            absoluteTop += currentElm.offsetTop
+            currentElm = currentElm.offsetParent as HTMLElement | null
+          }
+
+          const elementHeight = targetElm.offsetHeight
+          
+          // Если блок свернут (меньше 200px)
+          if (elementHeight <= 2) {
+            const windowHeight = window.innerHeight
+            // Вычисляем офсет сверху так, чтобы после вычитания в window.scrollTo 
+            // элемент оказался ровно по центру экрана
+            const targetCenterPos = absoluteTop - (windowHeight / 2) + (elementHeight / 2)
+            
+            // Нам нужно вернуть такое число, которое при вычитании из (getBoundingClientRect().top + pageYOffset)
+            // даст точно targetCenterPos. 
+            // Так как (getBoundingClientRect().top + pageYOffset) всегда равен нашему absoluteTop,
+            // то специальный офсет равен:
+            return absoluteTop - targetCenterPos
+          }
+          
+          return 0 // Стандартный отступ для больших блоков
+        }
+      }
+    })
+  }, [])
 
   return (
     <div 
@@ -119,6 +168,23 @@ export const TradeInHeaderSvg: React.FC<ITradeInHeaderProps> = ({
         <p style={{ margin: 0, fontFamily: 'Montserrat, system-ui, -apple-system, sans-serif', fontWeight: 500, lineHeight: 1.5, color: textColor }}>
           {message}
         </p>
+        {
+          showScrollBtn && (
+            <span>
+              <IconButton
+                // aria-label="more"
+                // id="to-bottom"
+                // aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                // aria-expanded={isMenuOpened ? 'true' : undefined}
+                // aria-haspopup="true"
+                onClick={scrollToContent}
+                color='primary'
+              >
+                <ArrowDownwardIcon />
+              </IconButton>
+            </span>
+          )
+        }
       </div>
     </div>
   )

@@ -126,7 +126,7 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
         width: '280px',
         maxHeight: '70vh',
         overflowY: 'auto',
-        zIndex: 200,
+        zIndex: 4,
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',

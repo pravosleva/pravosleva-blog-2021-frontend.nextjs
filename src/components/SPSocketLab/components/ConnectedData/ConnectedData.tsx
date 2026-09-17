@@ -186,9 +186,10 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
   return (
     <>
       <div
+        id='sp-tradein-target-content'
         className='backdrop-blur--lite'
         style={{
-          // borderTop: '1px solid lightgray',
+          borderTop: '1px solid lightgray',
           borderBottom: '1px solid lightgray',
           padding: '64px 0 32px 0',
           position: 'sticky',

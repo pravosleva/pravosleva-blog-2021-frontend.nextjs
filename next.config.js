@@ -12,8 +12,6 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const envFileName = '.env.production'
 const env = dotenv.parse(fs.readFileSync(envFileName))
 
-// console.log(env)
-
 const {
   NEXT_APP_BUILD_DATE,
   NEXT_APP_VERSION,
@@ -266,7 +264,7 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96],
   },
-  productionBrowserSourceMaps: false, // Оптимизация 1 (см. ниже)
+  productionBrowserSourceMaps: isDev, // Оптимизация 1 (см. ниже)
   publicExcludes: ['!static/css/src/**/*'], // Хотя теперь этого даже не потребуется, ведь на сервере папки src и так не будет!
   pwa: {
     dest: 'public', // Куда физически сложатся файлы

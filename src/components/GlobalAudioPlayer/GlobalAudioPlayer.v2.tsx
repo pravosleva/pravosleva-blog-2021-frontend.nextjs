@@ -74,7 +74,7 @@ export const GlobalAudioPlayer = () => {
   const containerStyle: React.CSSProperties = {
     position: 'fixed', bottom: 0, left: 0, right: 0,
     backgroundColor: '#111111', color: '#fff',
-    boxShadow: '0 -10px 30px rgba(0,0,0,0.7)', zIndex: 2000,
+    boxShadow: '0 -10px 30px rgba(0,0,0,0.7)', zIndex: 7,
     backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.08)',
     maxWidth: '600px', margin: '0 auto', borderRadius: '16px 16px 0 0',
     transition: 'all 0.2s ease-out',

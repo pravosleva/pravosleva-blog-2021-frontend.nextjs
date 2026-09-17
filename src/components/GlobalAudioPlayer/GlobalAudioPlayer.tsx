@@ -246,7 +246,7 @@ export const GlobalAudioPlayer = () => {
       {/* ИСПРАВЛЕНО: Визуальную шторку плеера рендерим строго по условию видимости */}
       {/* {isPlayerVisible && hasTracks && ( */}
         <div className={clsx('blog-audio-player-container', playerStateClass)} style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 2000,
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 7,
           maxWidth: '600px', margin: '0 auto', borderRadius: '20px 20px 0 0',
           transition: 'all 0.2s ease-out', overflow: 'hidden',
           paddingLeft: '16px', paddingRight: '16px', paddingTop: '10px', paddingBottom: 'calc(env(safe-area-inset-bottom, 16px) + 10px)',
