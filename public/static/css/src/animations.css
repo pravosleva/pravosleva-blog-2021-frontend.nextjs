@@ -15,3 +15,37 @@
 .fade-in-speed-2 {
   animation: fadeIn 0.2s ease-out;
 }
+
+@keyframes balloon-float-left {
+  0%, 55% { opacity: 0; transform: translate(0px, 0px) scale(0.8); }
+  65%, 90% { opacity: 1; transform: translate(-2px, -2px) scale(1); }
+  95%, 100% { opacity: 0; transform: translate(0px, -4px) scale(0.8); } /* Зафиксировано: гаснет намертво */
+}
+
+.balloon-excl { 
+  animation: balloon-float-left 7s ease-in-out infinite; 
+}
+/* Глитч-конвейер для циклической подмены символов на чистом GPU */
+@keyframes glitch-text-change {
+  0%, 19% { content: "!"; }
+  20%, 39% { content: "%"; }
+  40%, 59% { content: "#"; }
+  60%, 79% { content: "..."; }
+  80%, 100% { content: "!"; }
+}
+
+.glitch-content::after {
+  animation: glitch-text-change 3s steps(1) infinite;
+  content: "!";
+}
+
+/* Анимация для правого балуна: плавное появление, покачивание и исчезновение */
+@keyframes balloon-float-right {
+  0%, 100% { opacity: 0; transform: translate(0px, 0px) scale(0.8); }
+  15%, 45% { opacity: 1; transform: translate(2px, -3px) scale(1); }
+  55% { opacity: 0; transform: translate(0px, -5px) scale(0.8); }
+}
+
+.balloon-q { 
+  animation: balloon-float-right 7s ease-in-out infinite; 
+}

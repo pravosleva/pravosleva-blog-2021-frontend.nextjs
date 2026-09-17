@@ -1149,6 +1149,10 @@ const Logic = memo(({ room }: TLogicProps) => {
                   paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
                   // backgroundColor: '#fff',
                   // borderTop: '1px solid lightgray',
+
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px'
                 }}
                 className={clsx('backdrop-blur--lite', 'box-shadow-top__mobile')}
               >
@@ -1189,12 +1193,7 @@ const Logic = memo(({ room }: TLogicProps) => {
                     )
                   )
                 }
-                <Box
-                  sx={{
-                    pt: 2,
-                    // pb: 2,
-                  }}
-                >
+                <Box>
                   <Button size='small' fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/subprojects/audit-list' target='_self'>
                     Offline
                   </Button>

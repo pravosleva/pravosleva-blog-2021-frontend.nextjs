@@ -9,41 +9,12 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import { IconButton } from '@mui/material'
 import { useStore, TDesktopAuditState } from '~/components/audit-helper/desktop/AuditGrid/WithStateContext'
 import clsx from 'clsx'
-// import { useSelector } from 'react-redux'
-// import { IRootState } from '~/store/IRootState'
 
 type TProps = {
   audit: TAudit;
-  // onUpdateAuditComment: (ps: {
-  //   auditId: string;
-  //   comment: string;
-  // }) => void;
   onRemoveAudit: (ps: {
     auditId: string;
   }) => void;
-  // onAddJob: (ps: {
-  //   auditId: string;
-  //   name: string;
-  //   subjobs: TSubJob[];
-  // }) => void;
-  // onAddSubjob: (ps: {
-  //   name: string;
-  //   auditId: string;
-  //   jobId: string;
-  // }) => void;
-  // onToggleJobDone: (ps: {
-  //   auditId: string;
-  //   jobId: string;
-  // }) => void;
-  // onRemoveJob: (ps: {
-  //   auditId: string;
-  //   jobId: string;
-  // }) => void;
-  // onToggleSubjob: (ps: {
-  //   auditId: string;
-  //   jobId: string;
-  //   subjobId: string;
-  // }) => void;
   onEditAudit?: (audit: TAudit) => void;
   isEditable: boolean;
 }

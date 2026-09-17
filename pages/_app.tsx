@@ -6,7 +6,6 @@ import { CacheProvider, EmotionCache } from '@emotion/react'
 import theme from '~/mui/theme'
 import createEmotionCache from '~/createEmotionCache'
 import { wrapper } from '~/store'
-// import { pageview } from '~/utils/googleAnalitycs'
 import { useRouter } from 'next/router'
 // @ts-ignore
 import { PersistGate } from 'redux-persist/integration/react'
@@ -15,12 +14,6 @@ import { SnackbarProvider } from 'notistack'
 import { ThemeProvider as SCThemeProvider } from 'styled-components'
 import { Theme } from '~/ui-kit.uremont/Theme'
 import Head from 'next/head'
-// import Script from 'next/script'
-// import '../public/static/css/min/animations.css'
-// import '../public/static/css/min/fix.sweetalert2.css'
-// import '../public/static/css/min/block-quotes.css'
-// import '../public/static/css/min/sp-nw-2022.css'
-// import { ClientPerfWidget } from '~/components'
 import { getInitialPropsBase } from '~/utils/next/getInitialPropsBase'
 import { setTheme } from '~/store/reducers/globalTheme'
 import { GlobalAudioPlayer } from '~/components/GlobalAudioPlayer'
@@ -31,9 +24,6 @@ import { pageview } from '~/utils/googleAnalitycs'
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-// const isProd = process.env.NODE_ENV === 'production'
-// const YANDEX_COUNTER_ID = !!metrics.YANDEX_COUNTER_ID ? Number(metrics.YANDEX_COUNTER_ID) : null
-// const GA_TRACKING_ID = metrics.GA_TRACKING_ID || null
 const GA_API_SECRET = process.env.GA_API_SECRET || 'changeit'
 
 interface MyAppProps extends AppProps {
@@ -242,6 +232,11 @@ function AppWithRedux(props: MyAppProps) {
 
   const store = useStore()
   const isServer = useMemo<boolean>(() => typeof window === 'undefined', [typeof window])
+  // NOTE: Проверяем, находится ли пользователь в разделе аудит-листов.
+  // asPath проверяет реальный URL в браузере, что идеально подходит для динамических страниц вроде /432590690
+  const isAuditPage = useMemo(() => {
+    return router.asPath.startsWith('/subprojects/audit-list')
+  }, [router.asPath])
 
   return (
     <>
@@ -299,12 +294,14 @@ function AppWithRedux(props: MyAppProps) {
                     <CssBaseline />
                     <Component {...pageProps} />
                     {/* <ClientPerfWidget position='top-center' /> */}
-                    {/* ИСПРАВЛЕНО: Плеер и кнопка перенесены СЮДА.
+                    {!isAuditPage && <> (
+                      {/* ИСПРАВЛЕНО: Плеер и кнопка перенесены СЮДА.
                         1. Они рендерятся строго на клиенте (нет ошибок гидратации).
                         2. Находятся внутри ThemeProvider и CssBaseline (стили применятся эталонно).
                         3. По каскаду они перекроют футер страницы, так как лежат внутри того же контекста наложения. */}
-                    <GlobalPodcastSidebarButton />
-                    <GlobalAudioPlayer />
+                      <GlobalPodcastSidebarButton />
+                      <GlobalAudioPlayer />
+                    )</>}
                     {/* <Script src="/static/common/min/eruda.custom.js" strategy="lazyOnload" /> */}
                   </ThemeProvider>
                 </SCThemeProvider>

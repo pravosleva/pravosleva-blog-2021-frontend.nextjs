@@ -8,18 +8,35 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: theme.spacing(2),
-    borderRadius: theme.spacing(1),
-    boxShadow: 'unset',
-    transition: 'all .2s linear',
+    borderRadius: theme.spacing(2),
     minHeight: '52px',
-    
-    // 🔥 Заменяем нестандартный stretch на надежный 100% для кроссбраузерности
     width: '100%', 
     boxSizing: 'border-box',
+    userSelect: 'none',
+
+    // 🎯 ТОТАЛЬНЫЙ ОГНЕТУШИТЕЛЬ ДЛЯ ВСЕХ ВИДОВ ФОКУСА РОДИТЕЛЯ И ДЕТЕЙ:
+    // Мы явно запрещаем браузеру рисовать рамку на карточке, когда фокус падает на внутреннюю кнопку стрелочки!
+    '&, &:focus, &:active, &:focus-visible, &:focus-within': {
+      outline: 'none !important',
+      outlineWidth: '0px !important',
+      outlineColor: 'transparent !important',
+      outlineOffset: '0px !important',
+      WebkitTapHighlightColor: 'transparent !important',
+    },
   },
+  
   activeWrapper: {
-    border: '2px solid #fff',
-    outline: `2px solid ${theme.palette.primary.dark}`,
+    border: '2px solid #fff', 
+    boxShadow: `0 0 0 2px ${theme.palette.primary.dark}`,
+    outline: 'none !important',
+    
+    // Дублируем защиту для активного состояния
+    '&, &:focus, &:active, &:focus-visible, &:focus-within': {
+      outline: 'none !important',
+      outlineWidth: '0px !important',
+      outlineColor: 'transparent !important',
+      WebkitTapHighlightColor: 'transparent !important',
+    }
   },
 
   display: {
@@ -28,8 +45,6 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: theme.spacing(2),
-    
-    // 🎯 ФИКС 1: Разрешаем блоку сжиматься, ломаем дефолтное поведение Flexbox
     minWidth: 0, 
     flexGrow: 1, 
   },
@@ -39,17 +54,14 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    flexShrink: 0, // Запрещаем иконке/кругу сжиматься
+    flexShrink: 0, 
   },
 
-  // -- NOTE: Left side
   displayTitle: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    
-    // 🎯 ФИКС 2: Разрешаем текстовой колонке ужиматься на планшетах
     minWidth: 0, 
     flexGrow: 1,
   },
@@ -68,28 +80,37 @@ export const useStyles = makeStyles<Theme>((theme) => ({
     lineHeight: 1.66,
     letterSpacing: '0.03333em',
     width: '100%',
-
-    // 🎯 ФИКС 3: Сохраняем все переводы строк пользователя (Enter)
     whiteSpace: 'pre-wrap',
-
-    // 🎯 ФИКС 4: Агрессивно разрываем длинные ссылки и слова без пробелов, 
-    // чтобы они не выталкивали правый блок кнопок за экран
     wordBreak: 'break-word',
     overflowWrap: 'break-word',
-
-    // 👑 ОПЦИОНАЛЬНО (Красивое троеточие): Если на планшетах текст слишком длинный,
-    // этот код аккуратно скроет всё, что не поместилось в 2 строки, добавив "..."
     display: '-webkit-box',
-    WebkitLineClamp: 2, // Ограничение в 2 строки (можно поставить 3)
+    WebkitLineClamp: 2, 
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
   },
-  // --
-  actions: {
+  
+    actions: {
     marginLeft: 'auto',
     display: 'flex',
     gap: theme.spacing(0),
-    flexShrink: 0, // 🔥 Жестко запрещаем блоку кнопок сжиматься или улетать за экран
+    flexShrink: 0, // Жестко запрещаем блоку кнопок сжиматься или улетать за экран
+
+    // 🎯 ТОЧЕЧНЫЙ ОГНЕТУШИТЕЛЬ: Сбрасываем обводку у всех вложенных кнопок MUI
+    '& .MuiButtonBase-root, & .MuiIconButton-root, & button': {
+      outline: 'none !important',
+      outlineWidth: '0px !important',
+      outlineColor: 'transparent !important',
+      boxShadow: 'none !important', // На всякий случай гасим дефолтные тени MUI
+      WebkitTapHighlightColor: 'transparent !important',
+      
+      // Скрываем рамку фокуса, которая активируется браузером при клике мыши
+      '&:focus, &:active, &:focus-visible, &:focus-within': {
+        outline: 'none !important',
+        outlineWidth: '0px !important',
+        boxShadow: 'none !important',
+        WebkitTapHighlightColor: 'transparent !important',
+      },
+    },
 
     [theme.breakpoints.down('lg')]: {
       flexDirection: 'column',

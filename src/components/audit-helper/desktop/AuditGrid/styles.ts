@@ -69,7 +69,7 @@ export const useStyles = makeStyles((theme) => ({
   // },
   auditItem: {
     // @ts-ignore
-    padding: '2px 2px 0 2px', // NOTE: Special for outline css prop
+    // padding: '2px 2px 0 2px', // NOTE: Special for outline css prop
   },
 
   // NOTE: Right side

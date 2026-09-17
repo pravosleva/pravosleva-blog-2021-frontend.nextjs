@@ -109,33 +109,36 @@ export const ActiveAuditJobList = memo(({ audits, onUpdateAuditComment, onAddJob
             // paddingTop: '16px',
           }}
         >
-          <div
-            // className={externalStyles.stickyTopPanel}
-            style={{
-              // padding: '52px 0 0 0',
-              // border: '1px solid red',
+          {
+            !!activeAuditComment && (
+              <div
+                // className={externalStyles.stickyTopPanel}
+                className='fade-in-effect'
+                style={{
+                  // padding: '52px 0 0 0',
 
-              // padding: 'calc(52px + 2px) 2px 0 2px', // NOTE: Special for outline css prop
-              padding: '16px 0 32px 0',
-              // border: '1px dashed red',
-              // width: 'calc(100% + 4px)'
-            }}
-          >
-            <CommentBtn
-              key={activeAuditComment}
-              initialState={{
-                comment: activeAuditComment || '',
-              }}
-              onSuccess={({ state }) => {
-                if (!!activeAuditId) onUpdateAuditComment({
-                  auditId: activeAuditId,
-                  comment: state.comment,
-                })
-              }}
-              isEditable={isEditable}
-            />
-          </div>
-
+                  // padding: 'calc(52px + 2px) 2px 0 2px', // NOTE: Special for outline css prop
+                  padding: '16px 0 32px 0',
+                  // border: '1px dashed red',
+                  // width: 'calc(100% + 4px)'
+                }}
+              >
+                <CommentBtn
+                  key={activeAuditComment}
+                  initialState={{
+                    comment: activeAuditComment || '',
+                  }}
+                  onSuccess={({ state }) => {
+                    if (!!activeAuditId) onUpdateAuditComment({
+                      auditId: activeAuditId,
+                      comment: state.comment,
+                    })
+                  }}
+                  isEditable={isEditable}
+                />
+              </div>
+            )
+          }
           <div
             style={{
               // NOTE: Exp

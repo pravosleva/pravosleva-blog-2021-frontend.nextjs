@@ -13,6 +13,7 @@ import { universalHttpClient } from '~/utils/universalHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 import { ContentLockedSvg } from '~/components/special-svg-content/error/ContentLockedSvg'
+import { CyberLogoWithCalendar } from '~/components/special-svg-content/projects/blog/CyberLogoSvg.react.v4'
 
 type TPageService = {
   isOk: boolean;
@@ -103,6 +104,14 @@ const BlogIndex = ({ _pageService, list }: IBlogIndexProps) => {
         <link href="/static/css/min/blog_sqt_[search_query_title]-qrcode.react.css?v=0" rel="stylesheet" fetchpriority="high" />
       </Head>
       <Layout>
+        {/* <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
+          <CyberLogoWithCalendar
+            width={100} 
+            height={100}
+            className="header-logo"
+            onClick={() => console.log('Клик по логотипу!')} 
+          />
+        </div> */}
         <ArticlesList
           list={list}
           searchQueryTitle={{
