@@ -29,35 +29,31 @@ export const CollapsibleBox = withTranslator<any>(({
   text,
   actionsJson,
   t,
-  isEnabledForNavigation = '0', // Дефолтное значение '0' (игнорируется)
+  isEnabledForNavigation = '0',
 }: TProps) => {
   const scrollToIdRef = useRef(scrollToIdFactory({
     timeout: 0,
     offsetTop: standardDesktopOffsetTop,
-    elementHeightCritery: 2, // NOTE: Все что больше 2px по высоте будет проскроллено в топ страницы
+    elementHeightCritery: 2,
   }))
   const rootRef = useRef<HTMLDivElement>(null)
-  // Генерируем ID только если навигация включена, иначе ID на теге не обязателен
+  
   const boxId = useMemo(() => {
     return isEnabledForNavigation === '1' ? generateSlugId(header) : undefined
   }, [header, isEnabledForNavigation])
-  // Отслеживание видимости через IntersectionObserver и реактивный движок
-  // Отслеживание видимости и регистрация в реактивном движке
+
   useEffect(() => {
-    // Если навигация для этого блока выключена, ничего не делаем
     if (isEnabledForNavigation !== '1' || !boxId) return
 
     const element = rootRef.current
     if (!element) return
 
-    // Добавляем текущий блок в сигнал реестра
     collapsibleRegistrySignal.value = {
       ...collapsibleRegistrySignal.value,
       [boxId]: { id: boxId, header, isVisible: false }
     }
 
     const observer = new IntersectionObserver(([entry]) => {
-      // Обновляем статус видимости в сигнале напрямую
       if (collapsibleRegistrySignal.value[boxId]) {
         collapsibleRegistrySignal.value = {
           ...collapsibleRegistrySignal.value,
@@ -70,7 +66,6 @@ export const CollapsibleBox = withTranslator<any>(({
 
     observer.observe(element)
 
-    // При размонтировании удаляем только этот блок из реестра
     return () => {
       observer.disconnect()
       const currentRegistry = { ...collapsibleRegistrySignal.value }
@@ -80,42 +75,36 @@ export const CollapsibleBox = withTranslator<any>(({
       }
     }
   }, [boxId, header, isEnabledForNavigation])
+
   const isActionsRequired = useMemo(() => typeof actionsJson === 'string', [actionsJson])
   const isActionsValid = useMemo(() => !!actionsJson && isActionsRequired && isValidJson(actionsJson), [isActionsRequired, actionsJson])
   const parsedActions = useMemo(() => (!!actionsJson && isActionsRequired && isActionsValid)
     ? JSON.parse(actionsJson)
     : null, [actionsJson, isActionsRequired, isActionsValid])
+
   const [isOpened, setIsOpened] = useState(false)
   const handleToggle = useCallback(() => {
     setIsOpened((s) => !s)
   }, [setIsOpened])
+
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const bgColor = useMemo(() => {
     switch (currentTheme) {
-      case 'light':
-        return '#ededed'
-      case 'gray':
-        return '#ededed'
-      case 'hard-gray':
-        return 'gray'
-      case 'dark':
-        return 'rgba(255, 255, 255, 0.25)'
-      default:
-        return '#fff'
+      case 'light': return '#ededed'
+      case 'gray': return '#ededed'
+      case 'hard-gray': return 'gray'
+      case 'dark': return 'rgba(255, 255, 255, 0.25)'
+      default: return '#fff'
     }
   }, [currentTheme])
+
   const textColor = useMemo(() => {
     switch (currentTheme) {
-      case 'light':
-        return '#000'
-      case 'gray':
-        return 'inherit'
-      case 'hard-gray':
-        return '#fff'
-      case 'dark':
-        return 'inherit'
-      default:
-        return '#000'
+      case 'light': return '#000'
+      case 'gray': return 'inherit'
+      case 'hard-gray': return '#fff'
+      case 'dark': return 'inherit'
+      default: return '#000'
     }
   }, [currentTheme])
 
@@ -138,7 +127,6 @@ export const CollapsibleBox = withTranslator<any>(({
         break
     }
   }, [])
-  // const togglerSlug = slugify(header).toLowerCase() 
 
   return (
     <div
@@ -164,11 +152,7 @@ export const CollapsibleBox = withTranslator<any>(({
       onClick={handleToggle}
     >
       <div
-        style={{
-          display: 'flex',
-          flexWrap: 'nowrap',
-          gap: '16px',
-        }}
+        style={{ display: 'flex', flexWrap: 'nowrap', gap: '16px' }}
         className={classes.collapsible}
       >
         <div style={{ fontWeight: 'bold' }}>{header}</div>
@@ -182,21 +166,19 @@ export const CollapsibleBox = withTranslator<any>(({
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-
             paddingTop: '4px',
           }}
         >
-          {
-            isOpened
-              ? <KeyboardArrowUpIcon fontSize='small' />
-              : <KeyboardArrowDownIcon fontSize='small' />
-          }
+          {isOpened ? <KeyboardArrowUpIcon fontSize='small' /> : <KeyboardArrowDownIcon fontSize='small' />}
         </div>
       </div>
 
-      {!!text && isOpened && (
+      {/* 🔥 SEO-ФИКС 1: Текст рендерится ВСЕГДА, но плавно скрывается/показывается через display */}
+      {!!text && (
         <div
           className={clsx(classes.noMarginBottomForLastChild, classes.content)}
+          style={{ display: isOpened ? 'block' : 'none' }}
+          onClick={(e) => e.stopPropagation()} // Защита: клик по тексту не должен сворачивать блок
         >
           <ReactMarkdown
             // @ts-ignore
@@ -207,49 +189,39 @@ export const CollapsibleBox = withTranslator<any>(({
         </div>
       )}
 
-      {
-        isOpened && !!parsedActions && (
-          <div
+      {/* 🔥 SEO-ФИКС 2: Блок действий рендерится всегда, скрывается через display */}
+      <div 
+        style={{ 
+          display: (isOpened && !!parsedActions) ? 'flex' : 'none', 
+          flexDirection: 'row', 
+          flexWrap: 'wrap', 
+          gap: '16px' 
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {!!parsedActions && parsedActions.map(({ link, label, _label, target }: any, i: number) => (
+          <a key={`${link}-${i}`}
+            className={clsx('link-as-rippled-btn', 'truncate')}
+            href={link}
+            onClick={handleClickLink({ link, label })}
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              gap: '16px',
+              color: '#fff',
+              borderRadius: '8px',
             }}
+            target={target || '_self'}
           >
-            {
-              parsedActions.map(({ link, label, _label, target }: { link: 'string'; _label?: 'string'; label: 'string'; target?: '_blank' | '_self' }, i: number) => {
-                return (
-                  <a
-                    key={`${link}-${i}`}
-                    className={clsx('link-as-rippled-btn', 'truncate')}
-                    href={link}
-                    onClick={handleClickLink({ link, label })}
-                    style={{
-                      color: '#fff',
-                      borderRadius: '8px',
-                    }}
-                    target={target || '_self'}
-                  >
-                    {_label || t(label)}
-                  </a>
-                )
-              })
-            }
-          </div>
-        )
-      }
-      {
-        isOpened && isActionsRequired && !isActionsValid && (
-          <>
-            <pre style={{ marginBottom: '0px !important' }}>{JSON.stringify({
-              isActionsRequired,
-              isActionsValid,
-            }, null, 2)}</pre>
-            <div>Incorrect props</div>
-          </>
-        )
-      }
+            {_label || t(label)}
+          </a>
+        ))}
+      </div>
+
+      {/* Ошибки пропсов оставляем динамическими (они поисковику не нужны) */}
+      {isOpened && isActionsRequired && !isActionsValid && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <pre style={{ marginBottom: '0px !important' }}>{JSON.stringify({ isActionsRequired, isActionsValid }, null, 2)}</pre>
+          <div>Incorrect props</div>
+        </div>
+      )}
     </div>
   )
 })
