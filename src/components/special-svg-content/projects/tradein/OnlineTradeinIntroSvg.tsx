@@ -53,7 +53,7 @@ export const OnlineTradeinIntroSvg = React.memo(() => {
 
               @media (max-width: 600px) {
                 .online-tradein-logo-svg {
-                  transform: translateX(8px) scale(0.8) !important;
+                  /* transform: translateX(8px) scale(0.8) !important; */
                   transform-origin: center center !important;
                   margin: 0 auto !important;
                 }
