@@ -132,9 +132,15 @@ export const XHRReport = memo(({ xhr, level }: TProps) => {
                           text={JSON.stringify(xhr.state[url][tsstr], null, 4)}
                           onCopy={handleCopy}
                         >
-                          <Button size='small' variant='outlined' startIcon={<ContentCopyIcon />} className={classes.absoluteCopyBtn}>Copy</Button>
+                          <Button
+                            size='small'
+                            variant='outlined'
+                            startIcon={<ContentCopyIcon />}
+                            className={classes.absoluteCopyBtn}
+                            sx={{ position: 'absolute' }}
+                          >Copy</Button>
                         </CopyToClipboard>
-                        <pre className={clsx(baseClasses.preStyled)}>
+                        <pre className={clsx(baseClasses.preStyled)} style={{ fontSize: 'x-small' }}>
                           {JSON.stringify(xhr.state[url][tsstr], null, 4)}
                         </pre>
                       </div>

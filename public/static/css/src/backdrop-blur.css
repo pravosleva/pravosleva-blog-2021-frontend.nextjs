@@ -1,6 +1,6 @@
 /* slightly transparent fallback */
 .backdrop-blur {
-  background-color: rgba(255, 255, 255, .9);
+  background-color: rgba(255, 255, 255, .7);
 }
 
 /* if backdrop support: very transparent and blurred */
@@ -13,7 +13,7 @@
 }
 
 .backdrop-blur--lite {
-  background-color: rgba(255, 255, 255, .9);
+  background-color: rgba(255, 255, 255, .7);
 }
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
   .backdrop-blur--lite {
