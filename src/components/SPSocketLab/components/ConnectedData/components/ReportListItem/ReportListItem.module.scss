@@ -17,8 +17,10 @@
 
 .pre {
   // background-color: rgba(0,0,0,0.5);
-  background-color: rgba(165, 175, 186, 1);
-  color: #fff;
+  background-color: rgba(165, 175, 186, .2);
+  // color: #fff;
+  // color: contrast-color(rgba(165, 175, 186, 1));
+  color: inherit;
   font-weight: bold;
   font-size: small;
   margin-bottom: 0px;

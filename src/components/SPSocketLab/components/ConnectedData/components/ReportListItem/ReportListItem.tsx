@@ -112,8 +112,8 @@ export const ReportListItem = memo((ps: TProps) => {
         className={clsx(
           'fadeIn',
           {
-            'backdrop-blur--lite': currentTheme !== 'dark',
-            'backdrop-blur--dark': currentTheme === 'dark',
+            // 'backdrop-blur--lite': currentTheme !== 'dark',
+            // 'backdrop-blur--dark': currentTheme === 'dark',
             [classes.isActive]: viSnap.activeReport?.ts === ps.report.ts,
           },
           classes.mainHeader,
@@ -122,6 +122,7 @@ export const ReportListItem = memo((ps: TProps) => {
         <Badge
           color={_badgeColorMap[ps.report.reportType]}
           badgeContent={ps.report._wService?._perfInfo.tsList.length || 0}
+          sx={{ color: 'inherit' }}
         >
           {Icon}
         </Badge>
@@ -137,7 +138,7 @@ export const ReportListItem = memo((ps: TProps) => {
           {header}
         </div>
         <div style={{ fontFamily: 'system-ui', marginLeft: 'auto', wordBreak: 'keep-all', whiteSpace: 'nowrap' }}>
-          <Chip color={currentTheme === 'dark' ? 'secondary' : 'default'} label={<TimeAgoLabel ts={ps.report.ts} />} />
+          <Chip sx={{ color: 'inherit' }} color='default' label={<TimeAgoLabel ts={ps.report.ts} />} />
         </div>
       </div>
 

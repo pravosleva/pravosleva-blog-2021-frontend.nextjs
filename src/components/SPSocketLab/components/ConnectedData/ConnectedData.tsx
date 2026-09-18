@@ -187,7 +187,11 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
     <>
       <div
         id='sp-tradein-target-content'
-        className='backdrop-blur--lite'
+        className={clsx({
+          ['backdrop-blur--lite']: currentTheme === 'light' || currentTheme === 'gray',
+          ['backdrop-blur--dark']: currentTheme === 'hard-gray',
+          ['backdrop-blur--white']: currentTheme === 'dark',
+        })}
         style={{
           borderTop: '1px solid lightgray',
           borderBottom: '1px solid lightgray',
@@ -195,7 +199,10 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
           position: 'sticky',
           top: 0,
           zIndex: 2,
-          color: currentTheme === 'dark' ? 'black' : 'inherit',
+          color: clsx({
+            ['inherit']: currentTheme === 'light' || currentTheme === 'gray' || currentTheme === 'hard-gray',
+            ['rgb(255, 142, 83)']: currentTheme === 'dark',
+          }),
         }}
       >
         <ResponsiveBlock
@@ -211,6 +218,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
               flexDirection: 'row',
               alignItems: 'center',
               gap: '16px',
+              justifyContent: 'flex-end',
             }}
           >
             <span style={{ fontFamily: 'Montserrat', fontWeight: 'bold' }}>SP exp</span>
