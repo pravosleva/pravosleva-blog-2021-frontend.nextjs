@@ -6,6 +6,7 @@ import { ReactiveEngineIntroSvg } from '~/components/special-svg-content/project
 import Button from '@mui/material/Button'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Link from '~/components/Link'
+import SchoolIcon from '@mui/icons-material/School'
 
 type TPageService = {
   isOk: boolean;
@@ -33,10 +34,11 @@ export default function MyProjects(_ps: IMyProjectsProps) {
           isForLayout={true} hasBreadcrumbs={false}
           className='fade-in-effect'
         >
+          <ReactiveEngineIntroSvg />
           <span>
             <Button
-              size='small'
-              // endIcon={<ArrowForwardIcon />}
+              // size='small'
+              startIcon={<SchoolIcon />}
               variant='text'
               // variant='text'
               color='primary'
@@ -48,10 +50,9 @@ export default function MyProjects(_ps: IMyProjectsProps) {
               Документация
             </Button>
           </span>
-          <ReactiveEngineIntroSvg />
           <span>
             <Button
-              size='small'
+              // size='small'
               endIcon={<ArrowForwardIcon />}
               variant='contained'
               // variant='text'

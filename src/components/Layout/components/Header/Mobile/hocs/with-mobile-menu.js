@@ -168,11 +168,7 @@ export const withMobileMenu = (ComposedComponent) => {
                 </a>
               </Link>
             </li> */}
-            <li>
-              <Link href="/blog/q/MartVirkus">
-                <a onClick={handleCloseSidebar} className={checkActive('/blog/q/MartVirkus')}>Comic by Mart Virkus</a>
-              </Link>
-            </li>
+            
             {/* <li>
               <Link href="/feedback">
                 <a onClick={handleCloseSidebar} className={checkActive('/feedback')}>{props.t('FEEDBACK')}</a>
@@ -190,6 +186,18 @@ export const withMobileMenu = (ComposedComponent) => {
                 <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/what-where-when') ? 'active' : ''}>
                   {props.t('WHAT_WHERE_WHEN_EXTERNAL_LINK')}
                 </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/autopark-2022">
+                <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/autopark-2022') ? 'active' : ''}>
+                  Autopark (2022)
+                </a>
+              </Link>
+            </li>
+            <li>
+              <Link href="/blog/q/MartVirkus">
+                <a onClick={handleCloseSidebar} className={checkActive('/blog/q/MartVirkus')}>Comic by Mart Virkus</a>
               </Link>
             </li>
           </ul>
