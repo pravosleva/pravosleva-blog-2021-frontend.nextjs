@@ -148,8 +148,8 @@ export const withMobileMenu = (ComposedComponent) => {
               </Link>
             </li>
             <li>
-              <Link href="/p/reactive-engine-ru">
-                <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/reactive-engine-ru') ? 'active' : ''}>
+              <Link href="/_reactive-engine">
+                <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/_reactive-engine') ? 'active' : ''}>
                   Reactive Engine (2026)
                 </a>
               </Link>

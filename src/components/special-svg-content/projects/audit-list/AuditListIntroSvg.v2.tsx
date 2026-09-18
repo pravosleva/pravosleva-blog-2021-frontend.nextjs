@@ -3,26 +3,12 @@ import { useSelector } from 'react-redux'
 import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { IRootState } from '~/store/IRootState'
 
-interface IAuditListIntroProps {
-  title?: string;
-  description?: string;
-}
-
-export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({ 
-  title, // = 'Application Audit Platform',
-  description, // = 'Универсальный инструмент для автоматического аудита корпоративных приложений, выявления расхождений в биллинге и сквозной аналитики затрат.' 
-}) => {
-  // Фиксированная палитра для светлой темы
-  // const primaryColor = '#0162c8';     // Глубокий синий бренд
-  // const lightGreyBg = '#ededed';      // Светло-серый пастельный тон корпуса
-  // const textColor = '#334155';        // Цвет описания (Slate)
-  // const titleColor = '#0f172a';       // Цвет заголовка (Dark Slate)
-  const neonOrange = '#FF8E53';       // Фирменный оранжевый неон для слова "лист"
+export const AuditListIntroSvg = React.memo(() => {
+  const neonOrange = '#FF8E53';       // Фирменный оранжевый неон для слова "List"
 
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const subColor = getLabelBgColor({ currentTheme })
   const textColor = getTextColor({ currentTheme })
-  const titleColor = getTextColor({ currentTheme })
   const primaryColor = currentTheme === 'hard-gray' ? textColor : '#0162c8';
 
   return (
@@ -37,10 +23,10 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({
         textAlign: 'center'
       }}
     >
-      {/* 📐 ШИРОКОФОРМАТНЫЙ ВЕКТОРНЫЙ СЛОЙ С ТЕКСТОВЫМ АРТОМ И СХЕМАТИЧНЫМ КАЛЬКУЛЯТОРОМ */}
+      {/* 📐 КЛИПИРОВАННЫЙ ВЬЮБОКС 800x150: Пустые поля сверху и снизу полностью ликвидированы */}
       <svg
         className='audit-list-logo-svg'
-        viewBox="0 0 800 360" 
+        viewBox="0 0 800 150" 
         width="100%" 
         height="auto" 
         style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}
@@ -55,9 +41,7 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({
           <style>
             {`
               .audit-list-logo-svg {
-                /* transform: translateX(8px) scale(0.8); */
                 width: 100%;
-                /* border: 1px dashed red; */
               }
               @keyframes pulse-radar {
                 0% { r: 15px; opacity: 0.8; }
@@ -68,16 +52,16 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({
           </style>
         </defs>
 
-        {/* 🎯 СИСТЕМА ВНЕШНИХ ВЕРОЯТНОСТНЫХ КОЛЕЦ */}
-        <circle cx="400" cy="175" r="35" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.25" />
-        <circle cx="400" cy="175" r="85" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.12" />
-        <circle cx="400" cy="175" r="145" fill="none" stroke={primaryColor} strokeWidth="1" opacity="0.05" />
-        <circle cx="400" cy="175" className="radar-circle" fill="none" stroke={primaryColor} strokeWidth="2.5" />
+        {/* 🎯 СИСТЕМА ВНЕШНИХ КОЛЕЦ: Смещена на новую центральную ось Y = 75 */}
+        <circle cx="400" cy="75" r="35" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.25" />
+        <circle cx="400" cy="75" r="85" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.12" />
+        <circle cx="400" cy="75" r="145" fill="none" stroke={primaryColor} strokeWidth="1" opacity="0.05" />
+        <circle cx="400" cy="75" className="radar-circle" fill="none" stroke={primaryColor} strokeWidth="2.5" />
 
-        {/* 🔤 СЛОВО "Audit" (Слева, выровнено по правому краю x=335) */}
+        {/* 🔤 СЛОВО "Audit" (Базовая линия Y скорректирована до 112) */}
         <text 
           x="335" 
-          y="215" 
+          y="112" 
           fontFamily="Montserrat, system-ui, -apple-system, sans-serif" 
           fontWeight="900" 
           fontSize="115" 
@@ -89,10 +73,10 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({
           Audit
         </text>
         
-        {/* 🔤 СЛОВО "лист" (Справа, горит неоном, выровнено по левому краю x=465) */}
+        {/* 🔤 СЛОВО "List" (Базовая линия Y скорректирована до 112) */}
         <text 
           x="465" 
-          y="215" 
+          y="112" 
           fontFamily="Montserrat, system-ui, -apple-system, sans-serif" 
           fontWeight="900" 
           fontSize="115" 
@@ -105,14 +89,14 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({
         </text>
 
         {/* ========================================================================= */}
-        {/* 🧮 МИНИМАЛИСТИЧНЫЙ КАЛЬКУЛЯТОР СО СКРУГЛЕННЫМИ КРАЯМИ В ЦЕНТРЕ ПО ОСИ (400, 175) */}
+        {/* 🧮 МИНИМАЛИСТИЧНЫЙ КАЛЬКУЛЯТОР: Сдвинут по оси Y на -100px (y=29), пропорции сохранены */}
         {/* ========================================================================= */}
         <g id="central-calculator" filter="url(#text-art-shadow)">
           
-          {/* Основной корпус калькулятора (Размер 92x92, отцентрирован) */}
+          {/* Корпус калькулятора (Ваши размеры: 90x92, stroke=10) */}
           <rect 
             x="356" 
-            y="129" 
+            y="29" 
             width="90" 
             height="92" 
             rx="12" 
@@ -125,7 +109,7 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({
           {/* Схематичный дисплей сверху */}
           <rect 
             x="368" 
-            y="143" 
+            y="43" 
             width="64" 
             height="16" 
             rx="3" 
@@ -135,62 +119,20 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({
           />
           
           {/* Минималистичный индикатор значения на дисплее */}
-          <line x1="374" y1="151" x2="386" y2="151" stroke={primaryColor} strokeWidth="2" strokeLinecap="round" />
+          <line x1="374" y1="51" x2="386" y2="51" stroke={primaryColor} strokeWidth="2" strokeLinecap="round" />
 
           {/* ⚪ 4 ЧЁТКИЕ КНОПКИ ДЕЙСТВИЙ */}
           {/* Верхний ряд кнопок */}
-          <circle cx="384" cy="177" r="7" fill={primaryColor} stroke={primaryColor} strokeWidth="2" /> {/* Левая верхняя */}
-          <circle cx="418" cy="177" r="7" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* Правая верхняя */}
+          <circle cx="384" cy="77" r="7" fill={primaryColor} stroke={primaryColor} strokeWidth="2" /> {/* Левая верхняя */}
+          <circle cx="418" cy="77" r="7" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* Правая верхняя */}
           
           {/* Нижний ряд кнопок */}
-          <circle cx="384" cy="201" r="7" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* Левая нижняя */}
-          <circle cx="418" cy="201" r="7" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* Правая нижняя */}
+          <circle cx="384" cy="101" r="7" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* Левая нижняя */}
+          <circle cx="418" cy="101" r="7" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* Правая нижняя */}
 
         </g>
 
       </svg>
-
-      {/* 📝 ТЕКСТОВЫЙ ИНФОРМАЦИОННЫЙ БЛОК */}
-      {
-        (!!title || !!description) && (
-          <div 
-            style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '12px',
-              padding: '0 24px',
-              marginTop: '1.5rem'
-            }}
-          >
-            <h2 
-              style={{ 
-                margin: 0,
-                fontFamily: 'Montserrat, system-ui, sans-serif', 
-                fontWeight: 800, 
-                fontSize: '1.5rem', 
-                lineHeight: 1.3,
-                color: titleColor,
-                letterSpacing: '-0.02em'
-              }}
-            >
-              {title}
-            </h2>
-            
-            <p 
-              style={{ 
-                margin: 0,
-                fontFamily: 'Montserrat, system-ui, sans-serif', 
-                fontWeight: 500, 
-                fontSize: '0.88rem',
-                lineHeight: 1.6,
-                color: textColor
-              }}
-            >
-              {description}
-            </p>
-          </div>
-        )
-      }
     </div>
   )
 })

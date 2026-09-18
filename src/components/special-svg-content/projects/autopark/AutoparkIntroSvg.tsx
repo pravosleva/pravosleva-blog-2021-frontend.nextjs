@@ -3,26 +3,13 @@ import { useSelector } from 'react-redux';
 import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
 import { IRootState } from '~/store/IRootState';
 
-interface IAutoparkIntroProps {
-  title?: string;
-  description?: string;
-}
-
-export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = React.memo(({ 
-  title, // = 'Fleet Management Platform',
-  description = 'Раздел в разработке', // = 'Универсальная система мониторинга автопарка, контроля логистических маршрутов, учета техобслуживания и сквозной аналитики транспортных средств.' 
-}) => {
-  // Фиксированная палитра для светлой темы
-  // const primaryColor = '#0162c8';     // Глубокий синий бренд (Шина и контуры)
-  // const gunMetalBg = '#ededed';       // Светло-серый пастельный тон тела диска
-  // const textColor = '#334155';        // Цвет описания (Slate)
-  // const titleColor = '#0f172a';       // Цвет заголовка (Dark Slate)
+export const AutoparkIntroSvg = React.memo(() => {
   const neonOrange = '#FF8E53';       // Фирменный оранжевый неон для слова "Park"
 
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
   const subColor = getLabelBgColor({ currentTheme })
   const textColor = getTextColor({ currentTheme })
-  const titleColor = getTextColor({ currentTheme })
+  // const titleColor = getTextColor({ currentTheme })
   const primaryColor = currentTheme === 'hard-gray' ? textColor : '#0162c8';
 
   return (
@@ -37,10 +24,10 @@ export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = React.memo(({
         textAlign: 'center'
       }}
     >
-      {/* 📐 ШИРОКОФОРМАТНЫЙ ВЕКТОРНЫЙ СЛОЙ С ТЕКСТОВЫМ АРТОМ И АВТОМОБИЛЬНЫМ КОЛЕСОМ */}
+      {/* 📐 КЛИПИРОВАННЫЙ ВЬЮБОКС 800x150: Пустые поля сверху и снизу полностью ликвидированы */}
       <svg
         className='autopark-logo-svg'
-        viewBox="0 0 800 360" 
+        viewBox="0 0 800 150" 
         width="100%" 
         height="auto" 
         style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}
@@ -55,9 +42,8 @@ export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = React.memo(({
           <style>
             {`
               .autopark-logo-svg {
-                /* transform: translateX(8px) scale(0.8); */
                 width: 100%;
-                /* border: 1px dashed red; */
+                /* border: 1px solid red; */
               }
               @keyframes pulse-radar {
                 0% { r: 15px; opacity: 0.8; }
@@ -68,16 +54,16 @@ export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = React.memo(({
           </style>
         </defs>
 
-        {/* 🎯 СИСТЕМА ВНЕШНИХ ВЕРОЯТНОСТНЫХ КОЛЕЦ */}
-        <circle cx="400" cy="175" r="35" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.25" />
-        <circle cx="400" cy="175" r="85" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.12" />
-        <circle cx="400" cy="175" r="145" fill="none" stroke={primaryColor} strokeWidth="1" opacity="0.05" />
-        <circle cx="400" cy="175" className="radar-circle" fill="none" stroke={primaryColor} strokeWidth="2.5" />
+        {/* 🎯 СИСТЕМА ВНЕШНИХ КОЛЕЦ: Смещена на новую центральную ось Y = 75 */}
+        <circle cx="400" cy="75" r="35" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.25" />
+        <circle cx="400" cy="75" r="85" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.12" />
+        <circle cx="400" cy="75" r="145" fill="none" stroke={primaryColor} strokeWidth="1" opacity="0.05" />
+        <circle cx="400" cy="75" className="radar-circle" fill="none" stroke={primaryColor} strokeWidth="2.5" />
 
-        {/* 🔤 СЛОВО "Auto" (Слева, выровнено по правому краю x=335) */}
+        {/* 🔤 СЛОВО "Auto" (Базовая линия Y скорректирована до 112) */}
         <text 
           x="335" 
-          y="215" 
+          y="112" 
           fontFamily="Montserrat, system-ui, -apple-system, sans-serif" 
           fontWeight="900" 
           fontSize="115" 
@@ -89,10 +75,10 @@ export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = React.memo(({
           Auto
         </text>
         
-        {/* 🔤 СЛОВО "Park" (Справа, горит неоном, выровнено по левому краю x=465) */}
+        {/* 🔤 СЛОВО "Park" (Базовая линия Y скорректирована до 112) */}
         <text 
           x="465" 
-          y="215" 
+          y="112" 
           fontFamily="Montserrat, system-ui, -apple-system, sans-serif" 
           fontWeight="900" 
           fontSize="115" 
@@ -105,70 +91,30 @@ export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = React.memo(({
         </text>
 
         {/* ========================================================================= */}
-        {/* 🏎️ ЦЕНТРАЛЬНОЕ КОЛЕСО (КЛАССИЧЕСКАЯ РАЗБОЛТОВКА С 5 ОТВЕРСТИЯМИ) */}
+        {/* 🏎️ ЦЕНТРАЛЬНОЕ КОЛЕСО: Сдвинуто по оси Y на -100px, пропорции 5x100 сохранены */}
         {/* ========================================================================= */}
         <g id="autopark-wheel-5x100" filter="url(#text-art-shadow)">
           
           {/* Массивный внешний синий контур (Низкопрофильная шина: r=46, stroke=12) */}
-          <circle cx="400" cy="175" r="46" fill={subColor} stroke={primaryColor} strokeWidth="12" />
+          <circle cx="400" cy="75" r="46" fill={subColor} stroke={primaryColor} strokeWidth="12" />
           
           {/* Внутреннее прижимное кольцо обода диска */}
-          <circle cx="400" cy="175" r="41" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.25" />
+          <circle cx="400" cy="75" r="41" fill="none" stroke={primaryColor} strokeWidth="1.5" opacity="0.25" />
           
           {/* Центральная ступица (ось колеса) */}
-          <circle cx="400" cy="175" r="8" fill={primaryColor} />
+          {/* <circle cx="400" cy="75" r="8" fill={primaryColor} /> */}
 
           {/* ⚪ 5 ИДЕАЛЬНЫХ ОТВЕРСТИЙ СТАНДАРТНОЙ РАЗБОЛТОВКИ 5х100 */}
-          {/* Просчитано тригонометрически на радиусе 25px с шагом в 72 градуса относительно центра (400, 175) */}
-          <circle cx="400.00" cy="150.00" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* 0° (Точно вверху на 12 часов) */}
-          <circle cx="423.78" cy="167.27" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* 72° */}
-          <circle cx="414.69" cy="195.23" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* 144° */}
-          <circle cx="385.31" cy="195.23" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* 216° */}
-          <circle cx="376.22" cy="167.27" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* 288° */}
+          {/* Просчитано тригонометрически на радиусе 25px с шагом в 72 градуса относительно центра (400, 75) */}
+          <circle cx="400.00" cy="50.00" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" /> {/* 0° (12 часов) */}
+          <circle cx="423.78" cy="67.27" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" />  {/* 72° */}
+          <circle cx="414.69" cy="95.23" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" />  {/* 144° */}
+          <circle cx="385.31" cy="95.23" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" />  {/* 216° */}
+          <circle cx="376.22" cy="67.27" r="6.5" fill="#ffffff" stroke={primaryColor} strokeWidth="2" />  {/* 288° */}
 
         </g>
 
       </svg>
-
-      {/* 📝 ТЕКСТОВЫЙ ИНФОРМАЦИОННЫЙ БЛОК */}
-      {(!!title || !!description) && (
-        <div 
-          style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '12px',
-            padding: '0 24px',
-            marginTop: '1.5rem'
-          }}
-        >
-          <h2 
-            style={{ 
-              margin: 0,
-              fontFamily: 'Montserrat, system-ui, sans-serif', 
-              fontWeight: 800, 
-              fontSize: '1.5rem', 
-              lineHeight: 1.3,
-              color: titleColor,
-              letterSpacing: '-0.02em'
-            }}
-          >
-            {title}
-          </h2>
-          
-          <p 
-            style={{ 
-              margin: 0,
-              fontFamily: 'Montserrat, system-ui, sans-serif', 
-              fontWeight: 500, 
-              fontSize: '0.88rem',
-              lineHeight: 1.6,
-              color: textColor
-            }}
-          >
-            {description}
-          </p>
-        </div>
-      )}
     </div>
   )
 })

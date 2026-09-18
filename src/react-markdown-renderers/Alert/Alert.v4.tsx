@@ -7,13 +7,6 @@ import { theNotePageRenderers } from '~/react-markdown-renderers'
 
 interface IProps {
   type?: EType
-  text?: string // Сделали опциональным
-  header?: string
-  rawChildren?: React.ReactNode // НОВОЕ: Для приема готовых нод из нового синтаксиса цитат
-}
-
-interface IProps {
-  type?: EType
   text?: string
   header?: string
   rawChildren?: React.ReactNode // Для приема готовых нод из синтаксиса цитат

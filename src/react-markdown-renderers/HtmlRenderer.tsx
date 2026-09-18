@@ -29,6 +29,11 @@ const DynamicPWACacheManager = dynamic(
   { ssr: true }
 )
 
+const DynamicFullWidthSection = dynamic(
+  () => import('~/react-markdown-renderers/FullWidthSection').then(mod => mod.FullWidthSection),
+  { ssr: true }
+)
+
 const componentTransforms = {
   // -- NEW: Забираем текст из children, а не из атрибута value
   // Alert: (props: any) => <Alert text={props.children || props.value} {...props} />,
@@ -91,6 +96,7 @@ const componentTransforms = {
   Podcast: (props: any) => <Podcast {...props} />,
   PWACacheManager: () => <DynamicPWACacheManager />,
   EdnaExp: DynamicEdnaExp,
+  FullWidthSection: DynamicFullWidthSection,
 }
 
 // @ts-ignore

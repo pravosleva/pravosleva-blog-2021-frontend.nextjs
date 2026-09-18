@@ -4,11 +4,6 @@ import { Layout } from '~/components/Layout';
 import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer';
 import { AutoparkIntroSvg } from '~/components/special-svg-content/projects/autopark/AutoparkIntroSvg';
 
-// const isDev = process.env.NODE_ENV === 'development'
-// const baseURL = isDev
-//   ? 'http://localhost:5000/pravosleva-bot-2021/autopark-2022'
-//   : 'http://pravosleva.pro/express-helper/pravosleva-bot-2021/autopark-2022'
-
 type TPageService = {
   isOk: boolean;
   message?: string;
@@ -29,12 +24,6 @@ export default function MyProjects(_ps: IMyProjectsProps) {
         <meta name="robots" content="noindex, nofollow" />
         {/* <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_type=autopark`} /> */}
       </Head>
-      
-      {/* <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
-        <Container maxWidth="xs" style={{ paddingTop: '24px' }}>
-          <AutoparkHeaderSvg />
-        </Container>
-      </div> */}
 
       <Layout>
         <UniversalContainer
@@ -42,6 +31,7 @@ export default function MyProjects(_ps: IMyProjectsProps) {
           className='fade-in-effect'
         >
           <AutoparkIntroSvg />
+          <em>Проект на стадии ревью...</em>
         </UniversalContainer>
       </Layout>
     </>
