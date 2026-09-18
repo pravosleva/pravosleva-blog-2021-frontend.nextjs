@@ -173,11 +173,11 @@ export const withMobileMenu = (ComposedComponent) => {
                 <a onClick={handleCloseSidebar} className={checkActive('/blog/q/MartVirkus')}>Comic by Mart Virkus</a>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/feedback">
                 <a onClick={handleCloseSidebar} className={checkActive('/feedback')}>{props.t('FEEDBACK')}</a>
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link href="/p/cv-ru">
                 <a onClick={handleCloseSidebar} className={isCurrentPath(router.asPath, '/p/cv-ru') ? 'active' : ''}>

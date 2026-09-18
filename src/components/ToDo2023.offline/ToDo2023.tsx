@@ -49,6 +49,7 @@ import clsx from 'clsx'
 import jsonSize from 'json-size'
 import { getHumanizedReadableSize } from '~/utils/getHumanizedReadableSize'
 import { useLightThemeAlways } from '~/hooks/useLightThemeAlways'
+import { AuditListIntroSvg } from '../special-svg-content/projects/audit-list/AuditListIntroSvg.v2'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -388,9 +389,91 @@ export const ToDo2023 = memo(() => {
         </Head>
         <div
           style={{
+            minHeight: '100dvh',
             display: 'flex',
             flexDirection: 'column',
-            minHeight: 'calc(100dvh - 50px)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '24px',
+          }}
+          className='fade-in-effect'
+        >
+          {
+            isDev ? (
+              <span>
+                <Button
+                  size='small'
+                  endIcon={<ArrowForwardIcon />}
+                  variant='outlined'
+                  // variant='text'
+                  color='primary'
+                  component={Link}
+                  noLinkStyle
+                  href={'/subprojects/audit-list/432590690'}
+                  target='_self'
+                >
+                  Online
+                </Button>
+              </span>
+            ) : (
+              lastVisitedOnlinePages?.length > 0 ? (
+                <span>
+                  <Button
+                    size='small'
+                    endIcon={<ArrowForwardIcon />}
+                    variant='outlined'
+                    color='primary'
+                    component={Link}
+                    noLinkStyle
+                    href={`/subprojects/audit-list/${lastVisitedOnlinePages[0].tg_chat_id}`}
+                    target='_self'
+                  >
+                    Online {lastVisitedOnlinePages[0].tg_chat_id}
+                  </Button>
+                </span>
+              ) : (
+                <span>
+                  <Button
+                    size='small'
+                    endIcon={<TelegramIcon />}
+                    variant='contained'
+                    color='primary'
+                    component={Link}
+                    noLinkStyle
+                    href='https://t.me/pravosleva_bot?start=auditlist'
+                    target='_self'
+                  >
+                    Online
+                  </Button>
+                </span>
+              )
+            )
+          }
+          <AuditListIntroSvg />
+          <em style={{ textAlign: 'center' }}>{sizeInfo}</em>
+          {
+            isScrollToBottomVisible && (
+              <span>
+                <IconButton
+                  aria-label="more"
+                  id="to-bottom"
+                  // aria-controls={isMenuOpened ? 'long-menu' : undefined}
+                  // aria-expanded={isMenuOpened ? 'true' : undefined}
+                  aria-haspopup="true"
+                  onClick={scrollToBottom}
+                  color='primary'
+                >
+                  <ArrowDownwardIcon />
+                </IconButton>
+              </span>
+            )
+          }
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100dvh',
             // paddingBottom: '50px',
           }}
         >
@@ -398,93 +481,8 @@ export const ToDo2023 = memo(() => {
             direction='column'
             alignItems='start'
             spacing={0}
-            sx={{ pt: 2, pb: 0 }}
+            // sx={{ pt: 2, pb: 0 }}
           >
-            <Typography
-              variant="h1"
-              // component="h1"
-              gutterBottom
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                gap: '24px',
-                // border: '1px solid red',
-
-                textAlign: 'center',
-                width: '100%',
-              }}
-            >
-              <span className='truncate'>AuditList</span>
-              {
-                isScrollToBottomVisible && (
-                  <span>
-                    <IconButton
-                      aria-label="more"
-                      id="to-bottom"
-                      // aria-controls={isMenuOpened ? 'long-menu' : undefined}
-                      // aria-expanded={isMenuOpened ? 'true' : undefined}
-                      aria-haspopup="true"
-                      onClick={scrollToBottom}
-                      color='primary'
-                    >
-                      <ArrowDownwardIcon />
-                    </IconButton>
-                  </span>
-                )
-              }
-              {
-                isDev ? (
-                  <span>
-                    <Button
-                      size='small'
-                      endIcon={<ArrowForwardIcon />}
-                      variant='outlined'
-                      // variant='text'
-                      color='primary'
-                      component={Link}
-                      noLinkStyle
-                      href={'/subprojects/audit-list/432590690'}
-                      target='_self'
-                    >
-                      Online
-                    </Button>
-                  </span>
-                ) : (
-                  lastVisitedOnlinePages?.length > 0 ? (
-                    <span>
-                      <Button
-                        size='small'
-                        endIcon={<ArrowForwardIcon />}
-                        variant='outlined'
-                        color='primary'
-                        component={Link}
-                        noLinkStyle
-                        href={`/subprojects/audit-list/${lastVisitedOnlinePages[0].tg_chat_id}`}
-                        target='_self'
-                      >
-                        Online {lastVisitedOnlinePages[0].tg_chat_id}
-                      </Button>
-                    </span>
-                  ) : (
-                    <span>
-                      <Button
-                        size='small'
-                        endIcon={<TelegramIcon />}
-                        variant='contained'
-                        color='primary'
-                        component={Link}
-                        noLinkStyle
-                        href='https://t.me/pravosleva_bot?start=auditlist'
-                        target='_self'
-                      >
-                        Online
-                      </Button>
-                    </span>
-                  )
-                )
-              }
-            </Typography>
-            <em style={{ textAlign: 'center' }}>{sizeInfo}</em>
             <div style={{ visibility: 'hidden' }} ref={desktopPageContentTopRef} />
             <AuditGrid
               audits={localAudits}

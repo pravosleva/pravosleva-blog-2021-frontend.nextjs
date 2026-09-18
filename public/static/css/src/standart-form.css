@@ -11,7 +11,7 @@
 }
 @media (max-width: 767px) {
   .box {
-    margin-top: 50px;
+    padding-top: 50px;
   }
 }
 .box h2 {

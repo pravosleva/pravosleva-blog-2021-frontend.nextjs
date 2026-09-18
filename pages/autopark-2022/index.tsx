@@ -1,9 +1,8 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import Head from 'next/head'
-import { Container } from '@mui/material'
-import { AutoparkHeaderSvg } from '~/components/special-svg-content/projects/autopark/main/AutoparkHeaderSvg';
 import { Layout } from '~/components/Layout';
 import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer';
+import { AutoparkIntroSvg } from '~/components/special-svg-content/projects/autopark/AutoparkIntroSvg';
 
 // const isDev = process.env.NODE_ENV === 'development'
 // const baseURL = isDev
@@ -38,8 +37,11 @@ export default function MyProjects(_ps: IMyProjectsProps) {
       </div> */}
 
       <Layout>
-        <UniversalContainer isForLayout={true} hasBreadcrumbs={false}>
-          <AutoparkHeaderSvg />
+        <UniversalContainer
+          isForLayout={true} hasBreadcrumbs={false}
+          className='fade-in-effect'
+        >
+          <AutoparkIntroSvg />
         </UniversalContainer>
       </Layout>
     </>

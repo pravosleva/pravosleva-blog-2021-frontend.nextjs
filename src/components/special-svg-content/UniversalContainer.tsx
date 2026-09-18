@@ -6,12 +6,13 @@ interface IUniversalContainerProps {
   isForLayout: boolean;
   hasBreadcrumbs: boolean;
   children?: React.ReactNode; // Поддержка любых дочерних React-нод
+  className?: string,
 }
 
 const Wrapper = styled.div<{ isForLayout: boolean; hasBreadcrumbs: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -41,6 +42,6 @@ const Wrapper = styled.div<{ isForLayout: boolean; hasBreadcrumbs: boolean }>`
   box-sizing: border-box;
 `
 
-export const UniversalContainer: React.FC<IUniversalContainerProps> = ({ children, isForLayout, hasBreadcrumbs }) => (
-  <Wrapper isForLayout={isForLayout} hasBreadcrumbs={hasBreadcrumbs}>{children}</Wrapper>
+export const UniversalContainer: React.FC<IUniversalContainerProps> = ({ className, children, isForLayout, hasBreadcrumbs }) => (
+  <Wrapper isForLayout={isForLayout} hasBreadcrumbs={hasBreadcrumbs} className={className}>{children}</Wrapper>
 )
