@@ -12,7 +12,21 @@
 }
 
 .isActive {
-  color: #0162c8;
+  &:__light {
+    color: #0162c8;
+  }
+
+  &:__gray {
+    color: #0162c8;
+  }
+
+  &:__hard-gray {
+    color: gb(110, 250, 204);
+  }
+
+  &:__dark {
+    color: #FF9000;
+  }
 }
 
 .pre {

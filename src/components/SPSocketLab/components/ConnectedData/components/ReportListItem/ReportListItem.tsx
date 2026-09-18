@@ -120,6 +120,7 @@ export const ReportListItem = memo((ps: TProps) => {
             // 'backdrop-blur--dark': currentTheme === 'dark',
             [classes.isActive]: viSnap.activeReport?.ts === ps.report.ts,
           },
+          classes[`isActive__${currentTheme}`],
           classes.mainHeader,
         )}
       >
