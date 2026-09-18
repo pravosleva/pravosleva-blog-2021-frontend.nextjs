@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { useSelector } from 'react-redux';
-import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
-import { IRootState } from '~/store/IRootState';
+import * as React from 'react'
+import { useSelector } from 'react-redux'
+import { getLabelBgColor, getTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { IRootState } from '~/store/IRootState'
 
 interface IAuditListIntroProps {
   title?: string;

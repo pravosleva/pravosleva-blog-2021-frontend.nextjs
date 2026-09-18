@@ -68,13 +68,9 @@ const Page = () => {
           <OnlineTradeinIntroSvg />
           <span>
             <IconButton
-              // aria-label="more"
-              // id="to-bottom"
-              // aria-controls={isMenuOpened ? 'long-menu' : undefined}
-              // aria-expanded={isMenuOpened ? 'true' : undefined}
-              // aria-haspopup="true"
               onClick={scrollToContent}
               color='primary'
+              sx={{ borderWidth: '2px', borderStyle: 'solid', borderColor: 'primary' }}
             >
               <ArrowDownwardIcon />
             </IconButton>
