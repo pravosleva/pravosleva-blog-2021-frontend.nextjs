@@ -8,7 +8,7 @@ interface IAutoparkIntroProps {
   description?: string;
 }
 
-export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = ({ 
+export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = React.memo(({ 
   title, // = 'Fleet Management Platform',
   description = 'Раздел в разработке', // = 'Универсальная система мониторинга автопарка, контроля логистических маршрутов, учета техобслуживания и сквозной аналитики транспортных средств.' 
 }) => {
@@ -171,4 +171,4 @@ export const AutoparkIntroSvg: React.FC<IAutoparkIntroProps> = ({
       )}
     </div>
   )
-}
+})

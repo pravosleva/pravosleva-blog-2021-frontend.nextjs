@@ -8,7 +8,7 @@ interface IOnlineTradeinIntroProps {
   description?: string;
 }
 
-export const OnlineTradeinIntroSvg: React.FC<IOnlineTradeinIntroProps> = ({ 
+export const OnlineTradeinIntroSvg: React.FC<IOnlineTradeinIntroProps> = React.memo(({ 
   title, // = 'Online Trade-In Evaluation Platform',
   description, // = 'Профессиональный инструмент (демо) для автоматизированной оценки стоимости б/у устройств, калькуляции выгоды обмена и мгновенного оформления сделок Trade-in.', // = 'Высокотехнологичный движок для мгновенной онлайн-оценки устройств, расчета стоимости обмена и автоматизации трейд-ин транзакций в режиме реального времени.' 
 }) => {
@@ -205,4 +205,4 @@ export const OnlineTradeinIntroSvg: React.FC<IOnlineTradeinIntroProps> = ({
       )}
     </div>
   )
-}
+})

@@ -8,7 +8,7 @@ interface IAuditListIntroProps {
   description?: string;
 }
 
-export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = ({ 
+export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = React.memo(({ 
   title, // = 'Application Audit Platform',
   description, // = 'Универсальный инструмент для автоматического аудита корпоративных приложений, выявления расхождений в биллинге и сквозной аналитики затрат.' 
 }) => {
@@ -193,4 +193,4 @@ export const AuditListIntroSvg: React.FC<IAuditListIntroProps> = ({
       }
     </div>
   )
-}
+})
