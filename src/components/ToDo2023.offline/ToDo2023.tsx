@@ -356,8 +356,8 @@ export const ToDo2023 = memo(() => {
                   />
                 </Box>
                 <Stack spacing={2} direction='row' sx={{ width: '100%' }}>
-                  <Button size='small' fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='https://pravosleva.pro' target='_self'>
-                    Home
+                  <Button size='small' fullWidth startIcon={<ArrowBackIcon />} variant='outlined' color='primary' component={Link} noLinkStyle href='/blog' target='_self'>
+                    Blog
                   </Button>
                   {lastVisitedOnlinePages?.length > 0 && (
                     <Button
