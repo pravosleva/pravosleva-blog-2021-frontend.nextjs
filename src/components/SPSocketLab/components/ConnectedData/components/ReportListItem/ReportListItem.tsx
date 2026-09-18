@@ -106,6 +106,10 @@ export const ReportListItem = memo((ps: TProps) => {
           cursor: 'pointer',
           userSelect: 'none',
           WebkitTapHighlightColor: 'transparent',
+          border: clsx({
+            ['2px solid lightgray']: currentTheme === 'light',
+            ['2px solid #fff']: currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark',
+          }),
         }}
         // className='desktop-sticky-top-job-header'
         onClick={handleOpenToggle}

@@ -189,8 +189,7 @@ const UI = memo(({ onConnClick, onDisconnClick }: {
         id='sp-tradein-target-content'
         className={clsx({
           ['backdrop-blur--lite']: currentTheme === 'light' || currentTheme === 'gray',
-          ['backdrop-blur--dark']: currentTheme === 'hard-gray',
-          ['backdrop-blur--white']: currentTheme === 'dark',
+          ['backdrop-blur--dark']: currentTheme === 'hard-gray' || currentTheme === 'dark',
         })}
         style={{
           borderTop: '1px solid lightgray',
