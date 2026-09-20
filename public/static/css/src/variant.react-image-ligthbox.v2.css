@@ -127,13 +127,16 @@
 
 .ril__caption {
   bottom: 0;
-  max-height: 252px; /* Слегка увеличили максимальный лимит для длинных подписей */
+  max-height: calc(100dvh - 50px); /* Слегка увеличили максимальный лимит для длинных подписей */
   overflow-y: auto;
   
   /* ИСПРАВЛЕНО: Защита от шторки и системной домашней полосы устройства (Safe Area) */
   padding-bottom: env(safe-area-inset-bottom, 16px);
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
+
+  border-top: 2px solid rgb(255, 142, 83);
+  box-shadow: rgba(34,60,80,.5) 0 -10px 7px -8px;
 }
 
 .ril__captionContent {
@@ -340,4 +343,12 @@
 .ReactGridGallery_tile,
 .ReactGridGallery_tile-viewport > img {
   border-radius: 16px;
+}
+
+.mil-caption-hidden .ril__captionArea { display: none; }
+.ril-toolbar-right.ril__toolbarSide.ril__toolbarRightSide > *:nth-child(n+2):nth-child(-n+3) {
+  display: none !important;
+}
+.ril-toolbar-right.ril__toolbarSide.ril__toolbarRightSide > *:nth-child(1) {
+  padding: 0px;
 }
