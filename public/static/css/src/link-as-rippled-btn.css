@@ -1,77 +1,64 @@
+/* Базовые переменные для тем по умолчанию (Light / Gray) */
+:root {
+  --btn-bg: linear-gradient(90deg, #0162c8, #3a8de3);
+  --btn-bg-hover: linear-gradient(90deg, #0162c8, #0162c8);
+}
+
+/* Переопределение переменных для тем оформления */
+body.gray, body.hard-gray {
+  --btn-bg: linear-gradient(90deg, gray, dimgray);
+  --btn-bg-hover: linear-gradient(90deg, #0162c8, #0162c8);
+}
+
+body.dark {
+  --btn-bg: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.2));
+  --btn-bg-hover: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.4));
+}
+
+/* Основной стиль кнопки */
 a.link-as-rippled-btn {
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  
   position: relative;
   display: inline-block;
   padding: 0.9em 1.7em;
-  /* margin: 10px 0; */
   color: #fff;
-  text-decoration: none;
-  text-transform: uppercase;
   font-size: 0.9em;
   font-weight: bold;
   letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
   border-radius: 40px;
   overflow: hidden;
-  background: linear-gradient(90deg, #0162c8, #3a8de3);
-  transition: all 0.3s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: var(--btn-bg);
+  transition: background 0.3s ease;
 }
 
-/* GLOBAL THEMING */
-
-/* 1. LIGHT */
-body.light a.link-as-rippled-btn:hover,
-body.light a.link-as-rippled-btn:active {
-  background: linear-gradient(90deg, #0162c8, #0162c8);
-}
-/* 2. GRAY */
-body.gray a.link-as-rippled-btn:hover,
-body.gray a.link-as-rippled-btn:active {
-  background: linear-gradient(90deg, #0162c8, #0162c8);
-}
-/* 3. HARD-GRAY */
-body.hard-gray a.link-as-rippled-btn {
-  /* box-shadow: 0 0 4px 0 rgba(255, 255, 255, 1); */
-  background: linear-gradient(90deg, gray, dimgray);
-}
-body.hard-gray a.link-as-rippled-btn:hover,
-body.hard-gray a.link-as-rippled-btn:active {
-  /* box-shadow: 0 0 4px 0 rgba(255, 255, 255, 1); */
-  background: linear-gradient(90deg, #0162c8, #0162c8);
-}
-/* 4. DARK */
-body.dark a.link-as-rippled-btn {
-  background: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.2));
-}
-body.dark a.link-as-rippled-btn:hover,
-body.dark a.link-as-rippled-btn:active {
-  background: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.4));
+/* Стили при наведении */
+a.link-as-rippled-btn:hover {
+  background: var(--btn-bg-hover);
 }
 
-@media (max-width: 767px) {
-  a.link-as-rippled-btn {
-    /* width: 100%; */
-    text-align: center;
-  }
-}
-.link-as-rippled-btn > span.ripples {
+/* ИСПРАВЛЕНО: Эффект "по умолчанию" — это уже расширенная и скрытая волна */
+a.link-as-rippled-btn::after {
+  content: '';
   position: absolute;
-  background: #fff;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  padding-top: 100%; /* Делает идеальный круг относительно ширины кнопки */
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(2); /* Изначально увеличен */
+  opacity: 0;                                 /* Изначально скрыт */
   pointer-events: none;
-  animation: animateLinkAsRippledBtn 1s linear infinite;
+  /* Переносим transition сюда, чтобы при отпускании мыши эффект плавно доигрывал */
+  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
 }
-@keyframes animateLinkAsRippledBtn {
-  0% {
-    width: 0px;
-    height: 0px;
-    opacity: 0.5;
-  }
-  100% {
-    width: 500px;
-    height: 500px;
-    opacity: 0.5;
-  }
+
+/* ИСПРАВЛЕНО: В момент самого клика (:active) мы МГНОВЕННО сжимаем круг в центр кнопки */
+a.link-as-rippled-btn:active::after {
+  transform: translate(-50%, -50%) scale(0); /* Схлопывается в точку */
+  opacity: 0.5;                              /* Становится видимым */
+  transition: transform 0s, opacity 0s;      /* Мгновенный сброс без анимации */
 }
