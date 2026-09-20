@@ -2,17 +2,20 @@
 :root {
   --btn-bg: linear-gradient(90deg, #0162c8, #3a8de3);
   --btn-bg-hover: linear-gradient(90deg, #0162c8, #0162c8);
+  --btn-focus-ring: #3a8de3; /* Цвет кольца фокуса */
 }
 
 /* Переопределение переменных для тем оформления */
-body.gray, body.hard-gray {
+body.hard-gray {
   --btn-bg: linear-gradient(90deg, gray, dimgray);
   --btn-bg-hover: linear-gradient(90deg, #0162c8, #0162c8);
+  --btn-focus-ring: #0162c8;
 }
 
 body.dark {
   --btn-bg: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.2));
   --btn-bg-hover: linear-gradient(90deg, #ff781e, rgba(255, 144, 0, 0.4));
+  --btn-focus-ring: #ff781e;
 }
 
 /* Основной стиль кнопки */
@@ -31,7 +34,10 @@ a.link-as-rippled-btn {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   background: var(--btn-bg);
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.2s ease;
+  
+  /* Отключаем стандартный браузерный outline при фокусе, так как сделаем кастомный */
+  outline: none;
 }
 
 /* Стили при наведении */
@@ -39,26 +45,47 @@ a.link-as-rippled-btn:hover {
   background: var(--btn-bg-hover);
 }
 
-/* ИСПРАВЛЕНО: Эффект "по умолчанию" — это уже расширенная и скрытая волна */
+/* ДОБАВЛЕНО: Фокус с клавиатуры (:focus-visible) */
+/* Мягкое светящееся кольцо вокруг кнопки с небольшим отступом */
+a.link-as-rippled-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 0 6px var(--btn-focus-ring);
+}
+
+/* Эффект Ripple (волна) — по умолчанию "взорвана" и скрыта */
 a.link-as-rippled-btn::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   width: 100%;
-  padding-top: 100%; /* Делает идеальный круг относительно ширины кнопки */
+  padding-top: 100%; 
   background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
-  transform: translate(-50%, -50%) scale(2); /* Изначально увеличен */
-  opacity: 0;                                 /* Изначально скрыт */
+  transform: translate(-50%, -50%) scale(2); 
+  opacity: 0;                                 
   pointer-events: none;
-  /* Переносим transition сюда, чтобы при отпускании мыши эффект плавно доигрывал */
   transition: transform 0.6s ease-out, opacity 0.6s ease-out;
 }
 
-/* ИСПРАВЛЕНО: В момент самого клика (:active) мы МГНОВЕННО сжимаем круг в центр кнопки */
+/* В момент клика (:active) волна мгновенно сжимается в центр */
 a.link-as-rippled-btn:active::after {
-  transform: translate(-50%, -50%) scale(0); /* Схлопывается в точку */
-  opacity: 0.5;                              /* Становится видимым */
-  transition: transform 0s, opacity 0s;      /* Мгновенный сброс без анимации */
+  transform: translate(-50%, -50%) scale(0); 
+  opacity: 0.5;                              
+  transition: transform 0s, opacity 0s;      
+}
+
+/* ДОБАВЛЕНО: Состояние заблокированной кнопки/ссылки */
+a.link-as-rippled-btn[disabled],
+a.link-as-rippled-btn.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none; /* Полностью отключает hover, active и клики */
+}
+
+/* Адаптив */
+@media (max-width: 767px) {
+  a.link-as-rippled-btn {
+    display: block; 
+    text-align: center;
+  }
 }
