@@ -127,7 +127,7 @@
 
 .ril__caption {
   bottom: 0;
-  max-height: 180px; /* Слегка увеличили максимальный лимит для длинных подписей */
+  max-height: 252px; /* Слегка увеличили максимальный лимит для длинных подписей */
   overflow-y: auto;
   
   /* ИСПРАВЛЕНО: Защита от шторки и системной домашней полосы устройства (Safe Area) */
@@ -138,7 +138,7 @@
 
 .ril__captionContent {
   /* ИСПРАВЛЕНО: Увеличили паддинги и сделали комфортный межстрочный интервал */
-  padding: 14px 20px;
+  padding: 16px;
   color: #fff;
   line-height: 1.5;
   width: 100%;
@@ -159,7 +159,7 @@
 }
 
 .ril__toolbarLeftSide {
-  padding-left: 20px;
+  padding-left: 16px;
   padding-right: 0;
   flex: 0 1 auto;
   overflow: hidden;
@@ -170,7 +170,7 @@
 
 .ril__toolbarRightSide {
   padding-left: 0;
-  padding-right: 20px;
+  padding-right: 0px;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -217,7 +217,7 @@
 }
 
 .ril__closeButton {
-  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIj48cGF0aCBkPSJtIDEsMyAxLjI1LC0xLjI1IDcuNSw3LjUgNy41LC03LjUgMS4yNSwxLjI1IC03LjUsNy41IDcuNSw3LjUgLTEuMjUsMS4yNSAtNy41LC03LjUgLTcuNSw3LjUgLTEuMjUsLS4yNSA3LjUsLTcuNSAtNy41LC03LjUgeiIgZmlsbD0iI0ZGRiIvPjwvc3ZnPg==')
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIiBmaWxsPSIjRkZGIj48cGF0aCBkPSJNMTcuMyA0LjdsLTItMkwxMCA4IDQuNyAyLjdsLTIgMkw4IDEwbC01LjMgNS4zIDIgMkwxMCAxMmw1LjMgNS4zIDItMkwxMiAxMHoiLz48L3N2Zz4=')
     no-repeat center;
 }
 
