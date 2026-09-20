@@ -50,7 +50,7 @@ export default class MyDocument extends Document {
           
           <link rel="stylesheet" href="/static/css/min/standart-form.css" />
           <link rel="stylesheet" href="/static/css/min/custom-breadcrumbs.css" />
-          <link rel="stylesheet" href={`/static/css/min/variant.react-image-ligthbox.v2.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} />
+          <link rel="stylesheet" href={`/static/css/min/variant.react-image-ligthbox.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} />
 
           <link href={`/static/css/min/audio-podcast.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" fetchpriority="high" />
