@@ -49,6 +49,11 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
   // Находим текущий активный заголовок, чтобы вывести его название прямо на закрытую кнопку-плашку
   const activeHeading = headings.find(h => h.isActiveProgress) || headings[0]
   const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
+  const summaryBoxBg = currentTheme === 'dark'
+    ? 'rgba(0,0,0,.2)'
+    : (currentTheme === 'gray' || currentTheme === 'hard-gray')
+      ? '#2a2a2a'
+      : '#fff'
 
   return (
     <>
@@ -66,7 +71,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           padding: '12px 16px',
           borderRadius: '12px',
           // backgroundColor: getInfoToolBgColor({ currentTheme }),
-          backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
+          backgroundColor: summaryBoxBg,
           color: getFabTriggerTextColor({ currentTheme }),
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
           border: isDarkTheme ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
