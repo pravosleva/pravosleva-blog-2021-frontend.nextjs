@@ -41,3 +41,4 @@ deploy-app-config.json
 # tmp
 **/*/__vx.tsx
 .tmp*
+/public/static/_articles/_draft.*.mdx
