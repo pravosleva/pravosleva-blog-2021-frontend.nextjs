@@ -1,13 +1,12 @@
-import { YoutubePlayer, YoutubeGrid, YoutubeInModal } from './YoutubeRenderer'
+// import { YoutubePlayer, YoutubeGrid, YoutubeInModal } from './YoutubeRenderer'
 import JsxParser from 'react-jsx-parser'
-import Gist from 'react-gist'
 import { ErrorBoundary } from 'react-error-boundary'
 import { ErrorFallback } from '~/mui/ErrorFallback'
 // import { Alert } from './Alert'
 import { ControlsBox } from './ControlsBox'
 import { ImageInNewTab } from './ImageRenderer'
-import { ImagesGalleryBox, ImagesGalleryBox2, TProps as TImagesGalleryBoxProps } from './ImagesGalleryBox'
-import { JSONComparison } from './JSONComparison/index.2-ways'
+import { ImagesGalleryBox, TProps as TImagesGalleryBoxProps } from './ImagesGalleryBox'
+// import { JSONComparison } from './JSONComparison/index.2-ways'
 import { CollapsibleBox } from './CollapsibleBox'
 import { CardsExample } from './CardsExample'
 import { Podcast } from './PodcastComponent'
@@ -17,7 +16,7 @@ const DynamicEdnaExp = dynamic(
 )
 import dynamic from 'next/dynamic'
 import { CodeComparison } from './CodeComparison'
-import { PWACacheManager } from './PWACacheManager'
+// import { PWACacheManager } from './PWACacheManager'
 
 const DynamicAlert = dynamic(
   () => import('~/react-markdown-renderers/Alert/Alert.v4').then(mod => mod.Alert),
@@ -32,6 +31,16 @@ const DynamicPWACacheManager = dynamic(
 const DynamicFullWidthSection = dynamic(
   () => import('~/react-markdown-renderers/FullWidthSection').then(mod => mod.FullWidthSection),
   { ssr: true }
+)
+
+const DynamicImagesGalleryBox2 = dynamic(
+  () => import('~/react-markdown-renderers/ImagesGalleryBox/ImagesGalleryBox2/ImagesGalleryBox2').then(mod => mod.ImagesGalleryBox2),
+  { ssr: true }
+)
+
+const DynamicJSONComparison = dynamic(
+  () => import('~/react-markdown-renderers/JSONComparison/index.2-ways').then(mod => mod.JSONComparison),
+  { ssr: false }
 )
 
 const componentTransforms = {
@@ -59,11 +68,11 @@ const componentTransforms = {
   // --
   ControlsBox: (props: any) => <ControlsBox {...props} />,
   React: (props: any) => <>{props.children}</>,
-  YoutubeGrid,
-  YoutubeInModal,
-  YoutubePlayer,
+  // YoutubeGrid,
+  // YoutubeInModal,
+  // YoutubePlayer,
   ImageInNewTab: (props: any) => <ImageInNewTab {...props} />,
-  JSONComparison: (props: any) => <JSONComparison {...props} />,
+  JSONComparison: (props: any) => <DynamicJSONComparison {...props} />,
   // РЕГИСТРАЦИЯ: Теперь MDX-парсер знает про кастомный тег CodeComparison
   CodeComparison: (props: any) => <CodeComparison {...props} />,
   ImagesGalleryBox: (props: TImagesGalleryBoxProps) => (
@@ -80,7 +89,7 @@ const componentTransforms = {
 
     return (
       <ErrorBoundary FallbackComponent={ErrorFallback}>
-        <ImagesGalleryBox2 itemsData={rawData} previewPosition={props?.previewPosition} />
+        <DynamicImagesGalleryBox2 itemsData={rawData} previewPosition={props?.previewPosition} />
       </ErrorBoundary>
     )
   },
