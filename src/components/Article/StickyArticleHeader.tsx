@@ -55,10 +55,15 @@ const StyledStickyHeader = styled('div')<TStickyHeaderProps>`
   ${({ themeName }) => {
     switch (themeName) {
       case 'dark':
+        return css`
+          background-color: #1e1e1e;
+          color: rgba(255, 120, 30,1);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        `;
       case 'hard-gray':
         return css`
           background-color: #1e1e1e;
-          color: #fff;
+          color: rgba(255, 204, 153,1);
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         `;
       case 'gray':

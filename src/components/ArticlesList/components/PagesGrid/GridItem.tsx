@@ -6,6 +6,7 @@ import Link from '~/components/Link'
 // import { slugMap } from '~/constants/blog/slugMap'
 import { Button } from '@mui/material'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import clsx from 'clsx'
 // import clsx from 'clsx'
 // import baseClasses from '~/ui-kit.sp-tradein2024-devtools/Base.module.scss'
 
@@ -61,26 +62,17 @@ export const GridItem = memo(({ article }: TProps) => {
             ? <div className='gridItemDescription'>{brief}</div>
             : <div className='gridItemDescription'>...</div>
         }
-        <div className='gridItemAction'>
+        <div className={'gridItemAction'}>
           <div>
             <Button
+              className={clsx('themed-btn-2026', 'backdrop-blur--lite')}
               color='primary'
               component={Link}
               noLinkStyle
               href={`/p/${articleSlug}`}
               endIcon={<ArrowForwardIcon />}
-              sx={{
-                backgroundColor: '#FFC800',
-                color: '#000',
-                '&:hover': {
-                  backgroundColor: '#FF8E53',
-                },
-                '&:focus': {
-                  backgroundColor: '#FF8E53',
-                }
-              }}
             >
-              READ
+              Читать
             </Button>
           </div>
           <div style={{ fontSize: 'small' }}>{!!createdAt ? getNormalizedDate(createdAt) : 'No date'}</div>

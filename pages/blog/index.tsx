@@ -13,7 +13,6 @@ import { universalHttpClient } from '~/utils/universalHttpClient'
 import { getInitialPropsBase, setCommonStore } from '~/utils/next'
 import { UniversalContainer } from '~/components/special-svg-content/UniversalContainer'
 import { ContentLockedSvg } from '~/components/special-svg-content/error/ContentLockedSvg'
-import { CyberLogoWithCalendar } from '~/components/special-svg-content/projects/blog/CyberLogoSvg.react.v4'
 
 type TPageService = {
   isOk: boolean;

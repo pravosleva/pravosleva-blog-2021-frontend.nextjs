@@ -112,12 +112,12 @@ const BlogArticleSlug = ({ _pageService, article, statusCode }: IBlogArticleSlug
           return <meta key={key} property={key} content={String(value)} />
         })}
 
-        <link href={`/static/css/min/article.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} rel="stylesheet" fetchpriority="high" />
+        <link href={`/static/css/min/article.css?v=${process.env.NEXT_APP_GIT_SHA1}`} rel="stylesheet" fetchpriority="high" />
         <link rel="stylesheet" href="/static/prismjs/themes/prism-material-theme.min.css" fetchpriority="high" />
         <link href="/static/css/min/inline-video-player.css" rel="stylesheet" />
         <link href="/static/css/min/controls-box.css" rel="stylesheet" fetchpriority="high" />
         <link rel="stylesheet" href="/static/css/min/edna-exp-container.css" fetchpriority="high" />
-        <link rel="stylesheet" href={`/static/css/min/code.css?v=${process.env.NEXT_PUBLIC_BUILD_HASH}`} fetchpriority="high" />
+        <link rel="stylesheet" href={`/static/css/min/code.css?v=${process.env.NEXT_APP_GIT_SHA1}`} fetchpriority="high" />
         <link rel="stylesheet" href="/static/css/min/block-quotes.css" fetchpriority="high" />
         
         {/* TODO: Review */}

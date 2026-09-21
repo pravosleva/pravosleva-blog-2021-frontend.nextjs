@@ -161,16 +161,19 @@ body main.hard-gray .article-wrapper {
 body main.hard-gray .tiles-grid-item-in-article {
   /* background-color: rgba(90, 99, 108, 0.75); */
   /* background-color: rgba(1, 98, 200, 0.75); */
-  background-color: rgba(0, 0, 0, 0.6);
+  /* background-color: rgba(0, 0, 0, 0.6); */
+  background-color: rgba(255, 204, 153, .8);
+  color: dimgray;
+  
   /* Prism material theme #0C1D24 */
   /* background-color: rgba(12, 29, 36, 0.85); */
 }
 body main.hard-gray .tiles-grid-item {
-  background-color: rgba(0, 0, 0, 0.65);
-  color: #fff;
+  /* background-color: rgba(0, 0, 0, 0.65);
+  color: #fff; */
 }
 body main.hard-gray .tiles-grid-item:hover {
-  background-color: rgba(0, 0, 0, 0.75);
+  /* background-color: rgba(0, 0, 0, 0.75); */
   color: #fff;
   /* box-shadow: rgba(0, 0, 0, 0.14) 0px 0px 4px, rgba(0, 0, 0, 0.28) 0px 4px 8px; */
   /* border: 2px solid rgba(0, 0, 0, 0.5); */
@@ -263,7 +266,9 @@ body main.dark footer {
 body main.dark .tiles-grid-item-in-article {
   /* background-color: rgba(90, 99, 108, 0.75); */
   /* background-color: rgba(1, 98, 200, 0.75); */
-  background-color: rgba(0, 0, 0, 0.85);
+  /* background-color: rgba(0, 0, 0, 0.85); */
+  background-color: rgba(153, 51, 0,.75);
+
   /* Prism material theme #263238 */
   /* background-color: rgba(38, 50, 56, 0.85); */
   /* Prism material theme #0C1D24 */
@@ -328,3 +333,35 @@ body main.dark .white-bg,
 body main.hard-gray .white-bg {
   color: #000;
 }
+
+/* -- THEMED BUTTONS */
+
+body main.light .themed-btn-2026 {
+  background-color: #FFC800;
+  color: #000;
+}
+body main.light .themed-btn-2026:hover {}
+body main.light .themed-btn-2026:focus {}
+
+body main.gray .themed-btn-2026 {
+  background-color: transparent;
+  color: inherit;
+}
+body main.gray .themed-btn-2026:hover {}
+body main.gray .themed-btn-2026:focus {}
+
+body main.hard-gray .themed-btn-2026 {
+  background-color: transparent;
+  color: #FFC800;
+}
+body main.hard-gray .themed-btn-2026:hover {}
+body main.hard-gray .themed-btn-2026:focus {}
+
+body main.dark .themed-btn-2026 {
+  background-color: #ff781e;;
+  color: #000;
+}
+body main.dark .themed-btn-2026:hover {}
+body main.dark .themed-btn-2026:focus {}
+
+/* -- */

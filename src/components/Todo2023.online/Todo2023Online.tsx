@@ -104,17 +104,14 @@ const renderWidgetMascot = () => {
         />
         <RoseVase size={60} style={{ transform: 'translateY(calc(-100% + 4px))', left: '43px' }} />
         <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))', left: '35px' }} />
-        <Hedera
-          size={100}
-          style={{ transform: 'translateY(calc(-100% + 62px))', left: '50px' }}
-        />
+        <Hedera size={100} style={{ transform: 'translateY(calc(-100% + 62px))', left: '50px' }} />
       </>
     )
   }
 
   switch (currentDay) {
     case 1: // Mon
-      return null; // Ничего не выводим (будет пусто)
+      return <Hedera size={100} style={{ transform: 'translateY(calc(-100% + 62px))', left: '50px' }} />;
     case 3: // Wed
       return <Cactus size={50} style={{ transform: 'translateY(calc(-100% + 3px))' }} />;
     case 5: // Fri
