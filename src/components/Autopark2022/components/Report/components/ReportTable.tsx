@@ -46,7 +46,7 @@ export const ReportTable = ({
       component={Paper}
       style={{
         boxShadow: 'none',
-        marginBottom: '16px',
+        marginBottom: '8px',
       }}
     >
       <Table

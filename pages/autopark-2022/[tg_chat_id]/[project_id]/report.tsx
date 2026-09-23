@@ -97,8 +97,8 @@ export default function MyProjectReport({
         <meta name="msapplication-tap-highlight" content="no" />
       </Head>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100dvh', width: '100%' }}>
-        <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100svh', width: '100%' }}>
+        <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
 
           {isBrowser && <Report chat_id={chat_id} project_id={project_id} />}

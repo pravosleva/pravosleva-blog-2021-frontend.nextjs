@@ -20,8 +20,8 @@ export const BreadCrumbs = ({
 }: NBreadCrumbs.TProps) => {
   return (
     <div className="bx_breadcrumbs">
-      {/* Объявляем корневой контейнер списка строк навигации */}
-      <ul itemScope itemType="http://schema.org/BreadcrumbList">
+      {/* Корневой контейнер списка строк навигации */}
+      <ul itemScope itemType="https://schema.org/BreadcrumbList">
         {
           legend.map(({ link, labelCode, noTranslate }, i, a) => {
             const isLast = i === a.length - 1
@@ -33,11 +33,11 @@ export const BreadCrumbs = ({
             return (
               <React.Fragment key={link ? `${link}-${i}` : `no-link-${i}`}>
                 
-                {/* 🧭 ОСНОВНОЙ ЭЛЕМЕНТ НАВИГАЦИИ (СТРОГО ОДИН НА ШАГ ЦИКЛА) */}
+                {/* ОСНОВНОЙ ЭЛЕМЕНТ НАВИГАЦИИ */}
                 <li 
                   itemProp="itemListElement" 
                   itemScope 
-                  itemType="http://schema.org/ListItem"
+                  itemType="https://schema.org/ListItem"
                   className={clsx({ 'truncate target': !link })}
                 >
                   {
@@ -45,33 +45,43 @@ export const BreadCrumbs = ({
                       // КЕЙС А: Элемент является кликабельной ссылкой
                       link === '/' ? (
                         <a itemProp="item" href={link} target="_self">
-                          {/* 🔥 ФИКС 2: Обязательный тег с именем для Google */}
                           <span itemProp="name">{itemTitle}</span>
                         </a>
                       ) : (
                         <Link href={link} as={link} passHref>
-                          <a itemProp="item">
-                            {/* 🔥 ФИКС 2: Обязательный тег с именем для Google */}
+                          {/* Добавлен явный href для корректного считывания парсером Google */}
+                          <a itemProp="item" href={link}>
                             <span itemProp="name">{itemTitle}</span>
                           </a>
                         </Link>
                       )
                     ) : (
-                      // КЕЙС Б: Последний тупиковый элемент (текущая страница без ссылки)
-                      // По спецификации Google, даже страница без ссылки должна быть размечена как item
-                      <div itemProp="item" style={{ display: 'inline' }}>
+                      // 🔥 КЕЙС Б: Исправленный тупиковый элемент (текущая страница)
+                      // Чтобы избежать ошибки "Недопустимый URL в поле id", передаем пустой href="#" 
+                      // или хэш, но лучше всего — сделать элемент некликабельной ссылкой через стили.
+                      <a 
+                        itemProp="item" 
+                        href="#" 
+                        onClick={(e) => e.preventDefault()} 
+                        style={{ 
+                          cursor: 'default', 
+                          textDecoration: 'none', 
+                          color: 'inherit',
+                          pointerEvents: 'none' // Отключает кликабельность
+                        }}
+                      >
                         <span itemProp="name" style={{ fontWeight: 'bold', fontFamily: 'Montserrat' }}>
                           {itemTitle}
                         </span>
-                      </div>
+                      </a>
                     )
                   }
 
-                  {/* 🔥 ФИКС 1: Обязательный мета-тег позиции элемента в иерархии */}
+                  {/* Мета-тег позиции элемента в иерархии */}
                   <meta itemProp="position" content={String(positionIndex)} />
                 </li>
 
-                {/* 🛠️ ФИКС 3: ЧИСТЫЙ РАЗДЕЛИТЕЛЬ БЕЗ МИКРОРАЗМЕТКИ SCHEMA.ORG */}
+                {/* РАЗДЕЛИТЕЛЬ БЕЗ МИКРОРАЗМЕТКИ SCHEMA.ORG */}
                 {
                   !isLast && (
                     <li className={clsx('target')} aria-hidden="true">

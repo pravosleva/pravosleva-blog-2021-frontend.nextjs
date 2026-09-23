@@ -26,28 +26,18 @@ export const GoHomeSection = memo(({
     )
   }, [currentTheme])
   const defaultBtns = useMemo(() => isBlogPage
-    ? [{
-      href: '/',
-      as: '/',
-      Component: (
-        <a
-          style={{
-            whiteSpace: 'pre',
-            display: 'flex',
-            alignItems: 'center',
-            color: linkColor,
-          }}
-        >
-          <KeyboardArrowLeftIcon
-            style={{
-              borderRadius: '50%',
-              border: `2px solid ${linkColor}`,
-            }}
-          />
-          <span style={{ marginLeft: '10px', whiteSpace: 'pre', fontWeight: 'bold' }} className='truncate'>{t('HOME')}</span>
-        </a>
-      )
-    }]
+    ? [
+      // { href: '/', as: '/',
+      //   Component: (
+      //     <a style={{ whiteSpace: 'pre', display: 'flex', alignItems: 'center', color: linkColor }} >
+      //       <KeyboardArrowLeftIcon
+      //         style={{ borderRadius: '50%', border: `2px solid ${linkColor}` }}
+      //       />
+      //       <span style={{ marginLeft: '10px', whiteSpace: 'pre', fontWeight: 'bold' }} className='truncate'>{t('HOME')}</span>
+      //     </a>
+      //   )
+      // }
+    ]
     : [{
       href: '/blog',
       as: '/blog',

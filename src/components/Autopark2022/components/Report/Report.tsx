@@ -89,7 +89,7 @@ export const Report = ({
 
   return (
     <>
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 1 }}>
         <TextField
           value={mileage[chat_id]?.[project_id]}
           size='small'
@@ -104,14 +104,14 @@ export const Report = ({
 
       {
         !isSubmitDisabled && (
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1 }}>
             <Button fullWidth disabled={isLoading || !mileage[chat_id]?.[project_id]} variant='contained' onClick={handleSubmit} color='secondary' startIcon={<LocalFireDepartmentIcon />}>Получить отчет</Button>
           </Box>
         )
       }
 
       {!!apiErr && (
-        <Alert sx={{ mb: 2 }} variant="filled" severity="error">
+        <Alert sx={{ mb: 1 }} variant="filled" severity="error">
           {apiErr}
         </Alert>
       )}
@@ -123,7 +123,7 @@ export const Report = ({
         </Box>
       ) : isSubmitDisabled
         ? (
-          <Alert sx={{ mb: 2 }} variant="filled" severity="info">
+          <Alert sx={{ mb: 1 }} variant="filled" severity="info">
             Пока нет расходников
           </Alert>
         ) : null

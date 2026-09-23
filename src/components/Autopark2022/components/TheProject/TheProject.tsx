@@ -156,11 +156,12 @@ export const TheProject = ({
                     <div
                       style={{
                         display: 'flex',
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        gap: '8px',
                       }}
                     >
-                      <div>{description}</div>
-                      <div>{mileage.last} / {mileage.delta}</div>
+                      <div style={{ fontSize: 'small' }}>{description}</div>
+                      <div style={{ fontWeight: 'bold' }}>{mileage.last} / {mileage.delta}</div>
                     </div>
                   }
                 />

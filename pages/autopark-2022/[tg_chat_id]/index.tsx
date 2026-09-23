@@ -128,7 +128,7 @@ export default function MyProjects({
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_type=autopark`} />
       </Head>
       
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
         <Container maxWidth="xs" style={{ paddingTop: '24px' }}>
           <Autopark2022 chat_id={chat_id} />
         </Container>

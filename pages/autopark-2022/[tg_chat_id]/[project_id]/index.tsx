@@ -132,8 +132,8 @@ export default function MyProjectDetail({
         <link rel="manifest" href={`${baseURL}/get-dynamic-manifest?chat_id=${chat_id}&project_id=${project_id}&project_type=autopark`} />
       </Head>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100dvh' }}>
-        <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100svh' }}>
+        <Container maxWidth="xs" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <h2>{projectDataResponse?.name || 'ERR: Noname'}</h2>
 
           <TheProject chat_id={chat_id} project_id={project_id} />
