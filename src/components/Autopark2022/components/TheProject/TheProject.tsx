@@ -161,7 +161,7 @@ export const TheProject = ({
                       }}
                     >
                       <div style={{ fontSize: 'small' }}>{description}</div>
-                      <div style={{ fontWeight: 'bold' }}>{mileage.last} / {mileage.delta}</div>
+                      <div style={{ fontSize: 'small', fontWeight: 'bold' }}>{mileage.last} / {mileage.delta}</div>
                     </div>
                   }
                 />

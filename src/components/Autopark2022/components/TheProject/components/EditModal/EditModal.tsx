@@ -160,6 +160,9 @@ export const EditModal = ({
               label="Наименование"
               type="text"
               onChange={handleChangeName}
+
+              multiline
+              maxRows={3}
             ></TextField>
           </Box>
           <Box sx={{ mb: 2 }}>
@@ -172,6 +175,9 @@ export const EditModal = ({
               label="Описание"
               type="text"
               onChange={handleChangeDescr}
+
+              multiline
+              maxRows={10}
             ></TextField>
           </Box>
           <Grid container spacing={2} sx={{ mb: 2 }}>
