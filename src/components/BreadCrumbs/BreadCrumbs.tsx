@@ -83,30 +83,10 @@ export const BreadCrumbs = ({
 
                 {/* РАЗДЕЛИТЕЛЬ БЕЗ МИКРОРАЗМЕТКИ SCHEMA.ORG */}
                 {
-                  // Альтернативный и самый надежный вариант рендеринга внутри li:
-                  isLast ? (
-                    /* Последний элемент: имеет правильный URL для Google, но не кликабелен для пользователя */
-                    <a 
-                      itemProp="item" 
-                      href={link || '#'} 
-                      onClick={(e) => e.preventDefault()} 
-                      style={{ cursor: 'default', textDecoration: 'none', color: 'inherit', pointerEvents: 'none' }}
-                    >
-                      <span itemProp="name" style={{ fontWeight: 'bold', fontFamily: 'Montserrat' }}>{itemTitle}</span>
-                    </a>
-                  ) : (
-                    /* Обычные родительские ссылки */
-                    link === '/' ? (
-                      <a itemProp="item" href={link} target="_self">
-                        <span itemProp="name">{itemTitle}</span>
-                      </a>
-                    ) : (
-                      <Link href={link!} as={link} passHref>
-                        <a itemProp="item" href={link}>
-                          <span itemProp="name">{itemTitle}</span>
-                        </a>
-                      </Link>
-                    )
+                  !isLast && (
+                    <li className={clsx('target')} aria-hidden="true">
+                      <span style={{ fontWeight: 'bold', padding: '0 8px' }}>•</span>
+                    </li>
                   )
                 }
 
