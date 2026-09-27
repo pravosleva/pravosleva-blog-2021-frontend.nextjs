@@ -25,11 +25,19 @@ import { pageview } from '~/utils/googleAnalitycs'
 const clientSideEmotionCache = createEmotionCache();
 
 const GA_API_SECRET = process.env.GA_API_SECRET || 'changeit'
-const NO_PLAYER_PAGES = [
+const NO_PLAYER_MASKS = [
   '/subprojects/audit-list',
   '/subprojects/audit-list/*',
   '/autopark-2022/*',
 ];
+const NO_PLAYER_REGEXES = NO_PLAYER_MASKS.map((mask) => {
+  const regexPattern = mask
+    .replace(/[.+^\${}()|[\]\\]/g, '\\$&') // Экранируем спецсимволы regex
+    .replace(/\/\*/g, '(/.*)?')            // Превращаeм '/*' в необязательную группу со слешем и любыми символами после
+    .replace(/\*/g, '.*');                 // На случай, если '*' использована без слеша
+  
+  return new RegExp(`^${regexPattern}$`);
+});
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -237,18 +245,12 @@ function AppWithRedux(props: MyAppProps) {
 
   const store = useStore()
   const isServer = useMemo<boolean>(() => typeof window === 'undefined', [typeof window])
-  const shouldHidePlayer = useMemo(() => NO_PLAYER_PAGES.some((mask) => {
-    // Превращаем строку с маской '/*' в валидное регулярное выражение.
-    // Экранируем спецсимволы, кроме звездочки, а звездочку превращаем в '.*'
-    const regexPattern = mask
-      .replace(/[.+^\${}()|[\]\\]/g, '\\$&') // Экранируем системные символы regex
-      .replace(/\*/g, '.*');               // Превращаем * в wildcard для регулярки
+  const shouldHidePlayer = useMemo(() => {
+    // Отрезаем query-параметры и хэш один раз
+    const cleanPath = router.asPath.split(/[?#]/)[0];
     
-    const regex = new RegExp(`^${regexPattern}$`);
-    
-    // Проверяем как pathname (без query-параметров), так и asPath (полный путь) для надежности
-    return regex.test(router.pathname) || regex.test(router.asPath.split('?')[0]);
-  }), [router.pathname, router.asPath]);
+    return NO_PLAYER_REGEXES.some((regex) => regex.test(cleanPath));
+  }, [router.asPath]); // router.pathname больше не нужен, так как asPath покрывает всё
 
   return (
     <>
