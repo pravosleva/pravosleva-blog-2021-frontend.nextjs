@@ -62,7 +62,14 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
   if (!isMobile) return null
 
   const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
-  const textColor = isDarkTheme ? '#fff' : '#000'
+  // const textColor = isDarkTheme ? '#fff' : '#000'
+  const textColor = currentTheme === 'dark'
+    ? 'rgb(255,142,83)'
+    : currentTheme === 'gray'
+      ? '#fff'
+      : currentTheme === 'hard-gray'
+        ? 'rgb(57, 229, 172)'
+        : '#000'
   const panelBg = isDarkTheme ? '#1e1e1e' : '#f9f9f9'
   // const elementBg = isDarkTheme ? '#2a2a2a' : '#ededed'
 
@@ -105,10 +112,13 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           </span>
         </div>
         <span
-          // style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: elementBg, color: textColor, whiteSpace: 'nowrap', flexShrink: 0 }}
-          style={{ letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px', backgroundColor: getLabelBgColor({ currentTheme }), color: isDarkTheme ? '#fff' : '#000' }}
+          style={{
+            letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 8px', borderRadius: '6px',
+            backgroundColor: getLabelBgColor({ currentTheme }),
+            color: textColor,
+          }}
         >
-          {!!totalNotes ? `${pluralize({ count: totalNotes, titles: ['находка', 'находки', 'находок'] })} 🔍` : '🔍'}
+          {!!totalNotes ? `${pluralize({ count: totalNotes, titles: ['находка', 'находки', 'находок'] })}` : '🔍'}
         </span>
       </div>
 

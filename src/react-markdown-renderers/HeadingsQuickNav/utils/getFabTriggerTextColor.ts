@@ -5,9 +5,9 @@ export const getFabTriggerTextColor = ({ currentTheme }: { currentTheme: string 
     case 'gray':
       return '#fff'
     case 'hard-gray':
-      return '#fff'
+      return 'rgba(255,204,153,1)'
     case 'dark':
-      return '#fff'
+      return 'rgb(255,142,83)'
     default:
       return '#000'
   }

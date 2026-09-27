@@ -26,7 +26,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     getFabTriggerTextColor,
     getActiveBorderCSS,
     getActiveBgColor,
-    getInfoToolBgColor,
+    // getInfoToolBgColor,
   } = useHeadingsNavigation({
     levels, pageLimit, actualSlug,
     // Заголовки внутри элементов с этими классами будут полностью проигнорированы!
@@ -49,9 +49,9 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
   // Находим текущий активный заголовок, чтобы вывести его название прямо на закрытую кнопку-плашку
   const activeHeading = headings.find(h => h.isActiveProgress) || headings[0]
   const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
-  const summaryBoxBg = currentTheme === 'dark'
-    ? 'rgba(0,0,0,.2)'
-    : (currentTheme === 'gray' || currentTheme === 'hard-gray')
+  const summaryBoxBg = currentTheme === 'dark' || currentTheme === 'hard-gray'
+    ? 'rgba(0,0,0,.3)'
+    : (currentTheme === 'gray')
       ? '#2a2a2a'
       : '#fff'
 
@@ -96,7 +96,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
         </div>
         <span
           style={{
-            letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 6px', borderRadius: '6px',
+            letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 8px', borderRadius: '6px',
             backgroundColor: getLabelBgColor({ currentTheme }),
             color: (isDarkTheme || currentTheme === 'gray') ? '#fff' : '#000',
           }}

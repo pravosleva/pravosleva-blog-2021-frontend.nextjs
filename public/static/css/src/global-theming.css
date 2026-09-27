@@ -1,13 +1,18 @@
+/* Добавляем плавность для самого body и для main */
+body, 
 body main {
   transition: ease 0.5s all;
 }
 
 /* LIGHT */
 
-body main.light {
+body:has(main.light) {
   background-color: #fff;
+}
+body main.light {
   color: #000;
 }
+
 body main.light footer {
   color: #fff;
   background-color: rgba(0, 0, 0, 0.9);
@@ -54,9 +59,10 @@ body main.light div.article-body ul li::marker {
 
 /* GRAY */
 
-body main.gray {
+body:has(main.gray) {
   background-color: #d3d3d3;
-  /* color: #708090; */
+}
+body main.gray {
   color: #683434;
 }
 body main.gray input,
@@ -118,8 +124,10 @@ body main.gray .big-text:hover {
 
 /* HARD-GRAY */
 
-main.hard-gray {
+body:has(main.hard-gray) {
   background-color: #666;
+}
+body main.hard-gray {
   color: #fff;
 }
 
@@ -231,9 +239,10 @@ body main.hard-gray #audit-description {
 
 /* DARK */
 
-body main.dark {
+body:has(main.dark) {
   background-color: #000;
-  /* background-image: linear-gradient(to right top, #0162c8, #005aa4, #004f7e, #0f4159, #263238); */
+}
+body main.dark {
   color: #fff;
 }
 
@@ -344,15 +353,15 @@ body main.light .themed-btn-2026:hover {}
 body main.light .themed-btn-2026:focus {}
 
 body main.gray .themed-btn-2026 {
-  background-color: transparent;
+  background-color: rgba(255, 200, 0, 1);;
   color: inherit;
 }
 body main.gray .themed-btn-2026:hover {}
 body main.gray .themed-btn-2026:focus {}
 
 body main.hard-gray .themed-btn-2026 {
-  background-color: transparent;
-  color: #FFC800;
+  color: rgba(42, 42, 42, 1);
+  background-color: rgba(57, 229, 172, 1);
 }
 body main.hard-gray .themed-btn-2026:hover {}
 body main.hard-gray .themed-btn-2026:focus {}
