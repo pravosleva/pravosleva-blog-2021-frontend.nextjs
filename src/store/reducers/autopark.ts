@@ -1,6 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { HYDRATE } from "next-redux-wrapper"
-// import { IRootState } from '~/store/IRootState'
+import { IRootState } from '../IRootState';
+import { TUserCheckerResponse } from '~/utils/autoparkHttpClient';
 
 type TItem = {
   name: string;
@@ -11,6 +12,9 @@ type TProject = {
   description: string;
   items: TItem[];
 }
+type TProjects = {
+  [key: string]: TProject;
+} | undefined
 enum EAPIUserCode {
   UserExists = 'already_exists',
   IncorrecrParams = 'incorrect_params',
@@ -29,21 +33,13 @@ enum EAPIUserCode {
 //   IncorrecrParams = 'incorrect_params',
 //   NotFound = 'not_found'
 // }
-export type TUserCheckerResponse = {
-  ok: boolean;
-  code: EAPIUserCode; // 'not_found' | 'server_error' | 'already_exists' | 'incorrect_params';
-  message?: string;
-  password?: number;
-  projects?: {
-    [key: string]: TProject;
-  }
-} | null
+
 export type TActiveProject = {
   [key: string]: any;
 } | null
 export type TState = {
   activeProject: TActiveProject;
-  userCheckerResponse: TUserCheckerResponse;
+  userCheckerResponse: TUserCheckerResponse | null;
   x: number;
   isOneTimePasswordCorrect: boolean;
 }
@@ -55,33 +51,36 @@ export const initialState: TState = {
   isOneTimePasswordCorrect: false,
 }
 
-export const autoparkSlice: any = createSlice({
+export const autoparkSlice = createSlice({
   name: 'autopark',
   initialState,
   reducers: {
-    setUserCheckerResponse: (state: any, action: any) => {
+    setUserCheckerResponse: (state: TState, action: { payload: TUserCheckerResponse }) => {
       state.userCheckerResponse = action.payload
       state.x += 1
     },
-    setActiveProject: (state: any, action: any) => {
+    setActiveProject: (state: TState, action: { payload: TProject }) => {
       state.activeProject = action.payload
     },
-    updateProjects: (state: any, action: any) => {
-      if (!state.userCheckerResponse) state.userCheckerResponse = { projects: action.payload }
-      else state.userCheckerResponse.projects = action.payload
+    updateProjects: (state: TState, action: { payload: TUserCheckerResponse }) => {
+      if (!state.userCheckerResponse) state.userCheckerResponse = action.payload
+      else state.userCheckerResponse.projects = action.payload?.projects
     },
-    setIsOneTimePasswordCorrect: (state: any, action: { payload: boolean }) => {
+    setIsOneTimePasswordCorrect: (state: TState, action: { payload: boolean }) => {
       state.isOneTimePasswordCorrect = action.payload
     }
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
-  extraReducers: {
-    [HYDRATE]: (state, action) => {
+  extraReducers: (builder) => {
+    builder.addCase(HYDRATE, (state, action) => {
+      // Явно приводим action к типу PayloadAction<TRootState>
+      const hydrateAction = action as PayloadAction<IRootState>;
+      
       return {
         ...state,
-        ...action.payload.autopark,
+        ...hydrateAction.payload.autopark,
       };
-    },
+    });
   },
 })
 

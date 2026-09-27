@@ -1,4 +1,4 @@
-import { Modal, Box, Typography, Button, TextField, Grid } from '@mui/material'
+import { Modal, Box, Typography, Button, TextField, Grid, Paper, Stack } from '@mui/material'
 import axios from 'axios';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -52,20 +52,6 @@ const fetchUpdateItem = async ({ chat_id, project_id, item }: TReqArgs) => {
     .catch((err: any) => typeof err === 'string' ? err : err.message || 'No err.message')
 
   return result
-}
-
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '100%',
-  maxWidth: '320px',
-  bgcolor: 'background.paper',
-  // border: '1px solid #000',
-  borderRadius: '8px',
-  boxShadow: 24,
-  p: 2,
 }
 
 export const EditModal = ({
@@ -133,24 +119,14 @@ export const EditModal = ({
   }, [name, initialState.id, description, mileageLast, mileageDelta, onClose])
 
   return (
-    <Modal
-      open={isOpened}
-      onClose={onClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <>
-        <Box sx={style}>
-          <Box sx={{ p: 2 }}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Edit item
-            </Typography>
-            {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography> */}
-          </Box>
+    <Modal open={isOpened} onClose={onClose}>
+      <Paper sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, p: 2 }}>
+        <Stack spacing={2}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Редактировать
+          </Typography>
 
-          <Box sx={{ mb: 2 }}>
+          <div>
             <TextField
               value={name}
               size='small'
@@ -164,8 +140,8 @@ export const EditModal = ({
               multiline
               maxRows={3}
             ></TextField>
-          </Box>
-          <Box sx={{ mb: 2 }}>
+          </div>
+          <div>
             <TextField
               value={description}
               size='small'
@@ -179,32 +155,27 @@ export const EditModal = ({
               multiline
               maxRows={10}
             ></TextField>
-          </Box>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs={6}>
-              <TextField value={mileageLast} size='small' fullWidth variant="outlined" label="Крайний пробег" type="number" onChange={handleChangeMileageLast}></TextField>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField value={mileageDelta} size='small' fullWidth variant="outlined" label="Интервал замены" type="number" onChange={handleChangeMileageDelta}></TextField>
-            </Grid>
-          </Grid>
+          </div>
 
-          {/* isDev && (
-            <pre>{JSON.stringify(initialState, null, 2)}</pre>
-          ) */}
+          {/* 2. Используем классический синтаксис Grid v5 для полей пробега */}
+          <Stack direction="row" spacing={2}>
+            <TextField value={mileageLast} size="small" fullWidth variant="outlined" label="Крайний пробег" type="number" onChange={handleChangeMileageLast} />
+            <TextField value={mileageDelta} size="small" fullWidth variant="outlined" label="Интервал замены" type="number" onChange={handleChangeMileageDelta} />
+          </Stack>
 
-          <Grid container spacing={2}>
+          {/* 3. Используем классический синтаксис Grid v5 для кнопок */}
+          <Stack direction="row" spacing={2}>
             {!!onClose && (
-              <Grid item xs={6}>
-                <Button fullWidth variant='outlined' onClick={onClose} color='primary' sx={{ mb: 2 }}>Закрыть</Button>
-              </Grid>
+              <Button fullWidth variant="outlined" onClick={onClose} color="primary">
+                Закрыть
+              </Button>
             )}
-            <Grid item xs={6}>
-              <Button fullWidth variant='contained' onClick={handleSubmit} disabled={!isFormCorrect} color='primary'>Отправить</Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </>
+            <Button fullWidth variant="contained" onClick={handleSubmit} disabled={!isFormCorrect} color="primary">
+              Отправить
+            </Button>
+          </Stack>
+        </Stack>
+      </Paper>
     </Modal>
   )
 }

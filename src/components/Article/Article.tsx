@@ -229,11 +229,21 @@ export const Article = withTranslator<TArticleComponentProps>(memo(({ t, current
           </ResponsiveBlock>
           {tagList.length > 0 && (
             <ResponsiveBlock isLimited isPaddedMobile style={{ paddingTop: '1.45rem' }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+              <div
+                style={{
+                  display: 'flex', flexWrap: 'wrap', gap: '8px',
+                  transform: 'translateX(-4px)',
+                }}
+              >
                 {tagList.map((tag) => (
                   <a
                     className={clsx('truncate')}
-                    style={{ whiteSpace: 'pre', color: linkColor, WebkitTapHighlightColor: 'transparent' }}
+                    style={{
+                      whiteSpace: 'pre',
+                      color: linkColor,
+                      WebkitTapHighlightColor: 'transparent',
+                      padding: '0 4px 0 4px',
+                    }}
                     key={tag}
                     href={`/blog/q/${encodeURIComponent(tag)}`}
                   >

@@ -497,7 +497,7 @@ body main.dark .table-floating-header-wrapper {
   }
   .article-wrapper__big-image-as-container {
     /* margin: 50px 0 50px 0; */
-    border-radius: 8px;
+    border-radius: 16px;
   }
 }
 @media (max-width: 960px) {

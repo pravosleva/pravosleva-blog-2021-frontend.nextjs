@@ -25,6 +25,11 @@ import { pageview } from '~/utils/googleAnalitycs'
 const clientSideEmotionCache = createEmotionCache();
 
 const GA_API_SECRET = process.env.GA_API_SECRET || 'changeit'
+const NO_PLAYER_PAGES = [
+  '/subprojects/audit-list',
+  '/subprojects/audit-list/*',
+  '/autopark-2022/*',
+];
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -232,11 +237,18 @@ function AppWithRedux(props: MyAppProps) {
 
   const store = useStore()
   const isServer = useMemo<boolean>(() => typeof window === 'undefined', [typeof window])
-  // NOTE: Проверяем, находится ли пользователь в разделе аудит-листов.
-  // asPath проверяет реальный URL в браузере, что идеально подходит для динамических страниц вроде /432590690
-  const isAuditPage = useMemo(() => {
-    return router.asPath.startsWith('/subprojects/audit-list')
-  }, [router.asPath])
+  const shouldHidePlayer = useMemo(() => NO_PLAYER_PAGES.some((mask) => {
+    // Превращаем строку с маской '/*' в валидное регулярное выражение.
+    // Экранируем спецсимволы, кроме звездочки, а звездочку превращаем в '.*'
+    const regexPattern = mask
+      .replace(/[.+^\${}()|[\]\\]/g, '\\$&') // Экранируем системные символы regex
+      .replace(/\*/g, '.*');               // Превращаем * в wildcard для регулярки
+    
+    const regex = new RegExp(`^${regexPattern}$`);
+    
+    // Проверяем как pathname (без query-параметров), так и asPath (полный путь) для надежности
+    return regex.test(router.pathname) || regex.test(router.asPath.split('?')[0]);
+  }), [router.pathname, router.asPath]);
 
   return (
     <>
@@ -294,7 +306,7 @@ function AppWithRedux(props: MyAppProps) {
                     <CssBaseline />
                     <Component {...pageProps} />
                     {/* <ClientPerfWidget position='top-center' /> */}
-                    {!isAuditPage && (
+                    {!shouldHidePlayer && (
                       <>
                         {/* ИСПРАВЛЕНО: Плеер и кнопка перенесены СЮДА.
                           1. Они рендерятся строго на клиенте (нет ошибок гидратации).

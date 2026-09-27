@@ -1,8 +1,4 @@
-import axios, {
-  AxiosResponse as IAxiosResponse,
-  AxiosInstance as IAxiosInstance,
-  CancelTokenSource,
-} from 'axios';
+import axios, { AxiosInstance as IAxiosInstance } from 'axios';
 import axiosRetry from 'axios-retry'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -172,12 +168,12 @@ class httpClientSingletone {
         message: this.getErrorMsg(result)
       }
 
-    } catch (criticalErr: any) {
+    } catch (criticalErr: unknown) {
       // Глухой защитный барьер верхнего уровня
       return {
         ok: false,
         code: EAPIUserCode.ServerError,
-        message: criticalErr?.message || 'Критический сбой десериализации данных.'
+        message: (criticalErr as Error)?.message || 'Критический сбой десериализации данных.'
       }
     }
   }

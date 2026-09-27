@@ -20,7 +20,8 @@ import { UniversalContainer } from '~/components/special-svg-content/UniversalCo
 import { AuthorizationRequired401Svg } from '~/components/special-svg-content/error/AuthorizationRequired401Svg'
 import { Layout } from '~/components/Layout/Layout'
 import { NoInternetConnectionSvg } from '~/components/special-svg-content/error/NoInternetConnectionSvg'
-import { autoparkHttpClient, EAPIUserCode } from '~/utils/autoparkHttpClient'
+import { autoparkHttpClient, EAPIUserCode, TUserCheckerResponse } from '~/utils/autoparkHttpClient'
+import { useRouter } from 'next/router'
 
 const isDev = process.env.NODE_ENV === 'development'
 const baseURL = isDev
@@ -59,6 +60,7 @@ export default function MyProjectDetail({
   const hasItems = useMemo(() => items.length > 0, [items])
   const isOneTimePasswordCorrect = useSelector((state: IRootState) => state.autopark.isOneTimePasswordCorrect)
   const baseProps = useSelector((s: IRootState) => s.baseProps)
+  const { pathname, query, asPath, route } = useRouter()
 
   // =========================================================================
   // 🚨 ЖЕСТКИЙ БАРЬЕР ПРИВАТНОСТИ ДЛЯ ИНКОГНИТО (АНТИ-ОБХОД)
@@ -147,7 +149,7 @@ export default function MyProjectDetail({
           <pre style={{ fontSize: 'x-small',
             whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
             wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
-          }}>{JSON.stringify({ _pageService, baseProps }, null, 2)}</pre>
+          }}>{JSON.stringify({ _pageService, router: { pathname, query, asPath, route } }, null, 2)}</pre>
         </Container>
         
         <div
@@ -217,7 +219,7 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     
     let errorMsg: string | null = null
     let statusCode = 200
-    let userDataResult = null
+    let userDataResult: TUserCheckerResponse | null = null
     let projectDataResult = null
     let isOffline = false
 
@@ -248,9 +250,7 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
     // КЛИЕНТСКИЙ + СЕРВЕРНЫЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ)
     let isAuthorized = baseProps?.authData?.oneTime?.jwt?.isAuthorized === true
     
-    // =========================================================================
-    // 🛡️ КЛИЕНТСКИЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ SPA-РОУТИНГА)
-    // =========================================================================
+    // NOTE: КЛИЕНТСКИЙ МОСТ АВТОРИЗАЦИИ (ИДЕМПОТЕНТНОСТЬ SPA-РОУТИНГА)
     // TODO [SECURITY]: 1/2 Текущая проверка через .includes() является поверхностной 
     // и уязвимой для подделки (XSS / манипуляции в консоли).
     // Необходима доработка на строгий парсинг токена или вызов валидатора.
@@ -300,9 +300,6 @@ MyProjectDetail.getInitialProps = wrapper.getInitialPageProps(
       }
     }
 
-    // =========================================================================
-    // 📡 БЕЗОПАСНЫЙ СБОР ДАННЫХ И ПЕРЕХВАТ ИСКЛЮЧЕНИЙ СЕТИ (TRY / CATCH)
-    // =========================================================================
     if (!isOffline) {
       try {
         store.dispatch(setIsOneTimePasswordCorrect(true))

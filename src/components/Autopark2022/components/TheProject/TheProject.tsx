@@ -1,18 +1,12 @@
-import { Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
+import { List, ListItem, ListItemText } from '@mui/material'
 import { useCallback, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { updateProjects, setActiveProject } from '~/store/reducers/autopark'
 import { IRootState } from '~/store/IRootState'
-// import AddIcon from '@mui/icons-material/Add'
-// import { CreateNewItem } from './components'
-// import FolderIcon from '@mui/icons-material/Folder'
-// import DeleteIcon from '@mui/icons-material/Delete'
 import axios from 'axios'
-// import BuildCircleIcon from '@mui/icons-material/BuildCircle';
-import BuildIcon from '@mui/icons-material/Build'
-// import EditIcon from '@mui/icons-material/Edit'
 import { EditModal } from './components/EditModal'
 import { ProjectMenu } from './components'
+import { TProject } from '~/utils/autoparkHttpClient'
 
 type TProps = {
   chat_id: string;
@@ -31,15 +25,8 @@ const baseURL = isDev
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true, })
 const fetchRemoveItem = async ({ chat_id, project_id, item_id }: TReqArgs) => {
   const result = await api
-    .post('/project/remove-item', {
-      chat_id,
-      project_id,
-      item_id,
-    })
-    .then((res: any) => {
-      // console.log(res)
-      return res.data
-    })
+    .post('/project/remove-item', { chat_id, project_id, item_id })
+    .then((res: any) => res.data)
     .catch((err: any) => typeof err === 'string' ? err : err.message || 'No err.message')
 
   return result
@@ -70,16 +57,12 @@ export const TheProject = ({
     const isConfirmed = window.confirm('Уверены?')
     if (!isConfirmed) return
 
-    fetchRemoveItem({
-      chat_id,
-      project_id,
-      item_id: id,
-    })
+    fetchRemoveItem({ chat_id, project_id, item_id: id })
       .then((res) => {
         if (res.ok) {
           if (!!res.projects) {
             dispatch(updateProjects(res.projects))
-            const targetProject = res.projects[project_id]
+            const targetProject: TProject = res.projects[project_id]
 
             if (!!targetProject) dispatch(setActiveProject(targetProject))
           }
@@ -126,7 +109,9 @@ export const TheProject = ({
                 secondaryAction={
                   (isOneTimePasswordCorrect || isDev)
                   ? (
-                    <div style={{ transform: 'translateX(16px)' }}>
+                    <div
+                      // style={{ transform: 'translateX(16px)' }}
+                    >
                       <ProjectMenu
                         onDelete={() => {
                           handleDelete(id)
@@ -145,13 +130,13 @@ export const TheProject = ({
                   ) : null
                 }
               >
-                <ListItemAvatar>
+                {/* <ListItemAvatar>
                   <Avatar>
                     <BuildIcon />
                   </Avatar>
-                </ListItemAvatar>
+                </ListItemAvatar> */}
                 <ListItemText
-                  primary={name}
+                  primary={<span style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{name}</span>}
                   secondary={
                     <div
                       style={{

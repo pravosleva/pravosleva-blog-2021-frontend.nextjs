@@ -144,7 +144,22 @@ const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         label: {
-          fontFamily: 'system-ui',
+          fontFamily: 'monospace',
+        },
+      },
+    },
+
+    MuiListItemSecondaryAction: {
+      styleOverrides: {
+        root: {
+          position: 'static',     // Отключает position: absolute
+          transform: 'none',      // Отключает transform: translateY(-50%)
+          top: 'auto',            // Сбрасывает центрирование по вертикали
+          right: 'auto',          // Сбрасывает привязку к правому краю
+          
+          // Дополнительно: если вам нужно выстроить контент во flex-поток
+          // (так как ListItem по умолчанию является flex-контейнером)
+          display: 'inline-flex', 
         },
       },
     },
