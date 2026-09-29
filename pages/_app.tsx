@@ -20,6 +20,12 @@ import { GlobalAudioPlayer } from '~/components/GlobalAudioPlayer'
 import { GlobalPodcastSidebarButton } from '~/components/GlobalPodcastSidebarButton'
 import { metrics } from '~/constants'
 import { pageview } from '~/utils/googleAnalitycs'
+import { 
+  // AnalyticsEventDetail, 
+  BrowserMetricsPayload, 
+  GoogleWorkerMessage, 
+  YandexWorkerMessage 
+} from '~/metrics.types'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -31,13 +37,13 @@ const NO_PLAYER_MASKS = [
   '/autopark-2022/*',
 ];
 const NO_PLAYER_REGEXES = NO_PLAYER_MASKS.map((mask) => {
-  const regexPattern = mask
-    .replace(/[.+^\${}()|[\]\\]/g, '\\$&') // Экранируем спецсимволы regex
-    .replace(/\/\*/g, '(/.*)?')            // Превращаeм '/*' в необязательную группу со слешем и любыми символами после
-    .replace(/\*/g, '.*');                 // На случай, если '*' использована без слеша
+  const cleanMask = mask.replace(/\/\(/, '').replace(/\/\*\)/, '')
+  let regexPattern = cleanMask.replace(/[.+^\${}()|[\]\\]/g, '\\$&')
+  if (mask.endsWith('/*')) regexPattern = `${regexPattern}(/?|/.*)`
+  else regexPattern = `${regexPattern}/?`
   
-  return new RegExp(`^${regexPattern}$`);
-});
+  return new RegExp(`^${regexPattern}$`)
+})
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -63,7 +69,7 @@ function AppWithRedux(props: MyAppProps) {
   }, []);
   // --
 
-  // -- NOTE: Web Worker (Для отправки кастомных ивентов)
+  // NOTE: Web Workers для отправки кастомных ивентов
   useEffect(() => {
     const GA_ID = metrics.GA_TRACKING_ID;
     const YANDEX_COUNTER_ID = metrics.YANDEX_COUNTER_ID;
@@ -73,184 +79,157 @@ function AppWithRedux(props: MyAppProps) {
     let gaWorker: Worker | null = null;
     let yandexWorker: Worker | null = null;
 
+    const sendToGoogleWorker = (message: GoogleWorkerMessage) => gaWorker?.postMessage(message)
+    const sendToYandexWorker = (message: YandexWorkerMessage) => yandexWorker?.postMessage(message)
+
+    // Google Analytics 4
     try {
-      // Google Analytics 4
-      gaWorker = new Worker(`/static/common/min/analytics/metrics-worker.google.js?t=${Date.now()}`);
-      gaWorker.postMessage({ 
-        type: 'init', 
-        payload: { gaId: GA_ID, gaApiSecret: GA_API_SECRET, isDebug: false } 
-      });
+      gaWorker = new Worker(`/static/common/min/analytics/metrics-worker.google.js?t=${Date.now()}`)
+      sendToGoogleWorker({ type: 'init', payload: { gaId: GA_ID, gaApiSecret: GA_API_SECRET, isDebug: false } })
     } catch (e) {
-      console.error('❌ Не удалось запустить Google Analytics Worker:', e);
+      console.error('❌ Не удалось запустить Google Analytics Worker:', e)
     }
 
+    // Поднимаем новый выделенный воркер Яндекс.Метрики
     try {
-      // Поднимаем новый выделенный воркер Яндекс.Метрики
-      yandexWorker = new Worker(`/static/common/min/analytics/metrics-worker.yandex.js?t=${Date.now()}`);
-      yandexWorker.postMessage({ 
-        type: 'init', 
-        payload: { yandexId: YANDEX_COUNTER_ID } 
-      });
+      yandexWorker = new Worker(`/static/common/min/analytics/metrics-worker.yandex.js?t=${Date.now()}`)
+      if (typeof YANDEX_COUNTER_ID === 'number') sendToYandexWorker({ type: 'init', payload: { yandexId: YANDEX_COUNTER_ID } })
     } catch (e) {
-      console.error('❌ Не удалось запустить Yandex Metrika Worker:', e);
+      console.error('❌ Не удалось запустить Yandex Metrika Worker:', e)
     }
 
     // Восстанавливаем или создаем clientId для GA сессии
     let clientId = localStorage.getItem('blog_ga_client_id');
     if (!clientId) {
-      clientId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      localStorage.setItem('blog_ga_client_id', clientId);
+      clientId = Math.random().toString(36).substring(2) + Date.now().toString(36)
+      localStorage.setItem('blog_ga_client_id', clientId)
     }
 
     // Сборщик системных параметров для Яндекса
-    const getBrowserPayload = (url: string) => {
-      const screenRes = typeof window !== 'undefined' ? `${window.screen.width}x${window.screen.height}x${window.screen.colorDepth}` : '1920x1080x24';
-      const userLang = typeof window !== 'undefined' ? (window.navigator.language || (window.navigator as any).userLanguage || 'ru').toLowerCase().split('-') : 'ru';
-      const referrer = typeof window !== 'undefined' ? window.document.referrer : '';
-      const title = typeof window !== 'undefined' ? window.document.title : '';
-
-      return {
-        url: window.location.origin + url,
-        title,
-        referrer,
-        screenResolution: screenRes,
-        userLanguage: userLang,
-        clientId
-      };
-    };
+    const getBrowserPayload = (url: string): BrowserMetricsPayload => {
+      const screenRes = typeof window !== 'undefined' ? `${window.screen.width}x${window.screen.height}x${window.screen.colorDepth}` : '1920x1080x24'
+      const userLang = typeof window !== 'undefined' ? (window.navigator.language || (window.navigator as any).userLanguage || 'ru').toLowerCase().split('-') : 'ru'
+      const referrer = typeof window !== 'undefined' ? window.document.referrer : ''
+      const title = typeof window !== 'undefined' ? window.document.title : ''
+      return { url: window.location.origin + url, title, referrer, screenResolution: screenRes, userLanguage: userLang, clientId }
+    }
 
     // 2. РАСПРЕДЕЛИТЕЛЬНЫЙ МОСТ: Прокидываем события по нужным воркерам
-    const handleAnalyticsEvent = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      const { type, payload } = customEvent.detail || {};
+    const handleAnalyticsEvent = (e: WindowEventMap['blog_analytics_event']) => {
+      const detail = e.detail;
+      if (!detail) return;
 
-      if (type === 'pageview') {
-        const browserPayload = getBrowserPayload(payload.url);
-        
-        // Шлем просмотр страницы в GA
-        if (gaWorker) {
-          gaWorker.postMessage({ type: 'track_pageview', payload: browserPayload });
+      switch (detail.type) {
+        case 'pageview': {
+          const browserPayload = getBrowserPayload(detail.payload.url);
+          sendToGoogleWorker({ type: 'track_pageview', payload: browserPayload });
+          sendToYandexWorker({ type: 'track_pageview', payload: browserPayload });
+          break
         }
-        // Шлем просмотр страницы в Яндекс
-        if (yandexWorker) {
-          yandexWorker.postMessage({ type: 'track_pageview', payload: browserPayload });
-        }
+        case 'event':
+          // Кастомные клики и ивенты отправляем в GA воркер
+          if (gaWorker) {
+            sendToGoogleWorker({
+              type: 'track_event',
+              payload: { action: detail.payload.action, params: detail.payload.params, clientId }
+            })
+          }
+          break
+        default:
+          break
       }
-
-      if (type === 'event') {
-        // Кастомные клики и ивенты отправляем в GA воркер
-        if (gaWorker) {
-          gaWorker.postMessage({
-            type: 'track_event',
-            payload: { action: payload.action, params: payload.params, clientId }
-          });
-        }
-      }
-    };
-    window.addEventListener('blog_analytics_event', handleAnalyticsEvent);
+    }
+    window.addEventListener('blog_analytics_event', handleAnalyticsEvent)
 
     // Первичный запуск при холодном старте
-    pageview(window.location.pathname);
+    pageview(window.location.pathname)
 
     // Отслеживание SPA переходов Next.js
-    const handleRouteChange = (url: string) => {
-      setTimeout(() => pageview(url), 70);
-    };
-    router.events.on('routeChangeComplete', handleRouteChange);
+    const handleRouteChange = (url: string) => setTimeout(() => pageview(url), 70)
 
+    router.events.on('routeChangeComplete', handleRouteChange)
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-      window.removeEventListener('blog_analytics_event', handleAnalyticsEvent);
+      router.events.off('routeChangeComplete', handleRouteChange)
+      window.removeEventListener('blog_analytics_event', handleAnalyticsEvent)
       
-      if (gaWorker) gaWorker.terminate();
-      if (yandexWorker) yandexWorker.terminate();
-    };
-  }, [router.events]);
+      if (gaWorker) gaWorker.terminate()
+      if (yandexWorker) yandexWorker.terminate()
+    }
+  }, [router.events])
 
+  // -- NOTE: Отладочный режим для Я.Метрики (если включен - придется тормозить основной поток)
   useEffect(() => {
-    if (typeof window === 'undefined' || process.env.NEXT_METRICS_ENABLED !== '1') return;
+    if (typeof window === 'undefined' || process.env.NEXT_METRICS_ENABLED !== '1') return
 
-    const YANDEX_COUNTER_ID = metrics.YANDEX_COUNTER_ID;
-
-    // Вытаскиваем параметры из строки запроса
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Проверяем первый отладочный флаг (?_ym_debug=1 или 2)
-    const isYandexDebug = urlParams.get('_ym_debug') === '2' || urlParams.get('_ym_debug') === '1';
-    
-    // Проверяем второй флаг проверки статуса (?_ym_status-check=your-counter-id)
-    const isYandexStatusCheck = urlParams.get('_ym_status-check') === String(YANDEX_COUNTER_ID);
-
-    let yandexScript: HTMLScriptElement | null = null;
-
-    // NOTE: Включаем нативный тег, если сработал ХОТЬ ОДИН из диагностических параметров Яндекса
+    const YANDEX_COUNTER_ID = metrics.YANDEX_COUNTER_ID
+    const urlParams = new URLSearchParams(window.location.search)
+    // Первый отладочный флаг
+    const isYandexDebug = urlParams.get('_ym_debug') === '2' || urlParams.get('_ym_debug') === '1'
+    // Второй флаг проверки статуса
+    const isYandexStatusCheck = urlParams.get('_ym_status-check') === String(YANDEX_COUNTER_ID)
+    let yandexScript: HTMLScriptElement | null = null
+    // - NOTE: Включаем нативный тег, если сработал ХОТЬ ОДИН из диагностических параметров Яндекса
     if ((isYandexDebug || isYandexStatusCheck) && !!window) {
       // 1. Создаем официальный тег скрипта Яндекса на лету
-      yandexScript = window.document.createElement('script');
-      yandexScript.type = 'text/javascript';
-      yandexScript.async = true;
-      yandexScript.src = ['https://mc.yandex.ru', 'metrika', 'tag.js'].join('/');
-      
+      yandexScript = window.document.createElement('script')
+      yandexScript.type = 'text/javascript'
+      yandexScript.async = true
+      yandexScript.src = ['https://mc.yandex.ru', 'metrika', 'tag.js'].join('/')
       // 2. Инициализируем его в браузере
       window.ym = window.ym || function() { 
         if (window.ym) {
-          window.ym.a = window.ym.a || [];
-          window.ym.a.push(arguments);
+          window.ym.a = window.ym.a || []
+          window.ym.a.push(arguments)
         }
-      };
-      window.ym.l = Date.now();
-      window.ym(YANDEX_COUNTER_ID, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true });
-
-      window.document.head.appendChild(yandexScript);
-      console.log('📻 [Yandex Debug Mode]: Официальный tag.js временно внедрен в Main Thread для проверки кабинета.');
-    }
-
-    return () => {
-      if (yandexScript && window.document.head.contains(yandexScript)) {
-        window.document.head.removeChild(yandexScript);
       }
-    };
-  }, [router.query]);
+      window.ym.l = Date.now()
+      window.ym(YANDEX_COUNTER_ID, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true })
 
+      window.document.head.appendChild(yandexScript)
+      console.log('📻 [Yandex Debug Mode]: Официальный tag.js временно внедрен в Main Thread для проверки кабинета.')
+    }
+    // -
+    return () => {
+      if (yandexScript && window.document.head.contains(yandexScript))
+        window.document.head.removeChild(yandexScript)
+    }
+  }, [router.query])
+  // --
+  // -- NOTE: Eruda
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return
 
-    // ... ваш старый рабочий код воркера аналитики без изменений ...
-
-    // NOTE: КЛИЕНТСКИЙ ИНЖЕКТОР (ZERO LIGHTHOUSE OVERHEAD):
-    // Eruda больше никогда не запустится автоматически для роботов Lighthouse и пользователей.
+    // КЛИЕНТСКИЙ ИНЖЕКТОР (ZERO LIGHTHOUSE OVERHEAD):
+    // Eruda никогда не должна запускаться автоматически для роботов Lighthouse и пользователей.
     // Скрипт активируется строго по секретному query-параметру ?eruda_debug=1.
-    const urlParams = new URLSearchParams(window.location.search);
-    const isDebugMode = urlParams.get('eruda_debug') === '1';
+    const urlParams = new URLSearchParams(window.location.search)
+    const isDebugMode = urlParams.get('eruda_debug') === '1'
 
-    let erudaWrapper: HTMLScriptElement | null = null;
+    let erudaWrapper: HTMLScriptElement | null = null
 
     if (isDebugMode) {
-      erudaWrapper = window.document.createElement('script');
-      erudaWrapper.src = '/static/common/min/eruda.custom.js';
-      erudaWrapper.async = true;
-      window.document.body.appendChild(erudaWrapper);
-      console.log('🛠️ [Eruda Engine]: Режим отладки активирован через URL параметр.');
+      erudaWrapper = window.document.createElement('script')
+      erudaWrapper.src = '/static/common/min/eruda.custom.js'
+      erudaWrapper.async = true
+      window.document.body.appendChild(erudaWrapper)
+      console.log('🛠️ [Eruda Engine]: Режим отладки активирован через URL параметр.')
     }
 
     // Очистка ресурсов при размонтировании приложения
     return () => {
       // ...старая очистка роутера аналитики (вынесена в отдельный эффект)
-      if (erudaWrapper && window.document.body.contains(erudaWrapper)) {
-        window.document.body.removeChild(erudaWrapper);
-      }
-    };
-  }, [router.events, router.query]); // Добавили router.query в зависимости для мгновенной реакции SPA
+      if (erudaWrapper && window.document.body.contains(erudaWrapper))
+        window.document.body.removeChild(erudaWrapper)
+    }
+  }, [router.events, router.query]) // Добавили router.query в зависимости для мгновенной реакции SPA
   // --
-
   const store = useStore()
   const isServer = useMemo<boolean>(() => typeof window === 'undefined', [typeof window])
   const shouldHidePlayer = useMemo(() => {
     // Отрезаем query-параметры и хэш один раз
-    const cleanPath = router.asPath.split(/[?#]/)[0];
-    
-    return NO_PLAYER_REGEXES.some((regex) => regex.test(cleanPath));
-  }, [router.asPath]); // router.pathname больше не нужен, так как asPath покрывает всё
+    const cleanPath = router.asPath.split(/[?#]/)[0]
+    return NO_PLAYER_REGEXES.some((regex) => regex.test(cleanPath))
+  }, [router.asPath]) // router.pathname больше не нужен, так как asPath покрывает всё
 
   return (
     <>
@@ -261,8 +240,6 @@ function AppWithRedux(props: MyAppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-
-        {/* Базовый цвет темы (оставляем тут, так как завязано на рантайм) */}
         <meta name="theme-color" content="#0162c8" />
         
         {/* Каноническая ссылка по умолчанию (страницы смогут перебивать её своим уникальным URL) EXAMPLE: href='https://pravosleva.pro/' */}

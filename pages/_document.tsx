@@ -15,19 +15,69 @@ export default class MyDocument extends Document {
           {/* Кодировка: (REMOVE) <meta charSet="utf-8" /> */}
           <meta httpEquiv='Content-Type' content='text/html;charset=UTF-8' />
 
-          {/* Фавиконки и иконки Apple Touch */}
-          <link rel="shortcut icon" href="/static/img/logo/favicon.ico" />
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-76x76.jpg" sizes="76x76" />
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-120x120.jpg" sizes="120x120" />
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-152x152.jpg" sizes="152x152" />
-          <link rel="apple-touch-icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-180x180.jpg" sizes="180x180" />
-          <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-16x16.jpg" sizes="16x16" />
-          <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-32x32.jpg" sizes="32x32" />
-          <link rel="shortcut icon" href="https://pravosleva.pro/static/img/logo/logo-pravosleva-192x192.jpg" sizes="192x192" />
-          <link rel="apple-touch-icon" sizes="180x180" href="https://pravosleva.pro/static/img/logo/apple-touch-icon.png" />
-          <link rel="icon" type="image/png" sizes="32x32" href="https://pravosleva.pro/static/img/logo/favicon-32x32.png" />
-          <link rel="icon" type="image/png" sizes="16x16" href="https://pravosleva.pro/static/img/logo/favicon-16x16.png" />
-          <link rel="mask-icon" href="/static/img/logo/safari-pinned-tab.svg" color="#5bbad5" />
+          <link rel="manifest" href="/static/manifest.json?v=3" />
+
+          {/* 1. Современный стандарт: отдаем SVG напрямую браузерам (Chrome, Firefox, Edge) */}
+          <link rel="icon" type="image/svg+xml" href="/static/img/logo/rocket-thruster.svg" />
+
+          {/* 2. Запасной вариант в формате PNG для десктопного Safari и старых систем */}
+          <link rel="icon" type="image/png" sizes="64x64" href="/static/img/pwa/pwa-64x64.png" />
+
+          {/* 3. Для iOS устройств Apple (иконка при добавлении на рабочий стол) */}
+          <link rel="apple-touch-icon" href="/static/img/pwa/apple-icon-180.png" />
+
+          {/* 4. Для обратной совместимости со старым софтом (IE) */}
+          <link rel="shortcut icon" href="/static/img/pwa/favicon.ico" type="image/x-icon" />
+
+          {/* Активация режима PWA для Safari на iOS */}
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2064-2752.jpg" media="(device-width: 1032px) and (device-height: 1376px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2752-2064.jpg" media="(device-width: 1032px) and (device-height: 1376px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2048-2732.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2732-2048.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1668-2420.jpg" media="(device-width: 834px) and (device-height: 1210px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2420-1668.jpg" media="(device-width: 834px) and (device-height: 1210px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1668-2388.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2388-1668.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1668-2224.jpg" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2224-1668.jpg" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1536-2048.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2048-1536.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1640-2360.jpg" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2360-1640.jpg" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1620-2160.jpg" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2160-1620.jpg" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1488-2266.jpg" media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2266-1488.jpg" media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1320-2868.jpg" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2868-1320.jpg" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1206-2622.jpg" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2622-1206.jpg" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1260-2736.jpg" media="(device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2736-1260.jpg" media="(device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1290-2796.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2796-1290.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1179-2556.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2556-1179.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1170-2532.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2532-1170.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1284-2778.jpg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2778-1284.jpg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1080-2340.jpg" media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2340-1080.jpg" media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1242-2688.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2688-1242.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1125-2436.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2436-1125.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-828-1792.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1792-828.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1242-2208.jpg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-2208-1242.jpg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-750-1334.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1334-750.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+          <link rel="apple-touch-startup-image" href="/static/img/pwa/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" />
 
           {/* Настройки отображения системных приложений */}
           <meta name="msapplication-TileColor" content="#0162c8" />

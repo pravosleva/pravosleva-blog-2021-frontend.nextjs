@@ -235,10 +235,39 @@ const customRuntimeCaching = [
       },
     },
   },
+  // Правило для вашего кастомного манифеста
+  {
+    urlPattern: /\/static\/manifest\.json$/i,
+    handler: 'StaleWhileRevalidate',
+    options: {
+      cacheName: 'pwa-manifest-cache-v1',
+      expiration: {
+        maxEntries: 1,
+        maxAgeSeconds: 60 * 60 * 24 * 7, // 7 дней
+      }
+    }
+  },
+  // Агрессивный CacheFirst для новых иконок на базе rocket-thruster.svg
+  {
+    urlPattern: /\/static\/img\/logo\/pwa\/.*\.png$/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'pwa-new-logo-icons-cache:v1',
+      expiration: {
+        maxEntries: 20,
+        maxAgeSeconds: 60 * 60 * 24 * 365, // 1 год
+        purgeOnQuotaError: true,
+      },
+      cacheableResponse: {
+        statuses: [0, 200],
+      },
+    },
+  },
   ...runtimeCaching,
 ]
 
 const nextConfig = {
+  trailingSlash: true, // Гарантирует, что Next.js всегда будет редиректить с /blog на /blog/
   // async redirects() {
   //   return [
   //     {
