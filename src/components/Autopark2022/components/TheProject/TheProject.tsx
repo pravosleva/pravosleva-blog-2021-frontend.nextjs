@@ -4,8 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { updateProjects, setActiveProject } from '~/store/reducers/autopark'
 import { IRootState } from '~/store/IRootState'
 import axios from 'axios'
-import { EditModal } from './components/EditModal'
-import { ProjectMenu } from './components'
+import { EditModal, ProjectMenu } from './components'
 import { TProject } from '~/utils/autoparkHttpClient'
 
 type TProps = {

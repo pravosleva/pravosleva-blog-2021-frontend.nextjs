@@ -6,7 +6,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
-import { TReport } from '~/components/Autopark2022/components/Report/interfaces'
+import { TReport } from '~/components/Autopark2022/components/_Report/interfaces'
 import Chip from '@mui/material/Chip'
 import { getPrettyPrice } from '~/utils/getPrettyPrice'
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';

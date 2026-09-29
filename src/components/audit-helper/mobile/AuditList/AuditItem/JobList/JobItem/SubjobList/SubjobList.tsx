@@ -109,6 +109,7 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
               }}
             >
               <Chip
+                size='small'
                 // className='truncate'
                 icon={icons[status]?.component || <HelpOutlineIcon />}
                 label={name}

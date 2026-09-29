@@ -46,8 +46,9 @@ export const ProjectList = ({
       project_id: id,
     })
       .then((res) => {
+        // console.log(res)
         if (res.ok) {
-          if (!!res.projects) dispatch(updateProjects(res.projects))
+          if (!!res.projects) dispatch(updateProjects(res))
           // resetAll()
         }
         // else if (!!res.message) setApiErr(res.message)

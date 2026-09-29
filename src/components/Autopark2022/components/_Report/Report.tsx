@@ -2,9 +2,9 @@ import { Button, TextField, Box, Alert } from '@mui/material'
 import axios from 'axios';
 import { useCallback, useMemo, useState } from 'react';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
-import { ReportTable } from './components'
+import { ReportTable } from '../Report.v2/components'
 import { useStickyState } from '~/hooks/useStickyState'
-import { TReport } from '~/components/Autopark2022/components/Report/interfaces'
+import { TReport } from '~/components/Autopark2022/components/_Report/interfaces'
 import axiosRetry from 'axios-retry'
 
 type TProps = {
