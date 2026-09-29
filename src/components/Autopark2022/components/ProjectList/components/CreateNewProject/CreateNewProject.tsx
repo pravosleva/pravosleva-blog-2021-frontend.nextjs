@@ -1,19 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Autocomplete, Button, TextField, Box, Grid, Select, MenuItem, Alert, FormControl, InputLabel, Typography, Card, CardMedia, CardContent, CardActions } from '@mui/material';
-import axios from 'axios';
-// import { useDebounce } from '~/hooks/useDebounce'
-import {
-  // useSelector,
-  useDispatch,
-} from 'react-redux'
-// import { IRootState } from '~/store/IRootState';
+import axios from 'axios'
+import { useDispatch } from 'react-redux'
 import { updateProjects } from '~/store/reducers/autopark'
 import AddIcon from '@mui/icons-material/Add'
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment'
 import CloseIcon from '@mui/icons-material/Close'
-// import { marks } from '~/components/Autopark2022/components/CarSelectSample/2022-car-marks-list-by-uremont.json'
 import { marks } from '~/components/Autopark2022/components/CarSelectSample/2025-car-marks-list-by-uremont.json'
-// import { ContentCut } from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import axiosRetry from 'axios-retry'
 import Chip from '@mui/material/Chip'
@@ -290,26 +283,6 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                   setSelectedTransmission(e.target.textContent)
                 }}
               />
-              {/* <FormControl fullWidth required>
-                <InputLabel id="transmission-select-label">Трансмиссия</InputLabel>
-                <Select
-                  size='small'
-                  variant='outlined'
-                  labelId='transmission-select-label'
-                  id='transmission-select'
-                  value={selectedTransmission}
-                  label='Трансмиссия'
-                  fullWidth
-                  onChange={(e: any) => {
-                    setSelectedTransmission(e.target.value)
-                  }}
-                >
-                  <MenuItem value='MT'>MT</MenuItem>
-                  <MenuItem value='AT'>AT</MenuItem>
-                  <MenuItem value='AMT'>AMT</MenuItem>
-                  <MenuItem value='CVT'>CVT</MenuItem>
-                </Select>
-              </FormControl> */}
             </Box>
             {generationOptions.length > 0 && (
               <Box sx={{ mb: 2 }}>
@@ -348,17 +321,6 @@ export const CreateNewProject = ({ chat_id }: TProps) => {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      {/* <Button
-                        size="small"
-                        variant={isSelected ? 'contained' : 'outlined'}
-                        color='secondary'
-                        onClick={() => {
-                          setSelectYear(null)
-                          setSelectedGeneration(label)
-                        }}
-                        startIcon={isSelected ? <CheckIcon /> : undefined}
-                      >{isSelected ? 'This!' : 'Select'}</Button> */}
-                      {/* <Button size="small">Learn More</Button> */}
                       <Chip
                         icon={isSelected ? <CheckIcon /> : undefined}
                         label={isSelected ? 'Выбрано' : 'Доступно'}
