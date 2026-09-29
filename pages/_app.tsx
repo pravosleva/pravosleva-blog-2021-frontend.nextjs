@@ -111,7 +111,14 @@ function AppWithRedux(props: MyAppProps) {
       const userLang = typeof window !== 'undefined' ? (window.navigator.language || (window.navigator as any).userLanguage || 'ru').toLowerCase().split('-') : 'ru'
       const referrer = typeof window !== 'undefined' ? window.document.referrer : ''
       const title = typeof window !== 'undefined' ? window.document.title : ''
-      return { url: window.location.origin + url, title, referrer, screenResolution: screenRes, userLanguage: userLang, clientId }
+      return {
+        url: window.location.origin + url,
+        title,
+        referrer,
+        screenResolution: screenRes,
+        userLanguage: userLang,
+        clientId: clientId as string,
+      }
     }
 
     // 2. РАСПРЕДЕЛИТЕЛЬНЫЙ МОСТ: Прокидываем события по нужным воркерам
@@ -128,10 +135,14 @@ function AppWithRedux(props: MyAppProps) {
         }
         case 'event':
           // Кастомные клики и ивенты отправляем в GA воркер
-          if (gaWorker) {
+          if (gaWorker && !!clientId) {
             sendToGoogleWorker({
               type: 'track_event',
-              payload: { action: detail.payload.action, params: detail.payload.params, clientId }
+              payload: {
+                action: detail.payload.action,
+                params: detail.payload.params,
+                clientId,
+              }
             })
           }
           break
