@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils';
-import { pluralize } from '~/utils/string-tools/pluralize';
+import React, { useState, useEffect, useRef } from 'react'
+import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { pluralize } from '~/utils/string-tools/pluralize'
 import { useArticlesSearch } from '../useArticlesSearch'
-import { useIsDesktop } from '~/hooks/useIsDesktop';
-// import { slugMap } from '~/constants/blog/slugMap';
-import { NCodeSamplesSpace } from '~/types';
-
+import { useIsDesktop } from '~/hooks/useIsDesktop'
+import { NCodeSamplesSpace } from '~/types'
+import CloseIcon from '@mui/icons-material/Close'
 
 interface ArticlesSearchMobileProps {
   currentTheme: string;
@@ -28,12 +27,64 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
 
   const [isMobile, setIsMobile] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  const [localInput, setLocalInput] = useState(query) // Локальный стейт для мгновенного ввода символов в инпут
+  const [localInput, setLocalInput] = useState(query)
+
+  // --- Нативная механика свайпа вниз (Drag-to-close) ---
+  const [translateY, setTranslateY] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const touchStartY = useRef(0)
+  const currentTransformY = useRef(0)
+
+    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    // Берем координату первого прикоснувшегося пальца [0]
+    touchStartY.current = e.touches[0].clientY
+    setIsDragging(true)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    // ИСПРАВЛЕНО: Добавлен индекс [0] для обращения к объекту Touch
+    const currentY = e.touches[0].clientY
+    const deltaY = currentY - touchStartY.current
+
+    if (deltaY > 0) {
+      setTranslateY(deltaY)
+      currentTransformY.current = deltaY
+    }
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+    if (currentTransformY.current > 120) {
+      setIsOpen(false)
+    }
+    setTranslateY(0)
+    currentTransformY.current = 0
+  }
+
+  // --- Эффект блокировки внешнего скролла ---
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none'; 
+    } else {
+      document.body.style.overflow = originalStyle;
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.overflow = originalStyle;
+      document.body.style.touchAction = '';
+    };
+  }, [isOpen]);
 
   const isDesktop = useIsDesktop(800)
   useEffect(() => {
     if (!isDesktop) {
-      setLimit(5) // Для мобилки выставляем лимит 5
+      setLimit(5)
     }
   }, [isDesktop])
 
@@ -44,25 +95,17 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
 
-  // Синхронизируем локальный инпут при сбросе
   useEffect(() => {
     if (!query) setLocalInput('')
   }, [query])
 
   const getLink = (id: string) => {
-    // 1. Формируем полную абсолютную ссылку для QR-кода
-    const articleSlug = id
-    
-    // Важно: QR-код должен содержать полный URL с доменом, чтобы телефон его распознал
-    // const host = typeof window !== 'undefined' ? window.location.origin : 'https://pravosleva.pro'
-    const fullArticleUrl = `/p/${articleSlug}`
-    return fullArticleUrl
+    return `/p/${id}`
   }
 
   if (!isMobile) return null
 
   const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
-  // const textColor = isDarkTheme ? '#fff' : '#000'
   const textColor = currentTheme === 'dark'
     ? 'rgb(255,142,83)'
     : currentTheme === 'gray'
@@ -71,7 +114,8 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
         ? 'rgb(57, 229, 172)'
         : '#000'
   const panelBg = isDarkTheme ? '#1e1e1e' : '#f9f9f9'
-  // const elementBg = isDarkTheme ? '#2a2a2a' : '#ededed'
+
+  const handleColor = isDarkTheme ? 'gray' : 'lightgray'
 
   return (
     <>
@@ -98,14 +142,11 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           alignItems: 'center',
           justifyContent: 'space-between',
           cursor: 'pointer',
-          // fontSize: '14px',
           fontWeight: 'bold',
           transition: 'all 0.2s ease',
         }}
       >
-        <div
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', marginRight: '12px' }}
-        >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', marginRight: '12px' }}>
           <span style={{ fontSize: 'small', opacity: 0.6 }}>Поиск:</span>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {query || 'Введите ключевые слова...'}
@@ -147,22 +188,78 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           bottom: 0,
           left: 0,
           width: '100vw',
-          // maxHeight: '80vh', // Поисковой шторке даем больше места (80%)
           backgroundColor: panelBg,
           color: textColor,
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
-          padding: '20px 16px 32px 16px',
+          padding: '8px 16px 32px 16px', // Оптимизировано под тач
           boxShadow: '0 -8px 32px rgba(0,0,0,0.2)',
           zIndex: 5,
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
-          transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          gap: '0px',
+          transform: isOpen 
+            ? `translateY(${translateY}px)` 
+            : 'translateY(100%)',
+          transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        <div style={{ width: '40px', height: '4px', backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)', borderRadius: '2px', margin: '0 auto 4px auto', flexShrink: 0 }} />
+        {/* ХЕНДЛЕР ЗАКРЫТИЯ (ЗОНА ДЛЯ СВАЙПА ЧЕРЕЗ СТРЕЛКУ) */}
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ 
+            width: '100%', 
+            padding: '8px 0px 8px 0px', 
+            margin: '-8px 0 0 0', 
+            cursor: 'grab', 
+            flexShrink: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {/* ИНТЕЛЛЕКТУАЛЬНАЯ СТРЕЛКА-ЧЕРТОЧКА */}
+          <div style={{ 
+            position: 'relative',
+            width: '36px', 
+            height: '12px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            {/* Левое крыло стрелки */}
+            <div style={{
+              position: 'absolute',
+              left: '2px',
+              width: '17px',
+              height: '4px',
+              backgroundColor: handleColor,
+              borderRadius: '2px',
+              transition: 'transform 0.2s ease',
+              // Когда тянем — плавно сгибаем левую часть вниз под углом 25 градусов
+              transform: isDragging 
+                ? 'rotate(25deg) translateX(1px)' 
+                : 'rotate(0deg)',
+            }} />
+            
+            {/* Правое крыло стрелки */}
+            <div style={{
+              position: 'absolute',
+              right: '2px',
+              width: '17px',
+              height: '4px',
+              backgroundColor: handleColor,
+              borderRadius: '2px',
+              transition: 'transform 0.2s ease',
+              // Когда тянем — плавно сгибаем правую часть вниз под углом -25 градусов
+              transform: isDragging 
+                ? 'rotate(-25deg) translateX(-1px)' 
+                : 'rotate(0deg)',
+            }} />
+          </div>
+        </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -171,155 +268,138 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           <button onClick={() => setIsOpen(false)} style={{ border: 'none', background: 'transparent', color: '#888', fontSize: '18px', cursor: 'pointer', padding: '4px' }}>✕</button>
         </div>
 
-        {/* СПИСОК РЕЗУЛЬТАТОВ СЕРВЕРНОЙ ВЫДАЧИ */}
-        <div
-          style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}
-        >
-          {
-            isLoading
-            ? (
-              <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small' }}>
-                Загрузка результатов...
-              </div>
-            )
-            : (!!data && data?.length > 0) ? (
-              data.map((note: { original: NCodeSamplesSpace.TNote; slug: string; }) => (
-                <a
-                  key={note.original._id}
-                  href={getLink(note.slug || note.original._id)}
-                  target='_blank'
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.03)' : '#fff',
-                    border: isDarkTheme ? '2px solid rgba(255,255,255,0.05)' : '2px solid rgba(0,0,0,0.05)',
-                    textDecoration: 'none',
-                    color: textColor
+        {/* СПИСОК РЕЗУЛЬТАТОВ */}
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px', touchAction: 'pan-y' }}>
+          {isLoading ? (
+            <div style={{ textTransform: 'none', textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small' }}>
+              Загрузка результатов...
+            </div>
+          ) : (!!data && data?.length > 0) ? (
+            data.map((note: { original: NCodeSamplesSpace.TNote; slug: string; }) => (
+              <a
+                key={note.original._id}
+                href={getLink(note.slug || note.original._id)}
+                target='_blank'
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.03)' : '#fff',
+                  border: isDarkTheme ? '2px solid rgba(255,255,255,0.05)' : '2px solid rgba(0,0,0,0.05)',
+                  textDecoration: 'none',
+                  color: textColor
+                }}
+              >
+                <div style={{
+                  fontSize: '14px', fontWeight: 'bold',
+                  color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : currentTheme === 'light' ? '#2672b6' : '#FF8E53',
+                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}
                 >
-                  <div
-                    style={{
-                      fontSize: '14px', fontWeight: 'bold',
-                      color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : currentTheme === 'light' ? '#2672b6' : '#FF8E53',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,           // Задаем максимальное количество строк (2 строки)
-                      WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
-                      overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
-                    }}>
-                    {note.original.title}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '12px', color: '#888', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 1,           // Задаем максимальное количество строк (1 строка)
-                      WebkitBoxOrient: 'vertical',  // Указываем вертикальную ориентацию бокса
-                      overflow: 'hidden',           // Скрываем все, что выходит за пределы двух строк
-                    }}>
-                    {note.original.description || 'Нет описания заметки'}
-                  </div>
-                  {/* <pre
-                    style={{ fontSize: 'x-small',
-                      whiteSpace: 'pre-wrap', // Включает перенос строк и сохраняет пробелы
-                      wordBreak: 'break-all', // По желанию: переносит слишком длинные слова
-                    }}
-                  >{JSON.stringify(note, null, 2)}</pre> */}
-                </a>
-              ))
-            ) : query ? (
-              <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small' }}>Ничего не найдено. Попробуйте изменить запрос</div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small', fontStyle: 'italic' }}>Введите слова для начала поиска</div>
-            )}
-          </div>
-
-          {/* СЕРВЕРНАЯ ПАГИНАЦИЯ */}
-          {!isLoading && totalPages > 1 && (
-            <div
-              style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', paddingTop: '12px',
-                borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)', flexShrink: 0,
-                opacity: isLoading ? 0.5 : 1,
-                pointerEvents: isLoading ? 'none' : 'auto'
-              }}
-            >
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                style={{
-                  padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1,
-                  backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: textColor }}
-              >
-                ← Назад
-              </button>
-              <span style={{ fontSize: 'small', color: '#888', fontWeight: 'bold' }}>
-                {currentPage} / {totalPages}
-              </span>
-              <button
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                style={{
-                  padding: '8px 16px', fontSize: 'small', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1,
-                  backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '1px solid #ccc', borderRadius: '8px', color: textColor,
-                }}
-              >
-                Вперед →
-              </button>
-            </div>
-          )}
-
-          {/* ПУБЛИЧНОЕ ПОЛЕ ВВОДА (INPUT С ДЕБАУНСОМ ЧЕРЕЗ СЕРВИС) */}
-          <div
-            style={{
-              position: 'relative', display: 'flex', gap: '8px', flexShrink: 0,
-              // marginTop: '4px',
-              paddingTop: '12px',
-              borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Ключевые слова через пробел..."
-              value={localInput}
-              onChange={(e) => {
-                setLocalInput(e.target.value)
-                setQuery(e.target.value) // Вызывает дебаунс-метод сервиса
-              }}
-              style={{
-                flex: 1,
-                padding: '12px 36px 12px 12px',
-                borderRadius: '8px',
-                border: '2px solid',
-                borderColor: isDarkTheme ? '#444' : '#ccc',
-                backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
-                color: textColor,
-                // fontSize: '15px',
-                fontFamily: 'monospace, system-ui',
-                outline: 'none',
-
-                fontWeight: 'bold',
-                // @ts-ignore
-                caretShape: 'block', // Делает курсор прямоугольным
-                caretColor: isDarkTheme ? '#39e5ac' : 'lightgray', // Окрашивает курсор
-              }}
-            />
-            {localInput && (
-              <button 
-                onClick={() => {
-                  setLocalInput('');
-                  reset();
-                  close();
-                }}
-                style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(calc(-50% + 6px))', border: 'none', background: 'transparent', color: '#888', fontSize: '16px', cursor: 'pointer' }}
-              >
-                ✕
-              </button>
-            )}
-          </div>
+                  {note.original.title}
+                </div>
+                <div style={{
+                  fontSize: 'small', color: '#888', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}
+                >
+                  {note.original.description || 'Нет описания заметки'}
+                </div>
+              </a>
+            ))
+          ) : query ? (
+            <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small' }}>Ничего не найдено. Попробуйте изменить запрос</div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small', fontStyle: 'italic' }}>Введите слова для начала поиска</div>
+          )
+        }
       </div>
-    </>
-  )
-}
+
+      {/* СЕРВЕРНАЯ ПАГИНАЦИЯ */}
+      {!isLoading && totalPages > 1 && (
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', paddingTop: '12px',
+        // borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
+        flexShrink: 0,
+        opacity: isLoading ? 0.5 : 1, pointerEvents: isLoading ? 'none' : 'auto'
+      }}>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+          style={{
+          padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1,
+          backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: textColor
+          }}
+          >
+          ← Назад</button>
+
+        <span style={{ fontSize: 'small', color: '#888', fontWeight: 'bold' }}>
+        {currentPage} / {totalPages}</span>
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+          style={{
+          padding: '8px 16px', fontSize: 'small', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1,
+          backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '1px solid #ccc', borderRadius: '8px', color: textColor,
+          }}
+          >
+          Вперед →</button>
+      </div>
+    )}
+
+    {/* ПУБЛИЧНОЕ ПОЛЕ ВВОДА */}
+    <div style={{
+      position: 'relative', display: 'flex', gap: '8px', flexShrink: 0, paddingTop: '12px',
+      // borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
+    }}>
+      <input
+        type="text"
+        placeholder="Ключевые слова через пробел..."
+        value={localInput}
+        onChange={(e) => {
+        setLocalInput(e.target.value)
+        setQuery(e.target.value)
+        }}
+        style={{
+        flex: 1, padding: '12px 36px 12px 12px', borderRadius: '8px', border: '2px solid',
+        borderColor: isDarkTheme ? '#444' : '#ccc', backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
+        color: textColor, fontFamily: 'monospace, system-ui', outline: 'none', fontWeight: 'bold',
+        }}
+      />
+      {localInput && (
+        <button
+          onClick={() => {
+          setLocalInput('');
+          reset();
+          close();
+          }}
+          style={{
+            position: 'absolute',
+            right: '12px',
+            top: '50%',
+            transform: 'translateY(calc(-50% + 6px))',
+            border: 'none',
+            borderRadius: '50%',
+            width: '30px',
+            height: '30px',
+            
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            
+            background: 'transparent',
+            color: '#888',
+            fontSize: '16px',
+            cursor: 'pointer',
+          }}
+        >
+          <CloseIcon fontSize='small' />
+        </button>
+      )}
+    </div>
+  </div>
+</>
+)}

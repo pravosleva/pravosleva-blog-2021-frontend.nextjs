@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useHeadingsNavigation } from './hooks'
 
 interface HeadingsQuickNavMobileProps {
@@ -10,7 +10,7 @@ interface HeadingsQuickNavMobileProps {
 
 export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
   levels,
-  pageLimit = 4, // Для мобилки лучше уменьшить лимит до 4-5 пунктов, чтобы шторка не занимала весь экран
+  pageLimit = 4,
   currentTheme,
   actualSlug
 }) => {
@@ -26,17 +26,65 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
     getFabTriggerTextColor,
     getActiveBorderCSS,
     getActiveBgColor,
-    // getInfoToolBgColor,
   } = useHeadingsNavigation({
     levels, pageLimit, actualSlug,
-    // Заголовки внутри элементов с этими классами будут полностью проигнорированы!
     ignoreSelectors: ['.article-alert', '.notice-block', '.info-banner']
   })
 
   const [isMobile, setIsMobile] = useState(false)
-  const [isOpen, setIsOpen] = useState(false) // Стейт открытия шторки меню
+  const [isOpen, setIsOpen] = useState(false)
 
-  // 1. Логика отображения только на мобильных экранах (< 800px)
+  // --- Нативная механика свайпа вниз (Drag-to-close) ---
+  const [translateY, setTranslateY] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const touchStartY = useRef(0)
+  const currentTransformY = useRef(0)
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartY.current = e.touches[0].clientY // Исправлено: строгое извлечение первого тача
+    setIsDragging(true)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const currentY = e.touches[0].clientY // Исправлено: строгое извлечение первого тача
+    const deltaY = currentY - touchStartY.current
+
+    // Тянуть разрешено только вниз
+    if (deltaY > 0) {
+      setTranslateY(deltaY)
+      currentTransformY.current = deltaY
+    }
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+    if (currentTransformY.current > 120) {
+      setIsOpen(false)
+    }
+    setTranslateY(0)
+    currentTransformY.current = 0
+  }
+
+  // --- Эффект фиксации и блокировки внешнего скролла ---
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const originalStyle = window.getComputedStyle(document.body).overflow
+
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+      document.body.style.touchAction = 'none'
+    } else {
+      document.body.style.overflow = originalStyle
+      document.body.style.touchAction = ''
+    }
+
+    return () => {
+      document.body.style.overflow = originalStyle
+      document.body.style.touchAction = ''
+    }
+  }, [isOpen])
+
   useEffect(() => {
     const checkWidth = () => setIsMobile(window.innerWidth < 800)
     checkWidth()
@@ -46,14 +94,16 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
 
   if (!isMobile || headings.length === 0) return null
 
-  // Находим текущий активный заголовок, чтобы вывести его название прямо на закрытую кнопку-плашку
   const activeHeading = headings.find(h => h.isActiveProgress) || headings[0]
   const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
+  
   const summaryBoxBg = currentTheme === 'dark' || currentTheme === 'hard-gray'
     ? 'rgba(0,0,0,.3)'
     : (currentTheme === 'gray')
       ? '#2a2a2a'
       : '#fff'
+
+  const handleColor = isDarkTheme ? 'gray' : 'lightgray'
 
   return (
     <>
@@ -70,7 +120,6 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           maxWidth: '400px',
           padding: '12px 16px',
           borderRadius: '12px',
-          // backgroundColor: getInfoToolBgColor({ currentTheme }),
           backgroundColor: summaryBoxBg,
           color: getFabTriggerTextColor({ currentTheme }),
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
@@ -81,7 +130,6 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           cursor: 'pointer',
-          // fontSize: '14px',
           fontWeight: 'bold',
           transition: 'all 0.2s ease',
         }}
@@ -130,31 +178,75 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           bottom: 0,
           left: 0,
           width: '100vw',
-          // maxHeight: '60vh',
           backgroundColor: isDarkTheme ? '#1e1e1e' : '#f9f9f9',
-          // backgroundColor: getInfoToolBgColor({ currentTheme }),
-          // backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
           color: getFabTriggerTextColor({ currentTheme }),
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
-          padding: '20px 16px 32px 16px',
+          padding: '8px 16px 32px 16px', // Оптимизировано под хендлер тача
           boxShadow: '0 -8px 32px rgba(0,0,0,0.2)',
           zIndex: 4,
           display: 'flex',
           flexDirection: 'column',
-          gap: '8px',
+          gap: '0px',
           
-          // Анимация выезда снизу вверх
-          transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: isOpen ? `translateY(${translateY}px)` : 'translateY(100%)',
+          transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        {/* Хэндл шторки (визуальная полоска сверху для красоты) */}
-        <div style={{ width: '40px', height: '4px', backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)', borderRadius: '2px', margin: '0 auto 8px auto', flexShrink: 0 }} />
+        {/* ХЕНДЛЕР ЗАКРЫТИЯ (ЗОНА ДЛЯ СВАЙПА СО СТРЕЛКОЙ) */}
+        <div 
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ 
+            width: '100%', 
+            padding: '8px 0px 8px 0px', 
+            margin: '-8px 0 0 0', 
+            cursor: 'grab', 
+            flexShrink: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {/* УМНАЯ СТРЕЛКА ОГЛАВЛЕНИЯ */}
+          <div style={{ 
+            position: 'relative',
+            width: '36px', 
+            height: '12px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            {/* Левый сегмент */}
+            <div style={{
+              position: 'absolute',
+              left: '2px',
+              width: '17px',
+              height: '4px',
+              backgroundColor: handleColor,
+              borderRadius: '2px',
+              transition: 'transform 0.2s ease',
+              transform: isDragging ? 'rotate(25deg) translateX(1px)' : 'rotate(0deg)',
+            }} />
+            
+            {/* Правый сегмент */}
+            <div style={{
+              position: 'absolute',
+              right: '2px',
+              width: '17px',
+              height: '4px',
+              backgroundColor: handleColor,
+              borderRadius: '2px',
+              transition: 'transform 0.2s ease',
+              transform: isDragging ? 'rotate(-25deg) translateX(-1px)' : 'rotate(0deg)',
+            }} />
+          </div>
+        </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', /* marginBottom: '4px' */ }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 'small', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Содержание статьи
+            Содержание
           </div>
           <button 
             onClick={() => setIsOpen(false)}
@@ -164,18 +256,18 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           </button>
         </div>
 
-        {/* Список заголовков */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {/* Список заголовков (Разрешен внутренний тач-скролл) */}
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px', touchAction: 'pan-y' }}>
           {visibleItems.map((heading, idx) => (
             <button
               key={heading.id}
               onClick={() => {
                 handleScrollTo(heading.id)
-                setIsOpen(false) // Закрываем шторку после клика, чтобы пользователь видел куда приехал скролл
+                setIsOpen(false)
               }}
               style={{
                 textAlign: 'left',
-                padding: '10px 12px', // Чуть увеличили паддинг для удобства нажатия пальцем (Mobile Friendly)
+                padding: '10px 12px',
                 fontSize: 'small',
                 borderRadius: '8px',
                 border: heading.isActiveProgress ? getActiveBorderCSS({ currentTheme }) : '1px solid transparent',
@@ -186,74 +278,50 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
                     ? getLabelBgColor({ currentTheme })
                     : 'transparent',
                 color: getHeadingButtonColor({ item: heading, idx, currentTheme }),
-                // fontWeight: heading.isActiveProgress ? 'bold' : '500',
                 fontWeight: 'bold',
                 transition: 'all 0.15s ease',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
                 width: '100%',
-                background: 'none'
+                background: 'none',
+                cursor: 'pointer'
               }}
               title={heading.text}
             >
-              <span
-                style={{
-                  whiteSpace: 'pre',
-                  // fontFamily: heading.levelDiff > 0 ? 'monospace, Courier' : 'inherit',
-                  fontFamily: 'monospace, Courier',
-                }}>
+              <span style={{ whiteSpace: 'pre', fontFamily: 'monospace, Courier' }}>
                 {heading.prefix}{heading.text}
               </span>
             </button>
-          ))}
+            ))
+          }
         </div>
 
-        {/* Пагинация (Кнопки увеличены под тач-интерфейсы) */}
+        {/* Пагинация */}
         {totalPages > 1 && (
-          <div
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginTop: '8px', 
-              paddingTop: '16px', 
-              borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)', 
-              
-              // ИСПРАВЛЕНО: Вместо shrink пишем flexShrink
-              flexShrink: 0 
-            }}
-          >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', paddingTop: '0px',
+          // borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
+          flexShrink: 0 }}>
             <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              style={{ padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: getFabTriggerTextColor({ currentTheme }) }}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            style={{ padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: getFabTriggerTextColor({ currentTheme }) }}
             >
-              ← Назад
-            </button>
+            ← Назад</button>
+
             <span style={{ fontSize: 'small', color: '#888', fontWeight: 'bold' }}>
-              {currentPage} / {totalPages}
-            </span>
+            {currentPage} / {totalPages}</span>
+
             <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              style={{ 
-                padding: '8px 16px', 
-                fontSize: 'small', 
-                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', 
-                opacity: currentPage === totalPages ? 0.3 : 1, 
-                // ИСПРАВЛЕНО: Убрана синтаксическая ошибка в тернарнике фона
-                backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', 
-                border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', 
-                borderRadius: '8px', 
-                color: getFabTriggerTextColor({ currentTheme }) 
-              }}
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            style={{ padding: '8px 16px', fontSize: 'small', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: getFabTriggerTextColor({ currentTheme }) }}
             >
-              Вперед →
-            </button>
+            Вперед →</button>
           </div>
         )}
       </div>
+
     </>
   )
 }
