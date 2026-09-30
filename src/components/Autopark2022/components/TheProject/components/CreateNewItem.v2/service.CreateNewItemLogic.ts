@@ -37,7 +37,6 @@ export class CreateNewItemLogic extends AbstractService {
 
   /**
    * [COMPUTED]: Декларативная валидация формы.
-   * Полностью заменяет старый useMemo.
    */
   public isFormCorrect = this.engine.computed<boolean>(() => {
     return (
@@ -47,6 +46,23 @@ export class CreateNewItemLogic extends AbstractService {
       this.mileageDelta.value > 0
     )
   }, 'create-item:computed:is-form-correct')
+
+  /**
+   * 🔥 УНИВЕРСАЛЬНЫЙ МЕТОД: Извлекает данные полей из HTML-формы за один проход.
+   * Работает нативно и плавно без посимвольного перерендерирования инпутов.
+   */
+  public updateFieldsFromForm(formElement: HTMLFormElement) {
+    const formData = new FormData(formElement)
+    
+    this.name.value = String(formData.get('name') || '')
+    this.description.value = String(formData.get('description') || '')
+    
+    const last = parseInt(String(formData.get('mileageLast')), 10)
+    this.mileageLast.value = isNaN(last) ? 0 : last
+
+    const delta = parseInt(String(formData.get('mileageDelta')), 10)
+    this.mileageDelta.value = isNaN(delta) ? 0 : delta
+  }
 
   public handleOpen = () => {
     this.isOpened.value = true

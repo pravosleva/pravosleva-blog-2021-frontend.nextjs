@@ -20,21 +20,31 @@ const engine = new ReactiveEngine({
 
 export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
   const dispatch = useDispatch()
-
-  // Внедряем сервис логики
   const logic = engine.inject(CreateNewItemLogic)
 
-  // Получаем реактивные значения полей формы
-  const name = useReactiveValue0(logic.name)
-  const description = useReactiveValue0(logic.description)
-  const mileageLast = useReactiveValue0(logic.mileageLast)
-  const mileageDelta = useReactiveValue0(logic.mileageDelta)
-  
-  // Получаем состояния отображения элементов управления
+  // Получаем состояния отображения элементов управления и флаги валидации
   const isOpened = useReactiveValue0(logic.isOpened)
   const isLoading = useReactiveValue0(logic.isLoading)
   const apiErr = useReactiveValue0(logic.apiErr)
   const isFormCorrect = useReactiveValue0(logic.isFormCorrect)
+
+  // Подписываемся на сигналы данных, чтобы отслеживать момент вызова логического сброса формы (resetAll)
+  const nameSignal = useReactiveValue0(logic.name)
+  const descriptionSignal = useReactiveValue0(logic.description)
+
+  // Ссылаемся на один общий реф формы целиком
+  const formRef = useRef<HTMLFormElement>(null)
+
+  // Если сигналы в ядре очистились (сработал resetAll), нативно сбрасываем состояние HTML-полей формы
+  useEffect(() => {
+    if (!nameSignal && !descriptionSignal && formRef.current) {
+      formRef.current.reset()
+    }
+  }, [nameSignal, descriptionSignal])
+
+  const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
+    logic.updateFieldsFromForm(e.currentTarget)
+  }
 
   const onSubmit = () => {
     logic.handleSubmit({
@@ -46,124 +56,91 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
     })
   }
 
-  const nameInputRef = useRef<HTMLInputElement>(null)
-  const descInputRef = useRef<HTMLInputElement>(null)
-  const mileageLastInputRef = useRef<HTMLInputElement>(null)
-  const mileageDeltaInputRef = useRef<HTMLInputElement>(null)
-  useEffect(() => {
-    if (!name && nameInputRef.current) nameInputRef.current.value = ''
-    if (!description && descInputRef.current) descInputRef.current.value = ''
-    if (!mileageLast && mileageLastInputRef.current) mileageLastInputRef.current.value = ''
-    if (!mileageDelta && mileageDeltaInputRef.current) mileageDeltaInputRef.current.value = ''
-  }, [name, description, mileageLast, mileageDelta])
-
   return (
     <Box width="100%">
       {isOpened ? (
-        <Stack spacing={2}>
-          {/* Первый ряд: Наименование и Описание */}
-          <Stack direction="row" spacing={2}>
-            <TextField 
-              // value={name}
-              inputRef={nameInputRef}
-              defaultValue={logic.name.value}
-              size='small' 
-              fullWidth 
-              disabled={isLoading} 
-              variant="outlined" 
-              label="Наименование" 
-              onChange={(e) => { logic.name.value = e.target.value }} 
-            />
-            <TextField 
-              // value={description}
-              inputRef={descInputRef}
-              defaultValue={logic.description.value}
-              size='small' 
-              fullWidth 
-              disabled={isLoading} 
-              variant="outlined" 
-              label="Описание" 
-              onChange={(e) => { logic.description.value = e.target.value }} 
-            />
+        <form style={{ margin: 0 }} ref={formRef} onChange={handleFormChange} onSubmit={(e) => e.preventDefault()}>
+          <Stack spacing={2}>
+            {/* Первый ряд: Наименование и Описание */}
+            <Stack direction="row" spacing={2}>
+              <TextField 
+                name="name"
+                defaultValue={logic.name.value}
+                size='small' 
+                fullWidth 
+                disabled={isLoading} 
+                variant="outlined" 
+                label="Наименование" 
+              />
+              <TextField 
+                name="description"
+                defaultValue={logic.description.value}
+                size='small' 
+                fullWidth 
+                disabled={isLoading} 
+                variant="outlined" 
+                label="Описание" 
+              />
+            </Stack>
+
+            {/* Второй ряд: Пробеги */}
+            <Stack direction="row" spacing={2}>
+              <TextField 
+                name="mileageLast"
+                defaultValue={logic.mileageLast.value || ''}
+                size='small' 
+                fullWidth 
+                disabled={isLoading} 
+                variant="outlined" 
+                label="Крайний пробег" 
+                type="number" 
+              />
+              <TextField 
+                name="mileageDelta"
+                defaultValue={logic.mileageDelta.value || ''}
+                size='small' 
+                fullWidth 
+                disabled={isLoading} 
+                variant="outlined" 
+                label="Интервал замены" 
+                type="number" 
+              />
+            </Stack>
+
+            {/* Третий ряд: Действия */}
+            <Stack direction="row" spacing={2}>
+              <LoadingButton 
+                fullWidth 
+                disabled={!isFormCorrect || isLoading}
+                loading={isLoading}       
+                loadingPosition="start"   
+                variant='contained' 
+                onClick={onSubmit} 
+                color='primary' 
+                startIcon={<LocalFireDepartmentIcon />}
+              >
+                Создать
+              </LoadingButton>
+              <Button 
+                fullWidth 
+                variant='outlined' 
+                onClick={logic.resetAll} 
+                color='error' 
+                disabled={isLoading}
+                startIcon={<CloseIcon />}
+              >
+                Отмена
+              </Button>
+            </Stack>
+
+            {/* Системные алерты об ошибках сети/валидации API */}
+            {!!apiErr && (
+              <Alert severity="error" sx={{ mt: 1 }} onClose={() => { logic.apiErr.value = '' }}>
+                {apiErr}
+              </Alert>
+            )}
           </Stack>
-
-          {/* Второй ряд: Пробеги */}
-          <Stack direction="row" spacing={2}>
-            <TextField 
-              // value={mileageLast || ''}
-              inputRef={mileageLastInputRef}
-              defaultValue={logic.mileageLast.value}
-              size='small' 
-              fullWidth 
-              disabled={isLoading} 
-              variant="outlined" 
-              label="Крайний пробег" 
-              type="number" 
-              onChange={(e) => {
-                const val = parseInt(e.target.value, 10)
-                logic.mileageLast.value = isNaN(val) ? 0 : val
-              }} 
-            />
-            <TextField 
-              // value={mileageDelta || ''}
-              inputRef={mileageDeltaInputRef}
-              defaultValue={logic.mileageDelta.value}
-              size='small' 
-              fullWidth 
-              disabled={isLoading} 
-              variant="outlined" 
-              label="Интервал замены" 
-              type="number" 
-              onChange={(e) => {
-                const val = parseInt(e.target.value, 10)
-                logic.mileageDelta.value = isNaN(val) ? 0 : val
-              }} 
-            />
-          </Stack>
-
-          {/* Третий ряд: Действия */}
-          <Stack direction="row" spacing={2}>
-            <LoadingButton 
-              fullWidth 
-              disabled={!isFormCorrect} // Убираем isLoading отсюда, LoadingButton сам задизейблит кнопку при загрузке
-              
-              loading={isLoading}       // Передаем наш реактивный сигнал из движка
-              loadingPosition="start"   // Спиннер плавно заменит собой иконку LocalFireDepartmentIcon
-              /* NOTE: Важные нюансы для версии 5.0.0-alpha.48
-                1. Пропс loadingPosition="start" требует, чтобы у вас обязательно был передан пропс startIcon.
-                Во время загрузки иконка огня плавно исчезнет,
-                а на её месте появится вращающийся CircularProgress того же цвета, что и текст кнопки,
-                не ломая общую ширину и верстку.
-
-                2. Если вы хотите, чтобы при загрузке скрывался абсолютно весь текст, а спиннер вставал строго по центру,
-                просто удалите пропсы loadingPosition и startIcon.
-              */
-              
-              variant='contained' 
-              onClick={onSubmit} 
-              color='primary' 
-              startIcon={<LocalFireDepartmentIcon />}
-            >
-              Создать
-            </LoadingButton>
-            <Button 
-              fullWidth 
-              variant='outlined' 
-              onClick={logic.resetAll} 
-              color='error' 
-              startIcon={<CloseIcon />}
-            >
-              Отмена
-            </Button>
-          </Stack>
-
-          {/* Системные алерты об ошибках сети/валидации API */}
-          {!!apiErr && (
-            <Alert severity="error" sx={{ mt: 1 }}>
-              {apiErr}
-            </Alert>
-          )}
-        </Stack>
+        </form>
       ) : (
         <Button 
           fullWidth 

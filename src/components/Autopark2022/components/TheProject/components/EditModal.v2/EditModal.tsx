@@ -7,7 +7,6 @@ import { ReactiveEngine } from '@pravosleva/reactive-engine'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
 import LoadingButton from '@mui/lab/LoadingButton'
 
-// Инициализируем локальный синглтон движка для управления этой формой
 const engine = new ReactiveEngine({
   logger: {
     isEnabled: true,
@@ -22,141 +21,132 @@ export const EditModal = ({
   onClose,
   initialState,
 }: TProps) => {
-  const dispatch = useDispatch() // Автоматически выводится корректный тип Dispatch
-
-  // Внедряем сервис логики
+  const dispatch = useDispatch()
   const logic = engine.inject(EditModalLogic)
 
-  // Читаем реактивные сигналы. Компонент перерендерится ТОЛЬКО если изменится конкретный инпут
-  const name = useReactiveValue0(logic.name)
-  const description = useReactiveValue0(logic.description)
-  const mileageLast = useReactiveValue0(logic.mileageLast)
-  const mileageDelta = useReactiveValue0(logic.mileageDelta)
+  // Читаем только управляющие флаги и состояние ошибок
   const isFormCorrect = useReactiveValue0(logic.isFormCorrect)
   const isSubmitting = useReactiveValue0(logic.isSubmitting)
   const apiErr = useReactiveValue0(logic.apiErr)
 
-  // Синхронизируем внешние пропсы initialState с реактивными сигналами при открытии
+  // Один общий реф на всю HTML-форму целиком
+  const formRef = useRef<HTMLFormElement>(null)
+
+  // Синхронизируем реактивное состояние и сбрасываем нативные поля формы при открытии
   useEffect(() => {
-    if (isOpened) logic.syncInitialState(initialState)
+    if (isOpened && initialState) {
+      logic.syncInitialState(initialState)
+      if (formRef.current) {
+        formRef.current.reset() // Обновляет HTML-поля до актуальных значений defaultValue
+      }
+    }
   }, [isOpened, initialState, logic])
+
+  /**
+   * Сквозное делегирование событий. Любое изменение внутри формы 
+   * автоматически и без лишних ререндеров обновляет реактивное ядро.
+   */
+  const handleFormChange = (e: React.FormEvent<HTMLFormElement>) => {
+    logic.updateFieldsFromForm(e.currentTarget)
+  }
 
   const handleSubmit = () => {
     logic.submitForm({
       chat_id,
       project_id,
-      dispatch,             // Передается как Dispatch
-      updateProjects,       // Передается как типизированный Action Creator
-      setActiveProject,     // Передается как типизированный Action Creator
+      dispatch,
+      updateProjects,
+      setActiveProject,
       onClose,
     })
   }
 
-  const nameInputRef = useRef<HTMLInputElement>(null)
-  const descInputRef = useRef<HTMLInputElement>(null)
-  const mileageLastInputRef = useRef<HTMLInputElement>(null)
-  const mileageDeltaInputRef = useRef<HTMLInputElement>(null)
-  useEffect(() => {
-    if (!name && nameInputRef.current) nameInputRef.current.value = ''
-    if (!description && descInputRef.current) descInputRef.current.value = ''
-    if (!mileageLast && mileageLastInputRef.current) mileageLastInputRef.current.value = ''
-    if (!mileageDelta && mileageDeltaInputRef.current) mileageDeltaInputRef.current.value = ''
-  }, [name, description, mileageLast, mileageDelta])
-
   return (
     <Modal open={isOpened} onClose={onClose}>
       <Paper sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, p: 2 }}>
-        <Stack spacing={2}>
-          <Typography variant="h6" component="h2">
-            Редактировать
-          </Typography>
+        <form style={{ margin: 0 }} ref={formRef} onChange={handleFormChange} onSubmit={(e) => e.preventDefault()}>
+          <Stack spacing={2}>
+            <Typography variant="h6" component="h2" fontWeight="bold">
+              Редактировать
+            </Typography>
 
-          <div>
-            <TextField
-              // value={name}
-              inputRef={nameInputRef}
-              defaultValue={logic.name.value}
-              size='small'
-              fullWidth
-              disabled={isSubmitting}
-              variant="outlined"
-              label="Наименование"
-              type="text"
-              onChange={(e) => { logic.name.value = e.target.value }}
-              multiline
-              maxRows={3}
-            />
-          </div>
-          <div>
-            <TextField
-              // value={description}
-              inputRef={descInputRef}
-              defaultValue={logic.description.value}
-              size='small'
-              fullWidth
-              disabled={isSubmitting}
-              variant="outlined"
-              label="Описание"
-              type="text"
-              onChange={(e) => { logic.description.value = e.target.value }}
-              multiline
-              maxRows={10}
-            />
-          </div>
+            <div>
+              <TextField
+                name="name"
+                defaultValue={initialState?.name || ''}
+                size='small'
+                fullWidth
+                disabled={isSubmitting}
+                variant="outlined"
+                label="Наименование"
+                type="text"
+                multiline
+                maxRows={3}
+              />
+            </div>
+            <div>
+              <TextField
+                name="description"
+                defaultValue={initialState?.description || ''}
+                size='small'
+                fullWidth
+                disabled={isSubmitting}
+                variant="outlined"
+                label="Описание"
+                type="text"
+                multiline
+                maxRows={10}
+              />
+            </div>
 
-          <Stack direction="row" spacing={2}>
-            <TextField 
-              // value={mileageLast || ''}
-              inputRef={mileageLastInputRef}
-              defaultValue={logic.mileageLast.value}
-              size="small" 
-              fullWidth 
-              variant="outlined" 
-              label="Крайний пробег" 
-              type="number" 
-              disabled={isSubmitting}
-              onChange={(e) => { logic.mileageLast.value = parseInt(e.target.value) || 0 }} 
-            />
-            <TextField 
-              // value={mileageDelta || ''}
-              inputRef={mileageDeltaInputRef}
-              defaultValue={logic.mileageDelta.value}
-              size="small" 
-              fullWidth 
-              variant="outlined" 
-              label="Интервал замены" 
-              type="number" 
-              disabled={isSubmitting}
-              onChange={(e) => { logic.mileageDelta.value = parseInt(e.target.value) || 0 }} 
-            />
-          </Stack>
+            <Stack direction="row" spacing={2}>
+              <TextField 
+                name="mileageLast"
+                defaultValue={initialState?.mileage?.last ?? ''}
+                size="small" 
+                fullWidth 
+                variant="outlined" 
+                label="Крайний пробег" 
+                type="number" 
+                disabled={isSubmitting}
+              />
+              <TextField 
+                name="mileageDelta"
+                defaultValue={initialState?.mileage?.delta ?? ''}
+                size="small" 
+                fullWidth 
+                variant="outlined" 
+                label="Интервал замены" 
+                type="number" 
+                disabled={isSubmitting}
+              />
+            </Stack>
 
-          <Stack direction="row" spacing={2}>
-            {!!onClose && (
-              <Button fullWidth variant="outlined" onClick={onClose} color="primary" disabled={isSubmitting}>
-                Закрыть
-              </Button>
+            <Stack direction="row" spacing={2}>
+              {!!onClose && (
+                <Button fullWidth variant="outlined" onClick={onClose} color="primary" disabled={isSubmitting}>
+                  Закрыть
+                </Button>
+              )}
+              <LoadingButton 
+                fullWidth
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={!isFormCorrect || isSubmitting}
+                color="primary"
+                loading={isSubmitting}
+              >
+                Отправить
+              </LoadingButton>
+            </Stack>
+
+            {!!apiErr && (
+              <Alert severity="error" sx={{ mt: 1 }} onClose={() => { logic.apiErr.value = '' }}>
+                {apiErr}
+              </Alert>
             )}
-            <LoadingButton 
-              fullWidth
-              variant="contained"
-              onClick={handleSubmit}
-              disabled={!isFormCorrect}
-              color="primary"
-              
-              loading={isSubmitting}
-            >
-              {isSubmitting ? 'Отправка...' : 'Отправить'}
-            </LoadingButton>
           </Stack>
-
-          {/* Системные алерты об ошибках сети/валидации API */}
-          {!!apiErr && (
-            <Alert severity="error" sx={{ mt: 1 }}>
-              {apiErr}
-            </Alert>
-          )}
-        </Stack>
+        </form>
       </Paper>
     </Modal>
   )

@@ -2,12 +2,8 @@ import { AbstractService } from '@pravosleva/reactive-engine'
 import { Dispatch } from 'redux'
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit'
 import axios from 'axios'
-
-// 1. ИМПОРТИРУЕМ ОРИГИНАЛЬНЫЕ ТИПЫ ИЗ ВАШЕЙ КОДОВОЙ БАЗЫ
-// Пути восстановлены на основе логов ошибок вашей сборки
 import { TUserCheckerResponse } from '~/utils/autoparkHttpClient'
 
-// Вытаскиваем точную структуру проекта, которую ожидает initialState вашего компонента
 export interface TProjectItem {
   id: number;
   name: string;
@@ -26,14 +22,11 @@ export type TProps = {
   initialState: TProjectItem;
 }
 
-// 2. СТРОГО ТИПИЗИРУЕМ АРГУМЕНТЫ НА БАЗЕ ЭТАЛОННЫХ ТИПОВ
 interface TSubmitArgs {
   chat_id: string;
   project_id: string;
   dispatch: Dispatch;
-  // Передаем точный импортированный тип из Redux Toolkit createSlice
   updateProjects: ActionCreatorWithPayload<TUserCheckerResponse, string>;
-  // Для activeProject используем any или точный тип экшена, если он известен
   setActiveProject: ActionCreatorWithPayload<any, string>;
   onClose?: () => void;
 }
@@ -45,7 +38,6 @@ const baseURL = isDev
 const api = axios.create({ baseURL, validateStatus: (_s: number) => true })
 
 export class EditModalLogic extends AbstractService {
-  // Локальное реактивное состояние формы для управления Material UI
   public id = this.engine.signal<number | null>(null, 'edit-modal:id')
   public name = this.engine.signal<string>('', 'edit-modal:name')
   public description = this.engine.signal<string>('', 'edit-modal:description')
@@ -56,11 +48,11 @@ export class EditModalLogic extends AbstractService {
 
   public isFormCorrect = this.engine.computed<boolean>(() => {
     return (
-      !!this.name.value &&
+      !!this.name.value.trim() &&
       !!this.id.value &&
-      !!this.description.value &&
-      !!this.mileageLast.value &&
-      !!this.mileageDelta.value
+      !!this.description.value.trim() &&
+      this.mileageLast.value >= 0 &&
+      this.mileageDelta.value > 0
     )
   }, 'edit-modal:computed:is-form-correct')
 
@@ -70,6 +62,23 @@ export class EditModalLogic extends AbstractService {
     this.description.value = initialState.description
     this.mileageLast.value = initialState.mileage.last
     this.mileageDelta.value = initialState.mileage.delta
+  }
+
+  /**
+   * 🔥 УНИВЕРСАЛЬНЫЙ МЕТОД: Извлекает данные всех полей из HTML-формы за один проход.
+   * Работает нативно без посимвольного перерендерирования инпутов.
+   */
+  public updateFieldsFromForm(formElement: HTMLFormElement) {
+    const formData = new FormData(formElement)
+    
+    this.name.value = String(formData.get('name') || '')
+    this.description.value = String(formData.get('description') || '')
+    
+    const last = parseInt(String(formData.get('mileageLast')), 10)
+    this.mileageLast.value = isNaN(last) ? 0 : last
+
+    const delta = parseInt(String(formData.get('mileageDelta')), 10)
+    this.mileageDelta.value = isNaN(delta) ? 0 : delta
   }
 
   public async submitForm(args: TSubmitArgs) {
@@ -93,12 +102,10 @@ export class EditModalLogic extends AbstractService {
         },
       }
 
-      // Запрос типизируем оригинальным TUserCheckerResponse
       const res = await api.post<TUserCheckerResponse>('/project/update-item', payload)
       const data = res.data
 
       if (data && data.ok && data.projects) {
-        // Диспатчим объект, который идеально совпадает по структуре
         args.dispatch(args.updateProjects(data))
         
         const targetProject = data.projects[args.project_id]
