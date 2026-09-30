@@ -8,7 +8,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 // import TelegramIcon from '@mui/icons-material/Telegram' // НОВОЕ: Иконка Telegram для рекомендаций
 import { ResponsiveBlock } from '~/mui/ResponsiveBlock'
-import { CustomPinInput } from '~/components/CustomPinInput'
+import { CustomPinInput } from '~/components/CustomPinInput.v2'
 import { useDebounce } from '~/hooks/useDebounce'
 import { useDispatch, useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'

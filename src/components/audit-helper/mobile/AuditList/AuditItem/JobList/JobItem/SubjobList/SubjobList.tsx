@@ -109,7 +109,6 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
               }}
             >
               <Chip
-                size='small'
                 // className='truncate'
                 icon={icons[status]?.component || <HelpOutlineIcon />}
                 label={name}
@@ -120,7 +119,10 @@ export const SubjobList = memo(({ subjobs, auditId, jobId, onToggleSubjob, isEdi
                   if (!isEditable) e.preventDefault()
                   handleToggleSubjob({ subjobId: id })
                 }}
-                sx={{ opacity: status === ESubjobStatus.IS_DONE ? 0.5 : 1 }}
+                sx={{
+                  opacity: status === ESubjobStatus.IS_DONE ? 0.5 : 1,
+                  fontSize: 'small',
+                }}
               />
             </li>
           ))

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Button } from '@mui/material'
-import { CustomPinInput } from '~/components/CustomPinInput'
+import { CustomPinInput } from '~/components/CustomPinInput.v2'
 import { useDebounce } from '~/hooks/useDebounce'
 import { IRootState } from '~/store/IRootState'
 import axios from 'axios'
@@ -9,6 +9,7 @@ import { groupLog } from '~/utils/groupLog'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateProjects, setIsOneTimePasswordCorrect } from '~/store/reducers/autopark'
 import FingerprintIcon from '@mui/icons-material/Fingerprint'
+import CloseIcon from '@mui/icons-material/Close'
 
 type TProps = {
   chat_id: string;
@@ -124,7 +125,7 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
     <>
       {
         !isOneTimePasswordCorrect && !isFormOpened && (
-          <Button size='small' endIcon={<FingerprintIcon />} fullWidth variant="contained" color='primary' onClick={handleOpenForm}>
+          <Button size='small' startIcon={<FingerprintIcon />} fullWidth variant="contained" color='primary' onClick={handleOpenForm}>
             Вход
           </Button>
         )
@@ -138,6 +139,18 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
             onCancel={handleCloseForm}
             chat_id={chat_id}
           />
+        )
+      }
+      {
+        isFormOpened && (
+          <Button
+            size='small' startIcon={<FingerprintIcon />}
+            endIcon={<CloseIcon />} fullWidth variant='outlined' color='error'
+            onClick={handleCloseForm}
+            disabled={isLoading}
+          >
+            Закрыть
+          </Button>
         )
       }
     </>
