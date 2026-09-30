@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Button, TextField, Box, Stack, Alert } from '@mui/material'
 import { useDispatch } from 'react-redux'
 import { ReactiveEngine } from '@pravosleva/reactive-engine'
@@ -46,6 +46,17 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
     })
   }
 
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  const descInputRef = useRef<HTMLInputElement>(null)
+  const mileageLastInputRef = useRef<HTMLInputElement>(null)
+  const mileageDeltaInputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (!name && nameInputRef.current) nameInputRef.current.value = ''
+    if (!description && descInputRef.current) descInputRef.current.value = ''
+    if (!mileageLast && mileageLastInputRef.current) mileageLastInputRef.current.value = ''
+    if (!mileageDelta && mileageDeltaInputRef.current) mileageDeltaInputRef.current.value = ''
+  }, [name, description, mileageLast, mileageDelta])
+
   return (
     <Box width="100%">
       {isOpened ? (
@@ -53,7 +64,9 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
           {/* Первый ряд: Наименование и Описание */}
           <Stack direction="row" spacing={2}>
             <TextField 
-              value={name} 
+              // value={name}
+              inputRef={nameInputRef}
+              defaultValue={logic.name.value}
               size='small' 
               fullWidth 
               disabled={isLoading} 
@@ -62,7 +75,9 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
               onChange={(e) => { logic.name.value = e.target.value }} 
             />
             <TextField 
-              value={description} 
+              // value={description}
+              inputRef={descInputRef}
+              defaultValue={logic.description.value}
               size='small' 
               fullWidth 
               disabled={isLoading} 
@@ -75,7 +90,9 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
           {/* Второй ряд: Пробеги */}
           <Stack direction="row" spacing={2}>
             <TextField 
-              value={mileageLast || ''} 
+              // value={mileageLast || ''}
+              inputRef={mileageLastInputRef}
+              defaultValue={logic.mileageLast.value}
               size='small' 
               fullWidth 
               disabled={isLoading} 
@@ -88,7 +105,9 @@ export const CreateNewItem = ({ chat_id, project_id }: TProps) => {
               }} 
             />
             <TextField 
-              value={mileageDelta || ''} 
+              // value={mileageDelta || ''}
+              inputRef={mileageDeltaInputRef}
+              defaultValue={logic.mileageDelta.value}
               size='small' 
               fullWidth 
               disabled={isLoading} 
