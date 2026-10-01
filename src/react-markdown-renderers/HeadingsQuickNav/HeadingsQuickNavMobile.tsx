@@ -248,16 +248,18 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           <div style={{ fontSize: 'small', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Содержание
           </div>
-          <button 
+          {/* <button 
             onClick={() => setIsOpen(false)}
             style={{ border: 'none', background: 'transparent', color: '#888', fontSize: '18px', cursor: 'pointer', padding: '4px' }}
           >
             ✕
-          </button>
+          </button> */}
         </div>
 
         {/* Список заголовков (Разрешен внутренний тач-скролл) */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px', touchAction: 'pan-y' }}>
+        <div
+          style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px', touchAction: 'pan-y' }}
+        >
           {visibleItems.map((heading, idx) => (
             <button
               key={heading.id}
@@ -305,7 +307,8 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
             <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            style={{ padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: getFabTriggerTextColor({ currentTheme }) }}
+            style={{ padding: '8px 16px', fontSize: 'small', fontWeight: 'bold', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
+              border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: getFabTriggerTextColor({ currentTheme }) }}
             >
             ← Назад</button>
 
@@ -315,7 +318,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
             <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            style={{ padding: '8px 16px', fontSize: 'small', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: getFabTriggerTextColor({ currentTheme }) }}
+            style={{ padding: '8px 16px', fontSize: 'small', fontWeight: 'bold', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1, backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: getFabTriggerTextColor({ currentTheme }) }}
             >
             Вперед →</button>
           </div>

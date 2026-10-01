@@ -265,11 +265,14 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Поиск по статьям и заметкам
           </div>
-          <button onClick={() => setIsOpen(false)} style={{ border: 'none', background: 'transparent', color: '#888', fontSize: '18px', cursor: 'pointer', padding: '4px' }}>✕</button>
+          {/* <button onClick={() => setIsOpen(false)} style={{ border: 'none', background: 'transparent', color: '#888', fontSize: '18px', cursor: 'pointer', padding: '4px' }}>✕</button> */}
         </div>
 
         {/* СПИСОК РЕЗУЛЬТАТОВ */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px', touchAction: 'pan-y' }}>
+        <div
+          style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', touchAction: 'pan-y' }}
+          className='mobile-search-result-items-wrapper'
+        >
           {isLoading ? (
             <div style={{ textTransform: 'none', textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small' }}>
               Загрузка результатов...
@@ -285,7 +288,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                   flexDirection: 'column',
                   gap: '4px',
                   padding: '12px',
-                  borderRadius: '8px',
+                  // borderRadius: '8px',
                   backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.03)' : '#fff',
                   border: isDarkTheme ? '2px solid rgba(255,255,255,0.05)' : '2px solid rgba(0,0,0,0.05)',
                   textDecoration: 'none',
@@ -329,9 +332,10 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           disabled={currentPage === 1}
           onClick={() => setCurrentPage(currentPage - 1)}
           style={{
-          padding: '8px 16px', fontSize: 'small', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1,
-          backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '8px', color: textColor
-          }}
+          padding: '8px 16px', fontSize: 'small', fontWeight: 'bold', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1,
+          backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
+          border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: textColor
+        }}
           >
           ← Назад</button>
 
@@ -342,8 +346,9 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage(currentPage + 1)}
           style={{
-          padding: '8px 16px', fontSize: 'small', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1,
-          backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff', border: isDarkTheme ? '2px solid #444' : '1px solid #ccc', borderRadius: '8px', color: textColor,
+          padding: '8px 16px', fontSize: 'small', fontWeight: 'bold', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1,
+          backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
+          border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: textColor,
           }}
           >
           Вперед →</button>
@@ -364,7 +369,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
         setQuery(e.target.value)
         }}
         style={{
-        flex: 1, padding: '12px 36px 12px 12px', borderRadius: '8px', border: '2px solid',
+        flex: 1, padding: '12px 36px 12px 12px', borderRadius: '24px', border: '2px solid',
         borderColor: isDarkTheme ? '#444' : '#ccc', backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
         color: textColor, fontFamily: 'monospace, system-ui', outline: 'none', fontWeight: 'bold',
         }}

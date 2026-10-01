@@ -1,0 +1,10 @@
+.mobile-search-result-items-wrapper > a {
+  border-radius: 8px;
+}
+.mobile-search-result-items-wrapper > a:first-child {
+  border-radius: 24px 24px 8px 8px;
+}
+
+.mobile-search-result-items-wrapper > a:last-child {
+  border-radius: 8px 8px 24px 24px;
+}
