@@ -216,6 +216,8 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
             cursor: 'grab', 
             flexShrink: 0,
             display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -259,18 +261,16 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                 : 'rotate(0deg)',
             }} />
           </div>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
-          <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Поиск по статьям и заметкам
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+            <div style={{ fontSize: 'x-small', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Поиск по статьям и заметкам
+            </div>
           </div>
-          {/* <button onClick={() => setIsOpen(false)} style={{ border: 'none', background: 'transparent', color: '#888', fontSize: '18px', cursor: 'pointer', padding: '4px' }}>✕</button> */}
         </div>
 
         {/* СПИСОК РЕЗУЛЬТАТОВ */}
         <div
-          style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', touchAction: 'pan-y' }}
+          style={{ flex: 1, overflowY: 'auto', marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px', touchAction: 'pan-y' }}
           className='mobile-search-result-items-wrapper'
         >
           {isLoading ? (
@@ -323,7 +323,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
       {/* СЕРВЕРНАЯ ПАГИНАЦИЯ */}
       {!isLoading && totalPages > 1 && (
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', paddingTop: '12px',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px',
         // borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
         flexShrink: 0,
         opacity: isLoading ? 0.5 : 1, pointerEvents: isLoading ? 'none' : 'auto'
@@ -357,7 +357,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
 
     {/* ПУБЛИЧНОЕ ПОЛЕ ВВОДА */}
     <div style={{
-      position: 'relative', display: 'flex', gap: '8px', flexShrink: 0, paddingTop: '12px',
+      position: 'relative', display: 'flex', gap: '8px', flexShrink: 0, paddingTop: '16px',
       // borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
     }}>
       <input

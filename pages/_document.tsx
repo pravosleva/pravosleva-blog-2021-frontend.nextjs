@@ -105,7 +105,7 @@ export default class MyDocument extends Document {
           <link href={`/static/css/min/audio-podcast.css?v=${process.env.NEXT_APP_GIT_SHA1}`} rel="stylesheet" />
           <link href="/static/css/min/audio-podcast.article.css" rel="stylesheet" fetchpriority="high" />
           <link href="/static/css/min/audio-podcast-preview.css" rel="stylesheet" fetchpriority="high" />
-          <link href="/static/css/min/articles-search.css" rel="stylesheet" />
+          <link href={`/static/css/min/articles-search.css?v=${process.env.NEXT_APP_GIT_SHA1}`} rel="stylesheet" />
 
           <link rel="stylesheet" href="/static/css/min/link-as-rippled-btn.css" />
         </Head>

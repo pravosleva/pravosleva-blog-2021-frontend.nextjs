@@ -205,6 +205,8 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
             cursor: 'grab', 
             flexShrink: 0,
             display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -242,23 +244,16 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
               transform: isDragging ? 'rotate(-25deg) translateX(-1px)' : 'rotate(0deg)',
             }} />
           </div>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 'small', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Содержание
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontSize: 'x-small', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Содержание
+            </div>
           </div>
-          {/* <button 
-            onClick={() => setIsOpen(false)}
-            style={{ border: 'none', background: 'transparent', color: '#888', fontSize: '18px', cursor: 'pointer', padding: '4px' }}
-          >
-            ✕
-          </button> */}
         </div>
 
         {/* Список заголовков (Разрешен внутренний тач-скролл) */}
         <div
-          style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px', touchAction: 'pan-y' }}
+          style={{ flex: 1, overflowY: 'auto', marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px', touchAction: 'pan-y' }}
         >
           {visibleItems.map((heading, idx) => (
             <button
