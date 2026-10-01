@@ -119,7 +119,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           width: 'calc(100% - 32px)',
           maxWidth: '400px',
           padding: '12px 16px',
-          borderRadius: '12px',
+          borderRadius: '24px',
           backgroundColor: summaryBoxBg,
           color: getFabTriggerTextColor({ currentTheme }),
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',

@@ -131,7 +131,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           width: 'calc(100% - 32px)',
           maxWidth: '400px',
           padding: '12px 16px',
-          borderRadius: '12px',
+          borderRadius: '24px',
           backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
           color: textColor,
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
