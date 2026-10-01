@@ -263,7 +263,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
             <div style={{ fontSize: 'x-small', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Поиск по статьям и заметкам
+              Поиск
             </div>
           </div>
         </div>
@@ -274,7 +274,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           className='mobile-search-result-items-wrapper'
         >
           {isLoading ? (
-            <div style={{ textTransform: 'none', textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small' }}>
+            <div style={{ textTransform: 'none', textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small', fontStyle: 'italic' }}>
               Загрузка результатов...
             </div>
           ) : (!!data && data?.length > 0) ? (
@@ -313,7 +313,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
               </a>
             ))
           ) : query ? (
-            <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small' }}>Ничего не найдено. Попробуйте изменить запрос</div>
+            <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small', fontStyle: 'italic' }}>Ничего не найдено. Попробуйте изменить запрос</div>
           ) : (
             <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small', fontStyle: 'italic' }}>Введите слова для начала поиска</div>
           )
@@ -357,7 +357,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
 
     {/* ПУБЛИЧНОЕ ПОЛЕ ВВОДА */}
     <div style={{
-      position: 'relative', display: 'flex', gap: '8px', flexShrink: 0, paddingTop: '16px',
+      position: 'relative', display: 'flex', gap: '8px', flexShrink: 0, marginTop: '16px',
       // borderTop: isDarkTheme ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
     }}>
       <input
@@ -383,13 +383,13 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           }}
           style={{
             position: 'absolute',
-            right: '12px',
+            right: '5px',
             top: '50%',
-            transform: 'translateY(calc(-50% + 6px))',
+            transform: 'translateY(-50%)',
             border: 'none',
             borderRadius: '50%',
-            width: '30px',
-            height: '30px',
+            width: '40px',
+            height: '40px',
             
             display: 'flex',
             justifyContent: 'center',
