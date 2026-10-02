@@ -48,24 +48,9 @@ export const list: { [key: string]: TArticleTools } = {
     brief: 'Search sample',
     bg,
   },
-  // 'simple-test': {
-  //   id: '6655de148bbf9b44b4ec61ec',
-  //   brief: 'JS exp',
-  //   bg,
-  // },
   'js-vanilla-generators-retrier': {
     id: '69b38c28f7929b414054200e',
     brief: 'JS Generators experience',
-    bg,
-  },
-  // 'reactive-engine-ru': {
-  //   id: '6a50eeb7f7929b414054202b',
-  //   brief: 'JS в действии',
-  //   bg: bgReactivity,
-  // },
-  'js-interview-2026': {
-    id: '6a3e79f8f7929b4140542026',
-    brief: 'Заметки про JS',
     bg,
   },
 }

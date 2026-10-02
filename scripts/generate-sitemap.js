@@ -34,6 +34,7 @@ async function generateSitemap() {
   // 1. Статические страницы сайта
   const staticPages = [
     // { url: '', changefreq: 'daily', priority: '1.0' },
+    { url: '/reactive-engine/', changefreq: 'daily', priority: '0.9' },
     { url: '/blog', changefreq: 'daily', priority: '0.9' },
     { url: '/auth/login', changefreq: 'never', priority: '0.0' }, // Будет отфильтрована
   ];
