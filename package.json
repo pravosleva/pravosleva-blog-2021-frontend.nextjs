@@ -28,7 +28,10 @@
     "test": "jest",
     "_partytown": "node_modules/@builder.io/partytown/bin/partytown.cjs copylib ./public/static/~partytown",
     "_pwa:gen": "node_modules/pwa-asset-generator/bin/cli.js public/static/img/logo/rocket-thruster.svg public/static/img/pwa/ --manifest public/static/manifest.json --background \"#0162c8\" --padding \"15%\"",
-    "_pwa:gen:favicon": "node_modules/pwa-asset-generator/bin/cli.js public/static/img/logo/rocket-thruster.svg public/static/img/pwa/ --favicon --opaque false"
+    "_pwa:gen:favicon": "node_modules/pwa-asset-generator/bin/cli.js public/static/img/logo/rocket-thruster.svg public/static/img/pwa/ --favicon --opaque false",
+    "minify:css": "node scripts/minify-static.css.js",
+    "minify:js": "node scripts/minify-static.js.js",
+    "minify:all": "npm run minify:css && npm run minify:js"
   },
   "_moduleAliases": {
     "$tests": "./tests",

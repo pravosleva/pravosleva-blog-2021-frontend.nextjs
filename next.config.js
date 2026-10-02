@@ -2,12 +2,17 @@ const webpack = require('webpack')
 const path = require('path')
 const withPWA = require('next-pwa')
 const runtimeCaching = require('next-pwa/cache')
-const CleanCSS = require('clean-css') // Убедитесь, что пакет clean-css добавлен в package.json
-
 const fs = require('fs')
 const dotenv = require('dotenv')
 // NOTE: v2 Импортируем сам Webpack-плагин напрямую (он гарантированно установлен внутри @next/bundle-analyzer)
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+
+const minifyStaticCSS = require('./scripts/minify-static.css.js')
+const minifyStaticJS = require('./scripts/minify-static.js.js')
+
+// ЗАПУСК МИНИФИКАЦИИ
+minifyStaticCSS() // Синхронный вызов
+minifyStaticJS()  // Асинхронный вызов (работает в фоне перед билдом)
 
 const envFileName = '.env.production'
 const env = dotenv.parse(fs.readFileSync(envFileName))
@@ -48,122 +53,6 @@ location = /_next/image {
 }
 
 const isDev = process.env.NODE_ENV === 'development'
-
-function minifyStaticCSS() {
-  // Формируем чистые и независимые абсолютные пути от корня проекта
-  const srcDir = path.resolve(process.cwd(), 'public/static/css/src')
-  const destDir = path.resolve(process.cwd(), 'public/static/css/min')
-
-  // Проверяем существование исходной папки с исходниками
-  if (!fs.existsSync(srcDir)) {
-    console.warn('⚠️  [CSS Minifier]: Папка исходников css/src отсутствует. Пропускаем.')
-    return
-  }
-
-  // Создаем целевую папку min, если её ещё нет на диске
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, { recursive: true })
-  }
-
-  const files = fs.readdirSync(srcDir)
-  const cssMinifier = new CleanCSS({ level: 2 }) // Максимальный уровень сжатия
-
-  files.forEach((file) => {
-    // Обрабатываем только .css файлы, полностью игнорируя вложенные папки
-    if (file.endsWith('.css')) {
-      const srcPath = path.join(srcDir, file)
-      const destPath = path.join(destDir, file)
-      
-      try {
-        const inputCss = fs.readFileSync(srcPath, 'utf8')
-        const minified = cssMinifier.minify(inputCss)
-
-        if (minified.styles) {
-          fs.writeFileSync(destPath, minified.styles, 'utf8')
-        }
-        
-        // Если минификатор выдал предупреждения или ошибки — выведем их в консоль для DX
-        if (minified.errors.length > 0 || minified.warnings.length > 0) {
-          console.warn(`⚠️  [CSS Minifier] Проблемы в файле ${file}:`, minified.errors, minified.warnings)
-        }
-      } catch (fileError) {
-        console.error(`❌ [CSS Minifier] Ошибка обработки файла ${file}:`, fileError)
-      }
-    }
-  })
-  
-  console.log('⚡ [CSS Minifier]: Static CSS files optimized successfully in public/static/css/min/*')
-}
-
-// Запускаем минификацию перед инициализацией конфигурации Next.js
-minifyStaticCSS()
-
-async function minifyStaticJS() {
-  const srcRoot = path.resolve(process.cwd(), 'public/static/common/src')
-  const destRoot = path.resolve(process.cwd(), 'public/static/common/min')
-
-  // Если базовой папки с исходниками нет — тихо выходим
-  if (!fs.existsSync(srcRoot)) return
-
-  // Конфигурация Terser для максимального сжатия и обфускации
-  const terserOptions = {
-    compress: {
-      dead_code: true,     // Удаляет неиспользуемый код
-      drop_debugger: true, // Удаляет дебаг-команды debugger;
-      drop_console: false, // Оставляем console.log
-      passes: 2            // Два прохода оптимизатора
-    },
-    mangle: true,          // Включает обфускацию (сжатие имен переменных)
-    output: {
-      comments: false      // Вырезает комментарии
-    }
-  }
-
-  // РЕКУРСИВНАЯ ФУНКЦИЯ ОБХОДА ДИРЕКТОРИЙ
-  async function processDirectory(currentSrcDir, currentDestDir) {
-    // Создаем целевую подпапку, если её ещё нет на диске
-    if (!fs.existsSync(currentDestDir)) {
-      fs.mkdirSync(currentDestDir, { recursive: true })
-    }
-
-    const items = fs.readdirSync(currentSrcDir)
-
-    for (const item of items) {
-      const srcPath = path.join(currentSrcDir, item)
-      const destPath = path.join(currentDestDir, item)
-      const stats = fs.statSync(srcPath)
-
-      if (stats.isDirectory()) {
-        // Если это папка — углубляемся в рекурсию, передавая новые пути
-        await processDirectory(srcPath, destPath)
-      } else if (stats.isFile() && item.endsWith('.js')) {
-        // Если это JS-файл — запускаем сжатие
-        try {
-          const { minify } = require('terser') // ИСПРАВЛЕНО: Безопасный импорт terser
-          const inputJs = fs.readFileSync(srcPath, 'utf8')
-          const minified = await minify(inputJs, terserOptions)
-
-          if (minified.code) {
-            fs.writeFileSync(destPath, minified.code, 'utf8')
-          }
-        } catch (terserError) {
-          console.error(`❌ [JS Minifier] Ошибка компиляции файла ${item}:`, terserError.message)
-        }
-      }
-    }
-  }
-
-  // Запуск глубокого рекурсивного сканирования от корня common/src
-  try {
-    await processDirectory(srcRoot, destRoot)
-    console.log('⚡ [JS Minifier]: Static JS files and nested folders optimized successfully in common/min/*')
-  } catch (globalError) {
-    console.error('❌ [JS Minifier Global Error]:', globalError)
-  }
-}
-
-// Запускаем асинхронный процесс
-minifyStaticJS()
 
 // Создаем кастомные правила кэширования, расширяя стандартные от next-pwa
 const customRuntimeCaching = [
