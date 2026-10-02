@@ -4,6 +4,7 @@ import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByT
 import { useScrollPosition } from '~/hooks/useScrollPosition'
 import { useGlobalTheming, TThemeName } from '~/hooks/useGlobalTheming'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import { getWidgetAccentColor, getWidgetBorderCSS, getWidgetBgCSS } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 const getTextColorByThemeName = (themeName: TThemeName) => {
   switch (themeName) {
@@ -25,11 +26,11 @@ type TStyledProps = {
 const StyledScrollTopBtn = styled.div<TStyledProps>`
   position: fixed;
   z-index: 3;
-  right: 32px;
+  right: 8px;
   bottom: 76px;
   border-radius: 50%;
-  border: none;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  border: ${(props: TStyledProps) =>  getWidgetBorderCSS({ currentTheme: props.$themeName })};
+  // box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   text-align: center;
   width: 56px;
@@ -41,14 +42,14 @@ const StyledScrollTopBtn = styled.div<TStyledProps>`
   
   transition: transform 0.3s ease-out, background-color 0.2s ease, color 0.2s ease;
 
-  /* 2. Исправление ошибки: Явно типизируем входящие пропсы (props: TStyledProps) перед вызовом функций */
-  color: ${(props: TStyledProps) => getLoaderColorByThemeName(props.$themeName)};
-  background-color: ${(props: TStyledProps) => getTextColorByThemeName(props.$themeName)};
+  backdrop-filter: blur(10px);
+  color: ${(props: TStyledProps) => getWidgetAccentColor({ currentTheme: props.$themeName })};
+  background-color: ${(props: TStyledProps) => getWidgetBgCSS({ currentTheme: props.$themeName })};
 
-  &:active {
-    background-color: ${(props: TStyledProps) => getLoaderColorByThemeName(props.$themeName)};
-    color: ${(props: TStyledProps) => getTextColorByThemeName(props.$themeName)};
-  }
+  // &:active {
+  //   background-color: ${(props: TStyledProps) => getLoaderColorByThemeName(props.$themeName)};
+  //   color: ${(props: TStyledProps) => getTextColorByThemeName(props.$themeName)};
+  // }
 `
 
 export const ScrollTopBtn = memo(() => {

@@ -1,3 +1,4 @@
+import React from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useSelector } from 'react-redux'
 import { IRootState } from '~/store/IRootState'
@@ -7,9 +8,12 @@ type TProps = {
   alt: string;
   onClickHandler: () => void;
   previewPosition?: 'left' | 'center';
+  // TODO: Добавляем размеры для next/image (рекомендуется для предотвращения Layout Shift)
+  // width?: number | string;
+  // height?: number | string;
+  // layout?: 'fill' | 'fixed' | 'intrinsic' | 'responsive';
 }
 
-// 🎯 СТАБИЛЬНЫЙ СЛОВАРЬ ЛОАДЕРОВ: Вынесен из компонента, чтобы не пересоздаваться в памяти
 const LOADER_MAP: Record<string, string> = {
   'light': '/static/img/loaders/loader7-primary.svg',
   'gray': '/static/img/loaders/loader7.svg',
@@ -19,14 +23,19 @@ const LOADER_MAP: Record<string, string> = {
 
 const DEFAULT_LOADER = '/static/img/loaders/loader7-primary.svg'
 
-export const Image = ({ src, alt, onClickHandler, previewPosition = 'center' }: TProps) => {
-  // Хук ленивой загрузки (Lazy Loading) через Intersection Observer
-  const { ref, inView } = useInView({ threshold: 0 })
+export const Image = React.memo(({ 
+  src, 
+  alt, 
+  onClickHandler, 
+  previewPosition = 'center',
+}: TProps) => {
+  // ⚡ РЕШЕНИЕ: triggerOnce: true отключает observer после первого пересечения экрана
+  const { ref, inView } = useInView({ 
+    threshold: 0,
+    triggerOnce: true 
+  })
   
-  // Получаем текущую тему из глобального Redux-хранилища
   const currentTheme = useSelector((state: IRootState) => state.globalTheme.theme)
-
-  // Мгновенный и легковесный выбор лоадера без useMemo
   const previewSrc = LOADER_MAP[currentTheme] || DEFAULT_LOADER
 
   return (
@@ -35,8 +44,9 @@ export const Image = ({ src, alt, onClickHandler, previewPosition = 'center' }: 
       src={inView ? src : previewSrc}
       alt={alt}
       onClick={onClickHandler}
-      // Если картинка вне зоны видимости — жестко держим класс 'center' для лоадера
       className={inView ? previewPosition : 'center'}
     />
   )
-}
+})
+
+Image.displayName = 'Image'

@@ -353,7 +353,7 @@ body main.light .themed-btn-2026:hover {}
 body main.light .themed-btn-2026:focus {}
 
 body main.gray .themed-btn-2026 {
-  background-color: rgba(255, 200, 0, 1);;
+  background-color: rgba(57, 229, 172, 1);
   color: inherit;
 }
 body main.gray .themed-btn-2026:hover {}
@@ -361,7 +361,7 @@ body main.gray .themed-btn-2026:focus {}
 
 body main.hard-gray .themed-btn-2026 {
   color: rgba(42, 42, 42, 1);
-  background-color: rgba(57, 229, 172, 1);
+  background-color: rgb(255, 204, 153);
 }
 body main.hard-gray .themed-btn-2026:hover {}
 body main.hard-gray .themed-btn-2026:focus {}

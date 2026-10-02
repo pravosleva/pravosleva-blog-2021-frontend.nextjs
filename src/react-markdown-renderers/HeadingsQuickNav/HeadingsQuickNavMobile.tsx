@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useHeadingsNavigation } from './hooks'
+import { getWidgetBorderCSS } from './utils/getWidgetBorderCSS';
+import { getWidgetBgCSS } from './utils';
 
 interface HeadingsQuickNavMobileProps {
   levels?: ('h1' | 'h2' | 'h3' | 'h4')[];
@@ -97,13 +99,10 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
   const activeHeading = headings.find(h => h.isActiveProgress) || headings[0]
   const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
   
-  const summaryBoxBg = currentTheme === 'dark' || currentTheme === 'hard-gray'
-    ? 'rgba(0,0,0,.3)'
-    : (currentTheme === 'gray')
-      ? '#2a2a2a'
-      : '#fff'
+  const summaryBoxBg = getWidgetBgCSS({ currentTheme })
 
   const handleColor = isDarkTheme ? 'gray' : 'lightgray'
+  const widgetBorderCSS = getWidgetBorderCSS({ currentTheme })
 
   return (
     <>
@@ -123,7 +122,7 @@ export const HeadingsQuickNavMobile: React.FC<HeadingsQuickNavMobileProps> = ({
           backgroundColor: summaryBoxBg,
           color: getFabTriggerTextColor({ currentTheme }),
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
-          border: isDarkTheme ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+          border: widgetBorderCSS,
           backdropFilter: 'blur(10px)',
           zIndex: 4,
           display: 'flex',

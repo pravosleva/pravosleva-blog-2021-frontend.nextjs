@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { getLabelBgColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getLabelBgColor, getWidgetAccentColor, getWidgetBgCSS, getWidgetBorderCSS } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 import { pluralize } from '~/utils/string-tools/pluralize'
 import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop'
@@ -106,16 +106,12 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
   if (!isMobile) return null
 
   const isDarkTheme = currentTheme === 'gray' || currentTheme === 'hard-gray' || currentTheme === 'dark'
-  const textColor = currentTheme === 'dark'
-    ? 'rgb(255,142,83)'
-    : currentTheme === 'gray'
-      ? '#fff'
-      : currentTheme === 'hard-gray'
-        ? 'rgb(57, 229, 172)'
-        : '#000'
+  const accentTextColor = getWidgetAccentColor({ currentTheme })
   const panelBg = isDarkTheme ? '#1e1e1e' : '#f9f9f9'
 
   const handleColor = isDarkTheme ? 'gray' : 'lightgray'
+  const widgetBorderCSS = getWidgetBorderCSS({ currentTheme })
+  const widgetBgCSS = getWidgetBgCSS({ currentTheme })
 
   return (
     <>
@@ -132,10 +128,10 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           maxWidth: '400px',
           padding: '12px 16px',
           borderRadius: '24px',
-          backgroundColor: isDarkTheme ? '#2a2a2a' : '#ffffff',
-          color: textColor,
+          backgroundColor: widgetBgCSS,
+          color: accentTextColor,
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)',
-          border: isDarkTheme ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.06)',
+          border: widgetBorderCSS,
           backdropFilter: 'blur(10px)',
           zIndex: 3,
           display: 'flex',
@@ -156,7 +152,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           style={{
             letterSpacing: '0.5px', whiteSpace: 'nowrap', fontSize: '11px', padding: '2px 8px', borderRadius: '6px',
             backgroundColor: getLabelBgColor({ currentTheme }),
-            color: textColor,
+            color: accentTextColor,
           }}
         >
           {!!totalNotes ? `${pluralize({ count: totalNotes, titles: ['находка', 'находки', 'находок'] })}` : '🔍'}
@@ -189,7 +185,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           left: 0,
           width: '100vw',
           backgroundColor: panelBg,
-          color: textColor,
+          color: accentTextColor,
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
           padding: '8px 16px 32px 16px', // Оптимизировано под тач
@@ -292,12 +288,12 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                   backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.03)' : '#fff',
                   border: isDarkTheme ? '2px solid rgba(255,255,255,0.05)' : '2px solid rgba(0,0,0,0.05)',
                   textDecoration: 'none',
-                  color: textColor
+                  color: accentTextColor
                 }}
               >
                 <div style={{
                   fontSize: '14px', fontWeight: 'bold',
-                  color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : currentTheme === 'light' ? '#2672b6' : '#FF8E53',
+                  // color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : currentTheme === 'light' ? '#2672b6' : '#FF8E53',
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}
                 >
@@ -334,7 +330,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           style={{
           padding: '8px 16px', fontSize: 'small', fontWeight: 'bold', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.3 : 1,
           backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
-          border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: textColor
+          border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: accentTextColor
         }}
           >
           ← Назад</button>
@@ -348,7 +344,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
           style={{
           padding: '8px 16px', fontSize: 'small', fontWeight: 'bold', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.3 : 1,
           backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
-          border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: textColor,
+          border: isDarkTheme ? '2px solid #444' : '2px solid #ccc', borderRadius: '24px', color: accentTextColor,
           }}
           >
           Вперед →</button>
@@ -371,7 +367,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
         style={{
         flex: 1, padding: '12px 36px 12px 12px', borderRadius: '24px', border: '2px solid',
         borderColor: isDarkTheme ? '#444' : '#ccc', backgroundColor: isDarkTheme ? '#2a2a2a' : '#fff',
-        color: textColor, fontFamily: 'monospace, system-ui', outline: 'none', fontWeight: 'bold',
+        color: accentTextColor, fontFamily: 'monospace, system-ui', outline: 'none', fontWeight: 'bold',
         }}
       />
       {localInput && (

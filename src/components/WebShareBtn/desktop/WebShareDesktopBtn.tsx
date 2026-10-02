@@ -6,6 +6,7 @@ import ShareIcon from '@mui/icons-material/Share'
 import { useGlobalTheming, TThemeName } from '~/hooks/useGlobalTheming'
 import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByThemeName'
+import { getWidgetAccentColor, getWidgetBgCSS, getWidgetBorderCSS } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 const getTextColorByThemeName = (themeName: TThemeName) => {
   switch (themeName) {
@@ -28,11 +29,11 @@ type TStyledProps = {
 const StyledShareBtn = styled('div')<TStyledProps>`
   position: fixed;
   z-index: 3;
-  right: 32px;
+  right: 8px;
   // Позиционируем ровно на 16px выше кнопки поиска
   bottom: 220px; 
   border-radius: 50%;
-  border: none;
+  border: ${(p) => getWidgetBorderCSS({ currentTheme: p.themeName })};
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   text-align: center;
@@ -56,8 +57,8 @@ const StyledShareBtn = styled('div')<TStyledProps>`
   ${({ themeName }) =>
     themeName &&
     css`
-      color: ${getLoaderColorByThemeName(themeName)};
-      background-color: ${getTextColorByThemeName(themeName)};
+      color: ${getWidgetAccentColor({ currentTheme: themeName })};
+      background-color: ${getWidgetBgCSS({ currentTheme: themeName })};
     `}
     
   &:active {

@@ -346,9 +346,9 @@
 }
 
 .mil-caption-hidden .ril__captionArea { display: none; }
-.ril-toolbar-right.ril__toolbarSide.ril__toolbarRightSide > *:nth-child(n+2):nth-child(-n+3) {
+/* .ril-toolbar-right.ril__toolbarSide.ril__toolbarRightSide > *:nth-child(n+2):nth-child(-n+3) {
   display: none !important;
-}
+} */
 .ril-toolbar-right.ril__toolbarSide.ril__toolbarRightSide > *:nth-child(1) {
   padding: 0px;
 }

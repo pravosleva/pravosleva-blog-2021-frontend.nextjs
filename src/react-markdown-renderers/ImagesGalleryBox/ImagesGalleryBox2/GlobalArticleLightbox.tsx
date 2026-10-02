@@ -86,8 +86,8 @@ export const GlobalArticleLightbox = () => {
             }}
           >
             {showCaption
-              ? <><span>✕</span><span>Скрыть описание</span></>
-              : <><span>👁</span><span>Показать описание</span></>
+              ? <span>Скрыть описание</span>
+              : <span>Показать описание</span>
             }
           </button>
         </div>
@@ -131,32 +131,32 @@ export const GlobalArticleLightbox = () => {
       onMovePrevRequest={hasMoreThanOneImage ? () => { galleryActiveIndexSignal.value = prevIndex } : undefined}
       onMoveNextRequest={hasMoreThanOneImage ? () => { galleryActiveIndexSignal.value = nextIndex } : undefined}
 
-      toolbarButtons={[
-        <button
-          key="fullscreen-btn"
-          onClick={toggleFullscreen}
-          style={{
-            background: 'none',
-            color: '#fff',
-            cursor: 'pointer',
-            fontSize: '35px',
-            padding: '0px',
-            opacity: 0.7,
-            transition: 'opacity 0.2s',
-            display: 'flex',
-            border: 'none',
-            width: '45px',
-            height: '50px',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.7')}
-          title={isFullscreen ? 'Выйти из полноэкранного режима' : 'На весь экран'}
-        >
-          {isFullscreen ? '↙' : '↗'} 
-        </button>
-      ]}
+      // toolbarButtons={[
+      //   <button
+      //     key="fullscreen-btn"
+      //     onClick={toggleFullscreen}
+      //     style={{
+      //       background: 'none',
+      //       color: '#fff',
+      //       cursor: 'pointer',
+      //       fontSize: '38px',
+      //       padding: '0px',
+      //       opacity: 0.7,
+      //       transition: 'opacity 0.2s',
+      //       display: 'flex',
+      //       border: 'none',
+      //       width: '45px',
+      //       height: '50px',
+      //       justifyContent: 'center',
+      //       alignItems: 'center',
+      //     }}
+      //     onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+      //     onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.7')}
+      //     title={isFullscreen ? 'Выйти из полноэкранного режима' : 'На весь экран'}
+      //   >
+      //     {isFullscreen ? '↙' : '↗'} 
+      //   </button>
+      // ]}
     />
   )
 }

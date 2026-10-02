@@ -10,7 +10,7 @@ import { TThemeName } from '~/hooks/useGlobalTheming'
 import { getLoaderColorByThemeName } from '@/utils/globalTheme/getLoaderColorByThemeName'
 import { pluralize } from '~/utils/string-tools/pluralize' // Наша функция склонений
 import { useIsDesktop } from '~/hooks/useIsDesktop'
-import { getCounterBadgeBgColor, getCounterBadgeTextColor } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
+import { getCounterBadgeBgColor, getCounterBadgeTextColor, getWidgetAccentColor, getWidgetBorderCSS, getWidgetBgCSS } from '~/react-markdown-renderers/HeadingsQuickNav/utils'
 
 const getTextColorByThemeName = (themeName: TThemeName) => {
   switch (themeName) {
@@ -45,12 +45,12 @@ type TTriggerProps = {
 const StyledSearchTriggerBtn = styled('div')<TTriggerProps>`
   position: fixed;
   z-index: 3;
-  right: 32px;
+  right: 8px;
   // Высота ScrollTopBtn (56px) + её bottom (76px) + зазор (16px) = 148px
   bottom: 148px; 
   border-radius: 50%;
-  border: none;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+  border: ${({ themeName }) => getWidgetBorderCSS({ currentTheme: themeName })};
+  // box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   text-align: center;
   width: 56px;
@@ -73,18 +73,9 @@ const StyledSearchTriggerBtn = styled('div')<TTriggerProps>`
   ${({ themeName }) =>
     themeName &&
     css`
-      color: ${getLoaderColorByThemeName(themeName)};
-      background-color: ${getTextColorByThemeName(themeName)};
+      color: ${getWidgetAccentColor({ currentTheme: themeName })};
+      background-color: ${getWidgetBgCSS({ currentTheme: themeName })};
     `}
-
-  &:active {
-    ${({ themeName }) =>
-      themeName &&
-      css`
-        background-color: ${getLoaderColorByThemeName(themeName)};
-        color: ${getTextColorByThemeName(themeName)};
-      `}
-  }
 `
 
 // СТИЛИ ВЫЕЗЖАЮЩЕЙ ПАНЕЛИ ПОИСКА
