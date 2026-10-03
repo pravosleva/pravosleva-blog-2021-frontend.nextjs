@@ -8,6 +8,8 @@ import { NResponseLocal } from '~/srv.utils/errors/api'
 import { TLocalSlugMap } from '~/srv.utils/cahce/slug-map/slugMap.cahe'
 import { defaultBg } from '~/srv.utils/local-mdx/readLocalMdxFallback'
 import { testTextByAllWords } from '~/srv.utils/tools-string/testTextByAllWords'
+import { testTextByAnyWord } from '~/srv.utils/tools-string/testTextByAnyWorld'
+import clsx from 'clsx'
 
 const codeSamplesProxyApi = express()
 const NOTES_BASE_API_URL = 'http://62.109.21.103' // http://code-samples.space
@@ -56,11 +58,17 @@ const searchInSlugMapping = ({ slugMapping, qText, isPrivatePagesIncluded }: { s
     const titleText = tools.title ? tools.title.toLowerCase() : ''
     
     const tags: string[] = Array.isArray(tools.tags) ? tools.tags : []
-    const isTagMatched = tags.some(tag => tag.toLowerCase().includes(normalizedQuery))
+    const isTagMatched = testTextByAnyWord({
+      text: clsx(titleText, briefText),
+      words: [...(normalizedQuery.split(',')), ...(normalizedQuery.split(' ')), ...tags],
+    })
     const isPrivate = typeof tools.isPrivate === 'boolean' ? tools.isPrivate : false
 
     const isMatched = !(isPrivate && !isPrivatePagesIncluded) && (
-      testTextByAllWords({ words: normalizedQuery.split(','), text: tools.title }) ||
+      testTextByAllWords({
+        text: tools.title,
+        words: normalizedQuery.split(','),
+      }) ||
       !normalizedQuery || 
       slugKey.toLowerCase().includes(normalizedQuery) || 
       humanReadableTitle.toLowerCase().includes(normalizedQuery) || 

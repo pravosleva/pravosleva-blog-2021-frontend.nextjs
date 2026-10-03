@@ -88,7 +88,7 @@ async function generateSitemap() {
     <loc>${cleanBaseUrl}${articlePath}</loc>
     <lastmod>${lastModDate}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>${meta.priority || 0.8}</priority>
   </url>`);
         addedArticlesCount++;
       });
