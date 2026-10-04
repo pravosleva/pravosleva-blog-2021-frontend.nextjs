@@ -37,16 +37,20 @@ const theme = createTheme({
   },
   // NOTE: See also https://mui.com/material-ui/customization/theme-components/#theme-default-props
   components: {
-    // Name of the component
     MuiButton: {
       styleOverrides: {
         // Name of the slot
         root: {
-          // Some CSS
-          borderRadius: '8px',
+          // 🎯 По умолчанию для мобилок (экран < 600px) ставим большое скругление
+          borderRadius: '24px', 
           padding: '6px 16px',
           '&::disabled': {
             cursor: 'not-allowed'
+          },
+
+          // 🎯 Для десктопов (экран >= 600px) возвращаем стандартное скругление 8px
+          [`@media (min-width:${breakpoints.sm}px)`]: {
+            borderRadius: '8px',
           },
         },
         sizeSmall: {
