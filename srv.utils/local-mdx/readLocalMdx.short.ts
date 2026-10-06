@@ -42,6 +42,7 @@ export const readLocalMdxShort = async (slug: string): Promise<any> => {
         title: frontMatter.title || 'Без названия',
         description: '', // ЖЕСТКО ВЫРЕЗАЕМ весь текст статьи. Для поиска он не нужен!
         isPrivate: frontMatter.isPrivate || false,
+        isDisabledForMainBlogPage: frontMatter.isDisabledForMainBlogPage || false,
         createdAt: frontMatter.createdAt || new Date().toISOString(),
         updatedAt: frontMatter.updatedAt || new Date().toISOString(),
         priority: frontMatter.priority || 0,

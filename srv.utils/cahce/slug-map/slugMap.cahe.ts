@@ -7,6 +7,7 @@ export interface ILocalSlugItem {
   brief: string
   id?: string | number
   isPrivate?: boolean
+  isDisabledForMainBlogPage: boolean;
   isDraft?: boolean
   createdAt?: string
   updatedAt?: string

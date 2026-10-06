@@ -151,7 +151,7 @@ BlogIndex.getInitialProps = wrapper.getInitialPageProps(
         
         _pageService.isOk = true
         _pageService.response = notesResult.response
-        list = notesResult.response?.data ? notesResult.response.data : []
+        list = notesResult.response?.data ? notesResult.response.data.filter((e) => !e.original.isDisabledForMainBlogPage) : []
         break
       default:
         _pageService.isOk = false

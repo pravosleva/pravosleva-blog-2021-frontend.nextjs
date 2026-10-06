@@ -47,6 +47,7 @@ const createNoteObject = (slugKey: string, tools: ILocalSlugItem, isPrivate: boo
     title: tools.title ? `📁 ${tools.title}` : slugKey,
     description: tools.brief || 'Локальное описание отсутствует',
     isPrivate,
+    isDisabledForMainBlogPage: tools.isDisabledForMainBlogPage || false,
     createdAt: tools.createdAt || new Date().toISOString(), 
     updatedAt: tools.updatedAt || new Date().toISOString(),
     priority: typeof tools.priority === 'number' ? tools.priority : 0,

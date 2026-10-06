@@ -39,6 +39,7 @@ export const readLocalMdxFallback = (slug: string) => {
       title: data.title || 'Без названия (Локальный файл)',
       description: content,
       isPrivate: data.isPrivate || false,
+      isDisabledForMainBlogPage: data.isDisabledForMainBlogPage || false,
       createdAt: data.createdAt || new Date().toISOString(),
       updatedAt: data.updatedAt || new Date().toISOString(),
       priority: data.priority || 0,
