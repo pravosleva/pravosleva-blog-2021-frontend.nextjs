@@ -1,0 +1,125 @@
+---
+title: "Эволюция локального ИИ-кодинга: Почему рассуждающие модели меняют правила игры в рефакторинге"
+brief: "AI в действии — На смену линейной генерации кода пришли модели с поддержкой внутреннего рассуждения."
+bg_src: '/static/img/blog/ai-tools-aider.webp'
+bg_size: { w: 2600, h: 1269 }
+bg_type: 'image/webp'
+
+createdAt: "2026-10-11T01:55:17.913Z"
+updatedAt: "2026-10-11T01:55:17.913Z"
+priority: 0.8
+
+author: "Den Pol"
+tags: ["ai_engineering", "ai", "prompt_engineering", "deepseek", "llm"]
+category: "helpers"
+isPrivate: false
+isDraft: false
+isDisabledForMainBlogPage: false
+---
+При работе со сложными архитектурными задачами — такими как рефакторинг реактивных графов вычислений, управление батчингом или проектирование стейт-менеджеров — разработчики часто сталкиваются с тем, что классические ИИ-кодеры начинают буксовать. Они возвращают небезопасные типы `any`, игнорируют правила кодстайла в блоках автозамены (`SEARCH/REPLACE`) и бесконечно ходят по кругу, исправляя один тест и ломая другой. Ниже подробно разобрано, почему для глубокого рефакторинга ядра классических инструментов больше недостаточно.
+
+## Специфика железа: Перформанс Zen 5 и ограничения встроенного GPU
+
+В качестве аппаратной платформы рефакторинга выступает мощный процессор **AMD Ryzen AI 9 HX 470** на современной архитектуре **Zen 5** под управлением **Ubuntu**. Чип несет на борту **12 физических ядер и 24 вычислительных потока** с высокой тактовой частотой (Boost до 5.3 ГГц) и внушительным кэшем (24 МБ L3). Такая конфигурация идеальна для параллельного прогона сотен тестов ядра, сборки TypeScript и одновременного удержания больших контекстов локальных ИИ-моделей. Процессор поддерживает инструкции **AVX-512**, **AVX_VNNI** и содержит выделенный **NPU XDNA 2**, аппаратно ускоряющие инференс нейросетей через Ollama на уровне CPU. 
+
+Однако ключевое архитектурное ограничение для LLM здесь — **отсутствие дискретной видеокарты NVIDIA**. Интегрированная графика **Radeon 890M** не поддерживается библиотеками глубокого обучения (CUDA/Triton), из-за чего тяжеловесный файн-тюнинг уровня Unsloth локально невозможен. Вся нагрузка по запуску локальных ИИ-агентов ложится непосредственно на ядра CPU и общую системную оперативную память (RAM). Это делает емкость ОЗУ главным сдерживающим фактором при выборе битности и размера ИИ-моделей.
+```bash
+lscpu
+Architecture:                x86_64
+  CPU op-mode(s):            32-bit, 64-bit
+  Address sizes:             48 bits physical, 48 bits virtual
+  Byte Order:                Little Endian
+CPU(s):                      24
+  On-line CPU(s) list:       0-23
+Vendor ID:                   AuthenticAMD
+  Model name:                AMD Ryzen AI 9 HX 470 w/ Radeon 890M
+    CPU family:              26
+    Model:                   36
+    Thread(s) per core:      2
+    Core(s) per socket:      12
+    Socket(s):               1
+    Stepping:                0
+    Frequency boost:         enabled
+    CPU(s) scaling MHz:      30%
+    CPU max MHz:             5297.2979
+    CPU min MHz:             621.6220
+    BogoMIPS:                3992.52
+    Flags:                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_
+                             opt pdpe1gb rdtscp lm constant_tsc rep_good amd_lbr_v2 nopl xtopology nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclm
+                             ulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy 
+                             abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpuid_f
+                             ault cpb cat_l3 cdp_l3 hw_pstate ssbd mba perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase tsc_adjust bmi1 avx2 sme
+                             p bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl 
+                             xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk avx_vnni avx512_bf16 clzero irpe
+                             rf xsaveerptr rdpru wbnoinvd cppc arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilte
+                             r pfthreshold avic v_vmsave_vmload vgif x2avic v_spec_ctrl vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq 
+                             avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid bus_lock_detect movdiri movdir64b overflow_recov succor smca fsrm avx512_vp
+                             2intersect flush_l1d amd_lbr_pmc_freeze
+Virtualization features:     
+  Virtualization:            AMD-V
+Caches (sum of all):         
+  L1d:                       576 KiB (12 instances)
+  L1i:                       384 KiB (12 instances)
+  L2:                        12 MiB (12 instances)
+  L3:                        24 MiB (2 instances)
+NUMA:                        
+  NUMA node(s):              1
+  NUMA node0 CPU(s):         0-23
+Vulnerabilities:             
+  Gather data sampling:      Not affected
+  Ghostwrite:                Not affected
+  Indirect target selection: Not affected
+  Itlb multihit:             Not affected
+  L1tf:                      Not affected
+  Mds:                       Not affected
+  Meltdown:                  Not affected
+  Mmio stale data:           Not affected
+  Old microcode:             Not affected
+  Reg file data sampling:    Not affected
+  Retbleed:                  Not affected
+  Spec rstack overflow:      Mitigation; IBPB on VMEXIT only
+  Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+  Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+  Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; STIBP always-on; PBRSB-eIBRS Not affected; BHI Not affected
+  Srbds:                     Not affected
+  Tsa:                       Not affected
+  Tsx async abort:           Not affected
+  Vmscape:                   Mitigation; IBPB on VMEXIT
+```
+
+Ставим:
+```
+ollama pull deepseek-r1:14b
+```
+
+## Архитектура «Мышления» против «Линейной выдачи»
+
+Популярные кодинг-модели (например, классическая серия Qwen Coder) работают по принципу **линейного предсказания токенов**. Они выдают код сразу, опираясь на паттерны из обучающей выборки. Если в исходном коде класса были объявлены свойства с типом `any`, линейная модель с высокой вероятностью просто скопирует их в блок исправления, поленившись переписать соседние строки под строгие дженерики.
+
+Модели класса **DeepSeek-R1** работают принципиально иначе. Перед тем как выдать первую строчку кода в терминал, они запускают скрытый от пользователя (отображаемый в тегах `<think>`) **цикл логических рассуждений**. Модель проводит внутренний дебат, симулируя последствия своих правок:
+
+*«Пользователь требует убрать точки с запятой и скобки в однострочных if. Если я заменю этот блок, мне нужно проконтролировать отсутствие ";" во всех измененных строках. А еще нужно заменить any на IEffect из импортированных типов, проверяем структуру...»*
+
+## Почему рассуждающие модели побеждают на сложных задачах?
+
+1. **Контроль негативных инструкций.** Команды вида *«НЕ используй точки с запятой»* или *«НЕ пиши фигурные скобки»* — самые сложные для обычных LLM. Обычные ИИ-кодеры нарушают их из-за привычки, заложенной в весах модели. Рассуждающая модель сначала валидирует свои же запреты и лишь затем пишет финальный синтаксис.
+2. **Безопасная очистка от legacy-типов.** Замена `any` на `unknown` или строгие интерфейсы в Proxy-ловушках и WeakMap требует удержания в памяти связей между файлом типов `types.ts` и логикой планировщика обновлений. Модели с логическим мышлением лучше видят каскадные взаимосвязи в графе зависимостей.
+
+## Сравнительный анализ локальных ИИ-инструментов
+
+Данные актуальны и зафиксированы на **октябрь 2026 года**. В таблице приведено сравнение ключевых моделей для локального запуска на современных процессорах (уровня AMD Ryzen AI 9 / Zen 5) с объемом системной памяти 32–64 ГБ.
+
+| **Параметр сравнения** | **Qwen2.5-Coder:14b** | **Qwen3-Coder:30b** | **DeepSeek-R1:14b** | **DeepSeek-R1:32b** |
+| :--- | :--- | :--- | :--- | :--- |
+| **Требуемые ресурсы (RAM)** | **~16 ГБ ОЗУ**<br />Легко запускается параллельно с браузером и тяжелой IDE. | **~32 ГБ ОЗУ**<br />Занимает около 19 ГБ на диске. Требует закрытия тяжелых вкладок браузера при 32 ГБ RAM. | **~16 ГБ ОЗУ**<br />Работает стабильно на базовых конфигурациях за счет дистилляции. | **~48–64 ГБ ОЗУ**<br />Требует запаса памяти под тяжелый контекст рассуждений. |
+| **Способность к рассуждениям (Reasoning)** | **Отсутствует**<br />Пишет код линейно, склонна к ленивому копированию структуры SEARCH. | **Слабая / Базовая**<br />Фокусируется на огромном контексте (до 256K), но логику строит прямолинейно. | **Высокая (Блок `<think>`)**<br />Анализирует архитектурные абстракции перед генерацией. | **Максимальная**<br />Глубокое математическое и логическое планирование каждого шага. |
+| **Следование негативным инструкциям** | **Низкое**<br />Часто игнорирует запреты на использование `;`, скобок или конкретных API. | **Среднее**<br />Удерживает простые ограничения за счет увеличенного объема параметров. | **Очень высокое**<br />Жестко фильтрует итоговый синтаксис на этапе внутреннего анализа. | **Абсолютное**<br />Контролирует любые сложные граничные условия и запреты архитектора. |
+| **С какими задачами лучше справляется** | • Написание шаблонного кода<br />• Быстрые инлайновые правки<br />• Дописывание простых юнит-тестов | • Развесистые монорепозитории<br />• Чтение больших контекстов файлов<br />• Рутинный сквозной кодинг | • Сложный рефакторинг ядра<br />• Очистка кодовой базы от `any`<br />• Внедрение строгой типизации | • Алгоритмы (топологическая сортировка)<br />• Поиск витиеватых багов и утечек памяти |
+| **Общее резюме** | Быстрый, легкий, но «глупый» воркхорс. Не подходит для изменения архитектуры. | Идеальный локальный драйвер для Aider за счет скорости MoE-архитектуры и длинного контекста. | Лучший выбор для точечного рефакторинга логики на средних ПК без дискретной графики. | Тяжелый, медленный, но невероятно умный инструмент для распутывания критических багов. |
+
+## Архитектурный вердикт
+
+Для перевода стейт-менеджеров и реактивных движков на мажорные версии (уровня `2.x.x-alpha`) оптимальным является комбинированный подход:
+
+1. Запускать автоматические пайплайны генерации патчей (например, через неинтерактивный агент Aider) на базе **Qwen3-Coder:30b** — она обеспечит высокую скорость генерации токенов (12–15 токс/сек) и удержит контекст всех файлов ядра.
+2. Если модель начинает ходить по кругу и ломать тесты из-за сложных типов в Proxy-ловушках или батчинге микрозадач — изолировать проблему и переключать конвейер на **DeepSeek-R1 (14b / 32b)**. Ее способность к рассуждению позволяет решать задачи, которые обычным кодинг-моделям просто не под силу.
