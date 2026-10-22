@@ -1240,7 +1240,6 @@ const Logic = memo(({ room }: TLogicProps) => {
               }
             </button>
             <Button
-              size='small'
               startIcon={<ArrowBackIcon />}
               variant='outlined'
               color='primary'
