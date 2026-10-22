@@ -93,7 +93,7 @@ const renderWidgetMascot = () => {
   // const currentDay = new Date('2026-09-18').getDay() // FRI
 
   // 1. УСЛОВИЕ-ИСКЛЮЧЕНИЕ: Только 17 октября
-  if (currentDate === 17 && currentMonth === 9) {
+  if ((currentDate >= 17 && currentDate <= 30) && currentMonth === 9) {
     return (
       <>
         <Cat
