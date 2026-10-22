@@ -103,13 +103,14 @@ export const AddNewBtn = ({
           
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose} sx={{ borderRadius: '8px' }}>Cancel</Button>
           <Button
             variant='contained'
             onClick={
               handleSubmit(handleSuccess, handleError)
             }
             disabled={Object.keys(errors).length !== 0 || !isValid}
+            sx={{ borderRadius: '8px' }}
           >Next</Button>
         </DialogActions>
       </Dialog>

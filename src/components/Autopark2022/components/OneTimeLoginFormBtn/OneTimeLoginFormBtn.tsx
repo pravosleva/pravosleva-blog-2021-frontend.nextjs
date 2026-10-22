@@ -151,7 +151,8 @@ export const OneTimeLoginFormBtn = ({ chat_id }: TProps) => {
       {
         isFormOpened && (
           <Button
-            size='small' startIcon={<FingerprintIcon />}
+            size='small'
+            // startIcon={<FingerprintIcon />}
             endIcon={<CloseIcon />} fullWidth variant='outlined' color='error'
             onClick={handleCloseForm}
             disabled={isLoading}
