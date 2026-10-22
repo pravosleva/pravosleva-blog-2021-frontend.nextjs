@@ -108,6 +108,7 @@ export const CustomPinInput = ({
           variant="contained"
           color="primary"
           onClick={handleSendPasswordClick}
+          sx={{ borderRadius: '8px' }}
         >
           {isSending ? 'Sending...' : 'Send Password'}
         </Button>

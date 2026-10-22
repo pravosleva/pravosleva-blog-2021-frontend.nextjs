@@ -1348,6 +1348,9 @@ const Logic = memo(({ room }: TLogicProps) => {
                   zIndex: 2,
                   padding: '16px',
                   paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
                 }}
                 className='backdrop-blur--lite'
               >

@@ -124,7 +124,10 @@ export const EditModal = ({
 
             <Stack direction="row" spacing={2}>
               {!!onClose && (
-                <Button fullWidth variant="outlined" onClick={onClose} color="primary" disabled={isSubmitting}>
+                <Button
+                  fullWidth variant="outlined" onClick={onClose} color="primary" disabled={isSubmitting}
+                  sx={{ borderRadius: '8px' }}
+                >
                   Закрыть
                 </Button>
               )}
@@ -135,6 +138,7 @@ export const EditModal = ({
                 disabled={!isFormCorrect || isSubmitting}
                 color="primary"
                 loading={isSubmitting}
+                sx={{ borderRadius: '8px' }}
               >
                 Отправить
               </LoadingButton>
