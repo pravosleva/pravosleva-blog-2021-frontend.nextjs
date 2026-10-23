@@ -234,19 +234,19 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
           else this.radioEl.src = track.url // `${track.url}?_t=${Date.now()}`;
           
           this.radioEl.play()
-            // .then(() => { 
-            //   this.isPlaying.value = true; 
-            //   this.broadcast('someone_started_playback'); 
-            //   if (this.radioEl) this.initRadioAudioContext(this.radioEl);
-            // })
             .then(() => { 
-              // Оборачиваем мутации здесь
-              (this as any).engine.batch(() => {
-                this.isPlaying.value = true; 
-                this.broadcast('someone_started_playback'); 
-                if (this.radioEl) this.initRadioAudioContext(this.radioEl);
-              });
+              this.isPlaying.value = true; 
+              this.broadcast('someone_started_playback'); 
+              if (this.radioEl) this.initRadioAudioContext(this.radioEl);
             })
+            // .then(() => { 
+            //   // Оборачиваем мутации здесь
+            //   (this as any).engine.batch(() => {
+            //     this.isPlaying.value = true; 
+            //     this.broadcast('someone_started_playback'); 
+            //     if (this.radioEl) this.initRadioAudioContext(this.radioEl);
+            //   });
+            // })
             .catch((err) => { console.warn('Прерван запуск радио потока:', err.message); });
         } else {
           this.radioEl.pause();

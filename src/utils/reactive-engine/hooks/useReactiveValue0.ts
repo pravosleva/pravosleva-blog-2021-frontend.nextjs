@@ -1,101 +1,105 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 
-
 type CleanupFn = () => void;
 
 interface ObservableItem<T> {
   readonly value: T
+  readonly valueWithoutTracking?: T
   subscribe: (cb: (val: T) => void) => CleanupFn
   destroy?: () => void
 }
 
 type ReactiveInput<T> = ObservableItem<T> | (() => ObservableItem<T>)
 
-/**
- * Изоморфный фоллбэк-хук для извлечения текущего значения из реактивных примитивов ядра
- * (Signal, Computed, Resource) и управления подпиской в окружениях **React 16.8+ и React 17**.
- *
- * В отличие от современной версии `useReactiveValue`, данный хук спроектирован на базе классической
- * связки `useState` + `useEffect`. Он содержит встроенный механизм упреждающей синхронизации
- * (Pre-emptive Synchronization Pattern), предотвращающий рассинхронизацию данных (Tearing) и мерцание UI
- * во время асинхронных микрозадач планировщика React.
- *
- * ### Особенности управления памятью:
- * 1. **Глобальные сигналы (Сервисы/Синглтоны):** При размонтировании компонента хук выполняет
- *    только стандартную отписку от обновлений. Метод `.destroy()` **не вызывается**,
- *    что сохраняет глобальное состояние системы в безопасности.
- * 2. **Локальные фабрики (`() => engine.computed(...)`):** Если в качестве аргумента передана
- *    функция-фабрика, хук понимает, что вычисление создано локально для этого экрана.
- *    При анмаунте компонента хук автоматически вызовет `.destroy()`, предотвращая утечки памяти в ядре.
- *
- * @template T - Тип данных, инкапсулированных внутри реактивного элемента.
- * @param {ReactiveInput<T>} input - Готовый реактивный элемент ядра или ленивая функция-фабрика, возвращающая его.
- * @returns {T} Актуальное синхронизированное значение реактивного элемента.
- *
- * @example
- * ```tsx
- * import { useReactiveValue0 } from '@pravosleva/reactive-engine/react';
- * import { userInfoService } from '~/store';
- *
- * // Сценарий 1: Прямая подписка на долгоживущий сигнал сервиса в legacy-компоненте
- * export const LegacyCounterDisplay = () => {
- *   const counter = useReactiveValue0(userInfoService.counter);
- *   return <span>Значение: {counter}</span>;
- * };
- *
- * // Сценарий 2: Использование ленивой фабрики во React 17 проектах (авто-очистка ядра при анмаунте)
- * export const LegacyFilteredList = ({ query }: { query: string }) => {
- *   const filteredData = useReactiveValue0(() =>
- *     engine.computed(() => userInfoService.list.value.filter(item => item.includes(query)))
- *   );
- *   return <ul>{filteredData.map(item => <li key={item}>{item}</li>)}</ul>;
- * };
- * ```
- */
 export const useReactiveValue0 = <T>(input: ReactiveInput<T>): T => {
   const isFactory = typeof input === 'function'
 
-  // NOTE: СТАБИЛИЗАЦИЯ ИНПУТА: защищает от бесконечных циклов при инлайн-стрелочных фабриках
   const factoryRef = useRef(input)
   useEffect(() => {
     factoryRef.current = input
   }, [input])
 
-  // Вычисляем элемент строго 1 раз при монтировании, либо при смене ссылки на готовый сигнал
   const reactiveItem = useMemo(() => {
     if (typeof input === 'function') {
-      return input() // Ленивый вызов фабрики ровно один раз за жизнь компонента
+      return input() 
     }
     return input
-  }, [isFactory ? undefined : input]) // Игнорируем ссылки инлайн-функций
+  }, [isFactory ? undefined : input])
 
-  const [state, setState] = useState<T>(reactiveItem.value)
+  // Безопасно получаем начальное значение без трекинга зависимостей на рендере
+  const getSafeValue = (item: ObservableItem<T>) => {
+    if (item.valueWithoutTracking !== undefined) return item.valueWithoutTracking;
+
+    // Пытаемся динамически найти инстанс движка, к которому привязан этот сигнал
+    const rawItem = item as any;
+    
+    // В зависимости от того, Signal это или Computed, ищем ссылку на движок в приватных полях ноды
+    const node = rawItem._node || rawItem;
+    // В исходниках `core.ts` у движка есть уникальные свойства, например `computedCache` или `pendingEffects`
+    // Если мы можем найти метод untrack в контексте объекта — вызываем его локально
+    const localUntrack = rawItem.engine?.untrack || node.engine?.untrack;
+
+    if (typeof localUntrack === 'function') {
+      try {
+        return localUntrack(() => item.value);
+      } catch {
+        // Фоллбэк, если локальный untrack почему-то дал сбой
+      }
+    }
+
+    // Если это computed из файла `core.method.computed.ts`, у него есть node.run
+    if (node && typeof node.run === 'function' && node.type === 'computed') {
+      return node.verifiedInEpoch !== undefined ? rawItem.valueWithoutTracking : node.run();
+    }
+
+    return item.value;
+  };
+
+  const [state, setState] = useState<T>(() => getSafeValue(reactiveItem))
   const setStateRef = useRef(setState)
 
-  // Держим ссылку на setState всегда актуальной для безопасных асинхронных вызовов
   useEffect(() => {
     setStateRef.current = setState
   }, [setState])
 
-  // NOTE: СИНХРОНИЗАЦИЯ НА ОПЕРЕЖЕНИЕ (Теккущее значение):
-  // Если между фазой рендера и выполнением useEffect значение в ядре библиотеки успело измениться,
-  // мы синхронно подтягиваем актуальный стейт, исключая "слепые пятна" и мерцание UI.
-  if (state !== reactiveItem.value) {
-    setState(reactiveItem.value)
+  // БЕЗОПАСНАЯ СИНХРОНИЗАЦИЯ НА ОПЕРЕЖЕНИЕ (с поддержкой локального инстанса)
+  const currentSafeValue = getSafeValue(reactiveItem)
+  if (state !== currentSafeValue) {
+    setState(currentSafeValue)
   }
 
   useEffect(() => {
-    // Привязываем подписку ядра к триггеру обновлений React
-    const unsubscribe = reactiveItem.subscribe((newValue) => {
-      setStateRef.current(newValue)
-    })
+    let unsubscribe: (() => void) | null = null;
+    let isMounted = true;
+
+    // Изолируем подписку в макротаску, чтобы полностью развязать локальные 
+    // транзакции конкретного инстанса движка и жизненный цикл React 17
+    const timer = setTimeout(() => {
+      if (!isMounted) return;
+
+      try {
+        let isFirstCall = true;
+        unsubscribe = reactiveItem.subscribe((newValue) => {
+          if (isFirstCall) {
+            isFirstCall = false; 
+            return;
+          }
+          if (isMounted) {
+            setStateRef.current(newValue);
+          }
+        });
+      } catch (err) {
+        console.warn("Ошибка при подписке на сигнал локального инстанса:", err);
+      }
+    }, 0);
 
     return () => {
-      unsubscribe()
+      isMounted = false;
+      clearTimeout(timer);
+      if (unsubscribe) {
+        unsubscribe();
+      }
 
-      // NOTE: БЕЗОПАСНАЯ ОЧИСТКА ПАМЯТИ:
-      // Метод .destroy() вызывается СТРОГО если объект был порожден локальной фабрикой.
-      // Глобальные сигналы сервисов остаются в безопасности и не стираются из движка!
       if (isFactory && reactiveItem && typeof reactiveItem.destroy === 'function') {
         reactiveItem.destroy()
       }

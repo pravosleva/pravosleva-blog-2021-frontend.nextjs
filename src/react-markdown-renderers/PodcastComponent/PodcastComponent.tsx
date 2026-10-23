@@ -127,7 +127,7 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
             color: isCurrentActive ? '#FF8E53' : 'rgba(255,255,255,0.45)',
             fontWeight: 600
           }}>
-            {isBuffering ? '⏳ Буферизация...' : isPlayingNow ? '🔊 Сейчас играет подкаст' : isCurrentActive ? '⏸️ На паузе' : '📻 Аудио-эпизод'}
+            {(isPlayingNow && isBuffering) ? 'Буферизация...' : isPlayingNow ? '🔊 Сейчас играет подкаст' : isCurrentActive ? '⏸️ На паузе' : '📻 Аудио-эпизод'}
           </span>
 
           {durationStr && durationStr.trim() !== '' && (
