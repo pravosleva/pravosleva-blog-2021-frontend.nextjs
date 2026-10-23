@@ -387,32 +387,46 @@ export class AudioPodcastService extends AbstractService {
 
     if (wasPlayingTrack) {
       if (updatedQueue.length > 0) {
+        // 1. Мгновенно тушим физический звук текущего удаляемого трека через stopTrack
+        this.stopTrack();
+
+        // 2. Находим новый целевой трек (первый в оставшейся очереди)
         const nextTrack = updatedQueue[0];
+        
+        // 3. Переводим фокус плеера на него в состоянии ПАУЗЫ (готовым к новому клику)
         this.currentTrack.value = nextTrack;
         this.saveActiveTrackToStorage(nextTrack.id);
         this.broadcast('active_track_changed', nextTrack);
-        this.isPlaying.value = false;
 
+        // 4. Корректно инициализируем нативный элемент под новый трек без автоплея
         if (this.audioEl) {
-          // Здесь мы просто меняем src на новый.
           this.audioEl.src = nextTrack.url;
           this.audioEl.load();
-          this.currentTime.value = this.getTrackProgress(nextTrack.id);
-          this.audioEl.currentTime = this.currentTime.value;
+          const savedTime = this.getTrackProgress(nextTrack.id);
+          this.audioEl.currentTime = savedTime;
+          this.currentTime.value = savedTime;
         }
-      } else {
-        this.currentTrack.value = null;
-        this.saveActiveTrackToStorage(null);
-        this.broadcast('active_track_changed', null);
-        this.isPlaying.value = false;
-        this.currentTime.value = 0;
-        this.duration.value = 0;
         
-        // Безопасное стирание ресурсов при пустой очереди ( DRY + No Error )
-        if (this.audioEl) {
-          this.audioEl.removeAttribute('src');
-          this.audioEl.load();
-        }
+        // 5. Показываем шторку плеера с новым треком в свернутом/готовом виде
+        this.isPlayerVisible.value = true;
+      } else {
+        // this.currentTrack.value = null;
+        // this.saveActiveTrackToStorage(null);
+        // this.broadcast('active_track_changed', null);
+        // this.isPlaying.value = false;
+        // this.currentTime.value = 0;
+        // this.duration.value = 0;
+        
+        // // Безопасное стирание ресурсов при пустой очереди ( DRY + No Error )
+        // if (this.audioEl) {
+        //   this.audioEl.removeAttribute('src');
+        //   this.audioEl.load();
+        // }
+
+        // WIP: Вызываем комплексный метод остановки. Он сам вызовет .pause(),
+        // занулит стейты, разошлет broadcast события во все вкладки
+        // и корректно уничтожит радио/HLS инстансы в расширенном сервисе.
+        this.stopTrack()
       }
     }
     

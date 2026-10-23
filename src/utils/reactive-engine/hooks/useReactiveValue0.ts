@@ -24,47 +24,57 @@ export const useReactiveValue0 = <T>(input: ReactiveInput<T>): T => {
       return input() 
     }
     return input
-  }, [isFactory ? undefined : input])
+  }, [input]) // Сбрасываем мемоизацию при смене инпута
 
-  // Безопасно получаем начальное значение без трекинга зависимостей на рендере
-  const getSafeValue = (item: ObservableItem<T>) => {
+  // 🛡️ АБСОЛЮТНО БЕЗОПАСНЫЙ ГВАРД ВЫЧИТКИ ЗНАЧЕНИЯ НА ЭТАПЕ РЕНДЕРА
+  const getRawValueWithoutTriggeringGettter = (item: ObservableItem<T>): T => {
     if (item.valueWithoutTracking !== undefined) return item.valueWithoutTracking;
-
-    // Пытаемся динамически найти инстанс движка, к которому привязан этот сигнал
-    const rawItem = item as any;
     
-    // В зависимости от того, Signal это или Computed, ищем ссылку на движок в приватных полях ноды
-    const node = rawItem._node || rawItem;
-    // В исходниках `core.ts` у движка есть уникальные свойства, например `computedCache` или `pendingEffects`
-    // Если мы можем найти метод untrack в контексте объекта — вызываем его локально
-    const localUntrack = rawItem.engine?.untrack || node.engine?.untrack;
+    const raw = item as any;
+    const node = raw._node || raw;
 
-    if (typeof localUntrack === 'function') {
+    // Читаем сырые скрытые поля ядра, полностью игнорируя опасные геттеры .value
+    if (node.valueWithoutTracking !== undefined) return node.valueWithoutTracking;
+    if (node._value !== undefined) return node._value;
+    if (node.rawValue !== undefined) return node.rawValue;
+    
+    // Если это computed из core.method.computed.ts, значение лежит в замыкании, 
+    // но в инстансе ноды оно кешируется или пересчитывается через run()
+    if (node.type === 'computed' && typeof node.run === 'function') {
       try {
+        // Вызываем внутренний метод выполнения графа без подписки
+        node.run();
+      } catch {}
+    }
+
+    // Крайний фолбек: пробуем прочесть поле value, только если мы полностью защищены
+    try {
+      const localUntrack = raw.engine?.untrack || node.engine?.untrack;
+      if (typeof localUntrack === 'function') {
         return localUntrack(() => item.value);
-      } catch {
-        // Фоллбэк, если локальный untrack почему-то дал сбой
       }
+      return item.value;
+    } catch {
+      return raw._value;
     }
-
-    // Если это computed из файла `core.method.computed.ts`, у него есть node.run
-    if (node && typeof node.run === 'function' && node.type === 'computed') {
-      return node.verifiedInEpoch !== undefined ? rawItem.valueWithoutTracking : node.run();
-    }
-
-    return item.value;
   };
 
-  const [state, setState] = useState<T>(() => getSafeValue(reactiveItem))
-  const setStateRef = useRef(setState)
+  // Инициализируем стейт гарантированно безопасным значением
+  const initialValue = getRawValueWithoutTriggeringGettter(reactiveItem);
+  const [state, setState] = useState<T>(initialValue)
+  
+  const stateRef = useRef<T>(initialValue)
+  stateRef.current = state
 
+  const setStateRef = useRef(setState)
   useEffect(() => {
     setStateRef.current = setState
   }, [setState])
 
-  // БЕЗОПАСНАЯ СИНХРОНИЗАЦИЯ НА ОПЕРЕЖЕНИЕ (с поддержкой локального инстанса)
-  const currentSafeValue = getSafeValue(reactiveItem)
+  // СИНХРОНИЗАЦИЯ НА ЭТАПЕ РЕНДЕРА ЧЕРЕЗ СЫРЫЕ ДАННЫЕ
+  const currentSafeValue = getRawValueWithoutTriggeringGettter(reactiveItem)
   if (state !== currentSafeValue) {
+    stateRef.current = currentSafeValue
     setState(currentSafeValue)
   }
 
@@ -72,11 +82,10 @@ export const useReactiveValue0 = <T>(input: ReactiveInput<T>): T => {
     let unsubscribe: (() => void) | null = null;
     let isMounted = true;
 
-    // Изолируем подписку в макротаску, чтобы полностью развязать локальные 
-    // транзакции конкретного инстанса движка и жизненный цикл React 17
-    const timer = setTimeout(() => {
-      if (!isMounted) return;
+    const node = (reactiveItem as any)._node || reactiveItem;
+    const localUntrack = (reactiveItem as any).engine?.untrack || node.engine?.untrack;
 
+    const setupSubscription = () => {
       try {
         let isFirstCall = true;
         unsubscribe = reactiveItem.subscribe((newValue) => {
@@ -85,17 +94,32 @@ export const useReactiveValue0 = <T>(input: ReactiveInput<T>): T => {
             return;
           }
           if (isMounted) {
+            stateRef.current = newValue;
             setStateRef.current(newValue);
           }
         });
+        
+        // Как только эффект успешно прикоммитился к DOM — вычитываем актуальное 
+        // состояние из ядра плеера и прокидываем в стейт, завершая холодный старт.
+        const freshValue = getRawValueWithoutTriggeringGettter(reactiveItem);
+        if (isMounted && stateRef.current !== freshValue) {
+          stateRef.current = freshValue;
+          setStateRef.current(freshValue);
+        }
       } catch (err) {
-        console.warn("Ошибка при подписке на сигнал локального инстанса:", err);
+        console.warn("Предупреждение реактивного графа при подписке:", err);
       }
-    }, 0);
+    };
+
+    // Оформляем подписку строго изолированно от контекста сборщика Next.js
+    if (typeof localUntrack === 'function') {
+      localUntrack(setupSubscription);
+    } else {
+      setupSubscription();
+    }
 
     return () => {
       isMounted = false;
-      clearTimeout(timer);
       if (unsubscribe) {
         unsubscribe();
       }

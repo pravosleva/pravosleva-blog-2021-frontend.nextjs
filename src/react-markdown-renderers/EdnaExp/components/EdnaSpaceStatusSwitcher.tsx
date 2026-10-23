@@ -112,7 +112,7 @@ export const EdnaSpaceStatusSwitcher: React.FC<IEdnaSpaceStatusSwitcherProps> = 
           width="100%" 
           height="auto" 
           style={{ display: 'block', margin: '0 auto', overflow: 'visible' }} // overflow: visible страхует вылеты пикселей
-          xmlns="http://w3.org"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
             <filter id="space-box-shadow" x="-20%" y="-20%" width="140%" height="140%">

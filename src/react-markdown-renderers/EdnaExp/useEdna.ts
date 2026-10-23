@@ -1,5 +1,5 @@
 import { ednaEngine } from './ednaEngine'
-import { useReactiveValue0 } from '~/utils/reactive-engine'
+import { useReactiveValue0 } from '~/utils/reactive-engine/hooks/useReactiveValue0'
 import { EdnaScriptService } from './EdnaScriptService'
 
 export const useEdna = () => {

@@ -27,9 +27,10 @@ export class EdnaScriptService extends AbstractService {
   public widgetBadge = this.engine.signal<number>(0, 'edna:signal:widget-badge')
   public widgetTheme = this.engine.signal<string>('dark', 'edna:signal:widget-theme')
   
+    // ИСПРАВЛЕНО: Безопасное реактивное вычисление статуса блокировки кнопок пульта
   public isActionDisabled = this.engine.computed<boolean>(() => {
     const currentStatus = this.status.value
-    return currentStatus === 'success' || currentStatus === 'polling-api'
+    return currentStatus === 'success' || currentStatus === 'polling-api' || currentStatus === 'injecting' || currentStatus === 'fetching'
   }, 'edna:computed:action-disabled')
 
   private pollingIntervalId: any = null
