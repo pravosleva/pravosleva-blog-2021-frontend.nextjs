@@ -88,12 +88,12 @@ export class CreateNewProjectLogic extends AbstractService {
     
     // Если ошибка вызвана нашей валидацией pre-fetch — мягко её игнорируем, 
     // чтобы не пугать пользователя красным алертом на пустой форме
-    if (resError?.message?.includes('Pre-fetch validation failed')) {
+    if (resError?.includes('Pre-fetch validation failed')) {
       return null;
     }
     
     // Возвращаем строго текстовую строку, а не объект!
-    return resError ? resError.message : null
+    return resError ? resError : null
   }, 'project:computed:service-error-string')
 
   /**

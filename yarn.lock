@@ -2497,10 +2497,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.1.tgz#728ecd95ab207aab8a9a4e421f0422db329232be"
   integrity sha512-HnUhk1Sy9IuKrxEMdIRCxpIqPw6BFsbYSEUO9p/hNw5sMld/+3OLMWQP80F8/db9qsv3qUjs7ZR5bS/R+iinXw==
 
-"@pravosleva/reactive-engine@^1.5.8-beta":
-  version "1.5.8-beta"
-  resolved "https://registry.yarnpkg.com/@pravosleva/reactive-engine/-/reactive-engine-1.5.8-beta.tgz#fcb6ba79e6493d1138caa1e9b91408543e8d54a5"
-  integrity sha512-5zHJs3ar6ZQCxJP2DbCLukofLzyJeSg9BMbciRAEXTcbFmwLtUCf6tZ2yW/4mvZXiuy01rb3q4rW4Oa6vs0YkA==
+"@pravosleva/reactive-engine@2.6.1":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@pravosleva/reactive-engine/-/reactive-engine-2.6.1.tgz#1392971abd6f62e7c08745dd1f08aeef94d0f151"
+  integrity sha512-81mxHONHOPwARGzTuSyBa5ufL66XPThIf0KY81m5/mofCdtQgyYRUpHjz98YAYeVhunSZHgDLEmVYa7lNNM+kw==
 
 "@puppeteer/browsers@3.2.3", "@puppeteer/browsers@^3.2.2":
   version "3.2.3"
@@ -11423,10 +11423,15 @@ use-subscription@1.5.1:
   dependencies:
     object-assign "^4.1.1"
 
-use-sync-external-store@1.2.0, use-sync-external-store@^1.0.0, use-sync-external-store@^1.2.0:
+use-sync-external-store@1.2.0, use-sync-external-store@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
+
+use-sync-external-store@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.7.0.tgz#6dcb66ef569e02f186af6b3d575f414ce746e18f"
+  integrity sha512-6L+EeigHMQhdaIPNIFUKwfWJSwWFQ8gJbJ2DLOs5sDIegTwR9fRxvnM3uciHKjIZhFz+KAv2emhWMRvDmMcY8A==
 
 utf8-length@0.0.1:
   version "0.0.1"

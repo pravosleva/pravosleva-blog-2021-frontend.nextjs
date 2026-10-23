@@ -303,8 +303,7 @@ export const withLSManager = (ComposedComponent: any) => compose(
   withHandlers({
     addNewEmployeeToLS: (props: any) => () => {
       // @ts-ignore
-      swal
-        .fire({
+      swal.fire({
           title: 'Новый исполнитель',
           // text: 'Will be added to localStorage',
           input: 'text',
@@ -763,8 +762,7 @@ export const withLSManager = (ComposedComponent: any) => compose(
     },
     removeTaskFromLS: (props) => (id: any) => {
       // @ts-ignore
-      swal
-        .fire({
+      swal.fire({
           title: 'Are you sure?',
           text: "You won't be able to revert this!",
           type: 'warning',

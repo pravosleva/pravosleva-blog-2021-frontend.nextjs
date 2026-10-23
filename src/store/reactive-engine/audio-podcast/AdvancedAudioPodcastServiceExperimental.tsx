@@ -234,10 +234,18 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
           else this.radioEl.src = track.url // `${track.url}?_t=${Date.now()}`;
           
           this.radioEl.play()
+            // .then(() => { 
+            //   this.isPlaying.value = true; 
+            //   this.broadcast('someone_started_playback'); 
+            //   if (this.radioEl) this.initRadioAudioContext(this.radioEl);
+            // })
             .then(() => { 
-              this.isPlaying.value = true; 
-              this.broadcast('someone_started_playback'); 
-              if (this.radioEl) this.initRadioAudioContext(this.radioEl);
+              // Оборачиваем мутации здесь
+              (this as any).engine.batch(() => {
+                this.isPlaying.value = true; 
+                this.broadcast('someone_started_playback'); 
+                if (this.radioEl) this.initRadioAudioContext(this.radioEl);
+              });
             })
             .catch((err) => { console.warn('Прерван запуск радио потока:', err.message); });
         } else {
@@ -297,10 +305,18 @@ export class AdvancedAudioPodcastServiceExperimental extends AudioPodcastService
       }
 
       this.radioEl.play()
+        // .then(() => {
+        //   this.isPlaying.value = true;
+        //   this.broadcast('someone_started_playback');
+        //   if (this.radioEl) this.initRadioAudioContext(this.radioEl);
+        // })
         .then(() => {
-          this.isPlaying.value = true;
-          this.broadcast('someone_started_playback');
-          if (this.radioEl) this.initRadioAudioContext(this.radioEl);
+          // Оборачиваем мутации после await / в промисе в локальный batch инстанса
+          (this as any).engine.batch(() => {
+            this.isPlaying.value = true;
+            this.broadcast('someone_started_playback');
+            if (this.radioEl) this.initRadioAudioContext(this.radioEl);
+          });
         })
         .catch((err) => { console.warn('Запуск радио перехвачен микротаской:', err.message); });
 
