@@ -7,7 +7,11 @@ import { ReportTable } from './components'
 import { ReportLogic, TProps } from './service.ReportLogic'
 import { useReactiveValue0 } from '~/utils/reactive-engine'
 
-const engine = new ReactiveEngine()
+const engine = new ReactiveEngine({
+  logger: {
+    isEnabled: true
+  }
+})
 
 export const Report = ({ project_id, chat_id }: TProps) => {
   const logic = engine.inject(ReportLogic)

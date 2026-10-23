@@ -2497,10 +2497,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.10.1.tgz#728ecd95ab207aab8a9a4e421f0422db329232be"
   integrity sha512-HnUhk1Sy9IuKrxEMdIRCxpIqPw6BFsbYSEUO9p/hNw5sMld/+3OLMWQP80F8/db9qsv3qUjs7ZR5bS/R+iinXw==
 
-"@pravosleva/reactive-engine@2.6.1":
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/@pravosleva/reactive-engine/-/reactive-engine-2.6.1.tgz#1392971abd6f62e7c08745dd1f08aeef94d0f151"
-  integrity sha512-81mxHONHOPwARGzTuSyBa5ufL66XPThIf0KY81m5/mofCdtQgyYRUpHjz98YAYeVhunSZHgDLEmVYa7lNNM+kw==
+"@pravosleva/reactive-engine@2.6.2":
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/@pravosleva/reactive-engine/-/reactive-engine-2.6.2.tgz#f30ff2e8b39fd667e1843887d85973e53d17a699"
+  integrity sha512-/e0NZ/p8n2M418KMyhQRzpuW23oEgJ8hGrzinVL0i5++0jGxGrJ06lDnZBwblQruwHV4w+JUVWGx8RiVHF0rvA==
 
 "@puppeteer/browsers@3.2.3", "@puppeteer/browsers@^3.2.2":
   version "3.2.3"
