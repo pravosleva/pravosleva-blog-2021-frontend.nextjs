@@ -68,7 +68,7 @@
 /* Код анимаций и карточек остается без изменений */
 .gridItemBg {
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 24px;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
