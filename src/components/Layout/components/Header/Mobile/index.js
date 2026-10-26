@@ -123,7 +123,7 @@ const MobileHeader = memo(({
               }}
               onClick={handleLogoClick}
             >
-              <a href='/' target='_self' style={{ lineHeight: '40px' }}>R-ENGINE</a>
+              <a href='/reactive-engine' target='_self' style={{ lineHeight: '40px' }}>R-ENGINE</a>
             </li>
 
             {/* !isBrowserMemoryMonitorEnabled && (

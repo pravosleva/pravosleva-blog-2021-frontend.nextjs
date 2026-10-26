@@ -113,9 +113,7 @@ const _DesktopHeader = memo(({
             <ResponsiveBlock isLimited isPaddedMobile>
               <ul>
                 <li style={{ margin: '0 auto 0 0' }}>
-                  <Link href="/">
-                    R-ENGINE
-                  </Link>
+                  <Link href="/reactive-engine">R-ENGINE</Link>
                 </li>
 
                 {/* !isBrowserMemoryMonitorEnabled && (
