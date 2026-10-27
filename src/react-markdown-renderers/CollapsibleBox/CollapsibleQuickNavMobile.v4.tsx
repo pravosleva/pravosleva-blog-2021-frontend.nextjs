@@ -231,9 +231,6 @@ export const CollapsibleQuickNavMobile: React.FC = () => {
           if (items[0]?.id) {
             // 1. Скроллим к первому элементу
             scrollToIdRef.current({ id: items[0].id })
-            
-            // 2. Автоматически закрываем панель навигации (усыпляем рантайтм)
-            setIsOpened(false)
           }
         }}
         className="collapsible-quick-nav-hint-popup"
