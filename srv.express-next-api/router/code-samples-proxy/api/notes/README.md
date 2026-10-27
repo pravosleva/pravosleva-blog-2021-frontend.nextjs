@@ -39,7 +39,7 @@ const searchInSlugMapping = (slugMapping: TLocalSlugMap, qText: string): {
           // Берем id из JSON, если его нет — подставляем сам slugKey в качестве уникального ID
           _id: String(tools._id || slugKey), 
           // Если в файле был красивый title, выводим его с иконкой папки, иначе — slugKey
-          title: tools.title ? `📁 ${tools.title}` : slugKey,
+          title: tools.title || slugKey, // tools.title ? `📁 ${tools.title}` : slugKey,
           description: tools.brief || 'Локальное описание отсутствует',
           isPrivate,
           // Берем оригинальные даты создания и обновления из JSON-файла!

@@ -225,8 +225,18 @@ export const CollapsibleQuickNavMobile: React.FC = () => {
         gap: '12px',
       }}
     >
-      {/* 💡 НОВОЕ: ПОЛУПРОЗРАЧНАЯ ПОДСКАЗКА ДЛЯ ПОЛЬЗОВАТЕЛЯ */}
+      {/* 💡 ПОДСКАЗКА С АНИМАЦИЕЙ НАЖАТИЯ И АВТО-ЗАКРЫТИЕМ */}
       <div
+        onClick={() => {
+          if (items[0]?.id) {
+            // 1. Скроллим к первому элементу
+            scrollToIdRef.current({ id: items[0].id })
+            
+            // 2. Автоматически закрываем панель навигации (усыпляем рантайтм)
+            setIsOpened(false)
+          }
+        }}
+        className="collapsible-quick-nav-hint-popup"
         style={{
           position: 'absolute',
           right: '56px',
@@ -242,13 +252,27 @@ export const CollapsibleQuickNavMobile: React.FC = () => {
           boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
           backdropFilter: 'blur(8px)',
           border: '1px solid rgba(255,255,255,0.1)',
+          cursor: 'pointer',
+          WebkitTapHighlightColor: 'transparent',
+          userSelect: 'none',
           
-          // Анимация плавного появления/исчезновения
-          transform: showScrollHint ? 'translateX(0) scale(1)' : 'translateX(20px) scale(0.8)',
+          // Базовое состояние анимации появления/исчезновения
           opacity: showScrollHint ? 0.9 : 0,
           visibility: showScrollHint ? 'visible' : 'hidden',
-          transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          
+          // Динамический transform с поддержкой CSS-переменной для эффекта нажатия (:active)
+          transform: showScrollHint 
+            ? 'var(--nav-hint-scale, scale(1)) translateX(0)' 
+            : 'scale(0.8) translateX(20px)',
+            
+          // transition обрабатывает и смену состояния видимости, и микро-клики
+          transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, visibility 0.25s',
         }}
+        // Инлайн-микро-анимация для эффекта "пружины" при тапе/клике без тяжелых библиотек
+        onTouchStart={(e) => e.currentTarget.style.setProperty('--nav-hint-scale', 'scale(0.92)')}
+        onTouchEnd={(e) => e.currentTarget.style.removeProperty('--nav-hint-scale')}
+        onMouseDown={(e) => e.currentTarget.style.setProperty('--nav-hint-scale', 'scale(0.92)')}
+        onMouseUp={(e) => e.currentTarget.style.removeProperty('--nav-hint-scale')}
       >
         👇 Листайте вниз
       </div>

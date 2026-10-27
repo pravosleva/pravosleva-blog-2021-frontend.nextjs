@@ -44,7 +44,7 @@ export const indexRules = {
 const createNoteObject = (slugKey: string, tools: ILocalSlugItem, isPrivate: boolean) => ({
   original: {
     _id: String(tools._id || slugKey), 
-    title: tools.title ? `📁 ${tools.title}` : slugKey,
+    title: tools.title || slugKey, // tools.title ? `📁 ${tools.title}` : slugKey,
     description: tools.brief || 'Локальное описание отсутствует',
     isPrivate,
     isDisabledForMainBlogPage: tools.isDisabledForMainBlogPage || false,
