@@ -1,9 +1,9 @@
 ---
 title: "Капсула времени: Мой переезд на Angular 20+"
 brief: "Зафиксировал свои ожидания от Angular 20+ на позиции Senior React разработчика, чтобы вернуться сюда ровно через полгода и проверить инженерную интуицию."
-bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.jpg"
+bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.webp"
 bg_size: { w: 947, h: 562 }
-bg_type: "image/jpg"
+bg_type: "image/webp"
 
 createdAt: "2026-10-27T23:48:59.913Z"
 updatedAt: "2026-10-28T01:09:59.913Z"
@@ -14,7 +14,7 @@ tags: ["капсула_времени", "angular", "podcast", "ментальн�
 category: "guides"
 isPrivate: false
 isDraft: false
-isDisabledForMainBlogPage: true
+isDisabledForMainBlogPage: false
 ---
 ## Эксперимент: Капсула времени из Октября 2026 в Апрель 2027
 
@@ -26,16 +26,24 @@ isDisabledForMainBlogPage: true
 
 Включайте этот мини-выпуск, чтобы узнать, как выглядит современный Angular глазами прожженного реактера, и совпадет ли эта теоретическая альтернативная реальность с тем, что я обнаружу, когда переслушаю эту запись через 6 месяцев.
 
-![Когда они продолжают нести чушь про useCallback, а у тебя закончилось терпение.](/static/img/blog/2026-10-escape-to-angular.jpg "Escape to Angular in 2027")
+<Podcast
+  url="https://pravosleva.ru/docs/_exp/podcast/05.mp3"
+  title="Podcast #5"
+  description="Капсула времени: Переезд на Angular 20+"
+  durationStr="04:03"
+  bg="/static/img/blog/2026-10-escape-to-angular-preview.webp"
+/>
+
+![Когда они продолжают нести чушь про useCallback, а у тебя закончилось терпение.](/static/img/blog/2026-10-escape-to-angular.webp "Escape to Angular in 2027")
 
 <CollapsibleBox
 isEnabledForNavigation='0'
 header="Топ бриф-шуток для картинки"
-text="**1.** Когда они продолжают нести чушь про useCallback, а у тебя закончилось терпение. / When they keep talking shit about useCallback, and you're fresh out of patience.
+text="**1. Когда в React-чате продолжают нести чушь про useCallback, а у тебя закончилось терпение.** / When they keep talking shit about useCallback, and you're fresh out of patience.
 &nbsp;
-**2.** Хирургическое обновление живой ноды: До свидания, хуки. / Surgical update of a live node: Goodbye, hooks.
+**2. Хирургическое обновление живой ноды: До свидания, хуки.** / Surgical update of a live node: Goodbye, hooks.
 &nbsp;
-**3.** Белоснежка выбирает Zoneless: Выход из React-чата без лишних ререндеров. / Snow White chooses Zoneless: Leaving the React chat without extra re-renders."
+**3. Белоснежка выбирает Zoneless: Выход из React-чата без лишних ререндеров.** / Snow White chooses Zoneless: Leaving the React chat without extra re-renders."
 />
 
 ## Часть 1: Теоретическая
@@ -548,7 +556,7 @@ export class TodoApiService {
 
 `todo-dashboard.component.ts`
 
-```ts
+```typescript
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TodoStoreService } from './todo-store.service';
