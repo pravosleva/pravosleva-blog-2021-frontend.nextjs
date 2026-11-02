@@ -1,0 +1,409 @@
+---
+title: "Капсула времени: Мой переезд на Angular 20+ (день 1)"
+brief: "-"
+bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.webp"
+bg_size: { w: 947, h: 562 }
+bg_type: "image/webp"
+
+createdAt: "2026-11-02T23:48:59.913Z"
+updatedAt: "2026-11-02T01:09:59.913Z"
+priority: 0.8
+
+author: "Den Pol"
+tags: ["капсула_времени", "angular", "podcast", "ментальный_эксперимент", "реактивность", "сигналы"]
+category: "guides"
+isPrivate: true
+isDraft: true
+isDisabledForMainBlogPage: true
+---
+# 🅰️ День 1
+Что планируем освоить: Инфраструктура, Анатомия Standalone и Шаблонизатор нового поколения (Control Flow).
+
+## Шаг 1: Развертывание современной Zoneless-песочницы (0.5 часа)
+### Вариант А
+Установите актуальную версию Angular CLI глобально
+```bash
+nvm use 22.20
+npm install -g @angular/cli
+```
+
+Создайте новый проект. Нам нужна чистая standalone-архитектура. Флаг `--no-zonejs` (или выбор опции Zoneless при инициализации в современных версиях) отключает старый движок перехвата асинхронных событий, переводя приложение полностью на реактивность сигналов:
+```bash
+ng new angular-escape-sandbox --standalone --routing --style=css
+```
+
+### Вариант Б (лично я предпочитаю yarn)
+```bash
+nvm use 24.15
+yarn global add @angular/cli
+ng new angular-escape-sandbox --standalone --routing --style=css --package-manager=yarn
+
+cd angular-escape-sandbox
+yarn start
+```
+
+Инфраструктура готова. Все зависимости изолированы, сборка оптимизирована под современные стандарты ESM. Можно переходить к изучению анатомии созданного Standalone-компонента в `app.component.ts`.
+
+```bash
+ng new angular-escape-sandbox --standalone --routing --style=css --package-manager=yarn
+ Would you like to enable autocompletion? This will set up your terminal so pres
+sing TAB while typing Angular CLI commands will show possible options and autoco
+mplete arguments. (Enabling autocompletion will modify configuration files in yo
+ur home directory.) No
+Ok, you won't be prompted again. Should you change your mind, the following command will set up autocompletion for you:
+
+    ng completion
+ 
+Would you like to share pseudonymous usage data about this project with the Angu
+lar Team
+at Google under Google's Privacy Policy at https://policies.google.com/privacy.
+For more
+details and how to change this setting, see https://angular.dev/cli/analytics.
+
+   No
+Global setting: disabled
+Local setting: No local workspace configuration file.
+Effective status: disabled
+✔ Do you want to enable Server-Side Rendering (SSR) and Static Site Generation (
+SSG/Prerendering)? No
+✔ Which AI tools should Angular integrate with? https://angular.dev/ai/develop-w
+ith-ai None
+CREATE angular-escape-sandbox/.prettierrc (161 bytes)
+CREATE angular-escape-sandbox/README.md (1473 bytes)
+CREATE angular-escape-sandbox/.editorconfig (314 bytes)
+CREATE angular-escape-sandbox/.gitignore (622 bytes)
+CREATE angular-escape-sandbox/angular.json (1952 bytes)
+CREATE angular-escape-sandbox/package.json (799 bytes)
+CREATE angular-escape-sandbox/tsconfig.json (908 bytes)
+CREATE angular-escape-sandbox/tsconfig.app.json (398 bytes)
+CREATE angular-escape-sandbox/tsconfig.spec.json (409 bytes)
+CREATE angular-escape-sandbox/.vscode/extensions.json (130 bytes)
+CREATE angular-escape-sandbox/.vscode/launch.json (470 bytes)
+CREATE angular-escape-sandbox/.vscode/tasks.json (978 bytes)
+CREATE angular-escape-sandbox/src/main.ts (222 bytes)
+CREATE angular-escape-sandbox/src/index.html (306 bytes)
+CREATE angular-escape-sandbox/src/styles.css (80 bytes)
+CREATE angular-escape-sandbox/src/app/app.css (0 bytes)
+CREATE angular-escape-sandbox/src/app/app.spec.ts (696 bytes)
+CREATE angular-escape-sandbox/src/app/app.ts (305 bytes)
+CREATE angular-escape-sandbox/src/app/app.html (20144 bytes)
+CREATE angular-escape-sandbox/src/app/app.config.ts (312 bytes)
+CREATE angular-escape-sandbox/src/app/app.routes.ts (77 bytes)
+CREATE angular-escape-sandbox/public/favicon.ico (15086 bytes)
+✔ Packages installed successfully.
+подсказка: Using 'master' as the name for the initial branch. This default branch name
+подсказка: is subject to change. To configure the initial branch name to use in all
+подсказка: of your new repositories, which will suppress this warning, call:
+подсказка: 
+подсказка: 	git config --global init.defaultBranch <name>
+подсказка: 
+подсказка: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+подсказка: 'development'. The just-created branch can be renamed via this command:
+подсказка: 
+подсказка: 	git branch -m <name>
+    Successfully initialized git.
+```
+
+## Шаг 2: Анатомия компонента и ментальный сдвиг «Класс vs Функция» (1.5 часа)
+На Шаге 2 мы планируем работать со статичной структурой шаблона и стандартной интерполяцией строк через двойные фигурные скобки `{{ }}` (пока без Control Flow).
+
+В React компонент — это функция, которая при изменении стейта вызывается сверху вниз целиком. В Angular компонент — это класс (декларативная фабрика). Ваша задача на этом шаге — понять структуру декоратора `@Component`.
+1. Откройте `src/app/app.component.ts`. Обратите внимание на метаданные декоратора:
+	• `standalone: true` — компонент независим и сам управляет своими зависимостями (как полноценный изолированный модуль).
+	• `imports: [...]` — массив, куда вы будете явно импортировать другие компоненты, директивы или встроенные фичи (никакой глобальной магии, полная прозрачность для сборщика).
+2. Проведите мысленный мост: декоратор `@Component` — это конфигурация сборки и рантайма, а сам класс — это место, где вы описываете свойства и методы, которые отработают ровно один раз при инициализации, настроят связи, а дальше уйдут в тень, уступив место графу реактивности.
+
+Мы создадим экспериментальный компонент, который наглядно покажет анатомию Standalone-подхода в Angular 20+ и позволит провести тот самый лабораторный эксперимент по «убийству ререндеров» из вашего подкаста.
+Для чистоты эксперимента мы намеренно объявим в классе обычное классическое свойство (не Сигнал), чтобы вы увидели, как ведет себя рантайм Zoneless-приложения при попытке мутировать данные напрямую, и почему класс в Angular — это просто фабрика, отрабатывающая один раз при старте.
+
+### 1. Создание компонента
+```bash
+yarn ng generate component components/day-1/step-2
+```
+
+В результат создана новая директория `components/day-1/step-2/` с соответствующей структурой папок:
+```
+src/
+├── app/
+│   ├── components/           # Created
+│   │   ├── day-1/
+│   │   │   ├── step-2/
+│   │   │   │   ├── step-2.css
+│   │   │   │   ├── step-2.html
+│   │   │   │   ├── step-2.spec.ts
+│   │   │   │   ├── step-2.ts
+...
+│   ├── app.config.ts
+│   ├── app.ts
+...
+└── tsconfig.json
+```
+
+### 2. Код экспериментального компонента
+Откройте файл `src/app/components/day-1/step-2/step-2.ts` и приведите его к следующему виду. Код снабжен подробными комментариями, проводящими ментальные мосты с React:
+
+```ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'exp-day-1-step-2',
+  // 1. Полная независимость. Компонент сам является модулем (как файлы в React/Next.js)
+  standalone: true, 
+  // 2. Явный импорт зависимостей. Здесь нет авто-магии, всё что нужно шаблону — импортируем сюда
+  imports: [], 
+  // Inline-шаблон (как JSX в React), чтобы не прыгать по файлам во время опыта
+  template: `
+    <div style="padding: 20px; border: 2px dashed #666; font-family: monospace;">
+      <h3>🅰️ Экспериментальный стенд: Шаг 2</h3>
+      
+      <!-- Данные из класса рендерятся напрямую в текстовые ноды живого DOM -->
+      <p>Обычный счётчик (не Сигнал): <strong>{{ counter }}</strong></p>
+      <p>Результат тяжёлого вычисления: <strong>{{ runHeavyCalculation() }}</strong></p>
+      
+      <div style="margin-top: 15px;">
+        <button (click)="incrementCounter()">1. Мутировать counter напрямую</button>
+        <button (click)="forceTriggerDetection()" style="margin-left: 10px;">2. Триггернуть проверку</button>
+      </div>
+      
+      <p style="color: #666; font-size: 12px; margin-top: 15px;">
+        *🔬 Откройте Console в DevTools, чтобы увидеть рантайм-логи.
+      </p>
+    </div>
+  `,
+  styles: []
+})
+export class Step2 {
+  // Локальный стейт компонента (обычное свойство класса)
+  counter = 0;
+
+  constructor() {
+    // Вызовется ровно ОДИН раз за всю жизнь компонента
+    console.log('🏗️ [Constructor] Angular: Фабрика компонента инициализирована!');
+  }
+
+  /**
+   * Тяжёлая функция (аналог функции без useMemo в React)
+   */
+  runHeavyCalculation(): string {
+    console.log('🔴 [Heavy Calc] Выполняю тяжёлые вычисления в теле класса...');
+    return 'Результат #42';
+  }
+
+  /**
+   * Клик по первой кнопке
+   */
+  incrementCounter() {
+    this.counter++;
+    console.log(`⚡ [Click] counter изменен напрямую. Текущее значение в классе: ${this.counter}`);
+    console.log('🤔 Проверьте UI: изменилась ли цифра на экране? (Спойлер: в Zoneless-режиме — нет!)');
+  }
+
+  /**
+   * Клик по второй кнопке (эмуляция forceUpdate / жесткого триггера)
+   */
+  forceTriggerDetection() {
+    console.log('🔮 [Force Update] Пытаемся заставить Angular проверить дерево...');
+    // В Zoneless приложении без использования Сигналов этот метод просто отработает, 
+    // но Angular не пойдет перечитывать класс, потому что граф зависимостей пуст!
+  }
+}
+```
+
+Изменения в шаблоне `src/app/app.html`:
+```html
+<!-- ... -->
+<h1>Day 1</h1>
+<h2>Hello, {{ title() }}</h2>
+<p>Congratulations! Your app is running. 🎉</p>
+
+<exp-day-1-step-2></exp-day-1-step-2>
+<!-- ... -->
+```
+
+`src/app/app.ts`
+```ts
+import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { Step2 } from './components/day-1/step-2/step-2';
+
+@Component({
+  imports: [RouterOutlet, Step1],
+  selector: 'app-root',
+  styleUrl: './app.css',
+  templateUrl: './app.html',
+})
+export class App {
+  protected readonly title = signal('angular-escape-sandbox');
+}
+```
+
+### Что покажет этот лабораторный опыт в браузере?
+
+Когда вы откроете страницу и нажмете на первую кнопку:
+1. Вы увидите в консоли, что метод constructor и метод `runHeavyCalculation` отработали строго один раз при первой загрузке страницы.
+2. При клике на кнопку «Мутировать counter напрямую» переменная в памяти класса будет увеличиваться (1, 2, 3...), но интерфейс останется неподвижным.
+3. Самое главное: функция `runHeavyCalculation` НЕ вызывается повторно при кликах!
+
+**Вы наглядно убедились:** в Zoneless Angular обычные свойства класса мертвы для шаблона. Чтобы заставить UI реагировать, нам нужен реактивный примитив.
+
+## Шаг 3: Освоение встроенного Control Flow (2 часа)
+**Что планируем:** Освоение встроенного Control Flow, который вы уже предварительно наметили в глобальном плане. В JSX вы привыкли писать логику ветвления и циклов прямо на JavaScript (`{condition && <Component />}`, `{items.map(item => ...)}`). В Angular 20+ для этого используется нативный декларативный макросинтаксис компилятора с префиксом `@`.
+
+В JSX вы использовали JS-код: тернарные операторы `? :`, логическое `&&` и метод `.map()`. В современном Angular для этого есть встроенный декларативный макросинтаксис компилятора. Он не создает Virtual DOM, а генерирует прямые инструкции для живых нод.
+
+Чтобы сгенерировать компонент с вашими точными требованиями с помощью Angular CLI, используйте следующие флаги:
+• `--selector="exp-day-1-step-4"` — принудительно задает кастомное имя тега.
+• `--standalone` — гарантирует standalone-режим (в Angular 20+ он включен по умолчанию, но флаг явно фиксирует это).
+• `--inline-template` (или `-t`) — встраивает HTML-шаблон прямо в `.ts` файл (отменяет `.html`).
+• `--inline-style` (или `-s`) — встраивает CSS-стили прямо в `.ts` файл (отменяет `.css`).
+• `--skip-tests` — отменяет генерацию файла тестов (`.spec.ts`).
+
+_Создаем компонент с нужными настройками:_
+```bash
+yarn ng generate component components/day-1/step-3 --selector="exp-day-1-step-3" --standalone --inline-template --inline-style --skip-tests
+```
+
+В Zoneless-режиме Angular ленив. Чтобы Control Flow наглядно реагировал на изменения, нам понадобится сделать один шаг вперед и импортировать примитив `signal`. Сигнал — это реактивный узел, который сам скажет компилятору, в какое именно место шаблона `@if` или `@for` нужно доставить новые данные.
+
+Код компонента `src/app/components/day-1/step-3/step-3.ts`:
+```ts
+import { Component, signal } from '@angular/core';
+
+interface ProcessItem {
+  id: number;
+  name: string;
+}
+
+@Component({
+  selector: 'exp-day-1-step-3',
+  standalone: true,
+  imports: [], // Встроенный Control Flow (@if, @for) не требует импорта сторонних директив!
+  template: `
+    <div style="padding: 20px; border: 2px dashed #666; font-family: monospace; margin-top: 20px;">
+      <h3>🅰️ Экспериментальный стенд: Шаг 3 (Control Flow)</h3>
+
+      <div style="margin-bottom: 15px;">
+        <button (click)="toggleLoader()">Переключить лоадер</button>
+        <button (click)="addProcess()" style="margin-left: 10px;">Добавить процесс</button>
+        <button (click)="clearProcesses()" style="margin-left: 10px;">Очистить все</button>
+      </div>
+
+      <div style="background: #222; color: #0f0; padding: 15px; border-radius: 4px;">
+        <!-- 1. Ветвление через @if / @else -->
+        @if (isLoading()) {
+          <div class="spinner">⏳ [Рантайм]: Сканирование графа зависимостей...</div>
+        } @else {
+          <div>
+            <h4>📋 Активные процессы в песочнице:</h4>
+
+            <ul>
+              <!-- 2. Цикл через @for с обязательным трекингом по уникальному ID -->
+              <!-- Дополнительно берем контекстные переменные компилятора: $index и $even -->
+              @for (item of processes(); track item.id; let idx = $index, isEven = $even) {
+                <li [style.color]="isEven ? '#0f0' : '#00bc8c'">
+                  [{{ idx }}] ID: {{ item.id }} — Поток: {{ item.name }}
+                </li>
+              } @empty {
+                <!-- 3. Блок @empty автоматически отрендерится, если массив пуст -->
+                <li style="color: #ff3333;">📭 [Empty State]: Данные полностью отсутствуют</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </div>
+  `,
+})
+export class Step3 {
+  // Инициализируем реактивные атомы данных (Сигналы)
+  isLoading = signal(false);
+  processes = signal<ProcessItem[]>([
+    { id: 101, name: 'Main-Reactor-Core' },
+    { id: 102, name: 'Zoneless-Change-Detector' }
+  ]);
+
+  private nextId = 103;
+
+  toggleLoader() {
+    // Инвертируем булево значение внутри сигнала
+    this.isLoading.update(v => !v);
+  }
+
+  addProcess() {
+    // В Angular 20+ мутировать массив напрямую нельзя, иммутабельно обновляем сигнал процессов
+    this.processes.update(items => [
+      ...items,
+      { id: this.nextId++, name: `Sub-Routine-${Math.random().toString(36).substring(7)}` }
+    ]);
+  }
+
+  clearProcesses() {
+    this.processes.set([]);
+  }
+}
+```
+
+> [!info] **Критически важный инсайт для Senior React разработчика на этом шаге:**
+> Обратите внимание на выражение `track item.id`. В отличие от React, где пропущенный `key` выдаст лишь предупреждение в консоли браузера, компилятор Angular выдаст ошибку сборки, защищая граф обновлений от неоптимальных рендеров по дизайну.
+
+### Подводные камни и архитектурные инсайты Control Flow для Senior React Разработчика
+
+Когда вы пощелкаете кнопками в браузере, обратите внимание на три фундаментальных отличия от JSX:
+1. **Отсутствие «Ререндера всей функции»:** Когда вы нажимаете Добавить процесс, Angular не перерисовывает весь блок `@else`. Он не делает diff всего дерева UI. Благодаря тому, что `processes()` — это сигнал, компилятор при сборке превратил блок `@for` в микро-функцию, которая слушает этот сигнал и хирургически вставляет в DOM только одну новую строчку `<li>`, вообще не трогая предыдущие элементы.
+2. **Жесткий контракт `track` на уровне компиляции:** В React вы могли забыть написать `key={item.id}` в `.map()`, и приложение продолжило бы работать, выплюнув предупреждение в консоль. В Angular 20+ синтаксис `@for` (`item of items; track item.id`) делает `track` строго обязательным. Попытка пропустить `track` приведет к ошибке компиляции (`NG8131`). Фреймворк на уровне дизайна защищает вас от неоптимальных перерисовок списков.
+3. **Контекстные переменные `$index`, `$even`, `$odd`, `$first`, `$last`:** Встроенный движок компилятора Angular автоматически рассчитывает эти переменные внутри тела цикла `@for`. Вам больше не нужно вычислять индексы или проверять остаток от деления на 2 в уме, чтобы подкрасить четные строки таблицы.
+4. **Связка `@for + @empty`:** В JSX для отображения "пустого экрана" вам приходилось писать тернарный оператор вокруг маппинга: `items.length === 0 ? <Empty /> : items.map(...)`. В Angular блок `@empty` интегрирован прямо в синтаксис цикла, что делает разметку чистой и читаемой.
+
+## Шаг 4: Лабораторный эксперимент «Убийство Ререндеров» (3 часа)
+
+Создаем компонент с нужными настройками:
+```bash
+yarn ng generate component components/day-1/step-4 --selector="exp-day-1-step-4" --standalone --inline-template --inline-style --skip-tests
+```
+
+[Код компонента](https://github.com/pravosleva/angular-escape-sandbox/blob/master/src/app/components/day-1/step-4/step-4.ts).
+
+### 🔬 Проведение лабораторного опыта в браузере
+
+Откройте консоль и очистите её. Теперь последовательно нажимайте на кнопки:
+
+<CollapsibleBox
+isEnabledForNavigation='0'
+header="Тест 1: Нажмите «1. Переключить лоадер»"
+text="• Что происходит в UI: Текст лоадера скрывается и показывается.
+&nbsp;
+• Что происходит в консоли: Полная тишина.
+&nbsp;
+• Ментальный сдвиг: В React изменение `useState` лоадера вызвало бы ререндер всей функции. В консоль вылетел бы лог `🔴 [Heavy Calc]`. Вам пришлось бы писать useMemo, чтобы защитить тяжелую функцию.
+&nbsp;
+• В Zoneless Angular реактивный граф знает, что сигнал `isLoading()` связан только с блоком `@if`. Рантайм делает хирургический надрез в DOM, а тело класса, тяжелая функция и даже соседний computed полностью игнорируются!"
+/>
+
+<CollapsibleBox
+isEnabledForNavigation='0'
+header="Тест 2: Нажмите «2. Добавить процесс»"
+text="• Что происходит в UI: В список добавляется новая строчка `<li>`, значение computed обновляется на Всего процессов: 2.
+&nbsp;
+• Что происходит в консоли: Вы увидите лог `🟢 [Computed Graph]...`, но вы НЕ увидите лог `🔴 [Heavy Calc]`.
+&nbsp;
+• Ментальный сдвиг: Так как сигнал `processes()` обновился, зависимый от него узел графа computed пересчитался (абсолютно аналогично поведению `useMemo` с массивом зависимостей `processes`). Но сам компонент не перерендерился! Тяжелая функция `runHeavyCalculation()` по-прежнему осталась нетронутой."
+/>
+
+## 🧪 Итоговый лабораторный вывод Дня 1
+
+Вы успешно завершили интенсивный трек Первого дня и взломали ментальную модель Angular 20+:
+1. Компонент — это не функция, это фабрика. Он выполняет свой код (конструктор) ровно один раз при монтировании, настраивает декларативные связи и больше никогда не перечитывается рантаймом сверху вниз.
+2. Прощай, Virtual DOM Диффинг. Angular компилирует декларативный Control Flow (`@if`, `@for`) в прямые, точечные JS-инструкции для конкретных текстовых нод живого DOM.
+3. Реактивность без костылей. Граф зависимостей Сигналов собирается автоматически. Вам больше не нужно вручную следить за массивами зависимостей хуков или бояться, что случайный клик уронит перформанс вашего приложения.
+Поздравляю с успешным завершением Дня 1! Песочница полностью настроена и работает в Zoneless-режиме на Yarn.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "Переезд на Angular 20+ | План",
+      "type": "link",
+      "link": "/p/2026-10-escape-to-angular-in-2027-podcast",
+    }
+  ]'
+/>
