@@ -183,19 +183,6 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96],
   },
   productionBrowserSourceMaps: true, // Оптимизация 1 (см. ниже)
-
-
-
-
-
-
-
-
-
-
-
-
-
   publicExcludes: ['!static/css/src/**/*'], // Хотя теперь этого даже не потребуется, ведь на сервере папки src и так не будет!
   pwa: {
     dest: 'public', // Куда физически сложатся файлы

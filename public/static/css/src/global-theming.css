@@ -10,7 +10,7 @@ body:has(main.light) {
   background-color: #fff;
 }
 body main.light {
-  color: #000;
+  color: #121212;
 }
 
 body main.light footer {
@@ -240,7 +240,7 @@ body main.hard-gray #audit-description {
 /* DARK */
 
 body:has(main.dark) {
-  background-color: #000;
+  background-color: #121212;
 }
 body main.dark {
   color: #fff;

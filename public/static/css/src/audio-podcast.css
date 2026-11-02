@@ -88,7 +88,17 @@ body main.light ~ .blog-audio-player-container .player-queue-item.active-and-pla
 body main.light ~ .blog-audio-player-container .player-track-link.broken { color: #ff4d4d; text-decoration: line-through; }
 .blog-audio-player-container .player-btn-delete,
 body main.light ~ .blog-audio-player-container .player-btn-delete {
-  background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: small; font-weight: bold; }
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+  font-size: small;
+  font-weight: bold;
+
+  padding: 8px 16px 8px 16px;
+  border-radius: 0px 24px 24px 0px;
+  background-color: rgba(0,0,0,0.05);
+}
 
 /* 🔘 ТЕМА: GRAY */
 body main.gray ~ .blog-audio-player-container {

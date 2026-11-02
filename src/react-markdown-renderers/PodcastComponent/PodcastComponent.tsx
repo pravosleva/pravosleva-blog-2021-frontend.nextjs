@@ -67,23 +67,32 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
         ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,.4) 100%), url(${bg})`
         : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,.1) 100%)'
       case 'dark': return bg
-        ? `linear-gradient(to right, rgba(0,0,0,0.88) 45%, rgba(0,0,0,.4) 100%), url(${bg})`
-        : 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(255,255,255,.25) 100%)' 
+        ? `linear-gradient(to right, rgba(30,30,30,0.88) 45%, rgba(0,0,0,.4) 100%), url(${bg})`
+        : 'linear-gradient(to right, rgba(30, 30, 30, 0.88) 45%, rgba(255,255,255,.25) 100%)' 
       default:
         return 'linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(237,237,237,1) 100%)'
     }
   }, [currentTheme, bg])
   const borderCSS = useMemo(() => {
-    if (isPlayingNow) {
-      switch (currentTheme) {
-        case 'light': return '2px solid rgb(255, 142, 83)'
-        case 'gray': return '2px solid rgb(57, 229, 172)'
-        case 'hard-gray': return '2px solid rgb(57, 229, 172)'
-        case 'dark': return '2px solid rgb(255, 142, 83)'
-        default: return '2px solid rgb(255, 142, 83)'
-      }
+    switch (isPlayingNow) {
+      case true:
+        switch (currentTheme) {
+          case 'light': return '2px solid rgb(255, 142, 83)'
+          case 'gray': return '2px solid rgb(57, 229, 172)'
+          case 'hard-gray': return '2px solid rgb(57, 229, 172)'
+          case 'dark': return '2px solid rgb(255, 142, 83)'
+          default: return '2px solid rgb(255, 142, 83)'
+        }
+      default:
+        switch (currentTheme) {
+          case 'light': return '2px solid rgba(255, 255, 255, 1)'
+          case 'gray': return '2px solid rgba(255, 255, 255, 1)'
+          case 'hard-gray': return '2px solid rgba(255, 255, 255, 1)'
+          case 'dark': return 'none'
+          default: return '2px solid rgba(255, 255, 255, 1)'
+        }
     }
-    return '2px solid rgba(255, 255, 255, 1)'
+    
   }, [isPlayingNow, currentTheme])
 
   if (!url) return <div style={{ color: '#ff4d4d', padding: '10px' }}>⚠️ Ошибка: не указан путь (url) к аудиофайлу подкаста!</div>
@@ -191,7 +200,8 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
               onClick={() => addToQueue(trackObject)}
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.18)',
+                // border: '1px solid rgba(255, 255, 255, 0.18)',
+                border: 'none',
                 color: '#ffffff',
                 padding: '6px 14px',
                 borderRadius: '24px',
@@ -206,7 +216,6 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
                 gap: '8px',
               }}
             >
-              <span>➕</span>
               <span>В очередь</span>
             </button>
           )}

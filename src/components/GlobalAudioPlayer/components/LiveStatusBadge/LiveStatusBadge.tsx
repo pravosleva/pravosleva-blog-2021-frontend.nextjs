@@ -24,7 +24,7 @@ export const LiveStatusBadge = () => {
     switch (status) {
       case 'buffering': return 'БУФЕРИЗАЦИЯ...'
       case 'error': return 'ЭФИР СОРВАН'
-      case 'idle': return 'ОЖИДАНИЕ ⏸' // Текст для режима паузы радио
+      case 'idle': return 'ОЖИДАНИЕ' // Текст для режима паузы радио
       default: return 'ПРЯМОЙ ЭФИР'
     }
   }

@@ -56,7 +56,7 @@ const StyledStickyHeader = styled('div')<TStickyHeaderProps>`
     switch (themeName) {
       case 'dark':
         return css`
-          background-color: #1e1e1e;
+          background-color: #272727;
           color: rgb(255, 142, 83);
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         `;

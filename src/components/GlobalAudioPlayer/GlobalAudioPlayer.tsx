@@ -6,6 +6,11 @@ import { AudioVisualizer } from './components/AudioVisualizer'
 import { getTechnicalErrorText } from './utils/getTechnicalErrorText'
 import { LiveStatusBadge } from './components'
 import liveStatusBadgeStyles from './components/LiveStatusBadge/LiveStatusBadge.module.scss'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import FastForwardIcon from '@mui/icons-material/FastForward'
+import FastRewindIcon from '@mui/icons-material/FastRewind'
+import PauseIcon from '@mui/icons-material/Pause'
+import EjectIcon from '@mui/icons-material/Eject'
 
 const formatAudioTime = (seconds: number): string => {
   if (isNaN(seconds) || seconds === Infinity) return '00:00'
@@ -372,20 +377,21 @@ export const GlobalAudioPlayer = () => {
                                   ['active-and-playing']: isTrackActiveInPlayer && isTrackPlayingNow,
                                 })
                               }
-                              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', borderRadius: '8px' }}
+                              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '24px' }}
                             >
                               <span 
                                 onClick={() => !isBroken && toggleTrack(track)} 
                                 className={`player-track-link ${isBroken ? 'broken' : ''} ${isTrackActiveInPlayer ? 'selected' : ''}`}
                                 style={{
                                   cursor: isBroken ? 'default' : 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1,
-                                  // marginRight: '10px',
                                   display: 'inline-flex',
                                   flexDirection: 'row',
+                                  alignItems: 'center',
                                   gap: '8px',
+                                  padding: '8px'
                                 }}
                               >
-                                <span style={{ fontFamily: 'monospace, system-ui, Courier' }}>{isTrackPlayingNow ? '⏸' : (isTrackActiveInPlayer ? '▶' : '💤')}</span>
+                                {isTrackPlayingNow ? <PauseIcon fontSize='inherit' /> : (isTrackActiveInPlayer ? <PlayArrowIcon fontSize='inherit' /> : '💤')}
                                 <span
                                   style={{
                                     fontFamily: 'monospace, system-ui, Courier',
@@ -395,7 +401,10 @@ export const GlobalAudioPlayer = () => {
                                   }}
                                 >{track.title}</span>
                               </span>
-                              <button onClick={() => removeFromQueue(track.id)} className="player-btn-delete">Удалить</button>
+                              <button
+                                onClick={() => removeFromQueue(track.id)}
+                                className="player-btn-delete"
+                              >Удалить</button>
                             </div>
                           )
                         })}
@@ -412,7 +421,7 @@ export const GlobalAudioPlayer = () => {
                         minHeight: '23px',
                       }}>
                         <div className="player-meta-info" style={{ fontSize: '0.75em', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
-                          <span>Подкастов в очереди — </span><b className="player-queue-count">{queue.length}</b>
+                          <span>Подкастов в очереди — <b className="player-queue-count">{queue.length}</b></span>
                         </div>
 
                         {
@@ -497,7 +506,7 @@ export const GlobalAudioPlayer = () => {
                                     }}
                                     title="Полностью остановить и закрыть плеер"
                                   >
-                                    <span>⏏️</span>
+                                    <EjectIcon fontSize='small' />
                                     {/* <span style={{ fontSize: '0.6rem' }}>Остановить и закрыть</span> */}
                                   </button>
                                   {
@@ -521,7 +530,7 @@ export const GlobalAudioPlayer = () => {
                                         }}
                                         title="Назад на 20 секунд"
                                       >
-                                        <span>⏪</span>
+                                        <FastRewindIcon fontSize='small' />
                                         {/* <span style={{ fontSize: '0.6rem' }}>-20с</span> */}
                                       </button>
                                     )
@@ -563,7 +572,7 @@ export const GlobalAudioPlayer = () => {
                                         title="Вперед на 20 секунд"
                                       >
                                         {/* <span style={{ fontSize: '0.6rem' }}>+20с</span> */}
-                                        <span>⏩</span>
+                                        <FastForwardIcon fontSize='small' />
                                       </button>
                                     )
                                   }
@@ -591,7 +600,7 @@ export const GlobalAudioPlayer = () => {
                                     }}
                                     title="Поставить текущий трек на паузу"
                                   >
-                                    <span>⏸️</span>
+                                    <PauseIcon fontSize='small' />
                                     {/* <span style={{ fontSize: '0.6rem' }}>Пауза</span> */}
                                   </button>
                                 </div>
