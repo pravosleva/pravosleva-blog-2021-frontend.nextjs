@@ -114,20 +114,7 @@ export const ContentLockedSvg: React.FC<{ message?: string }> = ({
             color: textColor
           }}
         >
-          {message}
-        </p>
-
-        <p 
-          style={{ 
-            margin: 0,
-            fontFamily: 'Montserrat, system-ui, -apple-system, sans-serif',  
-            fontWeight: 500, 
-            // fontSize: '1.05rem', 
-            lineHeight: 1.5,
-            color: textColor
-          }}
-        >
-          Пожалуйста, загляните позже. Everything will be fine.
+          {message || 'Пожалуйста, загляните позже. Everything will be fine.'}
         </p>
       </div>
     </div>
