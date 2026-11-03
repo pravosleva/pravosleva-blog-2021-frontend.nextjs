@@ -85,11 +85,11 @@ const PodcastCore: React.FC<TPodcastProps> = ({ url, title, description, bg, dur
         }
       default:
         switch (currentTheme) {
-          case 'light': return '2px solid rgba(255, 255, 255, 1)'
-          case 'gray': return '2px solid rgba(255, 255, 255, 1)'
+          case 'light': return 'none'
+          case 'gray': return 'none'
           case 'hard-gray': return '2px solid rgba(255, 255, 255, 1)'
           case 'dark': return 'none'
-          default: return '2px solid rgba(255, 255, 255, 1)'
+          default: return 'none'
         }
     }
     

@@ -47,7 +47,7 @@ body main.light ~ .blog-audio-player-container .player-btn-minimize { color: rgb
 body main.light ~ .blog-audio-player-container .player-btn-action {
   background: rgba(0, 0, 0, 0.05);
   color: #222; border: none; padding: 4px 12px;
-  borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
+  border-radius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
 .blog-audio-player-container .player-progress-track,
 body main.light ~ .blog-audio-player-container .player-progress-track { background: rgba(0, 0, 0, 0.06); }
 .blog-audio-player-container .player-pagination-btn,
