@@ -1,0 +1,223 @@
+---
+title: "Переезд на Angular 20+ (день 3)"
+brief: "Движок DI и Функция inject"
+bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.webp"
+bg_size: { w: 947, h: 562 }
+bg_type: "image/webp"
+
+createdAt: "2026-11-03T13:24:59.913Z"
+updatedAt: "2026-11-03T13:24:59.913Z"
+priority: 0.8
+
+author: "Den Pol"
+tags: ["капсула_времени", "angular", "podcast", "ментальный_эксперимент", "реактивность", "сигналы"]
+category: "guides"
+isPrivate: false
+isDraft: true
+isDisabledForMainBlogPage: true
+---
+# 🅰️ День 3
+
+> **Синхронизация с глобальным Roadmap:**
+> Этот конспект полностью покрывает Блок 3 (Дни 5–6) теоретического плана перехода. Мы изучаем мощнейший движок DI на уровне TS-классов, отказываемся от иерархии UI-дерева при управлении состоянием и внедряем легковесный стор через функциональный `inject()`.
+
+## Шаг 1: Движок DI и функция `inject()` (3 часа)
+В React Context API жестко привязан к UI-дереву. Чтобы передать данные вниз, нужно обернуть компоненты в `<Context.Provider>`. В Angular движок DI работает на уровне рантайма инжекторов (классов и функций), полностью отделенных от визуального дерева.
+
+Специфика Angular 20+ — полный отказ от старого синтаксиса внедрения через конструкторы классов в пользу функциональной функции `inject()`.
+
+Создание атомарного стенда
+```bash
+yarn ng generate component components/day-3/step-1 --selector="exp-day-3-step-1" --standalone --inline-template --inline-style --skip-tests
+```
+
+Создаем локальный токен/сервис и внедряем его в родительский и глубоко вложенный дочерний компоненты, демонстрируя иерархию инжекторов (`NodeInjector`) без написания провайдеров в HTML:
+
+`src/app/components/day-3/step-1/step-1.ts`
+```ts
+import { Component, Injectable, inject, signal } from '@angular/core';
+
+/**
+ * 1. ИЗОЛИРОВАННЫЙ СЕРВИС (Бизнес-логика / Шина данных)
+ * Декоратор @Injectable заявляет рантайму Angular, что этот класс можно внедрять.
+ */
+@Injectable({
+  // providedIn: 'root' НЕ пишем, если нам нужен локальный стейт, 
+  // привязанный строго к ветке этого компонента, а не глобальный синглтон.
+})
+export class CustomLoggerService {
+  // Реактивный лог, к которому получат доступ все, кто внедрит сервис
+  logs = signal<string[]>(['[System]: Инициализация локального инжектора']);
+
+  addLog(message: string) {
+    this.logs.update(current => [...current, `[${new Date().toLocaleTimeString()}]: ${message}`]);
+  }
+}
+
+/**
+ * 2. ГЛУБОКО ВЛОЖЕННЫЙ ДОЧЕРНИЙ КОМПОНЕНТ (Day3Step1Child)
+ */
+@Component({
+  selector: 'exp-day-3-step-1-child',
+  standalone: true,
+  imports: [],
+  template: `
+    <div style="padding: 15px; border: 1px solid #e74c3c; background: #2c1a1a; margin-top: 15px; border-radius: 4px;">
+      <h4>👶 Глубокий ребенок (Day3Step1Child)</h4>
+      <p style="font-size: 12px; color: #bbb;">
+        Я нахожусь на глубине дерева, у меня нет пропсов или колбэков, но я пишу напрямую в логгер.
+      </p>
+      <button (click)="sendAction()">Запустить импульс из ребенка</button>
+    </div>
+  `,
+})
+export class Day3Step1Child {
+  // Настоящий аналог useContext() в Angular 20+.
+  // Функция inject() ищет CustomLoggerService вверх по иерархии инжекторов.
+  private logger = inject(CustomLoggerService);
+
+  sendAction() {
+    this.logger.addLog('⚡ Импульс сгенерирован внутри Day3Step1Child');
+  }
+}
+
+/**
+ * 3. РОДИТЕЛЬСКИЙ КОМПОНЕНТ (КОНТЕЙНЕР ШАГА)
+ */
+@Component({
+  selector: 'exp-day-3-step-1',
+  standalone: true,
+  // Импортируем дочерний компонент в скоуп standalone шаблона
+  imports: [Day3Step1Child],
+  // РЕГИСТРАЦИЯ ПРОВАЙДЕРА: Создает инстанс сервиса на уровне этого компонента и его детей.
+  // Это точечный аналог <Context.Provider value={...}>, но без раздувания HTML-дерева!
+  providers: [CustomLoggerService],
+  template: `
+    <div style="padding: 20px; border: 2px dashed #e74c3c; font-family: monospace; margin-top: 20px;">
+      <h3>🅰️ День 3: Шаг 1 — Движок DI и Функция inject()</h3>
+      
+      <button (click)="addParentLog()">Добавить лог из родителя</button>
+
+      <!-- Вывод логов, которые пишут и родитель, и ребенок в один инстанс класса -->
+      <div style="background: #222; color: #ff7675; padding: 15px; border-radius: 4px; margin-top: 15px; max-height: 150px; overflow-y: auto;">
+        <h4>📊 Локальный логгер инжектора (NodeInjector):</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px;">
+          @for (log of logger.logs(); track $index) {
+            <li>{{ log }}</li>
+          }
+        </ul>
+      </div>
+
+      <!-- Никаких пропсов и колбэков! Ребенок сам возьмет логгер из контекста DI -->
+      <exp-day-3-step-1-child />
+    </div>
+  `,
+})
+export class Step1 {
+  // Внедряем тот же самый инстанс логгера, который унаследует и ребенок
+  protected logger = inject(CustomLoggerService);
+
+  addParentLog() {
+    this.logger.addLog('🏗️ Действие зафиксировано в родителе Step1');
+  }
+}
+```
+
+## Шаг 2: Паттерн «Сервис как Стор» и Singleton-состояния (3 часа)
+В Шаге 2 создается глобальный синглтон-стор, который функционирует независимо от UI-дерева и доступен в любой точке приложения, выступая легковесной альтернативой громоздким стейт-менеджерам. Внедрение такого стора происходит через `inject()` в одну строчку, обеспечивая чистое разделение UI-слоя и состояния.
+
+Создание атомарного стенда
+```bash
+yarn ng generate component components/day-3/step-2 --selector="exp-day-3-step-2" --standalone --inline-template --inline-style --skip-tests
+```
+
+`src/app/components/day-3/step-2/step-2.ts`
+
+```ts
+import { Component, Injectable, inject, signal, computed } from '@angular/core';
+
+/**
+ * 1. ГЛОБАЛЬНЫЙ СИНГЛТОН-СТОР (Service-as-a-Store паттерн)
+ * providedIn: 'root' гарантирует, что Angular создаст ровно ОДИН инстанс 
+ * этого класса на все приложение и уничтожит его только при закрытии вкладки.
+ */
+@Injectable({
+  providedIn: 'root'
+})
+export class SandboxStoreService {
+  // Приватное состояние (Инкапсуляция данных)
+  private readonly _isEngineOnline = signal<boolean>(true);
+  private readonly _subRoutinesCount = signal<number>(5);
+
+  // Публичное состояние в режиме Read-Only
+  isEngineOnline = this._isEngineOnline.asReadonly();
+  subRoutinesCount = this._subRoutinesCount.asReadonly();
+
+  // Вычисляемое состояние на уровне Стора (Computed Node в ациклическом графе)
+  systemStatus = computed(() => {
+    console.log('🟢 [Global Store Computed]: Вычисляю системный статус...');
+    return this._isEngineOnline() 
+      ? `⚙️ Рантайм Активен. Процессов в пуле: ${this._subRoutinesCount()}` 
+      : '🔴 Рантайм Остановлен. Внимание.';
+  });
+
+  // Действия (Actions) для изменения состояния
+  toggleEngine() {
+    this._isEngineOnline.update(state => !state);
+  }
+
+  addSubRoutine() {
+    if (this._isEngineOnline()) {
+      this._subRoutinesCount.update(count => count + 1);
+    } else {
+      console.warn('⚠️ Невозможно добавить процесс: ядро системы выключено!');
+    }
+  }
+}
+
+/**
+ * 2. КОМПОНЕНТ ПУЛЬТА УПРАВЛЕНИЯ (Day3Step2)
+ */
+@Component({
+  selector: 'exp-day-3-step-2',
+  standalone: true,
+  imports: [],
+  // providers: [...] НЕ пишем, иначе мы перезапишем глобальный инстанс локальным!
+  template: `
+    <div style="padding: 20px; border: 2px dashed #3498db; font-family: monospace; margin-top: 20px;">
+      <h3>🅰️ День 3: Шаг 2 — Паттерн "Сервис как Стор" (Singleton)</h3>
+
+      <div style="background: #2c3e50; color: #fff; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+        <h4>📊 Монитор Глобального Состояния:</h4>
+        <p>Текущий статус: <strong>{{ store.systemStatus() }}</strong></p>
+        <p>Ядро онлайн: <strong [style.color]="store.isEngineOnline() ? '#0f0' : '#ff3333'">{{ store.isEngineOnline() }}</strong></p>
+      </div>
+
+      <div>
+        <button (click)="store.toggleEngine()">1. Переключить Питание Ядра</button>
+        <button (click)="store.addSubRoutine()" style="margin-left: 10px;">2. Запустить Sub-Routine</button>
+      </div>
+
+      <p style="color: #bbb; font-size: 12px; margin-top: 15px;">
+        *🔬 Этот стор полностью изолирован от UI-разметки. Изменение питания ядра не триггерит тяжелые вычисления в других компонентах.
+      </p>
+    </div>
+  `,
+})
+export class Step2 {
+  // Внедряем глобальный стор одной строчкой через inject().
+  // Шаблон компонента имеет прямой доступ к readonly сигналам стора.
+  protected store = inject(SandboxStoreService);
+}
+```
+
+### 🔬 Что этот код демонстрирует React-разработчику?
+1. Истинный синглтон без бойлерплейта: В React для создания глобального хранилища вам нужен Redux, Zustand или связка контекста с редьюсером. Здесь это обычный TS-класс с декоратором `@Injectable({ providedIn: 'root' })`. Angular сам лениво инициализирует его при первом вызове `inject()`.
+2. Инкапсуляция стейта (`asReadonly`): Компоненты могут читать состояние (`store.isEngineOnline()`), но не могут мутировать его в обход стора (например, написать `store.isEngineOnline.set(false)` вызовет ошибку TS). Изменения стейта происходят строго через декларативные методы-экшены самого класса стора.
+
+## 🧪 Лабораторный чек-лист для проверки в браузере
+
+При подключении компонентов `Day3Step1` и `Day3Step2` в корневой `src/app/app.ts` обратите внимание на следующие аспекты:
+1. Изоляция в Шаге 1: Дочерний компонент обновляет общий лог родителя напрямую без использования пропсов или колбэков благодаря DI-связыванию на уровне TypeScript.
+2. Изоляция вычислений в Шаге 2: Изменение статуса питания (ONLINE/OFFLINE) не вызывает лишних пересчетов `systemStatus`, так как граф реактивности отслеживает только релевантные изменения свойств.
+3. Чистота разметки: Шаблоны полностью очищены от инфраструктурного мусора вроде провайдеров контекста.
