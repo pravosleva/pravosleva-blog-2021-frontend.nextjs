@@ -47,7 +47,7 @@ body main.light ~ .blog-audio-player-container .player-btn-minimize { color: rgb
 body main.light ~ .blog-audio-player-container .player-btn-action {
   background: rgba(0, 0, 0, 0.05);
   color: #222; border: none; padding: 4px 12px;
-  border-radius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
+  border-radius: 24px; transform: translateX(6px); cursor: pointer; font-size: small; font-weight: bold; }
 .blog-audio-player-container .player-progress-track,
 body main.light ~ .blog-audio-player-container .player-progress-track { background: rgba(0, 0, 0, 0.06); }
 .blog-audio-player-container .player-pagination-btn,
@@ -121,7 +121,7 @@ body main.gray ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue
 }
 body main.gray ~ .blog-audio-player-container .player-queue-count { color: #fff; }
 body main.gray ~ .blog-audio-player-container .player-btn-minimize { color: rgba(255, 255, 255, 0.5); background: none; border: none; cursor: pointer; }
-body main.gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
+body main.gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; border-radius: 24px; transform: translateX(6px); cursor: pointer; font-size: small; font-weight: bold; }
 body main.gray ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
 body main.gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
@@ -168,7 +168,7 @@ body main.hard-gray ~ .blog-audio-player-container .podcast-inline-btn-queue.in-
 }
 body main.hard-gray ~ .blog-audio-player-container .player-queue-count { color: #fff; }
 body main.hard-gray ~ .blog-audio-player-container .player-btn-minimize { color: rgba(255, 255, 255, 0.5); background: none; border: none; cursor: pointer; }
-body main.hard-gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
+body main.hard-gray ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; border-radius: 24px; transform: translateX(6px); cursor: pointer; font-size: small; font-weight: bold; }
 body main.hard-gray ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
 body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.hard-gray ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
@@ -214,7 +214,7 @@ body main.dark ~ .blog-audio-player-container .podcast-inline-btn-queue.in-queue
 }
 body main.dark ~ .blog-audio-player-container .player-queue-count { color: #fff; }
 body main.dark ~ .blog-audio-player-container .player-btn-minimize { color: rgba(255, 255, 255, 0.5); background: none; border: none; cursor: pointer; }
-body main.dark ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; borderRadius: 12px; cursor: pointer; font-size: small; font-weight: bold; }
+body main.dark ~ .blog-audio-player-container .player-btn-action { background: rgba(255, 255, 255, 0.06); color: #fff; border: none; padding: 4px 12px; border-radius: 24px; transform: translateX(6px); cursor: pointer; font-size: small; font-weight: bold; }
 body main.dark ~ .blog-audio-player-container .player-progress-track { background: rgba(255, 255, 255, 0.1); }
 body main.dark ~ .blog-audio-player-container .player-pagination-btn { background: rgba(255, 255, 255, 0.05); border: none; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: small; cursor: pointer; }
 body main.dark ~ .blog-audio-player-container .player-pagination-btn:disabled { opacity: 0.2; cursor: default; }
