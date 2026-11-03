@@ -5,6 +5,7 @@ import { useArticlesSearch } from '../useArticlesSearch'
 import { useIsDesktop } from '~/hooks/useIsDesktop'
 import { NCodeSamplesSpace } from '~/types'
 import CloseIcon from '@mui/icons-material/Close'
+import Link from 'next/link'
 
 interface ArticlesSearchMobileProps {
   currentTheme: string;
@@ -275,38 +276,40 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
             </div>
           ) : (!!data && data?.length > 0) ? (
             data.map((note: { original: NCodeSamplesSpace.TNote; slug: string; }) => (
-              <a
-                key={note.original._id}
-                href={getLink(note.slug || note.original._id)}
-                target='_blank'
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '4px',
-                  padding: '12px',
-                  // borderRadius: '8px',
-                  backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.03)' : '#fff',
-                  border: isDarkTheme ? '2px solid rgba(255,255,255,0.05)' : '2px solid rgba(0,0,0,0.05)',
-                  textDecoration: 'none',
-                  color: accentTextColor
-                }}
+              <Link 
+                key={note.original._id} 
+                href={getLink(note.slug || note.original._id)} 
+                passHref
               >
-                <div style={{
-                  fontSize: '14px', fontWeight: 'bold',
-                  // color: currentTheme === 'hard-gray' || currentTheme === 'gray' ? '#39e5ac' : currentTheme === 'light' ? '#2672b6' : '#FF8E53',
-                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                <a
+                  onClick={() => setIsOpen(false)} // Автоматически закрываем шторку при переходе на статью
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    padding: '12px',
+                    backgroundColor: isDarkTheme ? 'rgba(255,255,255,0.03)' : '#fff',
+                    border: isDarkTheme ? '2px solid rgba(255,255,255,0.05)' : '2px solid rgba(0,0,0,0.05)',
+                    textDecoration: 'none',
+                    color: accentTextColor
                   }}
                 >
-                  {note.original.title}
-                </div>
-                <div style={{
-                  fontSize: 'small', color: '#888', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  <div style={{
+                    fontSize: '14px', fontWeight: 'bold',
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}
-                >
-                  {note.original.description || 'Нет описания заметки'}
-                </div>
-              </a>
+                  >
+                    {note.original.title}
+                  </div>
+                  <div style={{
+                    fontSize: 'small', color: '#888', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}
+                  >
+                    {note.original.description || 'Нет описания заметки'}
+                  </div>
+                </a>
+              </Link>
             ))
           ) : query ? (
             <div style={{ textAlign: 'center', padding: '24px', color: '#888', fontSize: 'small', fontStyle: 'italic' }}>Ничего не найдено. Попробуйте изменить запрос</div>

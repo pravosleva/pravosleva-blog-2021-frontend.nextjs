@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import clsx from 'clsx'
-import { IRootState } from '~/store/IRootState'
+import Link from 'next/link'
+// import { IRootState } from '~/store/IRootState'
 import { useStyles } from './styles'
 
 // Импорты иконок MUI
@@ -52,7 +53,7 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
     <div className={clsx(styles.wrapper, 'controls-box')}>
       {normalizedControls.map(({ label, link, title }, i) => {
         
-        let StartIcon = null
+        let StartIcon: React.ReactNode = null
         switch (title) {
           case 'PREV': StartIcon = <ArrowBackIcon fontSize='small' />; break
           case 'START_PLAY':
@@ -65,7 +66,7 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
           default: break
         }
 
-        let EndIcon = null
+        let EndIcon: React.ReactNode = null
         switch (title) {
           case 'NEXT': EndIcon = <ArrowForwardIcon fontSize='small' />; break
           case 'END_PLAY':
@@ -82,21 +83,20 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
           'START_NEW_TAB', 'START_DRIVE2', 'END_NEW_TAB', 'END_DRIVE2', 'START_GITHUB', 'END_GITHUB'
         ].includes(title)
 
-        return (
-          <a
-            key={`${link}-${i}`}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              textDecoration: 'none',
-              width: '100%',
-              padding: '16px',
-              boxSizing: 'border-box'
-            }}
-            href={link}
-            target={isExternalLink ? '_blank' : '_self'}
-          >
+        // Общие стили для контента ссылки, чтобы убрать дублирование в разметке
+        const linkStyle: React.CSSProperties = {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          textDecoration: 'none',
+          width: '100%',
+          padding: '16px',
+          boxSizing: 'border-box'
+        }
+
+        // Выносим внутреннее содержимое ссылки в отдельную переменную
+        const renderInnerContent = () => (
+          <>
             {/* Ряд с иконками и текстом кнопки */}
             <span
               style={{
@@ -114,7 +114,31 @@ export const ControlsBox = withTranslator<any>(({ controlsJson, t }) => {
             
             {/* Описание под кнопкой */}
             <span>{label}</span>
-          </a>
+          </>
+        )
+
+        // 🔥 Если внешняя ссылка — отдаем нативный тег с target='_blank'
+        if (isExternalLink) {
+          return (
+            <a
+              key={`${link}-${i}`}
+              style={linkStyle}
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer" // Рекомендуется для безопасности таргет-бланков
+            >
+              {renderInnerContent()}
+            </a>
+          )
+        }
+
+        // 🔥 Если внутренняя ссылка — оборачиваем в Next Link (для версий < Next 13 `passHref` обязателен при стилизации вложенного <a>)
+        return (
+          <Link key={`${link}-${i}`} href={link} passHref>
+            <a style={linkStyle}>
+              {renderInnerContent()}
+            </a>
+          </Link>
         )
       })}
     </div>
