@@ -30,6 +30,119 @@ isDisabledForMainBlogPage: true
 - Теория: Изучение декларативной конфигурации роутера (`provideRouter`). Разбор флага withComponentInputBinding(), который автоматически превращает query-параметры (`?search=apple`) и dynamic params (`/user/:id`) в стандартные нативные сигнальные инпуты компонента (`input()`), полностью избавляя от ручного парсинга URL.
 - Практика: Создание ленивого модуля для админ-панели лаборатории (`loadComponent: () => import(...)`). Настройка сквозного прокидывания параметров URL напрямую в стейт без участия хуков.
 
+### 1. Настройка маршрутов
+
+`src/app/app.routes.ts`
+
+```ts
+import { Routes } from '@angular/router';
+
+export const appRoutes: Routes = [
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  },
+  {
+    path: 'dashboard',
+    // Ленивая загрузка компонента (Lazy Loading "из коробки" без NgModules)
+    loadComponent: () => import('./components/day-4/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
+  {
+    // Динамический роут для демонстрации сквозного проброса параметров URL
+    path: 'dashboard/:id',
+    loadComponent: () => import('./components/day-4/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  }
+];
+```
+
+### 2. Глобальная конфигурация роутера
+
+`src/app/app.config.ts`
+
+Чтобы магия автоматического связывания URL с Сигналами заработала, нужно зарегистрировать маршруты с флагом `withComponentInputBinding()`
+
+```ts
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { appRoutes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // Активируем роутер и включаем сквозной проброс параметров в инпуты
+    provideRouter(appRoutes, withComponentInputBinding())
+  ]
+};
+```
+
+### 3. Ленивый standalone-компонент
+
+Фреймворк сам заполнит `id` и `search` реактивными данными при изменении URL. Обрати внимание, как computed-модель моментально реагирует на изменение пропсов, избавляя тебя от `useEffect`
+
+`src/app/components/day-4/dashboard/dashboard.component.ts`
+
+```ts
+import { Component, input, computed, effect } from '@angular/core';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [],
+  template: `
+    <div class="lab-sandbox dark stack1">
+      <h3>🅰 День 4: Шаг 1 — Функциональный роутинг & Component Input Binding</h3>
+      
+      <div class="lab-monitor stack1">
+        <h4>📡 Монитор параметров навигации URL:</h4>
+        <!-- Сигнальные инпуты автоматически извлекают данные из URL рантаймом -->
+        <p>Динамический ID процесса (из пути): <strong>{{ id() ?? 'Не указан (/dashboard/:id)' }}</strong></p>
+        <p>Поисковый фильтр (из query parameters): <strong>{{ search() ?? 'Отсутствует (?search=...)' }}</strong></p>
+      </div>
+
+      <div class="lab-monitor stack1">
+        <h4>📊 Вычисляемые метрики (Computed DAG):</h4>
+        <p>Текущее состояние графа: <strong>{{ analyticsSummary() }}</strong></p>
+      </div>
+
+      <p>
+        *🔬 Попробуй изменить URL в браузере вручную, например: <code>/dashboard/101?search=reactive</code>. 
+        Компонент точечно обновит DOM без тотального ререндера класса.
+      </p>
+    </div>
+  `
+})
+export class DashboardComponent {
+  /**
+   * 1. Входящие параметры URL автоматически оборачиваются в readonly-сигналы.
+   * Имя свойства строго совпадает со строкой конфигурации в роутах или query-ключом.
+   */
+  public readonly id = input<string | undefined>();
+  public readonly search = input<string | undefined>();
+
+  /**
+   * 2. Цепочка вычислений (DAG). Автоматически пересчитывается, 
+   * когда рантайм Angular обновляет входные сигналы id() или search().
+   */
+  public readonly analyticsSummary = computed(() => {
+    console.log('🟢 [Dashboard Computed]: URL изменился, пересчитываю метрики...');
+    const processId = this.id() ? `#${this.id()}` : 'Базовый';
+    const query = this.search() ? `с фильтрацией по слову "${this.search()}"` : 'без фильтрации';
+    return `Анализирую поток [${processId}] ${query}. Системные ноды стабильны.`;
+  });
+
+  constructor() {
+    // Трассировка обновлений для лабораторного лога
+    effect(() => {
+      console.log(`📡 [Dashboard UI Effect]: DOM хирургически изменен. Текущий ID в памяти: ${this.id()}`);
+    });
+  }
+}
+```
+
+### 🔬 Что этот опыт показывает Senior React разработчику?
+1. Никаких хуков разметки: Больше не нужно писать `const { id } = useParams()` или работать со стейтами истории навигации. Параметры залетают в класс как обычные декларативные свойства.
+2. Идеальный Lazy Loading: Angular автоматически разделит код и создаст отдельный асинхронный чанк (JS-файл) для DashboardComponent на этапе сборки. Код скачается браузером только в момент перехода на страницу `/dashboard`.
+
 ## Шаг 2: Реактивные мосты: Трансформация RxJS потоков в Signals (`toSignal`) (3 часа)
 - Теория: Роутер и HTTP-клиент Angular исторически возвращают асинхронные потоки RxJS Observable. Но шаблоны в Zoneless-режиме хотят читать синхронные Signals. Изучаем функцию-мост `toSignal()`, которая подписывается на поток, управляет его жизненным циклом и конвертирует асинхронные события в синхронный стейт.
 - Практика: Реализация поиска «на лету» с дебаунсом. Связываем input-сигнал поисковой строки, пропускаем его через RxJS операторы `debounceTime` и `switchMap` для отмены Race Conditions при запросах к API, и преобразуем результат в нативный `Signal` для хирургического вывода в DOM.
