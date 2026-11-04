@@ -5,15 +5,15 @@ bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.webp"
 bg_size: { w: 947, h: 562 }
 bg_type: "image/webp"
 
-createdAt: "2026-11-03T13:24:59.913Z"
-updatedAt: "2026-11-03T13:24:59.913Z"
+createdAt: "2026-11-04T15:22:59.913Z"
+updatedAt: "2026-11-04T15:22:59.913Z"
 priority: 0.8
 
 author: "Den Pol"
 tags: ["капсула_времени", "angular", "podcast", "ментальный_эксперимент", "реактивность", "сигналы"]
 category: "guides"
 isPrivate: false
-isDraft: true
+isDraft: false
 isDisabledForMainBlogPage: true
 ---
 # 🅰️ День 3
@@ -33,6 +33,40 @@ yarn ng generate component components/day-3/step-1 --selector="exp-day-3-step-1"
 
 Создаем локальный токен/сервис и внедряем его в родительский и глубоко вложенный дочерний компоненты, демонстрируя иерархию инжекторов (`NodeInjector`) без написания провайдеров в HTML:
 
+> Для Senior React разработчика проще всего понять `@Injectable` и `@Component` через призму метапрограммирования и компиляции.
+В React вы пишете чистые JS-функции, а связывание (рендеринг, контексты) происходит во время выполнения (runtime). В Angular архитектура декларативна: компилятор должен еще до запуска кода знать, какую роль выполняет каждый класс. Для этого используются декораторы (метаданные с префиксом `@`).
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="@Injectable — это..."
+text='**Паспорт для Движка DI (Бизнес-логика, отделенная от UI)**
+&nbsp;
+Декоратор `@Injectable` превращает обычный класс в Сервис, который может управляться встроенным движком Dependency Injection (Внедрения зависимостей). Он буквально говорит Angular: _«Этот класс не имеет отношения к UI. Это чистая бизнес-логика. Разреши движку DI создавать его инстансы и автоматически прокидывать туда другие зависимости»._
+&nbsp;
+**☝️ Принципиальный нюанс:** В Angular 20+ декоратор `@Injectable` необходим, даже если у сервиса нет зависимостей. Он генерирует скрытые метаданные типов (отражение типов TypeScript), без которых функция `inject()` в компоненте не сможет понять, какой именно класс вы хотите получить.'
+/>
+
+> **Два режима работы `@Injectable`:**
+>
+> 1. Глобальный (Singleton / Zustand-way):
+> ```ts
+> @Injectable({ providedIn: 'root' })
+> export class GlobalStore {}
+> ```
+> Движок DI создает один инстанс на все приложение. Полный аналог глобального стейт-менеджера.
+>
+> 2. Локальный (Scoped / Context-way):
+> ```ts
+> @Injectable() // Без providedIn
+> export class LocalService {}
+> ```
+> Инстанс родится только тогда, когда какой-то компонент укажет его в массиве `providers: [LocalService]`. Он умрет вместе с уничтожением этого компонента с экрана.
+
+> [!info] **Итоговая шпаргалка для Дня 3**
+>
+> - Если классу нужен HTML-шаблон и он рендерится в DOM — это `@Component`. Он отвечает за отображение и реактивное связывание данных с текстовыми нодами.
+> - Если классу нужна только бизнес-логика, стейт или работа с API — это `@Injectable`. Он отвечает за данные и может быть «внедрен» в `@Component` одной строчкой через `inject()`.
+
 `src/app/components/day-3/step-1/step-1.ts`
 ```ts
 import { Component, Injectable, inject, signal } from '@angular/core';
@@ -41,10 +75,10 @@ import { Component, Injectable, inject, signal } from '@angular/core';
  * 1. ИЗОЛИРОВАННЫЙ СЕРВИС (Бизнес-логика / Шина данных)
  * Декоратор @Injectable заявляет рантайму Angular, что этот класс можно внедрять.
  */
-@Injectable({
-  // providedIn: 'root' НЕ пишем, если нам нужен локальный стейт, 
+@Injectable(
+  // providedIn: 'root' НЕ пишем, если нам нужен локальный стейт,
   // привязанный строго к ветке этого компонента, а не глобальный синглтон.
-})
+)
 export class CustomLoggerService {
   // Реактивный лог, к которому получат доступ все, кто внедрит сервис
   logs = signal<string[]>(['[System]: Инициализация локального инжектора']);
@@ -62,12 +96,12 @@ export class CustomLoggerService {
   standalone: true,
   imports: [],
   template: `
-    <div style="padding: 15px; border: 1px solid #e74c3c; background: #2c1a1a; margin-top: 15px; border-radius: 4px;">
+    <div class="lab-monitor stack1">
       <h4>👶 Глубокий ребенок (Day3Step1Child)</h4>
       <p style="font-size: 12px; color: #bbb;">
         Я нахожусь на глубине дерева, у меня нет пропсов или колбэков, но я пишу напрямую в логгер.
       </p>
-      <button (click)="sendAction()">Запустить импульс из ребенка</button>
+      <button (click)="sendAction()" class="btn">Запустить импульс из ребенка</button>
     </div>
   `,
 })
@@ -93,13 +127,13 @@ export class Day3Step1Child {
   // Это точечный аналог <Context.Provider value={...}>, но без раздувания HTML-дерева!
   providers: [CustomLoggerService],
   template: `
-    <div style="padding: 20px; border: 2px dashed #e74c3c; font-family: monospace; margin-top: 20px;">
+    <div class="lab-sandbox dark stack1">
       <h3>🅰️ День 3: Шаг 1 — Движок DI и Функция inject()</h3>
-      
-      <button (click)="addParentLog()">Добавить лог из родителя</button>
+
+      <button (click)="addParentLog()" class="btn">Добавить лог из родителя</button>
 
       <!-- Вывод логов, которые пишут и родитель, и ребенок в один инстанс класса -->
-      <div style="background: #222; color: #ff7675; padding: 15px; border-radius: 4px; margin-top: 15px; max-height: 150px; overflow-y: auto;">
+      <div class="lab-monitor stack1">
         <h4>📊 Локальный логгер инжектора (NodeInjector):</h4>
         <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px;">
           @for (log of logger.logs(); track $index) {
@@ -113,7 +147,7 @@ export class Day3Step1Child {
     </div>
   `,
 })
-export class Step1 {
+export class Day3Step1 {
   // Внедряем тот же самый инстанс логгера, который унаследует и ребенок
   protected logger = inject(CustomLoggerService);
 
@@ -132,7 +166,6 @@ yarn ng generate component components/day-3/step-2 --selector="exp-day-3-step-2"
 ```
 
 `src/app/components/day-3/step-2/step-2.ts`
-
 ```ts
 import { Component, Injectable, inject, signal, computed } from '@angular/core';
 
@@ -221,3 +254,14 @@ export class Step2 {
 1. Изоляция в Шаге 1: Дочерний компонент обновляет общий лог родителя напрямую без использования пропсов или колбэков благодаря DI-связыванию на уровне TypeScript.
 2. Изоляция вычислений в Шаге 2: Изменение статуса питания (ONLINE/OFFLINE) не вызывает лишних пересчетов `systemStatus`, так как граф реактивности отслеживает только релевантные изменения свойств.
 3. Чистота разметки: Шаблоны полностью очищены от инфраструктурного мусора вроде провайдеров контекста.
+
+<ControlsBox
+  controlsJson='[
+    {
+      "title": "PREV",
+      "label": "Переезд на Angular 20+ (день 2)",
+      "type": "link",
+      "link": "/p/2026-11-03-escape-to-angular-in-2027-day-2"
+    }
+  ]'
+/>
