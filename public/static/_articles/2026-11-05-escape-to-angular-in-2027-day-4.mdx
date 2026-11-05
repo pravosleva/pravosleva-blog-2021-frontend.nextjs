@@ -34,11 +34,11 @@ isDisabledForMainBlogPage: true
 yarn ng generate component components/day-4/step-1 --selector="exp-day-4-step-1" --standalone --inline-template --inline-style --skip-tests
 ```
 
-### 1. Настройка маршрутов
-
-`src/app/app.routes.ts`
+### 1. Настройка маршрутов с ленивой загрузкой
 
 ```ts
+// src/app/app.routes.ts
+
 import { Routes } from '@angular/router';
 
 export const appRoutes: Routes = [
