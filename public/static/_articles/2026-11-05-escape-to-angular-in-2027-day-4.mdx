@@ -1,6 +1,6 @@
 ---
 title: "Переезд на Angular 20+ (день 4)"
-brief: "Осваиваем @angular/router"
+brief: "Осваиваем @angular/router; Функциональные Guards и Resolvers в Zoneless-окружении"
 bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.webp"
 bg_size: { w: 947, h: 562 }
 bg_type: "image/webp"
@@ -18,7 +18,7 @@ isDisabledForMainBlogPage: true
 ---
 # 🅰️ День 4
 
-## Теоретическая подготовка: Ментальный сдвиг
+## Теоретическая подготовка
 
 | Концепт | Как это в React (`react-router-dom`) | Как это в Angular 20+ (`@angular/router`) |
 | :--- | :--- | :--- |
@@ -27,6 +27,7 @@ isDisabledForMainBlogPage: true
 | **Предзагрузка** | Метод `loader` в Data Routers (запускается параллельно с рендером). | **Resolvers:** Функции-трансформеры, которые не пустят компонент на экран, пока данные не разрешатся. |
 
 ## Шаг 1: Функциональный роутинг, Lazy Loading и Component Input Binding (3 часа)
+
 - Теория: Изучение декларативной конфигурации роутера (`provideRouter`). Разбор флага withComponentInputBinding(), который автоматически превращает query-параметры (`?search=apple`) и dynamic params (`/user/:id`) в стандартные нативные сигнальные инпуты компонента (`input()`), полностью избавляя от ручного парсинга URL.
 - Практика: Создание ленивого модуля для админ-панели лаборатории (`loadComponent: () => import(...)`). Настройка сквозного прокидывания параметров URL напрямую в стейт без участия хуков.
 
@@ -180,17 +181,490 @@ export class DashboardLayoutComponent {
 2. Идеальный Lazy Loading: Angular автоматически разделит код и создаст отдельный асинхронный чанк (JS-файл) для DashboardComponent на этапе сборки. Код скачается браузером только в момент перехода на страницу `/dashboard`.
 
 ## Шаг 2: Реактивные мосты: Трансформация RxJS потоков в Signals (`toSignal`) (3 часа)
+
 - Теория: Роутер и HTTP-клиент Angular исторически возвращают асинхронные потоки RxJS Observable. Но шаблоны в Zoneless-режиме хотят читать синхронные Signals. Изучаем функцию-мост `toSignal()`, которая подписывается на поток, управляет его жизненным циклом и конвертирует асинхронные события в синхронный стейт.
 - Практика: Реализация поиска «на лету» с дебаунсом. Связываем input-сигнал поисковой строки, пропускаем его через RxJS операторы `debounceTime` и `switchMap` для отмены Race Conditions при запросах к API, и преобразуем результат в нативный `Signal` для хирургического вывода в DOM.
 
-## Шаг 3: Функциональные Guards и Resolvers в Zoneless-окружении (2 часа)
-- Теория: Полный отказ от старых ООП-классов CanActivate. Написание легковесных стрелочных функций-гвардов, которые проверяют статус авторизации во внешнем сторе или куках перед переходом. Изучение работы резолверов: как дождаться ответа от сервера до того, как компонент начнет инициализироваться.
-- Практика: Написание гварда authGuard, который запрашивает статус ядра из нашего вчерашнего `ExternalEngineStore` (используя фабричный `inject`), и блокирует переход на страницу админки, если внешнее ядро находится в режиме Offline.
+Для реализации «живого» поиска по вашему API нам понадобится связать синхронный мир Сигналов шаблона со временем и асинхронностью RxJS. Мы используем toObservable, чтобы превратить сигнал ввода в поток, применим операторы для борьбы с Race Conditions, а затем обернем результат обратно в сигнал с помощью `toSignal`.
+
+### 1. Типизация и Сервис Запросов
+
+```ts
+// src/app/models/notes.model.ts
+
+export interface NoteOriginal {
+  _id: string;
+  title: string;
+  description: string;
+  isPrivate: boolean;
+  isDisabledForMainBlogPage: boolean;
+  createdAt: string;
+  updatedAt: string;
+  priority: number;
+}
+
+export interface NoteItem {
+  original: NoteOriginal;
+  bg: {
+    src: string;
+    size: { w: number; h: number };
+    type: string;
+  };
+  slug: string;
+  brief: string;
+}
+
+export interface NotesApiResponse {
+  success: boolean;
+  data: NoteItem[];
+  pagination: {
+    totalPages: number;
+    currentPage: number;
+    totalNotes: number;
+  };
+}
+```
+
+```ts
+// src/app/services/notes-api.service.ts
+
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { NotesApiResponse } from '../models/notes.model';
+
+@Injectable({ providedIn: 'root' })
+export class NotesApiService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = 'https://pravosleva.pro/express-next-api/code-samples-proxy/api/notes';
+
+  public searchNotes(query: string): Observable<NotesApiResponse> {
+    return this.http.get<NotesApiResponse>(this.baseUrl, {
+      params: {
+        q_title_all_words: query,
+        page: '1',
+        limit: '10'
+      }
+    });
+  }
+}
+```
+
+### 2. Реализация Компонента Поиска
+
+В компоненте `src/app/components/day-4/step-2/step-2.ts` создается интерфейс поиска на базе сигналов и RxJS-операторов (`debounceTime`, `distinctUntilChanged`, `switchMap`). Поисковый запрос оборачивается в `Observable` с помощью `toObservable`, обрабатывается через сервис `NotesApiService`, а результат возвращается в шаблон через `toSignal` и вычисляемые свойства `computed()` для отображения списка заметок и счетчика.
+
+```ts
+// src/app/components/day-4/step-2/step-2.ts
+
+import { Component, signal, computed, inject, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+// Инструменты интероперабельности Сигналов и RxJS (rxjs-interop)
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+
+// Операторы RxJS для реализации задержки (debounce) и отмены race conditions (switchMap)
+import { of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+
+// Типизированный API-сервис и интерфейсы данных
+import { NotesApiService } from '../../../services/notes-api.service';
+import { NotesApiResponse } from '../../../models/notes.model';
+
+@Component({
+  selector: 'exp-day-4-step-2',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+    template: `
+    <div class="lab-sandbox dark stack1">
+      <h3>🅰 День 4: Шаг 2 — Живой поиск (Debounce + switchMap)</h3>
+      <div class="lab-monitor stack1">
+        <!-- 1. Панель ввода с двусторонним связыванием [(ngModel)] -->
+        <div class="control-panel">
+          <input
+            type="text"
+            placeholder="Поиск по статьям..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            class="input"
+          />
+        </div>
+
+        <!-- 2. Индикатор асинхронного фетчинга на сигналах -->
+        @if (isSearching()) {
+          <div class="status loading">
+            📡 Лаборатория pravosleva.pro: Выполняется сетевой поиск...
+          </div>
+        }
+
+        <!-- 3. Вывод результатов и метаданных графа -->
+        <div class="results-panel stack1">
+          <h4>📊 Всего найдено заметок: {{ totalNotesCount() }}</h4>
+
+          <ul class="notes-list stack1">
+            @for (item of notesList(); track item.original._id; let idx = $index) {
+              <li class="note-card stack1 lab-monitor">
+                <span class="index">[{{ idx + 1 }}]</span>
+                <div class="note-content stack1">
+                  <b>{{ item.original.title }}</b>
+                  <p>{{ item.brief }}</p>
+                  <small class="slug">Slug: <code>{{ item.slug }}</code></small>
+                </div>
+              </li>
+            } @empty {
+              @if (!isSearching()) {
+                <li class="empty-state">
+                  🔬 Наблюдение: Введите запрос или по вашему запросу ничего не найдено.
+                </li>
+              }
+            }
+          </ul>
+        </div>
+      </div>
+
+      <p class="lab-hint">
+        *🔬 Наблюдение для React Senior: При вводе символов Angular не вызывает повторно класс <code>Day4Step2</code>
+        и не диффит Virtual DOM. Рантайн точечно изменяет исключительно текстовые ноды и список <code>&lt;li&gt;</code>.
+      </p>
+    </div>
+  `,
+  styles: []
+})
+export class Day4Step2 {
+  // 1. Внедряем API-сервис новейшим функциональным способом через inject()
+  private readonly notesApi = inject(NotesApiService);
+
+  // 2. Локальный сигнал для реактивного связывания со строкой ввода (инпутом)
+  public readonly searchQuery = signal<string>('');
+
+  // 3. Сигнал-флаг для индикации состояния сетевого фетчинга данных
+  public readonly isSearching = signal<boolean>(false);
+
+  /**
+   * 4. Реактивный асинхронный мост (toSignal + toObservable).
+   * Превращает изменения строки ввода в стрим, гасит дребезг (debounce),
+   * отменяет предыдущие зависшие запросы (switchMap) и возвращает результат в Сигнал.
+   */
+  private readonly apiResponse = toSignal<NotesApiResponse | null>(
+    toObservable(this.searchQuery).pipe(
+      debounceTime(300), // Ждем 300мс затишья перед отправкой на сервер
+      distinctUntilChanged(), // Игнорируем повторные триггеры, если текст не изменился
+      tap((text) => {
+        console.log(`📡 [Day 4 Sandbox]: Инициализирован поиск для query: "${text}"`);
+        this.isSearching.set(true); // Включаем лоадер перед запросом
+      }),
+      switchMap((text) => {
+        // Если инпут пустой, не спамим сервер, возвращаем "пустой" валидный ответ
+        if (!text.trim()) {
+          return of({ success: true, data: [], pagination: { totalPages: 0, currentPage: 1, totalNotes: 0 } });
+        }
+        // switchMap автоматически сделает abort() для XHR/Fetch в браузере при новом вводе
+        return this.notesApi.searchNotes(text);
+      }),
+      tap(() => {
+        this.isSearching.set(false); // Выключаем лоадер по завершении потока
+      })
+    ),
+    { initialValue: null } // Начальное состояние до первого ввода пользователя
+  );
+
+  /**
+   * 5. Computed DAG (Направленный Ациклический Граф).
+   * Вытаскивает чистый массив заметок из API-ответа. Автоматически пересчитается,
+   * когда Сигнал apiResponse() получит новые данные из RxJS-моста.
+   */
+  public readonly notesList = computed(() => {
+    return this.apiResponse()?.data ?? [];
+  });
+
+  /**
+   * 6. Computed для получения метаданных пагинации
+   */
+  public readonly totalNotesCount = computed(() => {
+    return this.apiResponse()?.pagination?.totalNotes ?? 0;
+  });
+
+  constructor() {
+    // Лабораторный эффект для трассировки хирургического обновления DOM в консоли
+    effect(() => {
+      console.log(`🟢 [Day 4 UI Effect]: Список обновлен. Найдено элементов: ${this.totalNotesCount()}`);
+    });
+  }
+}
+```
+
+Исходники примера 👉 [здесь](https://github.com/pravosleva/angular-escape-sandbox/blob/master/src/app/components/day-4/step-2/step-2.ts)
 
 ## 🧪 Лабораторный чек-лист конца дня (Что должно работать в браузере)
 1. При вводе в URL `/dashboard?search=angular` компонент автоматически подхватывает строку поиска через сигнальный инпут.
 2. Сетевые запросы не дублируются при быстром вводе благодаря RxJS-операторам, а UI не моргает, так как граф зависимостей обновляется синхронно.
 3. Попытка перейти на секретный роут при выключенном внешнем движке перенаправляет пользователя на главную страницу песочницы.
+
+## Шаг 3: Функциональные Guards и Resolvers в Zoneless-окружении (2 часа)
+
+```bash
+yarn ng generate component components/day-4/step-3 --selector="exp-day-4-step-3" --standalone --inline-template --inline-style --skip-tests
+```
+
+Вместо устаревших ООП-классов, современный Angular использует лаконичные функции с фабричным `inject()`.
+- Функциональный Guard (`authGuard`): проверяет наличие сессии через `inject(Router)` и перенаправляет пользователя при необходимости.
+- Функциональный Resolver (`notesResolver`): выполняет предзагрузку данных из `NotesApiService` до инициализации компонента на основе параметров роута.
+- Конфигурация роутера (`app.routes.ts`): связывает путь `day-4/step-3` с `authGuard`, `notesResolver` и динамической загрузкой компонента `Day4Step3`
+
+### 1. Функциональный `authGuard`
+
+Этот гвард защищает роут от неавторизованных пользователей. Мы имитируем проверку состояния, но используем `inject()`, чтобы показать, как внутри чистой функции можно получить доступ к любому сервису или роутеру Angular для выполнения редиректа.
+
+```ts
+// src/app/guards/auth.guard.ts
+
+import { inject } from '@angular/core';
+import { Router, CanActivateFn } from '@angular/router';
+
+export const authGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
+
+  // Лабораторная заглушка авторизации.
+  // В реальном приложении здесь будет inject(AuthService).isLoggedIn()
+  const isAuthenticated = true;
+
+  console.log(`🛡 [Day 4 Guard]: Проверяю доступ к ${state.url}...`);
+
+  if (!isAuthenticated) {
+    console.warn('🔴 [Day 4 Guard]: Доступ запрещен. Редирект на главную.');
+    // Возвращаем UrlTree для декларативного редиректа
+    return router.createUrlTree(['/']);
+  }
+
+  console.log('🟢 [Day 4 Guard]: Доступ разрешен.');
+  return true;
+};
+```
+
+### 2. Функциональный `notesResolver`
+
+Резолвер перехватывает параметры URL (например, если в роуте `/day-4/step-3/:query` передан поисковый запрос) и предзагружает данные из сети до того, как компонент начнет инициализироваться. Мы переиспользуем `NotesApiService`.
+
+```ts
+// src/app/resolvers/notes.resolver.ts
+
+import { inject } from '@angular/core';
+import { ResolveFn } from '@angular/router';
+import { NotesApiService } from '../services/notes-api.service';
+import { NotesApiResponse } from '../models/notes.model';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+
+export const notesResolver: ResolveFn<NotesApiResponse | null> = (route, state) => {
+  const notesApi = inject(NotesApiService);
+
+  // Извлекаем динамический параметр из пути (например, /day-4/step-3/re)
+  // или берем значение по умолчанию пустую строку
+  const initialQuery = route.paramMap.get('query') ?? '';
+
+  console.log(`📡 [Day 4 Resolver]: Запуск предзагрузки для слова "${initialQuery}"...`);
+
+  return notesApi.searchNotes(initialQuery).pipe(
+    catchError((error) => {
+      console.error('🔴 [Day 4 Resolver]: Ошибка предзагрузки данных:', error);
+      // Возвращаем null, чтобы приложение не упало, а компонент сам обработал пустой стейт
+      return of(null);
+    })
+  );
+};
+```
+
+### 3. Конфигурация маршрутов `app.routes.ts`
+
+Соединяем всё вместе. Мы активируем Lazy Loading (ленивую загрузку чанка компонента) и настраиваем сквозное прокидывание данных резолвера прямо в Сигнальные инпуты компонента с помощью включенного ранее флага `withComponentInputBinding()`.
+
+```ts
+// src/app/app.routes.ts
+
+import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
+import { notesResolver } from './resolvers/notes.resolver';
+
+export const appRoutes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./components/main-layout/main-layout').then(m => m.MainLayoutComponent)
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent)
+  },
+  {
+    path: 'dashboard/:id',
+    loadComponent: () => import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent)
+  },
+  {
+    path: 'day-4/step-3',
+    // 1. Идеальный Lazy Loading standalone-компонента из коробки
+    loadComponent: () => import('./components/day-4/step-3/step-3').then(m => m.Day4Step3),
+
+    // 2. Подключаем функциональную защиту
+    canActivate: [authGuard],
+
+    // 3. Подключаем предзагрузку данных
+    resolve: {
+      initialNotes: notesResolver
+    }
+  },
+  {
+    // Альтернативный роут с динамическим параметром поиска в URL
+    path: 'day-4/step-3/:query',
+    loadComponent: () => import('./components/day-4/step-3/step-3').then(m => m.Day4Step3),
+    canActivate: [authGuard],
+    resolve: {
+      initialNotes: notesResolver
+    }
+  },
+];
+```
+
+### Компонент `Day4Step3`
+
+```ts
+import { Component, signal, computed, inject, effect, input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+// Инструменты интероперабельности Сигналов и RxJS (rxjs-interop)
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+
+// Операторы RxJS для реализации задержки (debounce) и отмены race conditions (switchMap)
+import { of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/operators';
+
+// Типизированный API-сервис и интерфейсы данных
+import { NotesApiService } from '../../../services/notes-api.service';
+import { NotesApiResponse } from '../../../models/notes.model';
+
+@Component({
+  selector: 'exp-day-4-step-2',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+    template: `
+    <div class="lab-sandbox dark stack1">
+      <h3>🅰 День 4: Шаг 2 — Живой поиск (Debounce + switchMap)</h3>
+      <div class="lab-monitor stack1">
+        <!-- 1. Панель ввода с двусторонним связыванием [(ngModel)] -->
+        <div class="control-panel">
+          <input
+            type="text"
+            placeholder="Поиск по статьям..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            class="input"
+          />
+        </div>
+
+        <!-- 2. Индикатор асинхронного фетчинга на сигналах -->
+        @if (isSearching()) {
+          <div class="status loading">
+            📡 Лаборатория pravosleva.pro: Выполняется сетевой поиск...
+          </div>
+        }
+
+        <!-- 3. Вывод результатов и метаданных графа -->
+        <div class="results-panel stack1">
+          <h4>📊 Всего найдено заметок: {{ totalNotesCount() }}</h4>
+
+          <ul class="notes-list stack1">
+            @for (item of notesList(); track item.original._id; let idx = $index) {
+              <li class="note-card stack1 lab-monitor">
+                <span class="index">[{{ idx + 1 }}]</span>
+                <div class="note-content stack1">
+                  <b>{{ item.original.title }}</b>
+                  <p>{{ item.brief }}</p>
+                  <small class="slug">Slug: <code>{{ item.slug }}</code></small>
+                </div>
+              </li>
+            } @empty {
+              @if (!isSearching()) {
+                <li class="empty-state">
+                  🔬 Наблюдение: Введите запрос или по вашему запросу ничего не найдено.
+                </li>
+              }
+            }
+          </ul>
+        </div>
+      </div>
+
+      <p class="lab-hint">
+        *🔬 Наблюдение для React Senior: При вводе символов Angular не вызывает повторно класс <code>Day4Step2</code>
+        и не диффит Virtual DOM. Рантайн точечно изменяет исключительно текстовые ноды и список <code>&lt;li&gt;</code>.
+      </p>
+    </div>
+  `,
+  styles: []
+})
+export class Day4Step3 {
+  private readonly notesApi = inject(NotesApiService);
+
+  // 1. Входящие параметры от роутера
+  public readonly query = input<string | undefined>();
+  public readonly initialNotes = input<NotesApiResponse | null>(null);
+
+  // 2. Локальные сигналы для UI
+  public readonly searchQuery = signal<string>('');
+  public readonly isSearching = signal<boolean>(false);
+
+  /**
+   * 3. Реактивный мост (Финальный монолитный вариант)
+   * Вместо ручных флагов мы превращаем initialNotes() в Observable.
+   * Если он выдает данные — UI их сразу отобразит. Если пользователь вводит текст — сработает switchMap.
+   */
+  private readonly apiResponse = toSignal<NotesApiResponse>(
+    toObservable(this.searchQuery).pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((text) => {
+        // Если поле ввода совпадает с параметром из URL, берем готовые данные из резолвера
+        if (text === this.query() && this.initialNotes()) {
+          return of(this.initialNotes() as NotesApiResponse);
+        }
+
+        if (!text.trim()) return of(this.getEmptyResponse());
+
+        this.isSearching.set(true);
+        return this.notesApi.searchNotes(text).pipe(
+          tap(() => this.isSearching.set(false))
+        );
+      }),
+      // Инициализируем поток актуальным состоянием резолвера на старте приложения
+      startWith(this.initialNotes() ?? this.getEmptyResponse())
+    ),
+    { requireSync: true }
+  );
+
+  // 4. Computed-свойства для шаблона остаются без изменений
+  public readonly notesList = computed(() => this.apiResponse().data);
+  public readonly totalNotesCount = computed(() => this.apiResponse().pagination.totalNotes);
+
+  constructor() {
+    /**
+     * 5. Эффект синхронизации.
+     * Срабатывает один раз, когда роутер заполнил input-свойства.
+     */
+    effect(() => {
+      const urlQuery = this.query();
+      if (urlQuery) {
+        this.searchQuery.set(urlQuery);
+      }
+    });
+  }
+
+  private getEmptyResponse(): NotesApiResponse {
+    return { success: true, data: [], pagination: { totalPages: 0, currentPage: 1, totalNotes: 0 } };
+  }
+}
+```
+
+Исходники примера 👉 [здесь](https://github.com/pravosleva/angular-escape-sandbox/blob/master/src/app/components/day-4/step-3/step-3.ts)
 
 <ControlsBox
   controlsJson='[
