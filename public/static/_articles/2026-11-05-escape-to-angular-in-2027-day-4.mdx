@@ -1,6 +1,6 @@
 ---
 title: "Переезд на Angular 20+ (день 4)"
-brief: "Движок DI и Функция inject"
+brief: "Осваиваем @angular/router"
 bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.webp"
 bg_size: { w: 947, h: 562 }
 bg_type: "image/webp"
@@ -30,6 +30,10 @@ isDisabledForMainBlogPage: true
 - Теория: Изучение декларативной конфигурации роутера (`provideRouter`). Разбор флага withComponentInputBinding(), который автоматически превращает query-параметры (`?search=apple`) и dynamic params (`/user/:id`) в стандартные нативные сигнальные инпуты компонента (`input()`), полностью избавляя от ручного парсинга URL.
 - Практика: Создание ленивого модуля для админ-панели лаборатории (`loadComponent: () => import(...)`). Настройка сквозного прокидывания параметров URL напрямую в стейт без участия хуков.
 
+```bash
+yarn ng generate component components/day-4/step-1 --selector="exp-day-4-step-1" --standalone --inline-template --inline-style --skip-tests
+```
+
 ### 1. Настройка маршрутов
 
 `src/app/app.routes.ts`
@@ -40,58 +44,59 @@ import { Routes } from '@angular/router';
 export const appRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
+    pathMatch: 'full',
+    loadComponent: () => import('./components/main-layout/main-layout').then(m => m.MainLayoutComponent)
   },
   {
     path: 'dashboard',
-    // Ленивая загрузка компонента (Lazy Loading "из коробки" без NgModules)
-    loadComponent: () => import('./components/day-4/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    loadComponent: () => import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent)
   },
   {
-    // Динамический роут для демонстрации сквозного проброса параметров URL
     path: 'dashboard/:id',
-    loadComponent: () => import('./components/day-4/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    loadComponent: () => import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent)
   }
 ];
 ```
 
 ### 2. Глобальная конфигурация роутера
 
-`src/app/app.config.ts`
-
 Чтобы магия автоматического связывания URL с Сигналами заработала, нужно зарегистрировать маршруты с флагом `withComponentInputBinding()`
 
 ```ts
-import { ApplicationConfig } from '@angular/core';
+// src/app/app.config.ts
+
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Активируем роутер и включаем сквозной проброс параметров в инпуты
+    // Глобальный перехватчик ошибок браузера
+    provideBrowserGlobalErrorListeners(),
+    // Активируем роутер со сквозным пробросом параметров URL в инпуты
     provideRouter(appRoutes, withComponentInputBinding())
   ]
 };
+
 ```
 
 ### 3. Ленивый standalone-компонент
 
 Фреймворк сам заполнит `id` и `search` реактивными данными при изменении URL. Обрати внимание, как computed-модель моментально реагирует на изменение пропсов, избавляя тебя от `useEffect`
 
-`src/app/components/day-4/dashboard/dashboard.component.ts`
-
 ```ts
+// src/app/components/day-4/step-1/step-1.ts
+
 import { Component, input, computed, effect } from '@angular/core';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'exp-day-4-step-1',
   standalone: true,
   imports: [],
   template: `
     <div class="lab-sandbox dark stack1">
       <h3>🅰 День 4: Шаг 1 — Функциональный роутинг & Component Input Binding</h3>
-      
+
       <div class="lab-monitor stack1">
         <h4>📡 Монитор параметров навигации URL:</h4>
         <!-- Сигнальные инпуты автоматически извлекают данные из URL рантаймом -->
@@ -105,13 +110,13 @@ import { Component, input, computed, effect } from '@angular/core';
       </div>
 
       <p>
-        *🔬 Попробуй изменить URL в браузере вручную, например: <code>/dashboard/101?search=reactive</code>. 
+        *🔬 Попробуй изменить URL в браузере вручную, например: <code>/dashboard/101?search=reactive</code>.
         Компонент точечно обновит DOM без тотального ререндера класса.
       </p>
     </div>
   `
 })
-export class DashboardComponent {
+export class Day4Step1 {
   /**
    * 1. Входящие параметры URL автоматически оборачиваются в readonly-сигналы.
    * Имя свойства строго совпадает со строкой конфигурации в роутах или query-ключом.
@@ -120,7 +125,7 @@ export class DashboardComponent {
   public readonly search = input<string | undefined>();
 
   /**
-   * 2. Цепочка вычислений (DAG). Автоматически пересчитывается, 
+   * 2. Цепочка вычислений (DAG). Автоматически пересчитывается,
    * когда рантайм Angular обновляет входные сигналы id() или search().
    */
   public readonly analyticsSummary = computed(() => {
@@ -138,6 +143,36 @@ export class DashboardComponent {
   }
 }
 ```
+
+`src/app/components/dashboard-layout/dashboard-layout.ts`
+
+```ts
+import { Component, input } from '@angular/core';
+import { Day4Step1 } from '../day-4/step-1/step-1.v2';
+
+@Component({
+  selector: 'app-dashboard-layout',
+  standalone: true,
+  imports: [Day4Step1],
+  template: `
+    <div class="sandbox-root">
+      <h1>Day 4</h1>
+      <h2>Hello Routes</h2>
+      <div class="stack2">
+        <!-- (v1) Явно передаем значения сигналов родителя в инпуты ребенка -->
+        <exp-day-4-step-1 [id]="id()" [search]="search()" />
+      </div>
+    </div>
+  `
+})
+export class DashboardLayoutComponent {
+  // NOTE: (v1) Теперь родитель принимает данные из URL
+  public readonly id = input<string | undefined>();
+  public readonly search = input<string | undefined>();
+}
+```
+
+Исходники примера 👉 [здесь](https://github.com/pravosleva/angular-escape-sandbox/blob/master/src/app/components/day-4/step-1/step-1.ts)
 
 ### 🔬 Что этот опыт показывает Senior React разработчику?
 1. Никаких хуков разметки: Больше не нужно писать `const { id } = useParams()` или работать со стейтами истории навигации. Параметры залетают в класс как обычные декларативные свойства.
