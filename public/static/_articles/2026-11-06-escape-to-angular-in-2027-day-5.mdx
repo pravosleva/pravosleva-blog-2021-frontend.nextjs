@@ -1,30 +1,216 @@
 ---
 title: "Переезд на Angular 20+ (день 5)"
-brief: "WIP"
+brief: "Иерархия DI"
 bg_src: "/static/img/blog/2026-10-escape-to-angular-preview.webp"
 bg_size: { w: 947, h: 562 }
 bg_type: "image/webp"
 
-createdAt: "2026-11-05T15:22:59.913Z"
-updatedAt: "2026-11-05T15:22:59.913Z"
+createdAt: "2026-11-06T11:51:59.913Z"
+updatedAt: "2026-11-06T11:51:59.913Z"
 priority: 0.8
 
 author: "Den Pol"
 tags: ["капсула_времени", "angular", "podcast", "ментальный_эксперимент", "реактивность", "сигналы"]
 category: "guides"
-isPrivate: true
-isDraft: true
+isPrivate: false
+isDraft: false
 isDisabledForMainBlogPage: true
 ---
 # 🅰️ День 5
 
-_WIP_
+Для React-разработчика с 7-летним стажем DI — это самая большая «слепая зона». В React внедрение зависимостей происходит декларативно через UI-дерево (Context API), что намертво связывает логику приложения с рендерингом компонентов.
+
+В Angular движок DI полностью отделен от визуального дерева DOM. Это мощнейший рантайм-инструмент на уровне классов и функций TypeScript, который управляет созданием, кэшированием и подменой инстансов («синглтонов») в экспериментальном приложении.
+
+## Архитектура движка: Две параллельные вселенные инжекторов
+
+В Angular 20+ существует две независимые иерархии инжекторов, которые и определяют область видимости (Scope) ваших сервисов и данных. Именно с этим поведением мы столкнулись на [Дне 4](/p/2026-11-05-escape-to-angular-in-2027-day-4):
+
+### 1. `EnvironmentInjector` (Маршруты и Модули)
+
+Это глобальная иерархия, которая создается на этапе старта приложения и загрузки чанков роутера. Сервисы здесь инициализируются как Singleton на весь сешн или раздел.
+- `providedIn: 'root'` — сервис регистрируется в самом корневом `EnvironmentInjector`. Он доступен везде и скачивается лениво (Tree-shakable).
+- `providers: [...]` внутри конфигурации путей Routes — создает инжектор на уровне конкретной ветки маршрутов. Как мы выяснили на Шаге 4, он сохраняет стейт при переходах между детьми, пока пользователь не покинет этот раздел.
+
+### 2. `NodeInjector` (UI-Дерево Компонентов)
+
+Это локальная иерархия, которая строится строго по структуре HTML-шаблонов ваших компонентов. Сервисы здесь привязаны к жизненному циклу конкретного тега в DOM.
+- `providers: [...]` внутри декоратора `@Component` — создает уникальный инстанс сервиса для этого компонента и всех его дочерних тегов. Если компонент уничтожается (например, скрылся под `@if`), стейт полностью стирается.
+
+## Новейший DX: Прощай `constructor()`, привет функция `inject()`
+
+В старых статьях по Angular вы увидите внедрение зависимостей через конструктор класса (`constructor(private api: NotesApiService)`). В Angular 20+ стандартом стала **функциональная инжекция с помощью функции `inject()`.**
+
+Она имеет колоссальные преимущества для React Senior:
+1. **Чистый синтаксис:** Сервис внедряется одной строчкой прямо при объявлении свойства класса, как кастомный хук в React.
+2. **Композиция логики:** Вы можете использовать `inject()` внутри обычных функций (например, в гвардах, резолверах или утилитах), создавая функциональные аналоги кастомных хуков React без привязки к классам.
+
+Чтобы закрепить эту тему, мы создадим компонент `src/app/components/day-5/step-1/step-1.ts` с помощью CLI:
+
+```bash
+yarn ng generate component components/day-5/step-1 --selector="exp-day-5-step-1" --standalone --inline-template --inline-style --skip-tests
+```
+
+<CollapsibleBox
+isEnabledForNavigation='1'
+header="InjectionToken в Angular 20+ — это..."
+text="Фундаментальный инструмент для создания слабой связанности (Decoupling) и реализации паттерна «Абстрактная фабрика» на уровне рантайма.
+&nbsp;
+В React для кастомизации поведения глубоких компонентов мы обычно прокидываем через Context конфигурационные объекты или функции-фабрики. В Angular для этого используется `InjectionToken`, который позволяет внедрять не просто конкретные классы-синглтоны, а интерфейсы, конфигурации, динамические значения или результаты работы фабричных функций."
+/>
+
+### Шаг 1: Объявление контракта и создание `InjectionToken`
+
+Создаем токен, который настраивается с помощью встроенного фабричного метода. Мы сразу закладываем ленивую инициализацию по умолчанию.
+
+```ts
+// src/app/tokens/logger.token.ts
+
+import { InjectionToken, inject } from '@angular/core';
+
+// 1. Интерфейс контракта (в React мы бы просто надеялись на duck-typing)
+export interface LabLogger {
+  log(message: string): void;
+  readonly prefix: string;
+}
+
+// 2. Создаем сам токен. Он выступает уникальным ключом для движка DI
+export const LAB_LOGGER = new InjectionToken<LabLogger>('LAB_LOGGER', {
+  providedIn: 'root', // Доступен везде по умолчанию (Tree-shakable)
+  factory: () => {
+    // Фабрика по умолчанию: если никто не переопределил токен выше по дереву инжекторов,
+    // Angular автоматически создаст стандартный консольный логгер.
+    return {
+      prefix: '🟢 [Default Core]',
+      log: (msg) => console.log(`🟢 [Default Core]: ${msg}`)
+    };
+  }
+});
+```
+
+### Шаг 2: Альтернативные реализации логгера (Наши фабричные продукты)
+
+Создадим продвинутый логгер для исследовательских лабораторий, который умеет динамически брать контекст из другого сервиса.
+
+```ts
+// Альтернативный продукт для NodeInjector
+
+export class AdvancedLabLogger implements LabLogger {
+  constructor(public readonly prefix: string) {}
+  
+  log(message: string): void {
+    console.warn(`${this.prefix} (Рантайм-трассировка): ${message}`);
+  }
+}
+```
+
+### Шаг 3: Полный код компонента `Day5Step1` с демонстрацией Абстрактной Фабрики
+
+Мы пишем родительский компонент, который переопределяет фабрику токена прямо в своей секции `providers`. Обратите внимание, как дочерний компонент вообще ничего не знает о том, какой логгер ему прилетит — он просто запрашивает ключ `LAB_LOGGER`.
+
+```ts
+// src/app/components/day-5/step-1/step-1.ts
+
+import { Component, inject, ComponentRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LAB_LOGGER, LabLogger, AdvancedLabLogger } from '../../../tokens/logger.token';
+
+/**
+ * 1. ДОЧЕРНИЙ ВИДЖЕТ (Экспериментальная нода)
+ */
+@Component({
+  selector: 'exp-day-5-child-node',
+  standalone: true,
+  template: `
+    <div style="background: #222; padding: 10px; border-radius: 4px; margin-top: 10px;">
+      <h5>🔬 Дочерняя Нода Инжекции</h5>
+      <p>Используемый префикс логгера: <strong style="color: #e74c3c;">{{ logger.prefix }}</strong></p>
+      <button (click)="runExperiment()" style="font-family: monospace; cursor: pointer;">
+        Отправить отчет в логгер
+      </button>
+    </div>
+  `
+})
+export class Day5ChildNode {
+  /**
+   * Магия Angular 20+: Мы внедряем контракт интерфейса по токену-ключу!
+   * Дочерний компонент изолирован. Ему всё равно, стандартный это логгер или AdvancedLabLogger.
+   */
+  protected readonly logger = inject(LAB_LOGGER);
+
+  public runExperiment(): void {
+    this.logger.log('Экспериментальный процесс запущен успешно.');
+  }
+}
+
+/**
+ * 2. РОДИТЕЛЬСКИЙ КОМПОНЕНТ (Day5Step1)
+ */
+@Component({
+  selector: 'exp-day-5-step-1',
+  standalone: true,
+  imports: [CommonModule, Day5ChildNode],
+  template: `
+    <div class="lab-sandbox dark stack1" style="background: #1e1e1e; padding: 20px; border-radius: 8px; color: #fff; font-family: monospace;">
+      <h3>🅰️ День 5: Шаг 1 — InjectionToken как Абстрактная Фабрика</h3>
+      
+      <div style="background: #2a2a2a; padding: 15px; border-radius: 6px;">
+        <p>Родительский контейнер переопределяет фабрику логов для этой ветки DOM-дерева.</p>
+        
+        <!-- Дочерний компонент получит кастомный логгер из NodeInjector родителя -->
+        <exp-day-5-child-node />
+      </div>
+    </div>
+  `,
+  // ИСПОЛЬЗУЕМ ДИНАМИЧЕСКИЙ USEFACTORY (Паттерн Абстрактная Фабрика)
+  providers: [
+    {
+      provide: LAB_LOGGER, // При запросе этого токена...
+      useFactory: (): LabLogger => {
+        // Здесь может быть любая сложная логика рантайма:
+        // проверка флагов окружения, чтение стейта, или генерация уникальных инстансов.
+        const isLabBeta = true; 
+        
+        if (isLabBeta) {
+          return new AdvancedLabLogger('⚠️ [Beta-Factory-Node #109]');
+        }
+        
+        // Фолбек к дефолтной реализации
+        return {
+          prefix: '🟢 [Fallback Production]',
+          log: (msg) => console.log(`🟢 [Fallback]: ${msg}`)
+        };
+      }
+    }
+  ]
+})
+export class Day5Step1 {}
+```
+
+### 
+🔬 Чек-лист Senior React разработчика (В чём профит?):
+
+1. **Разрыв жесткой связи (Decoupling):** В React, если вы импортируете класс или кастомный хук напрямую в дочерний компонент, вы не можете подменить его рантаймом без изменения кода ребенка. В Angular токен выступает прослойкой.
+2. **Dynamic Resolution:** Конструкция `useFactory` позволяет конструировать объекты на ходу. Вы можете внедрить в саму фабрику другие токены (например, `inject(HttpClient)`) и вернуть кастомизированный продукт в зависимости от ответа сервера или состояния приложения.
+3. **Бесшовный Мокинг в Тестах:** В файле тегов `spec.ts` для проверки `Day5ChildNode` вам достаточно написать:
+   ```ts
+   {
+    provide: LAB_LOGGER,
+    useValue: {
+      log: jasmine.createSpy('log'),
+      prefix: 'mock'
+    }
+   }
+   ```
+   ...и компонент протестируется в полной изоляции от реальной консоли или серверов.
+
+Исходники примера 👉 [здесь](https://github.com/pravosleva/angular-escape-sandbox/blob/master/src/app/components/day-5/step-1/step-1.ts)
 
 <ControlsBox
   controlsJson='[
     {
       "title": "PREV",
-      "label": "Переезд на Angular 20+ (день 3)",
+      "label": "Переезд на Angular 20+ (день 4)",
       "type": "link",
       "link": "/p/2026-11-05-escape-to-angular-in-2027-day-4"
     }

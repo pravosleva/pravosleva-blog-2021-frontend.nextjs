@@ -666,6 +666,12 @@ export class Day4Step3 {
 
 Исходники примера 👉 [здесь](https://github.com/pravosleva/angular-escape-sandbox/blob/master/src/app/components/day-4/step-3/step-3.ts)
 
+## Шаг 4: Опциональный
+
+Мы создаем спеиальны роут `/day-4/step-4` (родительский) и `/day-4/step-4/child` (дочерний) которые будут шарить стейт - ячейку в памяти `Step4StateService.level`. Поскольку сервис вынесен на уровень провайдеров роута (`providers: [Step4StateService]`), при переходе на `/child` и обратно инстанс класса не пересоздается, а данные в сигнале остаются нетронутыми.
+
+Исходники примера 👉 [здесь](https://github.com/pravosleva/angular-escape-sandbox/blob/master/src/app/components/day-4/step-4/step-4.ts)
+
 <ControlsBox
   controlsJson='[
     {
@@ -673,6 +679,12 @@ export class Day4Step3 {
       "label": "Переезд на Angular 20+ (день 3)",
       "type": "link",
       "link": "/p/2026-11-04-escape-to-angular-in-2027-day-3"
+    },
+    {
+      "title": "NEXT",
+      "label": "Переезд на Angular 20+ (день 5)",
+      "type": "link",
+      "link": "/p/2026-11-06-escape-to-angular-in-2027-day-5"
     }
   ]'
 />
