@@ -122,10 +122,10 @@ import { LAB_LOGGER, LabLogger, AdvancedLabLogger } from '../../../tokens/logger
   selector: 'exp-day-5-child-node',
   standalone: true,
   template: `
-    <div style="background: #222; padding: 10px; border-radius: 4px; margin-top: 10px;">
-      <h5>🔬 Дочерняя Нода Инжекции</h5>
+    <div class="lab-monitor stack1">
+      <b>🔬 Дочерняя Нода Инжекции</b>
       <p>Используемый префикс логгера: <strong style="color: #e74c3c;">{{ logger.prefix }}</strong></p>
-      <button (click)="runExperiment()" style="font-family: monospace; cursor: pointer;">
+      <button (click)="runExperiment()" class="btn">
         Отправить отчет в логгер
       </button>
     </div>
@@ -151,12 +151,12 @@ export class Day5ChildNode {
   standalone: true,
   imports: [CommonModule, Day5ChildNode],
   template: `
-    <div class="lab-sandbox dark stack1" style="background: #1e1e1e; padding: 20px; border-radius: 8px; color: #fff; font-family: monospace;">
+    <div class="lab-sandbox dark stack1">
       <h3>🅰️ День 5: Шаг 1 — InjectionToken как Абстрактная Фабрика</h3>
-      
-      <div style="background: #2a2a2a; padding: 15px; border-radius: 6px;">
+
+      <div class="lab-monitor stack1">
         <p>Родительский контейнер переопределяет фабрику логов для этой ветки DOM-дерева.</p>
-        
+
         <!-- Дочерний компонент получит кастомный логгер из NodeInjector родителя -->
         <exp-day-5-child-node />
       </div>
