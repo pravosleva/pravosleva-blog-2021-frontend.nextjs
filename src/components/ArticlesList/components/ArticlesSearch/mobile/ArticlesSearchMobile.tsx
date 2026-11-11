@@ -303,7 +303,7 @@ export const ArticlesSearchMobile = ({ currentTheme }: ArticlesSearchMobileProps
                   </div>
                   <div style={{
                     fontSize: 'small', color: '#888', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}
                   >
                     {note.original.description || 'Нет описания заметки'}
