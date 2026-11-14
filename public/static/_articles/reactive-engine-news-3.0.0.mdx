@@ -253,7 +253,7 @@ text="Проверяет скорость **первичной сборки и �
 
 ### Разбор проваленных тестов #212 и #213
 
-В наборе тестов на семантику графа [reactive-framework-test-suite](https://github.com/johnsoncodehk/reactive-framework-test-suite) `reactive-engine` v3.0.0 набрал **98.8% (159 из 161)**, показав паритет с `@vue/reactivity` 3.5.45. Единственные два не пройденных кейса (**#212** и **#213**) относятся к разделу **Inner Write** (запись в корневой сигнал прямо из тела эффекта, который сам же от него зависит). Примечательно, что ровно на этих же двух тестах спотыкаются и официальный полифил **TC39 Signals (`signal-polyfill`)**, и **`@solidjs/signals`**.
+В наборе тестов на семантику графа [reactive-framework-test-suite](https://github.com/johnsoncodehk/reactive-framework-test-suite) **reactive-engine** v3.0.0 набрал **98.8% (159 из 161)**, показав паритет с **@vue/reactivity** 3.5.45. Единственные два не пройденных кейса (**#212** и **#213**) относятся к разделу **Inner Write** (запись в корневой сигнал прямо из тела эффекта, который сам же от него зависит). Примечательно, что ровно на этих же двух тестах спотыкаются и официальный полифил **TC39 Signals (signal-polyfill)**, и **@solidjs/signals**.
 
 #### Что именно проверяют эти тесты?
 
@@ -311,8 +311,8 @@ S(s) ─────────→ C(c) [s * 2] ─────────→ 
 
 ## Итоговый результат в цифрах
 Сохранив 100% обратной совместимости публичного API, DI-контейнера, транзакционного логгера и адаптеров для React/Vue/Angular, версия 3.0.0 показала следующий прогресс:
-1. Семантика графа ([reactive-framework-test-suite](https://github.com/johnsoncodehk/reactive-framework-test-suite)): 159 из 161 пройденных тестов (98.8% - ровно с **@vue/reactivity** 3.5.45).
-2. Производительность ([js-reactivity-benchmark](https://github.com/transitive-bullshit/js-reactivity-benchmark)):
+1. Семантика графа на основе [reactive-framework-test-suite](https://github.com/johnsoncodehk/reactive-framework-test-suite): 159 из 161 пройденных тестов (98.8% - ровно с **@vue/reactivity** 3.5.45).
+2. Производительность на основе [js-reactivity-benchmark](https://github.com/transitive-bullshit/js-reactivity-benchmark):
    - **Kairo (`broadPropagation`, `deepPropagation`, `diamond`): быстрее SolidJS, Svelte v5, MobX и @angular/signals;**
    - **Mol (`molBench`): 811 мс** (1.02× от абсолютного лидера таблицы);
    - **CellX (`cellx10/20/30`): 0.11 – 0.25 мс** (топ самых быстрых движков);
@@ -321,7 +321,7 @@ S(s) ─────────→ C(c) [s * 2] ─────────→ 
 
 > [!warning] Эта часть статьи на редактировании
 
-| Критерий | **@pravosleva/reactive-engine** (v3.0.0) | Effector (v23+) | Reatom (v1000+) |
+| Критерий | **@pravosleva/reactive-engine** (v3.0.0) | **Effector** (v23+) | **Reatom** (v1000+) |
 | :--- | :--- | :--- | :--- |
 | **Архитектура** | Сигналы (Push-Pull), ленивые `computed` и автотрекинг. | Событийный граф (Push), статическая топология. | Сигнально-атомарный граф (Push-Pull / Push). |
 | **DX и стиль** | Сигналы, декораторы и DI-контейнер. | Функционально-реактивный стиль без классов. | Атомарно-функциональный стиль без бойлерплейта. |
@@ -392,7 +392,7 @@ _Во всех трёх примерах реализованы:_
 - Подавление гонок Race Conditions через отмену предыдущего активного запроса (`AbortController`).
 - Кастомная валидация ответа сервера перед сохранением результата.
 
-1. `@pravosleva/reactive-engine` (v3.0.0)
+1. **@pravosleva/reactive-engine** (v3.0.0)
 
 Используем встроенный декларативный примитив `resource`, который сам управляет `AbortSignal`, реактивно отслеживает зависимости внутри `source` и поддерживает декларативную проверку ответа через `responseValidate`.
 
@@ -450,7 +450,7 @@ search.value = 'signals'
 page.value = 2
 ```
 
-2. `effector` (v23+)
+2. **effector** (v23+)
 
 В Effector строится статическая топология потоков: объединяем сторы через `combine`, запускаем `createEffect` с ручным управлением `AbortController` для отмены предыдущего запроса и обрабатываем результат/ошибки через декларативные сторы.
 
@@ -524,7 +524,7 @@ setSearch('signals')
 setPage(2)
 ```
 
-3. `@reatom/core` (v1000+)
+3. **@reatom/core** (v1000+)
 
 В современной ветке Reatom (без явного `ctx`) используем атомы `atom`, вычисляемый поток с `withAsyncData` (или `effect` с `wrap`) и встроенный в контекст фрейма `AbortController` (`top().controller`), который автоматически абортируется при перезапуске вычисления.
 
@@ -594,9 +594,9 @@ page.set(2)
 
 **Ключевые отличия подходов**
 
-- `@pravosleva/reactive-engine` v3.0.0: Декларативный resource берёт на себя и `AbortController`, и валидацию до/после запроса (`validateBeforeFetch` / `responseValidate`), и батчинг зависимостей (`computed`).
-- `effector` v23+: Требует явного связывания потоков через `combine` и `sample`, а также ручного хранения ссылки на текущий `AbortController` внутри обработчика `createEffect`.
-- `@reatom/core` v1000+: Использует встроенный механизм отмены асинхронного фрейма (`abortVar` + `wrap`), автоматически прерывая цепочку `await` при изменении любого атома, прочитанного до первого `await`.
+- **@pravosleva/reactive-engine** v3.0.0: Декларативный `resource` берёт на себя и `AbortController`, и валидацию до/после запроса (`validateBeforeFetch` / `responseValidate`), и батчинг зависимостей (`computed`).
+- **effector** v23+: Требует явного связывания потоков через `combine` и `sample`, а также ручного хранения ссылки на текущий `AbortController` внутри обработчика `createEffect`.
+- **@reatom/core** v1000+: Использует встроенный механизм отмены асинхронного фрейма (`abortVar` + `wrap`), автоматически прерывая цепочку `await` при изменении любого атома, прочитанного до первого `await`.
 
 <ControlsBox
   controlsJson='[
