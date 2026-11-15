@@ -404,7 +404,7 @@ text="**_Сигнально-атомарный граф (Push-Pull / Push)_**
 
 > [!success] **Что же выбрать?**
 >
-> В итоге выбор сводится не к размеру проекта, а к предпочтительной архитектуре вашей команды (характеристики НЕ взаимоискручающие, а на чем можно строить первичный фокус при выборе):
+> В итоге выбор сводится не к размеру проекта, а к предпочтительной архитектуре вашей команды (характеристики НЕ взаимоисключающие, но на чем можно строить первичный фокус на пороге перед началом работы над большим стартапом, к примеру):
 > - **Функциональные потоки событий (Effector)**;
 > - **Атомарная композиция с трекингом контекста (Reatom)**;
 > - **Высокоскоростной сигнальный граф с DI, сервисами @pravosleva/reactive-engine**;
@@ -430,200 +430,287 @@ _Во всех трёх примерах реализованы:_
 
 Используем встроенный декларативный примитив `resource`, который сам управляет `AbortSignal`, реактивно отслеживает зависимости внутри `source` и поддерживает декларативную проверку ответа через `responseValidate`.
 
-```ts
-import { ReactiveEngine } from '@pravosleva/reactive-engine'
-// ИЛИ можно юзать глобальный инстанс движка для небольших задач: import { signal, resource, effect } from '@pravosleva/reactive-engine'
+```html
+<!DOCTYPE html>
+<html lang="ru">
 
-const engine = new ReactiveEngine()
+<head>
+  <meta charset="UTF-8" />
+  <title>Reactive Engine Express Start</title>
 
-// 1. Создаём два сигнала
-const search = engine.signal('reactive', 'search')
-const page = engine.signal(1, 'page')
+  <!-- NOTE: Подключаем монолитную UMD-сборку ядра с продакшена -->
+  <script src="http://pravosleva.pro/reactive-engine/build/reactive-engine.umd.js"></script>
+</head>
 
-// 2. Объединяем параметры в вычисляемый источник
-const deps = engine.computed(() => ({
-  q: search.value.trim(),
-  page: page.value,
-}), 'req-deps')
+<body style="background: #0e0e13; color: #fff; font-family: monospace; padding: 40px;">
+  <script>
+    // 0. Извлекаем сущности из глобального UMD-пространства
+    const { AbstractService, ReactiveEngine } = window.ReactiveEngineLib;
 
-// 3. Создаём ресурс с автоотменой (signal) и кастомной валидацией
-const usersResource = engine.resource(
-  async ({ q, page }, abortSignal) => {
-    const params = new URLSearchParams({ q, page: String(page) })
-    const res = await fetch(`https://example.com${!!params ? `?${params}` : ''}`, {
-      signal: abortSignal,
+    const engine = new ReactiveEngine({ logger: { isEnabled: true } })
+
+    // 1. Создаём два сигнала
+    const search = engine.signal('initial', 'search')
+    const page = engine.signal(1, 'page')
+
+    // 2. Объединяем параметры в вычисляемый источник
+    const deps = engine.computed(() => ({
+      q: search.value.trim(),
+      page: page.value,
+    }), 'deps')
+
+    // 3. Создаём ресурс с автоотменой (signal) и кастомной валидацией
+    const usersResource = engine.resource(
+      async ({ q, page }, abortSignal) => {
+        const params = new URLSearchParams({ q, page: String(page) })
+        const res = await fetch(`http://local.devtool-1.ru/express-helper/sp/api/analytics/event${!!params ? `?${params}` : ''}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          },
+          body: JSON.stringify({
+            uuid: 'a1',
+            analytics_session_id: 'asid0',
+            seconds_since_analytics_session_started: 1,
+            analytics_session_started_at: 1,
+            event: 'e',
+          }),
+          signal: abortSignal,
+        })
+
+        if (!res.ok) {
+          throw new Error(`HTTP error: ${res.status}`)
+        }
+
+        return res.json()
+      },
+      deps,
+      {
+        name: 'usersResource',
+        validateBeforeFetch: ({ q }) => q.length >= 2 || 'Минимум 2 символа для поиска',
+        responseValidate: (data) => {
+          if (data?.ok !== true) {
+            throw new Error('Некорректный формат ответа: ожидался data.ok === true')
+          }
+          return true
+        },
+      }
+    )
+
+    // 4. Подписываемся на состояние ресурса
+    engine.effect(() => {
+      const { loading, data, error } = usersResource.value
+      console.log({ loading, data, error })
     })
 
-    if (!res.ok) {
-      throw new Error(`HTTP error: ${res.status}`)
-    }
+    // Изменение сигналов мгновенно отменит первый запрос и запустит новый
+    search.value = 's' // Запрос должен быть пропущен
+    search.value = 'signals' // Запрос должен быть отменен из-за следующей строки
+    page.value = 2 // Запрос должен быть отправлен
+  </script>
 
-    return res.json()
-  },
-  deps,
-  {
-    name: 'usersResource',
-    validateBeforeFetch: ({ q }) => q.length >= 2 || 'Минимум 2 символа для поиска',
-    responseValidate: (data) => {
-      if (data?.ok !== true) {
-        return 'Некорректный формат ответа: ожидается data?.ok === true'
-      }
-      return true
-    },
-  }
-)
+</body>
 
-// 4. Подписываемся на состояние ресурса
-engine.effect(() => {
-  const { loading, data, error } = usersResource.value
-  console.log({ loading, data, error })
-})
-
-// Изменение сигналов мгновенно отменит первый запрос и запустит новый
-search.value = 'signals'
-page.value = 2
+</html>
 ```
 
 2. **effector** (v23+)
 
 В Effector строится статическая топология потоков: объединяем сторы через `combine`, запускаем `createEffect` с ручным управлением `AbortController` для отмены предыдущего запроса и обрабатываем результат/ошибки через декларативные сторы.
 
-```ts
-import { createStore, createEvent, createEffect, combine, sample } from 'effector'
+```html
+<!DOCTYPE html>
+<html lang="ru">
 
-// 1. События и сторы-сигналы
-const setSearch = createEvent()
-const setPage = createEvent()
+<head>
+  <meta charset="UTF-8" />
+</head>
 
-const $search = createStore('reactive').on(setSearch, (_, val) => val)
-const $page = createStore(1).on(setPage, (_, val) => val)
+<body>
+  <script type="module">
+    import { createStore, createEvent, combine, createEffect, sample } from 'https://cdn.jsdelivr.net/npm/effector/effector.mjs';
 
-// 2. Объединяем параметры в производный стор
-const $query = combine({ search: $search, page: $page }, ({ search, page }) => ({
-  q: search.trim(),
-  page,
-}))
+    // 1. События и сторы-сигналы
+    const setSearch = createEvent()
+    const setPage = createEvent()
 
-// 3. Эффект с отменой предыдущего запроса через замыкание на активный AbortController
-let activeController = null
+    const $search = createStore('initial').on(setSearch, (_, val) => val)
+    const $page = createStore(1).on(setPage, (_, val) => val)
 
-const fetchUsersFx = createEffect(async ({ q, page }) => {
-  if (activeController) {
-    activeController.abort()
-  }
-  activeController = new AbortController()
-  const { signal } = activeController
+    // 2. Объединяем параметры в производный стор
+    const $query = combine({ search: $search, page: $page }, ({ search, page }) => ({
+      q: search.trim(),
+      page,
+    }))
 
-  const params = new URLSearchParams({ q, page: String(page) })
-  const res = await fetch(`https://example.com${!!params ? `?${params}` : ''}`, { signal })
+    // 3. Эффект с отменой предыдущего запроса через замыкание на активный AbortController
+    let activeController = null
 
-  if (!res.ok) {
-    throw new Error(`HTTP error: ${res.status}`)
-  }
+    const fetchUsersFx = createEffect(async ({ q, page }) => {
+      if (activeController) {
+        activeController.abort()
+        console.log('Req aborted')
+      }
+      activeController = new AbortController()
+      const { signal } = activeController
 
-  const data = await res.json()
+      const params = new URLSearchParams({ q, page: String(page) })
+      console.log(`Req planned: ${params}`)
+      const res = await fetch(`http://local.devtool-1.ru/express-helper/sp/api/analytics/event${!!params ? `?${params}` : ''}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+          uuid: 'a1',
+          analytics_session_id: 'asid0',
+          seconds_since_analytics_session_started: 1,
+          analytics_session_started_at: 1,
+          event: 'e',
+        }),
+        signal,
+      })
 
-  // Кастомная валидация ответа
-  if (data?.ok !== true) {
-    return 'Некорректный формат ответа: ожидается data?.ok === true'
-  }
+      if (!res.ok) {
+        throw new Error(`HTTP error: ${res.status}`)
+      }
 
-  return data
-})
+      const data = await res.json()
 
-// 4. Сторы состояния и связывание потоков через sample
-const $data = createStore(null).on(fetchUsersFx.doneData, (_, payload) => payload)
-const $error = createStore(null)
-  .on(fetchUsersFx.failData, (_, err) => (err.name === 'AbortError' ? null : err.message))
-  .reset(fetchUsersFx)
+      // Кастомная валидация ответа
+      if (data?.ok !== true) {
+        throw new Error('Некорректный формат ответа: ожидался data.ok === true')
+      }
 
-const $state = combine({
-  loading: fetchUsersFx.pending,
-  data: $data,
-  error: $error,
-})
+      return data
+    })
 
-sample({
-  clock: $query,
-  filter: ({ q }) => q.length >= 2,
-  target: fetchUsersFx,
-})
+    // 4. Сторы состояния и связывание потоков через sample
+    const $data = createStore(null).on(fetchUsersFx.doneData, (_, payload) => payload)
+    const $error = createStore(null)
+      .on(fetchUsersFx.failData, (_, err) => (err.name === 'AbortError' ? null : err.message))
+      .reset(fetchUsersFx)
 
-// Первый запуск и подписка
-$state.watch((s) => console.log(s))
-fetchUsersFx($query.getState())
+    const $state = combine({
+      loading: fetchUsersFx.pending,
+      data: $data,
+      error: $error,
+    })
 
-// Изменение сторов отменит предыдущий запрос и запустит новый
-setSearch('signals')
-setPage(2)
+    sample({
+      clock: $query,
+      filter: ({ q }) => q.length >= 2,
+      target: fetchUsersFx,
+    })
+
+    // Первый запуск и подписка
+    $state.watch((s) => console.log(s))
+    fetchUsersFx($query.getState())
+
+    // Изменение сторов отменит предыдущий запрос и запустит новый
+    setSearch('s') // Запрос должен быть пропущен
+    setSearch('signals') // Запрос должен быть отменен из-за следующей строки
+    setPage(2) // Запрос должен быть отправлен
+  </script>
+
+</body>
+
+</html>
 ```
 
 3. **@reatom/core** (v1000+)
 
 В современной ветке Reatom (без явного `ctx`) используем атомы `atom`, вычисляемый поток с `withAsyncData` (или `effect` с `wrap`) и встроенный в контекст фрейма `AbortController` (`top().controller`), который автоматически абортируется при перезапуске вычисления.
 
-```ts
-import { atom, computed, effect, wrap, abortVar } from '@reatom/core'
+```html
+<!DOCTYPE html>
+<html lang="ru">
 
-// 1. Создаём два атома-сигнала
-const search = atom('reactive', 'search')
-const page = atom(1, 'page')
+<head>
+  <meta charset="UTF-8" />
+  <title>Reatom v1000+ Express Start</title>
+</head>
+<script src="http://pravosleva.ru/docs/_exp/reatom/reatom.umd.js"></script>
 
-// 2. Вспомогательная функция валидации
-function validateUsersPayload(data) {
-  if (data?.ok !== true) {
-    return 'Некорректный формат ответа: ожидается data?.ok === true'
-  }
-  return data
-}
+<body>
+  <script>
+    const { atom, action, computed, effect, abortVar, wrap } = window.reatom;
 
-// 3. Реактивный эффект с автоматической отменой предыдущего фрейма
-const state = atom({ loading: false, data: null, error: null }, 'usersState')
+    // 1. Создаём два атома-сигнала
+    const search = atom('reactive', 'search')
+    const page = atom(1, 'page')
 
-effect(async () => {
-  const q = search().trim()
-  const currentPage = page()
-
-  if (q.length < 2) {
-    state.set({ loading: false, data: null, error: 'Минимум 2 символа' })
-    return
-  }
-
-  // Получаем AbortController текущего реактивного запуска
-  const controller = abortVar.get()
-  state.set((prev) => ({ ...prev, loading: true, error: null }))
-
-  try {
-    const params = new URLSearchParams({ q, page: String(currentPage) })
-    const res = await wrap(
-      fetch(`https://example.com${!!params ? `?${params}` : ''}`, {
-        signal: controller?.signal,
-      })
-    )
-
-    if (!res.ok) {
-      throw new Error(`HTTP error: ${res.status}`)
+    // 2. Вспомогательная функция валидации
+    function validateUsersPayload(data) {
+      if (data?.ok !== true) {
+        throw new Error('Некорректный формат ответа: ожидался data.ok === true')
+      }
+      return data
     }
 
-    const rawData = await wrap(res.json())
-    const validData = validateUsersPayload(rawData)
+    // 3. Реактивный эффект с автоматической отменой предыдущего фрейма
+    const state = atom({ loading: false, data: null, error: null }, 'usersState')
 
-    state.set({ loading: false, data: validData, error: null })
-  } catch (err) {
-    // Игнорируем ошибку отмены устаревшего запроса
-    if (err?.name === 'AbortError') return
-    state.set({ loading: false, data: null, error: err.message })
-  }
-}, 'fetchUsersEffect')
+    effect(async () => {
+      const q = search().trim()
+      const currentPage = page()
 
-// 4. Подписываемся на итоговое состояние
-effect(() => {
-  console.log(state())
-})
+      if (q.length < 2) {
+        state.set({ loading: false, data: null, error: 'Минимум 2 символа' })
+        return
+      }
 
-// Изменение атомов автоматически абортирует предыдущий fetch через abortVar
-search.set('signals')
-page.set(2)
+      // Получаем AbortController текущего реактивного запуска
+      const controller = abortVar.get()
+      state.set((prev) => ({ ...prev, loading: true, error: null }))
+
+      try {
+        const params = new URLSearchParams({ q, page: String(currentPage) })
+        const res = await wrap(
+          fetch(`http://local.devtool-1.ru/e-helper/smartprice/api/analytics/event${!!params ? `?${params}` : ''}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+              uuid: 'a1',
+              analytics_session_id: 'asid0',
+              seconds_since_analytics_session_started: 1,
+              analytics_session_started_at: 1,
+              event: 'e',
+            }),
+            signal: controller?.signal,
+          })
+        )
+
+        if (!res.ok) {
+          throw new Error(`HTTP error: ${res.status}`)
+        }
+
+        const rawData = await wrap(res.json())
+        const validData = validateUsersPayload(rawData)
+
+        state.set({ loading: false, data: validData, error: null })
+      } catch (err) {
+        // Игнорируем ошибку отмены устаревшего запроса
+        if (err?.name === 'AbortError') return
+        state.set({ loading: false, data: null, error: err.message })
+      }
+    }, 'fetchUsersEffect')
+
+    // 4. Подписываемся на итоговое состояние
+    effect(() => {
+      console.log(state())
+    })
+
+    // Изменение атомов автоматически абортирует предыдущий fetch через abortVar
+    search.set('s') // Запрос должен быть пропущен
+    search.set('signals') // Запрос должен быть отменен из-за следующей строки
+    page.set(2) // Запрос должен быть отправлен
+  </script>
+</body>
+
+</html>
 ```
 
 **Ключевые отличия подходов**
