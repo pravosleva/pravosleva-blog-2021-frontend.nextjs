@@ -396,11 +396,6 @@ text="**_Сигнально-атомарный граф (Push-Pull / Push)_**
 
 ### Что выбрать под конкретную задачу
 
-> [!warning] Эта часть статьи на редактировании
->
-> 1. Довести примеры до конца
-> 2. Дописать ключевые отличия подходов
-
 Современная фронтенд-разработка ушла от поиска «единственно верного» стейт-менеджера. Сравнение **@pravosleva/reactive-engine**, **Effector** и **Reatom** показывает, что все три решения способны закрывать задачи крупного продакшена, но делают это через разные архитектурные парадигмы:
 
 * **Effector** — выбор для команд, которым ближе строгий функциональный стиль без классов. Его декларативные операторы (`sample`, `combine`) позволяют выстраивать предсказуемые потоки данных и строго контролировать зависимости в больших проектах.
@@ -416,6 +411,11 @@ text="**_Сигнально-атомарный граф (Push-Pull / Push)_**
 
 ### Ни слова больше, покажите код!
 
+> [!warning] Эта часть статьи на редактировании
+>
+> 1. Доработать примеры
+> 2. Согласовать их с авторами Reatom, Effector
+
 Ниже приведено решение одной и той же задачи на чистом JavaScript (ES2025+) с использованием актуальных версий инструментов: **@pravosleva/reactive-engine** v3.0.0, **@reatom/core** v1000+ и **effector** v23+.
 
 _Во всех трёх примерах реализованы:_
@@ -424,6 +424,7 @@ _Во всех трёх примерах реализованы:_
 - Автоматический перезапуск GET-запроса с подстановкой значений в `URLSearchParams`.
 - Подавление гонок Race Conditions через отмену предыдущего активного запроса (`AbortController`).
 - Кастомная валидация ответа сервера перед сохранением результата.
+- Доступ к промежуточному стейту
 
 1. **@pravosleva/reactive-engine** (v3.0.0)
 
@@ -440,10 +441,10 @@ const search = engine.signal('reactive', 'search')
 const page = engine.signal(1, 'page')
 
 // 2. Объединяем параметры в вычисляемый источник
-const queryParams = engine.computed(() => ({
+const deps = engine.computed(() => ({
   q: search.value.trim(),
   page: page.value,
-}), 'queryParams')
+}), 'req-deps')
 
 // 3. Создаём ресурс с автоотменой (signal) и кастомной валидацией
 const usersResource = engine.resource(
@@ -459,13 +460,13 @@ const usersResource = engine.resource(
 
     return res.json()
   },
-  queryParams,
+  deps,
   {
     name: 'usersResource',
     validateBeforeFetch: ({ q }) => q.length >= 2 || 'Минимум 2 символа для поиска',
     responseValidate: (data) => {
-      if (!data || !Array.isArray(data.items)) {
-        return 'Некорректный формат ответа: ожидался массив items'
+      if (data?.ok !== true) {
+        return 'Некорректный формат ответа: ожидается data?.ok === true'
       }
       return true
     },
@@ -523,8 +524,8 @@ const fetchUsersFx = createEffect(async ({ q, page }) => {
   const data = await res.json()
 
   // Кастомная валидация ответа
-  if (!data || !Array.isArray(data.items)) {
-    throw new Error('Некорректный формат ответа: ожидался массив items')
+  if (data?.ok !== true) {
+    return 'Некорректный формат ответа: ожидается data?.ok === true'
   }
 
   return data
@@ -570,8 +571,8 @@ const page = atom(1, 'page')
 
 // 2. Вспомогательная функция валидации
 function validateUsersPayload(data) {
-  if (!data || !Array.isArray(data.items)) {
-    throw new Error('Некорректный формат ответа: ожидался массив items')
+  if (data?.ok !== true) {
+    return 'Некорректный формат ответа: ожидается data?.ok === true'
   }
   return data
 }
