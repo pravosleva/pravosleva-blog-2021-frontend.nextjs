@@ -7,13 +7,14 @@ bg_size: { w: 780, h: 537 }
 bg_type: 'image/webp'
 
 createdAt: "2026-09-09T14:25:58.642Z"
-updatedAt: "2026-09-09T16:56:34.881Z"
+updatedAt: "2026-11-17T14:09:34.881Z"
 priority: 0.8
 
 author: "Den Pol"
 tags: ["react", "reactivity", "reactive_engine", "performance", "производительность", "реактивность", "реактивное_программирование", "javascript"]
 category: "news"
 isPrivate: false
+isDraft: false
 isDisabledForMainBlogPage: true
 ---
 > Эта статья про развитие движка **[ReactiveEngine](https://www.npmjs.com/package/@pravosleva/reactive-engine)** в ходе которого рассматриваются фундаментальные вещи во Frontend разработке.
@@ -22,8 +23,8 @@ isDisabledForMainBlogPage: true
 ### Экономия на операциях с памятью (Garbage Collection)
 В React при каждом изменении стейта компонент вызывается как функция заново. Это значит, что **в памяти заново создаются тысячи временных JS-объектов, описывающих Virtual DOM**. Затем **React тратит ресурсы CPU на их сравнение (reconciliation)**, а после — **нагружает Garbage Collector (сборщик мусора)**, чтобы эти объекты удалить. Движок **[ReactiveEngine](https://www.npmjs.com/package/@pravosleva/reactive-engine)** создает прокси-обертку один раз при инициализации. При изменении данных память не забивается временным мусором, так как обновление идет напрямую в целевой узел DOM.
 
-### Проблема ререндеров решена на уровне архитектуры
-В React, если стейт изменился на самом верху приложения, по умолчанию начнет перерисовываться всё дерево вниз. Разработчикам приходится вручную расставлять `useMemo`, `useCallback` и `React.memo`, чтобы спасти перформанс. В движке **ReactiveEngine** такой проблемы нет физически: благодаря **Proxy** и **Dependency Tracking,** изменение переменной `count` дернет исключительно функцию обновления строки `<span>{count}</span>`, даже если этот спан зарыт на 20 уровней вглубь дерева. Родительские компоненты вообще не знают об этом обновлении.
+### ⚠️ Проблема ререндеров частично решена на уровне архитектуры
+В экосистеме React хук `useReactiveValue` работает поверх `useSyncExternalStore` и запускает точечный ререндер только того React-компонента, который подписался на сигнал (не трогая родительские и соседние компоненты, но без прямого обхода Virtual DOM внутри самого компонента).
 
 ### Нулевой оверхед на загрузку (Bundle Size & TTI)
 Для долгосрочных и нагруженных инхаус-продуктов критически важна метрика **TTI (Time to Interactive).** Доставка 45 килобайт рантайма React на мобильные устройства со слабым 3G-интернетом замедляет парсинг скриптов. Движок **ReactiveEngine** весит в 15–20 раза меньше, не требует тяжелых полифилов и начинает работать мгновенно, что дает колоссальный буст для Core Web Vitals на клиенте.
@@ -38,9 +39,9 @@ isDisabledForMainBlogPage: true
     },
     {
       "title": "NEXT",
-      "label": "Обзор v2.6.2",
+      "label": "Обзор v3.0.0",
       "type": "link",
-      "link": "/p/reactive-engine-news-2.6.2"
+      "link": "/p/reactive-engine-news-3.0.0"
     }
   ]'
 />
@@ -49,17 +50,28 @@ isDisabledForMainBlogPage: true
 Каждый вызов `new ReactiveEngine()` создает изолированное государство со своей собственной инфраструктурой под капотом. У них нет общего глобального стейта, они никак не пересекаются в памяти и ничего не знают друг о друге.
 
 ### Что у каждого инстанса движка свое (изолированное)?
-- **Собственный DI-контейнер**: Сервисы, зарегистрированные через `engine1.inject(Logic)`, будут жить только внутри первого движка. Если вы вызовете `engine2.inject(Logic)`, создастся совершенно другой, второй экземпляр класса `Logic`.
-- **Изолированный граф реактивности**: Сигналы и компутеды, созданные внутри `engine1`, не могут триггерить вычисления или эффекты, созданные внутри `engine2`. Сборщик зависимостей (`engine.activeEffect`) у каждого свой.
-- **Раздельные шедулеры батчинга**: Очередь микрозадач `queueMicrotask` на выполнение эффектов и логов формируется у каждого движка отдельно. Они не склеиваются между собой.
-- **Собственные настройки логгера**: Вы можете включить логгер на полную мощность для `engine1`, а для `engine2` полностью его отключить — их консоли не будут забивать друг друга.
+1. **Собственный DI-контейнер**: Сервисы, зарегистрированные через `engine1.inject(Logic)`, будут жить только внутри первого движка. Если вы вызовете `engine2.inject(Logic)`, создастся совершенно другой, второй экземпляр класса `Logic`.
+2. **Изолированный граф реактивности**: Сигналы и компутеды, созданные внутри `engine1`, не могут триггерить вычисления или эффекты, созданные внутри `engine2`. Сборщик зависимостей (`engine.activeConsumer`) у каждого свой - хранится как свойство экземпляра класса `ReactiveEngineCore`, а не как глобальная переменная уровня модуля. В ядре **v3.x** активный узел-потребитель хранится в `engine.activeConsumer`, а граф связей построен на двунаправленных рёбрах `NodeLink`.
+> - **Свой контекст выполнения `this.activeConsumer`**: Когда запускается `computed` или `effect` внутри `engine2`, движок записывает активный узел только в свой локальный указатель `engine2.activeConsumer`. Указатель `engine1.activeConsumer` в этот момент остаётся равным `null`.
+> - **Проверка владельца при чтении `this.engine`:** Каждый узел (`SignalNode` и `ComputedNode`) хранит ссылку на породивший его движок. При обращении к `.value` сигнал проверяет `this.engine.activeConsumer`, а не чужой инстанс.
+> - **Защита от случайных подписок:** Если внутри эффекта `engine2` прочитать сигнал из `engine1`, подписка не создастся. Графы двух инстансов полностью изолированы друг от друга и связываются только явно через мосты (`.subscribe()` или `effect`).
+3. **Раздельные шедулеры батчинга**: Очередь микрозадач `queueMicrotask` на выполнение эффектов и логов формируется у каждого движка отдельно. Они не склеиваются между собой.
+4. **Собственные настройки логгера**: Вы можете включить логгер на полную мощность для `engine1`, а для `engine2` полностью его отключить — их консоли не будут забивать друг друга.
+
+#### Изоляция сборщика зависимостей (`activeConsumer`) на уровне инстанса
+
+В отличие от многих сигнальных библиотек, где текущий контекст выполнения хранится в глобальной переменной уровня модуля, в **`@pravosleva/reactive-engine` v3.x** указатель активного потребителя (`activeConsumer`) является **локальным полем каждого экземпляра `ReactiveEngineCore`**.
+
+* **Свой контекст выполнения (`this.activeConsumer`):** Когда запускается `computed` или `effect` внутри `engine2`, движок записывает активный узел только в свой собственный указатель `engine2.activeConsumer`. Поле `engine1.activeConsumer` в этот момент остаётся равным `null`.
+* **Проверка принадлежности при чтении (`this.engine`):** Каждый реактивный узел (`SignalNode`, `ComputedNode`) при создании сохраняет прямую ссылку на породивший его инстанс движка. При обращении к `.value` сигнал обращается строго к `this.engine.activeConsumer`, игнорируя любые другие экземпляры движка в памяти.
+* **Защита от случайного смешивания графов:** Если внутри `effect` или `computed` второго движка случайно прочитать сигнал из первого движка, неявная подписка не создастся. Два графа остаются физически изолированными, а обмен данными между ними возможен только через явные мосты синхронизации (`.subscribe()` или `effect`).
 
 ### Зачем это нужно на практике?
 - Паттерн нескольких инстансов движка идеален для микрофронтендов (**Microfrontends**) или изолированных виджетов.
 - Если на одной большой странице вашего портала рендерится сразу три независимых сложных виджета (например: «Чат», «Форма загрузки документов» и «Дашборд аналитики»), каждый из них может инициализировать свой собственный `new ReactiveEngine()`.
 - Это гарантирует, что **тяжелые каскады перерасчетов или очистка памяти (`destroy()`) внутри Чата физически не смогут затормозить или сломать работу Формы документов**, так как их реактивные графы изолированы на уровне инстансов классов.
 
-#### Отличный юзкейс для двух независимых инстансов — это архитектура «Ядро Системы + Изолированный Плагин» (или микрофронтенды).
+**Отличный юзкейс для двух независимых инстансов** — это архитектура «Ядро Системы + Изолированный Плагин» (или микрофронтенды).
 
 *Представьте дашборд оператора:*
 - **Главный инстанс (`hostEngine`)** управляет глобальным состоянием (например, текущим выбранным пользователем/аккаунтом).
@@ -73,28 +85,24 @@ isDisabledForMainBlogPage: true
 
 import { AbstractService } from '@pravosleva/reactive-engine'
 
-// Глобальный сервис хост-приложения (Инстанс 1)
 export class HostGlobalService extends AbstractService {
-  public activeUserId = this.engine.signal<string>('user-1', 'host:active-user-id');
-  
+  public activeUserId = this.engine.signal<string>('user-1', 'host:active-user-id')
+
   public switchUser(id: string) {
-    this.activeUserId.value = id;
+    this.activeUserId.value = id
   }
 }
 
-// Внутренний сервис изолированного виджета (Инстанс 2)
 export class WidgetInternalService extends AbstractService {
-  // Виджет хранит локальную копию ID, чтобы крутить вокруг неё свои вычисления
-  public currentTargetUser = this.engine.signal<string>('', 'widget:target-user');
-  public widgetLocalCounter = this.engine.signal<number>(0, 'widget:local-counter');
+  public currentTargetUser = this.engine.signal<string>('', 'widget:target-user')
+  public widgetLocalCounter = this.engine.signal<number>(0, 'widget:local-counter')
 
-  // Тяжелый локальный компутед виджета
   public widgetStatus = this.engine.computed(() => {
-    return `[Виджет работает для ${this.currentTargetUser.value}]. Локальных кликов: ${this.widgetLocalCounter.value}`;
-  }, 'widget:computed:status [IS_OPTIMIZED=1]');
+    return `[Виджет работает для ${this.currentTargetUser.value}]. Локальных кликов: ${this.widgetLocalCounter.value}`
+  }, 'widget:computed:status')
 
   public incLocal() {
-    this.widgetLocalCounter.value += 1;
+    this.widgetLocalCounter.value += 1
   }
 }
 ```
@@ -105,86 +113,65 @@ export class WidgetInternalService extends AbstractService {
 // Example115.tsx
 
 import { useEffect } from 'react'
+import clsx from 'clsx'
 import baseClasses from '~/ui.common.module.scss'
 import btnClasses from '~/ui.button.module.scss'
 import { ReactiveEngine } from '@pravosleva/reactive-engine/react'
 import { HostGlobalService, WidgetInternalService } from './services'
-import clsx from 'clsx'
 
-// 🌟 Создаем два АБСОЛЮТНО независимых государства в памяти
-const hostEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^host:.*/ } });
-const widgetEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^widget:.*/ } });
+// Создаем два АБСОЛЮТНО независимых государства в памяти
+const hostEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^host:.*/ } })
+const widgetEngine = new ReactiveEngine({ logger: { isEnabled: true, filter: /^widget:.*/ } })
 
 export const Example115 = () => {
   // Инжектируем синглтоны в их родные инстансы движков
-  const hostLogic = hostEngine.inject(HostGlobalService);
-  const widgetLogic = widgetEngine.inject(WidgetInternalService);
+  const hostLogic = hostEngine.inject(HostGlobalService)
+  const widgetLogic = widgetEngine.inject(WidgetInternalService)
 
   // Оформляем стандартные подписки для вывода на экран
-  const activeUserId = hostEngine.use(hostLogic.activeUserId);
-  const widgetStatus = widgetEngine.use(widgetLogic.widgetStatus);
+  const activeUserId = hostEngine.use(hostLogic.activeUserId)
+  const widgetStatus = widgetEngine.use(widgetLogic.widgetStatus)
 
-  // 🌟 МОСТ ДРУЖБЫ И СИНХРОНИЗАЦИИ (Cross-Engine Bridge):
+  // МОСТ ДРУЖБЫ И СИНХРОНИЗАЦИИ (Cross-Engine Bridge):
   useEffect(() => {
-    // Подписываемся на изменения в Первом движке (Host)
     const unsubscribeHost = hostEngine.effect(() => {
-      const freshHostUserId = hostLogic.activeUserId.value;
+      const freshHostUserId = hostLogic.activeUserId.value
+      widgetLogic.currentTargetUser.value = freshHostUserId
+    }, 'bridge:host-to-widget-sync')
 
-      // Передаем значение во Второй движок (Widget) напрямую в его сигнал!
-      // Это абсолютно безопасно, так как вызов происходит на границе систем
-      widgetLogic.currentTargetUser.value = freshHostUserId;
-    }, 'bridge:host-to-widget-sync');
-
-    // При размонтировании (unmount) уничтожаем мост
-    return () => unsubscribeHost();
-  }, [hostLogic, widgetLogic]);
+    return () => unsubscribeHost()
+  }, [hostLogic, widgetLogic])
 
   return (
-    <div className={clsx(baseClasses.unit, baseClasses.stack2)} style={{ width: '600px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      
-      {/* СЛОЙ 1: ХОСТ ПРИЛОЖЕНИЕ (ДВИЖЕК 1) */}
-      <div style={{ padding: '12px', background: '#1a1a24', borderRadius: '8px', border: '1px solid #00b4d8' }}>
-        <h4 style={{ margin: '0 0 8px 0', color: '#00b4d8' }}>🌐 Хост-приложение (Engine #1)</h4>
-        <div style={{ fontSize: '13px', marginBottom: '10px' }}>Текущий пользователь в Системе: <b>{activeUserId}</b></div>
-        
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button 
-            onClick={() => hostLogic.switchUser('user-1')}
-            className={clsx(btnClasses.btn, btnClasses.neonBtn, btnClasses['neonBtn--primary'], { [btnClasses['neonBtn--contained']]: activeUserId === 'user-1' })}
-          >
-            User 1
-          </button>
-          <button 
-            onClick={() => hostLogic.switchUser('user-2')}
-            className={clsx(btnClasses.btn, btnClasses.neonBtn, btnClasses['neonBtn--primary'], { [btnClasses['neonBtn--contained']]: activeUserId === 'user-2' })}
-          >
-            User 2
-          </button>
+      return (
+    <div className={clsx(baseClasses.unit, baseClasses.stack2)}>
+      {/* СЛОЙ 1: ХОСТ ПРИЛОЖЕНИЕ (ДВИЖОК 1) */}
+      <div>
+        <h4>🌐 Хост-приложение (Engine #1)</h4>
+        <div>
+          Текущий пользователь в Системе: <b>{activeUserId}</b>
+        </div>
+
+        <div>
+          <button onClick={() => hostLogic.switchUser('user-1')}>User 1</button>
+          <button onClick={() => hostLogic.switchUser('user-2')}>User 2</button>
         </div>
       </div>
 
-      {/* СЛОЙ 2: ИЗОЛИРОВАННЫЙ ВИДЖЕТ (ДВИЖЕК 2) */}
-      <div style={{ padding: '12px', background: '#111116', borderRadius: '8px', border: '1px solid #42b883' }}>
-        <h4 style={{ margin: '0 0 8px 0', color: '#42b883' }}>🧩 Изолированный Плагин-Виджет (Engine #2)</h4>
-        <div style={{ fontSize: '13px', fontFamily: 'monospace', background: '#000', padding: '8px', borderRadius: '4px', marginBottom: '10px', color: '#ccc' }}>
-          {widgetStatus}
-        </div>
-        
-        <button 
-          onClick={() => widgetLogic.incLocal()}
-          className={clsx(btnClasses.btn, btnClasses.neonBtn, btnClasses['neonBtn--secondary'], btnClasses['neonBtn--contained'])}
-        >
-          💥 Локальный клик виджета (+1)
+      <div>
+        <h4>Изолированный Плагин-Виджет (Engine #2)</h4>
+        <div>{widgetStatus}</div>
+        <button onClick={() => widgetLogic.incLocal()}>
+          Локальный клик виджета (+1)
         </button>
       </div>
-
     </div>
   )
 }
 ```
 
 ##### Что мы видим в консоли и почему это шедевр изоляции?
-Когда вы нажимаете кнопку «💥 Локальный клик виджета»:
+Когда вы нажимаете кнопку **«Локальный клик виджета»:**
 1. Мутирует сигнал `widgetLocalCounter`.
 2. Пересчитывается компут `widget:computed:status`.
 3. В логгере стреляет обособленный батч `REACTIVE TRANSACTION (Filter: widget)`.
@@ -226,7 +213,7 @@ export class WidgetInternalService extends AbstractService {
   
   public widgetStatus = this.engine.computed(() => {
     return `[Виджет для ${this.currentTargetUser.value}]. Кликов: ${this.widgetLocalCounter.value}`;
-  }, 'widget:computed:status [IS_OPTIMIZED=1]');
+  }, 'widget:computed:status');
 
   public incLocal() { this.widgetLocalCounter.value += 1; }
 }
@@ -235,24 +222,43 @@ export class WidgetInternalService extends AbstractService {
 const hostLogic = hostEngine.inject(HostGlobalService);
 const widgetLogic = widgetEngine.inject(WidgetInternalService);
 
-// 🌟 ЧИСТЫЙ JS-МОСТ СИНХРOНИЗАЦИИ (Канонический подход):
+// -- ATTENTION! JS-мост синхронизации:
 // Мы используем встроенный метод .subscribe() сигнала ядра. 
 // Связь будет жить вечно в оперативной памяти приложения, независимо от роутинга React!
+// ❌ УСТАРЕЛО (ломается в v3.0.1):
 hostLogic.activeUserId.subscribe((event) => {
   // Напрямую пушим новое значение во второй изолированный движок
   widgetLogic.currentTargetUser.value = event.to; 
 });
+
+// Начиная с v3.0.1 метод signal.subscribe(cb) передаёт в колбэк напрямую само новое значение T,
+// а не объект { from, to } (event.to вернёт undefined).
+// ✅ АКТУАЛЬНО ДЛЯ v3.x:
+const unsubscribe = hostLogic.activeUserId.subscribe((newUserId) => {
+  widgetLogic.currentTargetUser.value = newUserId;
+});
+// --
 ```
 
-#### Способ 2. Декларативный мост через эффекты ядра (`engine.effect`)
+#### Способ 2. Декларативный мост через эффекты ядра (`hostEngine.effect`)
 Если вы хотите использовать продвинутый батчинг микрозадач (`REACTIVE TRANSACTION`), вы можете завести мост через `engine.effect` первого движка прямо в корневом файле конфигурации приложения:
 ```ts
 // Сработает синхронно в конце микрозадачи, упаковав лог смены пользователя в транзакции Хоста
+
+// -- ATTENTION! Обновления v3.x
+// ❌ УСТАРЕЛО (ломается в v3.0.1):
 hostEngine.effect(() => {
   const freshId = hostLogic.activeUserId.value; // Намертво подписываем эффект к Engine 1
   
   widgetLogic.currentTargetUser.value = freshId; // Синхронно пушим в Engine 2
 }, 'core-bridge:global-sync [IS_OPTIMIZED=1]');
+
+// ✅ АКТУАЛЬНО ДЛЯ v3.x:
+hostEngine.effect(() => {
+  const newUserId = hostLogic.activeUserId.value
+  widgetLogic.currentTargetUser.value = newUserId
+})
+// --
 ```
 
 #### Способ 3. Мост через механизмы фреймворка (`useEffect` / `watch` / `effect`)
