@@ -1,12 +1,12 @@
 ---
-title: "Reactive Engine: Элементы регламента"
-brief: 'Заметки дорелизной кухни'
+title: "Reactive Engine: Дорелизный регламент"
+brief: 'Заметки внутренней кухни'
 bg_src: '/static/img/blog/reactive-engine.habr.721299f528d0fb2f883bfffc55288641.webp'
 bg_size: { w: 780, h: 537 }
 bg_type: 'image/webp'
 
 createdAt: "2026-11-12T00:20:59.816Z"
-updatedAt: "2026-11-12T00:20:59.816Z"
+updatedAt: "2026-11-17T13:19:59.816Z"
 priority: 0.8
 
 author: "Den Pol"
@@ -76,11 +76,15 @@ yarn test
 ```bash
 yarn test:dynamic
 ```
-4. Проверяем работоспособность существующих примеров в UI чтобы убедиться, что мы ничего не пропустили (примеры, вроде, исчерпывающие, но если что-то из них не работает - нужно разобраться, дописать тесты и поправить их через TDD):
+4. Прогоняем проверку деклараций вручную после сборки:
+```bash
+yarn build && yarn test:types
+```
+5. Проверяем работоспособность существующих примеров в UI чтобы убедиться, что мы ничего не пропустили (примеры, вроде, исчерпывающие, но если что-то из них не работает - нужно разобраться, дописать тесты и поправить их через TDD):
 ```bash
 yarn start
 ```
-5. Релизим альфу
-6. Прогоняем альфу на семантику графа 👉 [/johnsoncodehkreactive-framework-test-suite](https://github.com/johnsoncodehk/reactive-framework-test-suite)
-7. Если все устраивает, прогоняем альфу на производительность 👉 [github.com/transitive-bullshit/js-reactivity-benchmark](https://github.com/transitive-bullshit/js-reactivity-benchmark)
-8. Релизим минор/мажор
+6. Релизим альфу
+7. Прогоняем альфу на семантику графа 👉 [/johnsoncodehkreactive-framework-test-suite](https://github.com/johnsoncodehk/reactive-framework-test-suite)
+8. Если все устраивает, прогоняем альфу на производительность 👉 [github.com/transitive-bullshit/js-reactivity-benchmark](https://github.com/transitive-bullshit/js-reactivity-benchmark)
+9. Релизим минор/мажор
