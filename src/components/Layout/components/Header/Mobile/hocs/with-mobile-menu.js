@@ -86,6 +86,7 @@ const STATIC_TAGS = [
   // 'git',
   // 'nginx',
   'рабочие_моменты',
+  'реактивное_программирование',
 ].sort(abSort)
 
 export const withMobileMenu = (ComposedComponent) => {
