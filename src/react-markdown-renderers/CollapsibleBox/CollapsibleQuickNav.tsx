@@ -66,7 +66,7 @@ export const CollapsibleQuickNav: React.FC<CollapsibleQuickNavProps> = ({
 
   // Отслеживание ширины экрана
   useEffect(() => {
-    const checkWidth = () => setIsDesktop(window.innerWidth >= 800)
+    const checkWidth = () => setIsDesktop(window.innerWidth >= (24 + 280 + 24 + 800 + 24 + 280 + 24))
     checkWidth()
     window.addEventListener('resize', checkWidth, { passive: true })
     return () => window.removeEventListener('resize', checkWidth)
