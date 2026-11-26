@@ -24,19 +24,35 @@ isDisabledForMainBlogPage: true
 
 Чтобы закрыть этот вопрос без субъективщины, я собрал третий репозиторий — [github.com/pravosleva/reactive-matrix-advisor](https://github.com/pravosleva/reactive-matrix-advisor). Он забирает сырые JSON-артефакты из первых двух стендов, добавляет к ним архитектурные свойства библиотек (наличие DI, изоляцию инстансов для SSR/MFE, встроенные компараторы) и строит ранжированные рекомендации для 6 типовых сценариев в двух профилях: Desktop / Laptop и Mobile / Low-RAM.
 
+## Обновление замеров
+
+С момента выхода первых двух статей версии некоторых библиотек (а значит, и их характеристики) обновились, поэтому пришлось обновить все замеры. Отсюда вывод - **каждые полгода ситуация может меняться по мере развития библиотек.** Изображения, которые фигурируют ниже по тексту имеют ссылки на последние артефакты сборки в соответствующих репозиториях (текст абстрагирован от конкретных результатов).
+
+### mol-collider-benchmark
+
+![](https://raw.githubusercontent.com/pravosleva/mol-collider-benchmark/refs/heads/master/results/last-benchmark.svg)
+
+Подробности в файле `README` здесь: https://github.com/pravosleva/mol-collider-benchmark
+
+### reactive-memory-benchmark
+
+![](https://github.com/pravosleva/reactive-memory-benchmark/blob/master/results/last-benchmark.png?raw=true)
+
+Подробности в файле `README` здесь: https://github.com/pravosleva/reactive-memory-benchmark
+
 ## Почему нельзя просто взять «#1 по скорости» или «#1 по памяти»
 
 Прежде чем смотреть на сценарии, важно зафиксировать два инженерных наблюдения, которые хорошо видны на стыке первых двух бенчмарков:
-- **Абсолютные чемпионы по памяти не всегда готовы к сложной бизнес-логике.** Голые примитивы вроде **alien-signals** (`251 B/node`) или **@preact/signals-core** (`257 B/node`) задают физический эталон компактности. Но в прикладном коде отсутствие DI, изоляции инстансов под SSR и встроенного глубокого сравнения заставляет либо мириться с лишними пересчётами (`5` вызовов `hard()` вместо `3`), либо дописывать поверх них собственный фреймворк. Они идеальны как низкоуровневое ядро внутри UI-библиотек, но требуют строгой дисциплины в продуктовом коде.
+- **Абсолютные чемпионы по памяти не всегда готовы к сложной бизнес-логике.** В Ноябре 2026 примитивы вроде **alien-signals** или **@preact/signals-core** задают физический эталон компактности. Но в прикладном коде отсутствие DI, изоляции инстансов под SSR и встроенного глубокого сравнения заставляет либо мириться с лишними пересчётами (`5` вызовов `hard()` вместо `3`), либо дописывать поверх них собственный фреймворк. Они идеальны как низкоуровневое ядро внутри UI-библиотек, но требуют строгой дисциплины в продуктовом коде.
 - **Разница между Desktop и Mobile меняет веса метрик.** На ноутбуке с 16–32 ГБ RAM разница между `250 B` и `590 B` на один узел практически незаметна, зато критичны скорость отсечения лишних вычислений и эргономика сервисов. На бюджетном смартфоне или в тяжёлом WebView всё наоборот: частые аллокации в Young Generation (`Tick Alloc`) вызывают микрофризы при скролле, а хвосты при размонтировании (`Leak`) приводят к выгрузке вкладки по OOM.
 
 ## Матрица выбора: 8 сценариев × 2 профиля окружения
 
 В матрице каждый движок получает нормированную оценку от `0` до `100` по семи осям (`ops/sec`, отсечение лишних `hard()`, вес узла из [прошлой статьи](/p/reactive-engine-news-3.0.4-reactive-memory-benchmark) `Node (B)`, давление на GC `Tick Alloc (B)`, чистота отписки `Leak (B/cycle)`, изоляция контекста и встроенные компараторы).
 
-![](/static/img/blog/latest-benchmark_reactive-matrix-report_2026-11-24.png "reactive-matrix-report")
+![](https://github.com/pravosleva/reactive-matrix-advisor/blob/master/results/matrix-report.png?raw=true "reactive-matrix-report")
 
-_Более свежую версию результатов всегда можно посмотреть на странице [репозитория](https://github.com/pravosleva/reactive-matrix-advisor)._
+Подробности в файле `README` здесь: https://github.com/pravosleva/reactive-matrix-advisor
 
 > [!danger] **Важное уточнение!**
 >
@@ -75,7 +91,7 @@ _Эти параметры отражают значимость каждой ф
 * **`isolation`** — встроенная изоляция графа (`0–100%`): безопасность параллельного рендера в SSR (отдельный экземпляр на запрос) и независимость модулей разных команд без глобальных синглтонов.
 * **`ergonomics`** — наличие прикладных «батареек» в API (`0–100%`): встроенный DI, кастомные компараторы равенства, батчинг, асинхронные ресурсы и глубокие реактивные коллекции из коробки.
 
-_Таким образом, каждый элемент массива `SCENARIOS` имеет следующие настройки:_
+_Таким образом, каждый элемент массива `SCENARIOS` имеет следующие настройки (баланс весов):_
 
 ```js
 {
@@ -126,7 +142,14 @@ _При желании можно добавить свой сценарий и 
 * **`Async Resource`** — встроенный примитив или нативная поддержка асинхронных ресурсов с отменой гонок и статусами загрузки (`resource`, `rxResource`, `createEffect`, `reatomAsync`, `$mol_fetch`).
 * **`Deep Proxy`** — реактивные глубокие коллекции из коробки (`reactive()`, `makeAutoObservable`, `engine.reactive()`), позволяющие мутировать вложенные поля или массивы по месту (`O(1)`) без ручного копирования всего дерева (в атомарных иммутабельных сигналах вроде Angular или Solid глубокие деревья требуют ручного дробления на мелкие сигналы).
 
-_Таким образом, каждый движок в объекте `ENGINE_CAPABILITIES` имеет примерно такой формат:_
+_Таким образом, каждый движок в объекте `ENGINE_CAPABILITIES` имеет единый формат для всех участников._
+
+> [!danger] Если вы нашли какую-то неточность/ошибку либо неучтенную характеристику в настройках движков - напишите об этом [в телегу](https://t.me/bash_exp_ru/3393).
+
+## Характеристики
+
+### Angular
+
 ```js
 '@angular/core (Signals)': {
   tag: 'Framework Signals + DI',
@@ -147,55 +170,217 @@ _Таким образом, каждый движок в объекте `ENGINE_
 },
 ```
 
-> [!danger] Если вы нашли какую-то неточность/ошибку либо неучтенную характеристику в настройках движков - напишите в [телегу](https://t.me/bash_exp_ru/3393).
+### Effector
 
-#### Сводная таблица характеристик и обоснование оценок
+```js
+'Effector': {
+  tag: 'Static Domain Stores (Fork API)',
+  isolationFlags: {
+    scopedContainer: 1,     // fork() / Scope
+    noGlobalSingletons: 1,  // полная изоляция в Scope для SSR
+    snapshotHydration: 1,   // serialize() / fork({ values })
+    cascadeDispose: 1,      // clearNode() / сборка Scope
+  },
+  ergonomicsFlags: {
+    builtInDi: 1,           // Domain и фабрики юнитов
+    customEquals: 1,        // updateFilter в createStore
+    batchingSupport: 1,     // встроенная очередь батчинга
+    asyncPrimitive: 1,      // createEffect с pending/finally
+    deepReactive: 0,        // строго иммутабельные сторы
+  },
+  rationale:
+    'Эталонная SSR-изоляция через `Fork API` (`fork`, `serialize`, `clearNode`), доменная декомпозиция, `updateFilter`, встроенная очередь батчинга и эффекты. Строго иммутабельные сторы без глубокого Proxy.',
+},
+```
 
-> Таблица приведена для ознакомления и соответствует актуальным версиям на **Ноябрь 2026.** Более свежую версию всегда можно посмотреть в [репозитории](https://github.com/pravosleva/reactive-matrix-advisor).
+### MobX
 
-| Движок | `isolation` | `ergonomics` | Почему выставлены именно такие значения |
-| :--- | :---: | :---: | :--- |
-| **@angular/core (Signals)** `v22.3.0` | **`100%`** (4/4) | **`80%`** (4/5) | Полная изоляция через иерархический DI, `TransferState` для SSR, автоочистка через `DestroyRef`, встроенный батчинг, `{ equal }` и `resource()`. Минус 20% только за отсутствие глубоких Proxy-коллекций (иммутабельная модель). |
-| **Reatom (@reatom/core)** `v1001.3.0` | **`100%`** (4/4) | **`80%`** (4/5) | Изоляция через контексты выполнения (`createCtx`), сериализация снимков, иерархическая очистка, композиция фабрик, транзакционный батчинг и `reatomAsync`. Без глубоких Proxy-объектов. |
-| **Effector** `v23.4.4` | **`100%`** (4/4) | **`80%`** (4/5) | Эталонная SSR-изоляция через `Fork API` (`fork`, `serialize`, `clearNode`), доменная декомпозиция, `updateFilter`, встроенная очередь батчинга и эффекты. Строго иммутабельные сторы без глубокого Proxy. |
-| **@pravosleva/reactive-engine** `v3.0.4` | **`75%`** (3/4) | **`100%`** (5/5) | Изолированные инстансы `ReactiveEngine` без глобального состояния, контракт `exportSnapshot`/`hydrate`, встроенный DI (`AbstractService`), `{ equals }`, `batch()`, `resource()` с `AbortSignal` и глубокий Proxy `reactive()`. |
-| **MobX** `v7.1.7` | **`75%`** (3/4) | **`80%`** (4/5) | Изоляция через локальные инстансы сторов и `enableStaticRendering`, `comparer.structural`, `runInAction`, `flow()` и глубокий Proxy `makeAutoObservable`. Нет каскадной очистки подграфа одной командой и встроенного DI. |
-| **$mol ($mol_wire_let)** `v1.0.1852` | **`75%`** (3/4) | **`80%`** (4/5) | Контекст наследования `this.$` (`$mol_ambient`), детерминированные деструкторы, встроенный `$mol_compare_deep`, автобатчинг и прозрачный `sync-over-async`. Нет отдельного API снимков для SSR и глубокого Proxy (используется мемоизация свойств). |
-| **SolidJS 2 (@solidjs/signals)** `v2.0.3` | **`75%`** (3/4) | **`60%`** (3/5) | Изоляция подграфов и каскадный `dispose` через `createRoot`, встроенный `{ equals }`, `flush()` и нативная поддержка `Promise` внутри `createMemo`. В пакете сигналов нет DI, SSR-сериализации и глубокого Proxy. |
-| **@vue/reactivity** `v3.5.46` | **`75%`** (3/4) | **`40%`** (2/5) | В изолированном пакете `@vue/reactivity` есть `effectScope` с каскадным `stop()`, внутренний батчинг и глубокий Proxy `reactive()`, но отсутствуют DI, опция `equals` в `computed`, `resource()` и SSR-гидратация (доступны только в Vue/Nuxt). |
-| **alien-signals** `v3.2.1` | **`75%`** (3/4) | **`20%`** (1/5) | Минималистичный push-pull примитив: в v3+ есть `effectScope` для каскадной отписки и `startBatch`/`endBatch`, но полностью отсутствуют DI, компараторы, асинхронные ресурсы и Proxy. |
-| **@preact/signals-core** `v1.14.5` | **`25%`** (1/4) | **`20%`** (1/5) | Самый аскетичный примитив: из коробки есть только локальное создание сигналов без глобального реестра и `batch()`. Нет ни `effectScope`, ни компараторов, ни DI, ни ресурсов. |
+```js
+'MobX': {
+  tag: 'OOP Observable + Comparers',
+  isolationFlags: {
+    scopedContainer: 1,     // локальные инстансы классов-сторов
+    noGlobalSingletons: 1,  // enableStaticRendering(true) для SSR
+    snapshotHydration: 1,   // гидратация полей стора
+    cascadeDispose: 0,      // каждый autorun/reaction отписывается вручную
+  },
+  ergonomicsFlags: {
+    builtInDi: 0,           // нет встроенного DI-контейнера
+    customEquals: 1,        // comparer.structural / кастомный equals
+    batchingSupport: 1,     // runInAction / action
+    asyncPrimitive: 1,      // flow() с генераторами и отменой
+    deepReactive: 1,        // makeAutoObservable (глубокий Proxy)
+  },
+  rationale:
+    'Изоляция через локальные инстансы сторов и `enableStaticRendering`, `comparer.structural`, `runInAction`, `flow()` и глубокий Proxy `makeAutoObservable`. Нет каскадной очистки подграфа одной командой и встроенного DI.',
+},
+```
 
-Оценки `isolation` (4 признака × 25%) и `ergonomics` (5 признаков × 20%) вычисляются автоматически из бинарной матрицы признаков (`1` — есть из коробки в ядре/адаптере, `0` — отсутствует):
+### $mol
 
-| Движок | `isolation` (%) | Scoped Container | No Global Singletons | Snapshot / Hydration | Cascade Dispose | `ergonomics` (%) | Built-in DI | Custom `equals` | Sync Batching | Async Resource | Deep Proxy |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **@angular/core (Signals)** | `100%` | ✅ | ✅ | ✅ | ✅ | `80%` | ✅ | ✅ | ✅ | ✅ | — |
-| **Reatom (@reatom/core)** | `100%` | ✅ | ✅ | ✅ | ✅ | `80%` | ✅ | ✅ | ✅ | ✅ | — |
-| **Effector** | `100%` | ✅ | ✅ | ✅ | ✅ | `80%` | ✅ | ✅ | ✅ | ✅ | — |
-| **@pravosleva/reactive-engine** | `75%` | ✅ | ✅ | — | ✅ | `100%` | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **MobX** | `75%` | ✅ | ✅ | ✅ | — | `80%` | — | ✅ | ✅ | ✅ | ✅ |
-| **$mol ($mol_wire_let)** | `75%` | ✅ | ✅ | — | ✅ | `80%` | ✅ | ✅ | ✅ | ✅ | — |
-| **SolidJS 2 (@solidjs/signals)** | `75%` | ✅ | ✅ | — | ✅ | `60%` | — | ✅ | ✅ | ✅ | — |
-| **@vue/reactivity** | `75%` | ✅ | ✅ | — | ✅ | `40%` | — | — | ✅ | — | ✅ |
-| **alien-signals** | `75%` | ✅ | ✅ | — | ✅ | `20%` | — | — | ✅ | — | — |
-| **@preact/signals-core** | `25%` | — | ✅ | — | — | `20%` | — | — | ✅ | — | — |
+```js
+'$mol ($mol_wire_solo)': {
+  tag: 'Quantum Graph + Deep Compare',
+  isolationFlags: {
+    scopedContainer: 1,     // $mol_ambient (контекст this.$)
+    noGlobalSingletons: 1,  // изоляция через дерево владения
+    snapshotHydration: 0,   // нет отдельного API снимков в mol_wire_lib
+    cascadeDispose: 1,      // детерминированный вызов destructor()
+  },
+  ergonomicsFlags: {
+    builtInDi: 1,           // наследование контекста this.$
+    customEquals: 1,        // встроенный $mol_compare_deep на каждый атом
+    batchingSupport: 1,     // отложенный пересчёт до кадра / чтения
+    asyncPrimitive: 1,      // прозрачный sync-over-async и $mol_wire_sync
+    deepReactive: 0,        // мемоизация свойств вместо глубокого Proxy
+    // В $mol (и в частности в библиотеке mol_wire_lib) реактивность построена исключительно на мемоизации методов/свойств классов (@mol_mem / @mol_mem_key / $mol_wire_solo), а не на глубоких Proxy-обёртках над произвольными JSON-объектами или массивами (как reactive() во Vue, makeAutoObservable в MobX или engine.reactive() в @pravosleva/reactive-engine).
+  },
+  rationale:
+    'Контекст наследования `this.$` (`$mol_ambient`), детерминированные деструкторы, встроенный `$mol_compare_deep`, автобатчинг и прозрачный `sync-over-async`. Нет отдельного API снимков для SSR и глубокого Proxy (используется мемоизация свойств).',
+},
+```
 
-## Итоги всей трилогии
+### Preact
 
-Если свести результаты всех трёх репозиториев в три коротких правила выбора:
-1. Универсальный баланс без слабых мест — **@vue/reactivity** и **@angular/core (Signals).** Единственные два движка, которые вошли в топ-4 обоих бенчмарков одновременно: компактные узлы (`330–517 B`), минимальный мусор на тик (`119–247 B`) и точное отсечение лишних вычислений (`3` вызова `hard()`).
-2. Максимальная скорость под сложной бизнес-логикой и изоляция сервисов — **@pravosleva/reactive-engine.** Лидер вычислительного коллайдера (**#1, `8 271 ops/sec`**) с полноценным DI, глубокими компараторами и безопасным SSR. В следующих версиях остаётся точечная точка роста — сокращение веса узла с `590 B` до уровня `350–400 B` за счёт пула связей.
-3. Узкоспециализированные движки с чёткой нишей:
-	- **alien-signals и @preact/signals-core** — эталонный фундамент для кастомных рендереров и сверхплотных таблиц на слабых устройствах.
-	- **MobX** и **$mol** — мощные объектно-ориентированные / фрактальные модели для сложных доменных графов (но в **$mol** для динамических подграфов важно использовать полноценный жизненный цикл **$mol_object,** а не голые замыкания **$mol_wire_let**).
-	- **Reatom** и **Effector** — декларативные графы с развитой экосистемой хуков и транзакций, которые лучше раскрываются на уровне крупных доменных сторов, а не десятков тысяч микро-атомов.
+```js
+'@preact/signals-core': {
+  tag: 'Minimalist Signal Primitive',
+  isolationFlags: {
+    scopedContainer: 0,     // нет effectScope / createRoot в core
+    noGlobalSingletons: 1,  // можно создавать локально, но без контекста
+    snapshotHydration: 0,   // отсутствует
+    cascadeDispose: 0,      // каждый effect() отписывается отдельно
+  },
+  ergonomicsFlags: {
+    builtInDi: 0,           // отсутствует
+    customEquals: 0,        // только ===
+    batchingSupport: 1,        // batch()
+    asyncPrimitive: 0,      // отсутствует
+    deepReactive: 0,        // отсутствует
+  },
+  rationale:
+    'Самый аскетичный примитив: из коробки есть только локальное создание сигналов без глобального реестра и `batch()`. Нет ни `effectScope`, ни компараторов, ни DI, ни ресурсов.',
+},
+```
 
-_Все три стенда открыты и воспроизводятся одной командой на любой машине с **Node.js 22.20+**:_
+### @pravosleva/reactive-engine
 
-- Вычислительный коллайдер: https://github.com/pravosleva/mol-collider-benchmark
-- Коллайдер памяти и GC: https://github.com/pravosleva/reactive-memory-benchmark
-- Матричный анализатор сценариев: https://github.com/pravosleva/reactive-matrix-advisor
+```js
+'@pravosleva/reactive-engine': {
+  tag: 'Full-featured Engine + DI',
+  isolationFlags: {
+    scopedContainer: 1,     // new ReactiveEngine() на запрос / модуль
+    // NOTE: На всякий случай
+    // - «На запрос» означает, что new ReactiveEngine() создаётся внутри обработчика каждого входящего HTTP-запроса (или внутри корневого компонента дерева рендера на сервере), живёт ровно столько, сколько рендерится страница для этого конкретного пользователя, и после отправки HTML-ответа полностью уничтожается сборщиком мусора.
+    // - А «на модуль» (per module / microfrontend) — это клиентский аналог той же изоляции: когда в одном большом приложении работают несколько независимых микрофронтендов или виджетов разных команд, и каждый из них поднимает свой собственный изолированный new ReactiveEngine(), не пересекаясь с соседями.
+    noGlobalSingletons: 1,  // полное отсутствие глобального состояния
+    snapshotHydration: 0,   // нет встроенного API снимков в ядре; реализуется паттерном в сервисах (это, кстати легко добавить)
+    cascadeDispose: 1,      // очистка подписок и ресурсов
+  },
+  ergonomicsFlags: {
+    builtInDi: 1,           // AbstractService + engine.inject()
+    customEquals: 1,        // опция { equals } в computed
+    batchingSupport: 1,     // engine.batch()
+    asyncPrimitive: 1,      // engine.resource() с AbortSignal и retry
+    deepReactive: 1,        // engine.reactive() (Proxy)
+  },
+  rationale:
+    'Изолированные инстансы `ReactiveEngine` без глобального состояния, контракт `exportSnapshot`/`hydrate`, встроенный DI (`AbstractService`), `{ equals }`, `batch()`, `resource()` с `AbortSignal` и глубокий Proxy `reactive()`.',
+},
+```
+
+> [!info] **Честная ремарка про ergonomics = 100%**
+>
+> Объединение всех пяти механизмов в одном лёгком ядре — редкость, в таблице возможностей API из 10 СТМ только **@pravosleva/reactive-engine** закрывает все 5 пунктов (`5/5 = 100%`). В этом нет подгонки критериев — библиотека изначально проектировалась как компактный фреймворк-агностичный комбайн, объединяющий сервисный DI и `resource()` в духе современного **Angular 20+** с глубокими реактивными Proxy-коллекциями как во **Vue** или **@legendapp/state.**
+>
+> Индустрия исторически разделилась на два лагеря, и ни один из мейнстримных движков не закрывает все 5 пунктов одновременно в одном core-пакете:
+> 1. **Лагерь Deep Proxy** (Vue, MobX, Valtio) дают удобную мутацию вложенных объектов по месту, но MobX не включает встроенный DI-контейнер, а в изолированном **@vue/reactivity** нет DI (provide/inject живёт в runtime-core), нет кастомного `equals` в `computed` и нет встроенного `resource()`.
+> 2. **Лагерь иммутабельных атомов (Angular Signals, SolidJS 2, Reatom, Effector)** дают отличный DI/контексты, компараторы и асинхронные примитивы (`4/5 = 80%`), но принципиально отказываются от глубоких Proxy-коллекций, чтобы не платить за обёртки `new Proxy()` и не терять строгую иммутабельность.
+>
+> В математике матрицы влияние минимально: вес `ergonomics` в сценариях составляет всего 0.05 – 0.20 (5–20%), поэтому лишний балл (1–4 пункта из 100) не вытягивает библиотеку там, где критичны лимиты памяти. И у этого комфорта есть прямая физическая цена: за встроенные «батарейки» **@pravosleva/reactive-engine** платит статическим весом узла (~607 B против 251 B у аскетичного **alien-signals**), поэтому в задачах на десятки тысяч ячеек под слабые мобильные устройства лидерство закономерно переходит к минималистичным сигналам.
+>
+> Поэтому, уместно заметить, что **@pravosleva/reactive-engine** изначально проектировался как комбайн, объединяющий лучшие паттерны **Angular** (DI + resource), **Vue** (reactive Proxy) и **Solid** (equals), поэтому закономерно закрывает все 5 пунктов. И у этого комфорта есть прямая физическая цена: за встроенные «батарейки» @pravosleva/reactive-engine платит статическим весом узла (`607 B` против `522 B` у близкого по уровню абстракции **MobX,** `369 B` у **$mol** и `251 B` у аскетичного **alien-signals**), поэтому в задачах на десятки тысяч ячеек под слабые мобильные устройства лидерство закономерно переходит к более лёгким структурам графа. **Ближайший идейный аналог — @legendapp/state (Legend-State)** тоже совмещает глубокие Proxy-наблюдатели, батчинг, вычисляемые свойства и асинхронные/персистентные примитивы (fetch/synced), но в нём нет классического объектно-ориентированного DI-контейнера со скоупами сервисов (`AbstractService`), как в **Angular** или **@pravosleva/reactive-engine**.
+
+### Reatom
+
+```js
+'Reatom (@reatom/core)': {
+  tag: 'Transactional Atom Graph',
+  isolationFlags: {
+    scopedContainer: 1,     // контексты выполнения (createCtx / wrap)
+    noGlobalSingletons: 1,  // изоляция состояния по контекстам
+    snapshotHydration: 1,   // встроенная сериализация снимков (snapshot)
+    cascadeDispose: 1,      // иерархическая отмена и очистка подписок
+  },
+  ergonomicsFlags: {
+    builtInDi: 1,           // композиция фабрик и контекста
+    customEquals: 1,        // встроенная мемоизация и компараторы
+    batchingSupport: 1,        // транзакционный батчинг (notify / batch)
+    asyncPrimitive: 1,      // reatomAsync / эффекты с отменой
+    deepReactive: 0,        // иммутабельная модель атомов (без Proxy)
+  },
+  rationale:
+    'Изоляция через контексты выполнения (`createCtx`), сериализация снимков, иерархическая очистка, композиция фабрик, транзакционный батчинг и `reatomAsync`. Без глубоких Proxy-объектов.',
+},
+```
+
+### SolidJS 2
+
+```js
+'SolidJS 2 (@solidjs/signals)': {
+  tag: 'Root-scoped Signals',
+  isolationFlags: {
+    scopedContainer: 1,     // createRoot()
+    noGlobalSingletons: 1,  // граф привязан к владельцу (Owner)
+    snapshotHydration: 0,   // в @solidjs/signals нет (только в SolidStart)
+    cascadeDispose: 1,      // dispose() корневого createRoot
+  },
+  ergonomicsFlags: {
+    builtInDi: 0,           // нет в @solidjs/signals
+    customEquals: 1,        // опция { equals } в createMemo и createSignal
+    batchingSupport: 1,     // автоматический батчинг + flush()
+    asyncPrimitive: 1,      // встроенная поддержка Promise в createMemo (Solid 2)
+    deepReactive: 0,        // в @solidjs/signals только атомарные сигналы
+  },
+  rationale:
+    'Изоляция подграфов и каскадный `dispose` через `createRoot`, встроенный `{ equals }`, `flush()` и нативная поддержка `Promise` внутри `createMemo`. В пакете сигналов нет DI, SSR-сериализации и глубокого Proxy.',
+},
+```
+
+### @vue/reactivity
+
+```js
+'@vue/reactivity': {
+  tag: 'Balanced Core + EffectScope',
+  isolationFlags: {
+    scopedContainer: 1,     // effectScope()
+    noGlobalSingletons: 1,  // при создании внутри setup() / useState()
+    snapshotHydration: 0,   // из коробки @vue/reactivity нет (только в Nuxt)
+    cascadeDispose: 1,      // scope.stop()
+  },
+  ergonomicsFlags: {
+    builtInDi: 0,           // нет в @vue/reactivity (provide/inject в runtime-core)
+    customEquals: 0,        // нет опции equals в computed (только Object.is)
+    batchingSupport: 1,        // внутренний батчинг планировщика
+    asyncPrimitive: 0,      // нет в @vue/reactivity
+    deepReactive: 1,        // reactive() (глубокий Proxy)
+  },
+  rationale:
+    'В изолированном пакете `@vue/reactivity` есть `effectScope` с каскадным `stop()`, внутренний батчинг и глубокий Proxy `reactive()`, но отсутствуют DI, опция `equals` в `computed`, `resource()` и SSR-гидратация (доступны только в Vue/Nuxt).',
+},
+```
+
+Оценки `isolation` (4 признака × 25%) и `ergonomics` (5 признаков × 20%) вычисляются автоматически из бинарной матрицы признаков (`1` — есть из коробки в ядре/адаптере, `0` — отсутствует)
+
+> Версия замеров периодически обновляется, поэтому нет смысла публиковать ее в статье. Актуальную версию сводной таблицы характеристик и обоснование оценок можно найти в [репозитории](https://github.com/pravosleva/reactive-matrix-advisor).
+
+Все три стенда открыты и воспроизводятся одной командой на любой машине с **Node.js 22+**: 
+
+* Вычислительный коллайдер: [github.com/pravosleva/mol-collider-benchmark](https://github.com/pravosleva/mol-collider-benchmark)
+* Коллайдер памяти и GC: [github.com/pravosleva/reactive-memory-benchmark](https://github.com/pravosleva/reactive-memory-benchmark)
+* Матричный анализатор сценариев: [github.com/pravosleva/reactive-matrix-advisor](https://github.com/pravosleva/reactive-matrix-advisor)
+
+_Итоги подводить не будем, все сказали числа._
 
 <ControlsBox
   controlsJson='[
